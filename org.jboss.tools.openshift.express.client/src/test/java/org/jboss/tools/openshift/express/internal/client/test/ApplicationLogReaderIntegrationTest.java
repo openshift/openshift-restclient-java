@@ -26,7 +26,6 @@ import org.jboss.tools.openshift.express.client.OpenShiftService;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.TestUser;
 import org.jboss.tools.openshift.express.internal.client.test.utils.ApplicationUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -50,7 +49,6 @@ public class ApplicationLogReaderIntegrationTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Ignore
 	@Test
 	public void getStatusReturnsTheWholeLogIfNoNewLogEntryOnServer() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
@@ -68,7 +66,6 @@ public class ApplicationLogReaderIntegrationTest {
 	 * Asserts the service implementation: getStatus returns the new entries
 	 * (and a tailing-header) if new log entries are available
 	 */
-	@Ignore
 	@Test
 	public void getStatusReturnsNewEntriesIfNewLogEntriesOnServer() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();

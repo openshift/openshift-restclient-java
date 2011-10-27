@@ -19,7 +19,6 @@ import org.jboss.tools.openshift.express.client.SSHKeyPair;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.TestSSHKey;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.TestUser;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DomainIntegrationTest {
@@ -33,7 +32,6 @@ public class DomainIntegrationTest {
 		this.user = new TestUser();
 	}
 
-	@Ignore
 	@Test
 	public void canCreateDomain() throws Exception {
 
@@ -45,7 +43,6 @@ public class DomainIntegrationTest {
 		assertEquals(domainName, domain.getNamespace());
 	}
 
-	@Ignore
 	@Test
 	public void canChangeDomain() throws Exception {
 

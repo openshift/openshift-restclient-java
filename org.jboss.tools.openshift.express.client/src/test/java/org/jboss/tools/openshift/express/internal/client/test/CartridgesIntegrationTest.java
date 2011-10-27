@@ -20,7 +20,6 @@ import org.jboss.tools.openshift.express.client.OpenShiftService;
 import org.jboss.tools.openshift.express.client.User;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.TestUser;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -38,7 +37,6 @@ public class CartridgesIntegrationTest {
 		this.user = new TestUser();
 	}
 
-	@Ignore
 	@Test
 	public void canRequestListCartridges() throws Exception {
 		List<ICartridge> cartridges = openShiftService.getCartridges(user);
