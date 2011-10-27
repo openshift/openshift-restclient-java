@@ -24,7 +24,7 @@ public class TestUser extends User {
 
 	public static final String ID = "org.jboss.tools.openshift.express.client.test " + OpenShiftService.VERSION;
 	
-	public static final String RHLOGIN_USER_WITHOUT_DOMAIN = "toolsjboss.no.domain2@gmail.com";
+	public static final String RHLOGIN_USER_WITHOUT_DOMAIN = "toolsjboss+nodomain@gmail.com";
 	public static final String PASSWORD_USER_WITHOUT_DOMAIN = "1q2w3e";
 
 	public static final String RHLOGIN = "toolsjboss@gmail.com";
