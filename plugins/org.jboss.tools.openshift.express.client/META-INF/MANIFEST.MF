@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OpenShift Core Plugin
+Bundle-SymbolicName: org.jboss.tools.openshift.express.client 
+Bundle-Version: 2.3.0.qualifier
+Bundle-Activator: org.jboss.tools.openshift.express.internal.client.OpenShiftCoreActivator
+Bundle-Vendor: JBoss by Red Hat
+Require-Bundle: org.eclipse.core.runtime,
+ com.jcraft.jsch;bundle-version="[0.1.44,2.0.0)"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: jboss-dmr-1.0.0.Final.jar,
+ .
+Export-Package: org.jboss.dmr;x-friends:="org.jboss.tools.openshift.express.client.test",
+ org.jboss.tools.openshift.express.client,
+ org.jboss.tools.openshift.express.client.utils,
+ org.jboss.tools.openshift.express.internal.client;x-friends:="org.jboss.tools.openshift.express.client.test",
+ org.jboss.tools.openshift.express.internal.client.request;x-friends:="org.jboss.tools.openshift.express.client.test",
+ org.jboss.tools.openshift.express.internal.client.request.marshalling;x-friends:="org.jboss.tools.openshift.express.client.test",
+ org.jboss.tools.openshift.express.internal.client.response;x-friends:="org.jboss.tools.openshift.express.client.test",
+ org.jboss.tools.openshift.express.internal.client.response.unmarshalling;x-friends:="org.jboss.tools.openshift.express.client.test",
+ org.jboss.tools.openshift.express.internal.client.utils;x-friends:="org.jboss.tools.openshift.express.client.test"
