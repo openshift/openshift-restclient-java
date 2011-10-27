@@ -22,6 +22,10 @@ import org.jboss.tools.openshift.express.internal.client.UserInfo;
  */
 public interface IOpenShiftService {
 
+	// TODO extract to properties file
+	public static final String VERSION = "2.3.0";
+	public static final String ID = "org.jboss.tools.openshift.express.client"; 
+
 	/**
 	 * The platform base url
 	 */

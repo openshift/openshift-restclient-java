@@ -47,8 +47,6 @@ import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.
  */
 public class OpenShiftService implements IOpenShiftService {
 
-	// TODO extract to properties file
-	public static final String VERSION = "0.1.0";
 	private static final String USERAGENT_FORMAT = "Java OpenShift/{0} ({1})";
 
 	private String baseUrl;

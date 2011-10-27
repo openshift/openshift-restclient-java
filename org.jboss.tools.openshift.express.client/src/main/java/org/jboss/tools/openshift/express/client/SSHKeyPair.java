@@ -30,8 +30,6 @@ public class SSHKeyPair implements ISSHPublicKey {
 	 */
 	private static final int KEYLENGTH = 2048;
 
-	private static final String CLIENT_ID = "org.jboss.tools.openshift.express.client";
-
 	private KeyPair keyPair;
 	private String privateKeyPath;
 
@@ -62,7 +60,7 @@ public class SSHKeyPair implements ISSHPublicKey {
 		try {
 			KeyPair keyPair = KeyPair.genKeyPair(new JSch(), KeyPair.RSA, KEYLENGTH);
 			keyPair.setPassphrase(passPhrase);
-			keyPair.writePublicKey(publicKeyPath, "created by " + CLIENT_ID);
+			keyPair.writePublicKey(publicKeyPath, "created by " + IOpenShiftService.ID);
 			keyPair.writePrivateKey(privateKeyPath);
 			return new SSHKeyPair(keyPair, privateKeyPath, publicKeyPath);
 		} catch (Exception e) {
