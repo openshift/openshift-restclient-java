@@ -40,7 +40,7 @@ public class ApplicationAsserts {
 	 */
 	public static final Pattern GIT_URI_REGEXP = Pattern.compile("ssh://(.+)@(.+)-([^\\.]+)\\.(.+)/~/git/(.+).git/");
 
-	public static final Pattern APPLICATION_URL_REGEXP = Pattern.compile("http://(.+)-([^\\.]+)\\.(.+)/");
+	public static final Pattern APPLICATION_URL_REGEXP = Pattern.compile("https*://(.+)-([^\\.]+)\\.(.+)/");
 
 	public static void assertThatContainsApplication(String applicationName, String embedded, String applicationUUID,
 			String cartridgeName, String creationTime, List<IApplication> applications) throws OpenShiftException {
