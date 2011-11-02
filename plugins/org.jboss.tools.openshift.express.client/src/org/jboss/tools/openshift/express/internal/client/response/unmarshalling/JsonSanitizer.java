@@ -1,8 +1,3 @@
-package org.jboss.tools.openshift.express.internal.client.response.unmarshalling;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /******************************************************************************* 
  * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
@@ -13,6 +8,10 @@ import java.util.regex.Pattern;
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+package org.jboss.tools.openshift.express.internal.client.response.unmarshalling;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author André Dietisheim

@@ -19,10 +19,6 @@ import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.internal.client.IOpenShiftJsonConstants;
 
 /**
- * WARNING: the current (9-7-2011) response from the openshift rest service is
- * invalid. It quotes the nested json object in the data property: '"data" :
- * "{'. My current unmarshalling code does not handle this bad json.
- * 
  * @author André Dietisheim
  */
 public class ListCartridgesResponseUnmarshaller extends AbstractOpenShiftJsonResponseUnmarshaller<List<ICartridge>> {
