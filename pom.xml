@@ -1,24 +1,208 @@
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi:ts=2:sw=2:expandtab: -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<!-- Parent -->
 	<parent>
-		<groupId>org.jboss.tools.openshift.express.client</groupId>
-		<artifactId>org.jboss.tools.openshift.express.client.parent.pom</artifactId>
-		<version>2.3.0-SNAPSHOT</version>
-		<relativePath>./pom-parent.xml</relativePath>
+		<groupId>org.jboss</groupId>
+		<artifactId>jboss-parent</artifactId>
+		<version>6-beta-2</version>
+		<relativePath />
 	</parent>
-	<groupId>org.jboss.tools.openshift.express.client</groupId>
-	<artifactId>openshift</artifactId>
-	<name>openshift express client all</name>
-	<version>2.3.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<modules>
-		<module>plugins</module>
-		<module>tests</module>
-		<module>features</module>
-		<module>site</module>
-	</modules>
+
+	<!-- Model Information -->
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Artifact Information -->
+	<groupId>com.openshift.express</groupId>
+	<artifactId>openshift-java-client</artifactId>
+	<version>1.1.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>OpenShift Java Client</name>
+	<url>http://openshift.redhat.com</url>
+	<description>OpenShift Java Client</description>
+
+	<properties>
+
+		<!-- jboss-parent override -->
+		<version.release.plugin>2.1</version.release.plugin>
+		<maven.compiler.target>1.5</maven.compiler.target>
+		<maven.compiler.source>1.5</maven.compiler.source>
+
+
+		<!-- External Deps -->
+		<version.shrinkwrap_shrinkwrap>1.0.0-beta-6</version.shrinkwrap_shrinkwrap>
+		<version.shrinkwrap_resolver>1.0.0-beta-5</version.shrinkwrap_resolver>
+		<version.shrinkwrap_descriptors>1.1.0-beta-1</version.shrinkwrap_descriptors>
+
+	</properties>
+
+	<!-- Issues -->
+	<!--issueManagement> <system>jira</system> <url>http://jira.jboss.com/jira/browse/ARQ</url> 
+		</issueManagement -->
+
+	<!-- Licenses -->
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<!--scm> <connection>scm:git:git://git@github.com:arquillian/arquillian-core.git</connection> 
+		<developerConnection>scm:git:ssh://github.com/arquillian/arquillian-core.git</developerConnection> 
+		<url>git://github.com/arquillian/arquillian-core.git</url> </scm -->
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<PASSWORD>${PASSWORD}</PASSWORD>
+						<RHLOGIN>${RHLOGIN}</RHLOGIN>
+					</systemPropertyVariables>
+					<excludes>
+						<exclude>**/OpenShiftIntegrationTestSuite.java</exclude>
+					</excludes>
+					<includes>
+						<include>**/OpenShiftTestSuite.java</include>
+					</includes>
+					<!--excludes> <exclude>**/OpenShiftTestSuite.java</exclude> </excludes> 
+						<includes> <include>**/OpenShiftIntegrationTestSuite.java</include> </includes -->
+					<!--jvm>/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/bin/java</jvm -->
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jboss</groupId>
+			<artifactId>jboss-dmr</artifactId>
+			<version>1.0.0.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.44-1</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.9.0-rc1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-release-plugin</artifactId>
+						<configuration>
+							<autoVersionSubmodules>true</autoVersionSubmodules>
+							<pushChanges>false</pushChanges>
+							<localCheckout>true</localCheckout>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<doclet>org.jboss.apiviz.APIviz</doclet>
+							<docletArtifact>
+								<groupId>org.jboss.apiviz</groupId>
+								<artifactId>apiviz</artifactId>
+								<version>1.3.1.GA</version>
+							</docletArtifact>
+							<useStandardDocletOptions>true</useStandardDocletOptions>
+							<charset>UTF-8</charset>
+							<encoding>UTF-8</encoding>
+							<docencoding>UTF-8</docencoding>
+							<breakiterator>true</breakiterator>
+							<version>true</version>
+							<author>true</author>
+							<keywords>true</keywords>
+							<additionalparam>-sourceclasspath
+								${project.build.outputDirectory}</additionalparam>
+							<stylesheetfile>${project.parent.parent.basedir}/javadoc/stylesheet.css</stylesheetfile>
+							<javadocDirectory>${project.parent.parent.basedir}/javadoc</javadocDirectory>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>integration-tests</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<systemPropertyVariables>
+								<propertyName>PASSWORD</propertyName>
+								<buildDirectory>${PASSWORD}</buildDirectory>
+								<propertyName>RHLOGIN</propertyName>
+								<buildDirectory>${RHLOGIN}</buildDirectory>
+							</systemPropertyVariables>
+							<excludes>
+								<exclude>**/OpenShiftSuite.java</exclude>
+							</excludes>
+							<includes>
+								<include>**/OpenShiftIntegrationTestSuite.java</include>
+							</includes>
+						</configuration>
+						<executions>
+							<execution>
+								<id>integration-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<skip>false</skip>
+									<excludes>
+										<exclude>none</exclude>
+									</excludes>
+									<includes>
+										<include>**/integration/*Test.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
 </project>
-	
