@@ -1,12 +1,12 @@
-/******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
- * Distributed under license by Red Hat, Inc. All rights reserved. 
- * This program is made available under the terms of the 
- * Eclipse Public License v1.0 which accompanies this distribution, 
- * and is available at http://www.eclipse.org/legal/epl-v10.html 
- * 
- * Contributors: 
- * Red Hat, Inc. - initial API and implementation 
+/*******************************************************************************
+ * Copyright (c) 2011 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 package com.openshift.express.internal.client;
 
@@ -27,15 +27,22 @@ public class UserInfo {
 	private String rhcDomain;
 	private String namespace;
 	private List<ApplicationInfo> applicationInfos;
+	private long maxGears;
+	private long consumedGears;
 
-	public UserInfo(String rhLogin, String uuid, String sshPublicKey, String rhcDomain, String namespace,
-			List<ApplicationInfo> applicationInfos, String sshKeyType) throws OpenShiftUnknonwSSHKeyTypeException {
+	public UserInfo(String rhLogin, String uuid, String sshPublicKey,
+			String rhcDomain, String namespace,
+			List<ApplicationInfo> applicationInfos, String sshKeyType,
+			long maxGears, long consumedGears)
+			throws OpenShiftUnknonwSSHKeyTypeException {
 		this.rhLogin = rhLogin;
 		this.uuid = uuid;
 		this.sshPublicKey = new SSHPublicKey(sshPublicKey, sshKeyType);
 		this.rhcDomain = rhcDomain;
 		this.namespace = namespace;
 		this.applicationInfos = applicationInfos;
+		this.maxGears = maxGears;
+		this.consumedGears = consumedGears;
 	}
 
 	public String getUuid() {
@@ -49,7 +56,7 @@ public class UserInfo {
 	public boolean hasDomain() {
 		return namespace != null;
 	}
-	
+
 	public String getRhLogin() {
 		return rhLogin;
 	}
@@ -63,7 +70,8 @@ public class UserInfo {
 	}
 
 	public void removeApplicationInfo(String name) {
-		for (Iterator<ApplicationInfo> iterator = applicationInfos.iterator(); iterator.hasNext();) {
+		for (Iterator<ApplicationInfo> iterator = applicationInfos.iterator(); iterator
+				.hasNext();) {
 			ApplicationInfo appInfo = iterator.next();
 			if (appInfo.getName().equals(name)) {
 				iterator.remove();
@@ -86,6 +94,14 @@ public class UserInfo {
 
 	public String getRhcDomain() {
 		return rhcDomain;
+	}
+
+	public long getMaxGears() {
+		return maxGears;
+	}
+
+	public long getConsumedGears() {
+		return consumedGears;
 	}
 
 	protected void clearNameSpace() {

@@ -52,11 +52,13 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenShiftJsonResponseU
 		String uuid = getString(IOpenShiftJsonConstants.PROPERTY_UUID, userInfoNode);
 		String namespace = getString(IOpenShiftJsonConstants.PROPERTY_NAMESPACE, userInfoNode);
 		String rhcDomain = getString(IOpenShiftJsonConstants.PROPERTY_RHC_DOMAIN, userInfoNode);
+		long maxGears = this.getLong(IOpenShiftJsonConstants.PROPERTY_MAX_GEARS, userInfoNode);
+		long consumedGears = this.getLong(IOpenShiftJsonConstants.PROPERTY_CONSUMED_GEARS, userInfoNode);
 
 		List<ApplicationInfo> applicationInfos = createApplicationInfos(dataNode
 				.get(IOpenShiftJsonConstants.PROPERTY_APP_INFO));
 
-		return new UserInfo(rhlogin, uuid, sshPublicKey, rhcDomain, namespace, applicationInfos, sshKeyType);
+		return new UserInfo(rhlogin, uuid, sshPublicKey, rhcDomain, namespace, applicationInfos, sshKeyType, maxGears, consumedGears);
 	}
 
 	private String getSshKeyType(ModelNode userInfoNode) {

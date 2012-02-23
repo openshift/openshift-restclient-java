@@ -35,6 +35,9 @@ public class UserInfoResponseFake {
 					+ "SABRVSX+zeQjlfqbbUtYFc7TIfd4RQc3GaISG1rS3C4svRSjdWaG36"
 					+ "vDY2KxowdFvpKj8i8IYNPlLoRA/7EzzyneS6iyw==";
 	
+	public static final long MAX_GEARS = 5;
+	public static final long CONSUMED_GEARS = 0;
+	
 	public static final String APP1_NAME = "1315836963263";
 	public static final String APP1_UUID = "810540bafc1c4b5e8cac830fb8ca786f";
 	public static final String APP1_CARTRIDGE = "jbossas-7.0";

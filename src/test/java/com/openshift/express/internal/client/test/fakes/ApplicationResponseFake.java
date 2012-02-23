@@ -27,6 +27,8 @@ public class ApplicationResponseFake {
 	public static final String UUID = "0123456789abcdefghijklmnopqrstuvwz";
 	public static final String SSHPUBLICKEY = "sshpublicKey&!%$123456";
 	public static final String SSHKEYTYPE = "ssh-rsa";
+	public static final long MAX_GEARS = 5;
+	public static final long CONSUMED_GEARS = 0;
 	
 	public static final String RHC_DOMAIN = "rhcloud.com";
 	public static final String NAMESPACE = "1315839296868";

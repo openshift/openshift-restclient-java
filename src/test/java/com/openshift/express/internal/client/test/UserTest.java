@@ -179,7 +179,9 @@ public class UserTest {
 				, UserInfoResponseFake.RHC_DOMAIN
 				, UserInfoResponseFake.NAMESPACE
 				, applicationInfos
-				, UserInfoResponseFake.SSH_KEY_TYPE);
+				, UserInfoResponseFake.SSH_KEY_TYPE
+				, UserInfoResponseFake.MAX_GEARS
+				, UserInfoResponseFake.CONSUMED_GEARS);
 	}
 
 }

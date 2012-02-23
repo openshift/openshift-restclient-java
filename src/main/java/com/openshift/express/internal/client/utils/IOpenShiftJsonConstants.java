@@ -38,6 +38,8 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_USER_INFO = "user_info";
 	public static final String PROPERTY_APP_INFO = "app_info";
 	public static final String PROPERTY_RHC_DOMAIN = "rhc_domain";
+	public static final String PROPERTY_MAX_GEARS = "max_gears";
+	public static final String PROPERTY_CONSUMED_GEARS = "consumed_gears";
 	public static final String PROPERTY_EMBEDDED = "embedded";
 	public static final String PROPERTY_FRAMEWORK = "framework";
 	public static final String PROPERTY_CREATION_TIME = "creation_time";
