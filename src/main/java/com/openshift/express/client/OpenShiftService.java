@@ -297,7 +297,7 @@ public class OpenShiftService implements IOpenShiftService {
 
 			String logLocation = "/";
 			if (cartridge == Cartridge.JBOSSAS_7)
-				logLocation = "/jbossas-7.0/";
+				logLocation = "/jbossas-7/";
 
 			String command =
 					"tail "

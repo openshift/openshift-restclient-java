@@ -24,7 +24,7 @@ public class JBossCartridge extends Cartridge {
 	}
 
 	public String getLogLocation() {
-		return "/jbossas-7.0/";
+		return "/jbossas-7/";
 	}
 
 }

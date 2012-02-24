@@ -40,13 +40,13 @@ public class UserInfoResponseFake {
 	
 	public static final String APP1_NAME = "1315836963263";
 	public static final String APP1_UUID = "810540bafc1c4b5e8cac830fb8ca786f";
-	public static final String APP1_CARTRIDGE = "jbossas-7.0";
+	public static final String APP1_CARTRIDGE = "jbossas-7";
 	public static final String APP1_CREATION_TIME = "2011-09-12T10:15:48-04:00";
 	public static final List<EmbeddableCartridgeInfo> APP1_EMBEDDED = null;
 
 	public static final String APP2_NAME = "1315903559289";
 	public static final String APP2_UUID = "f5496311f43b42cd8fa5db5ecf83a352";
-	public static final String APP2_CARTRIDGE = "jbossas-7.0";
+	public static final String APP2_CARTRIDGE = "jbossas-7";
 	public static final String APP2_CREATION_TIME = "2011-09-13T04:45:44-04:00";
 	public static final String APP2_EMBEDDED_NAME = "mysql-5.1";
 	public static final String APP2_EMBEDDED_URL = "mysql://127.1.2.129:3306/";

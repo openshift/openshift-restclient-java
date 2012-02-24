@@ -37,7 +37,7 @@ public class ApplicationLogReaderTest {
 	private static final int LOGREADER_TIMEOUT = 2 * 1024;
 
 	private static final String LOG_HEADER =
-			"tailing /var/lib/libra/f36a4acf8a73450cb98637ed4483ea02/1317146294966//jbossas-7.0/standalone/log/server.log"
+			"tailing /var/lib/libra/f36a4acf8a73450cb98637ed4483ea02/1317146294966//jbossas-7/standalone/log/server.log"
 					+ "------ Tail of 1317146294966 application server.log ------\n";
 
 	private static final String INITIAL_LOG =
@@ -45,7 +45,7 @@ public class ApplicationLogReaderTest {
 					+ "11:31:36,340 INFO  [org.apache.coyote.http11.Http11Protocol] (MSC service thread 1-1) Starting Coyote HTTP/1.1 on http--127.1.9.1-8080\n"
 					+ "11:31:36,440 INFO  [org.jboss.as.connector] (MSC service thread 1-4) Starting JCA Subsystem (JBoss IronJacamar 1.0.3.Final)\n"
 					+ "11:31:36,471 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-1) Bound data source [java:jboss/datasources/ExampleDS]\n"
-					+ "11:31:36,966 INFO  [org.jboss.as.deployment] (MSC service thread 1-3) Started FileSystemDeploymentService for directory /var/lib/libra/b8ea642ed6aa4dd0af2a4fe94c0ff07c/1317137507620/jbossas-7.0/standalone/deployments\n"
+					+ "11:31:36,966 INFO  [org.jboss.as.deployment] (MSC service thread 1-3) Started FileSystemDeploymentService for directory /var/lib/libra/b8ea642ed6aa4dd0af2a4fe94c0ff07c/1317137507620/jbossas-7/standalone/deployments\n"
 					+ "11:31:36,982 INFO  [org.jboss.as] (Controller Boot Thread) JBoss AS 7.0.1.Final \"Zap\" started in 2796ms - Started 82 of 107 services (22 services are passive or on-demand)\n"
 					+ "11:31:37,004 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-2) Starting deployment of \"ROOT.war\"\n"
 					+ "11:31:37,084 INFO  [org.jboss.as.jpa] (MSC service thread 1-4) added javax.persistence.api dependency to ROOT.war\n"
@@ -57,7 +57,7 @@ public class ApplicationLogReaderTest {
 					+ "11:32:13,295 INFO  [org.apache.coyote.http11.Http11Protocol] (MSC service thread 1-1) Starting Coyote HTTP/1.1 on http--127.1.9.1-8080\n"
 					+ "11:32:13,344 INFO  [org.jboss.as.connector] (MSC service thread 1-1) Starting JCA Subsystem (JBoss IronJacamar 1.0.3.Final)\n"
 					+ "11:32:13,383 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-2) Bound data source [java:jboss/datasources/ExampleDS]\n"
-					+ "11:32:13,746 INFO  [org.jboss.as.deployment] (MSC service thread 1-2) Started FileSystemDeploymentService for directory /var/lib/libra/b8ea642ed6aa4dd0af2a4fe94c0ff07c/1317137507620/jbossas-7.0/standalone/deployments\n"
+					+ "11:32:13,746 INFO  [org.jboss.as.deployment] (MSC service thread 1-2) Started FileSystemDeploymentService for directory /var/lib/libra/b8ea642ed6aa4dd0af2a4fe94c0ff07c/1317137507620/jbossas-7/standalone/deployments\n"
 					+ "11:32:13,764 INFO  [org.jboss.as] (Controller Boot Thread) JBoss AS 7.0.1.Final \"Zap\" started in 2736ms - Started 82 of 107 services (22 services are passive or on-demand)\n"
 					+ "11:32:13,772 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-4) Starting deployment of \"ROOT.war\"\n"
 					+ "11:32:13,868 INFO  [org.jboss.as.jpa] (MSC service thread 1-1) added javax.persistence.api dependency to ROOT.war\n"
