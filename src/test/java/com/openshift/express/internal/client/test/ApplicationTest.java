@@ -84,7 +84,7 @@ public class ApplicationTest {
 						+ URLEncoder.encode(ApplicationResponseFake.RHLOGIN, "UTF-8")
 						+ "%22"
 						+ "%2C+%22debug%22+%3A+%22true%22"
-						+ "%2C+%22cartridge%22+%3A+%22jbossas-7%22"
+						+ "%2C+%22cartridge%22+%3A+%22jbossas-7.0%22"
 						+ "%2C+%22action%22+%3A+%22"
 						+ "configure"
 						+ "%22%2C+%22app_name%22+%3A+%22test-application%22"
@@ -109,7 +109,7 @@ public class ApplicationTest {
 						+ "%22rhlogin%22+%3A+"
 						+ "%22" + URLEncoder.encode(ApplicationResponseFake.RHLOGIN, "UTF-8") + "%22"
 						+ "%2C+%22debug%22+%3A+%22true%22"
-						+ "%2C+%22cartridge%22+%3A+%22jbossas-7%22"
+						+ "%2C+%22cartridge%22+%3A+%22jbossas-7.0%22"
 						+ "%2C+%22action%22+%3A+%22"
 						+ "deconfigure"
 						+ "%22%2C+%22app_name%22+%3A+%22test-application%22"

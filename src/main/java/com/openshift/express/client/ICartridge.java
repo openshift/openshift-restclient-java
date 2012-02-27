@@ -16,7 +16,7 @@ package com.openshift.express.client;
  */
 public interface ICartridge {
 
-	public static final ICartridge JBOSSAS_7 = new Cartridge("jbossas-7");
+	public static final ICartridge JBOSSAS_7 = new Cartridge("jbossas-7.0");
 	public static final ICartridge JENKINS_14 = new Cartridge("jenkins-1.4");
 	public static final ICartridge PERL_51 = new Cartridge("perl-5.10");
 	public static final ICartridge PYTHON_26 = new Cartridge("python-2.6");

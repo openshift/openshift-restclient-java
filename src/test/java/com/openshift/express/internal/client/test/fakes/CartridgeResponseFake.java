@@ -8,7 +8,7 @@ package com.openshift.express.internal.client.test.fakes;
 public class CartridgeResponseFake {
 
 	public static final String CARTRIDGE_PERL5 = "perl-5.10";
-	public static final String CARTRIDGE_JBOSSAS70 = "jbossas-7";
+	public static final String CARTRIDGE_JBOSSAS70 = "jbossas-7.0";
 	public static final String CARTRIDGE_WSGI32 = "python-2.6";
 	public static final String CARTRIDGE_RACK11 = "ruby-1.8";
 	public static final String CARTRIDGE_PHP53 = "php-5.3";
