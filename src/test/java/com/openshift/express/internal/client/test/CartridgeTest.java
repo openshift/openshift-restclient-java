@@ -59,7 +59,7 @@ public class CartridgeTest {
 						+ "\"messages\":\"\","
 						+ "\"debug\":\"\","
 						+ "\"data\":"
-						+ "\"{\\\"carts\\\":[\\\"perl-5.10\\\",\\\"jbossas-7.0\\\",\\\"wsgi-3.2\\\",\\\"rack-1.1\\\",\\\"php-5.3\\\"]}\","
+						+ "\"{\\\"carts\\\":[\\\"perl-5.10\\\",\\\"jbossas-7.0\\\",\\\"python-2.6\\\",\\\"ruby-1.8\\\",\\\"wsgi-3.2\\\",\\\"rack-1.1\\\",\\\"php-5.3\\\"]}\","
 						+ "\"api\":\"1.1.1\","
 						+ "\"api_c\":[\"placeholder\"],"
 						+ "\"result\":null,"
@@ -86,7 +86,7 @@ public class CartridgeTest {
 		assertEquals(false, response.isDebug());
 
 		List<ICartridge> cartridges = response.getOpenShiftObject();
-		assertEquals(5, cartridges.size());
+		assertEquals(7, cartridges.size());
 		assertThatContainsCartridge("perl-5.10", cartridges);
 		assertThatContainsCartridge("jbossas-7.0", cartridges);
 		assertThatContainsCartridge("python-2.6", cartridges);
