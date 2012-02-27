@@ -51,11 +51,14 @@ public class OpenShiftEnvelopeFactory implements IOpenShiftRequestFactory {
 				appendProperty(PROPERTY_AUTHKEY, authKey, builder);
 				builder.append(AMP);
 				appendProperty(PROPERTY_AUTHIV, authIV, builder);
-			} else {
+			} else if (password != null) {
 				appendProperty(PROPERTY_PASSWORD, password, builder);
+			} else {
+				throw new OpenShiftException("Could not create request, no password nor authKey specified");
 			}
-			
-			builder.append(AMP);
+			if (builder.length()>0) {
+				builder.append(AMP);
+			}
 			appendPayload(builder);
 			return builder.toString();
 		} catch (UnsupportedEncodingException e) {
