@@ -32,6 +32,7 @@ public class EmbeddableCartridge extends Cartridge implements IEmbeddableCartrid
 	protected static final String JENKINS_CLIENT = "jenkins-client";
 	protected static final String MYSQL = "mysql";
 	protected static final String PHPMYADMIN = "phpmyadmin";
+	protected static final String METRICS = "metrics";
 
 	private String creationLog;
 	private String url;

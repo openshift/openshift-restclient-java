@@ -35,6 +35,7 @@ import com.openshift.express.client.configuration.OpenShiftConfiguration;
 import com.openshift.express.client.configuration.SystemConfiguration;
 import com.openshift.express.client.configuration.UserConfiguration;
 import com.openshift.express.internal.client.JenkinsClientEmbeddableCartridge;
+import com.openshift.express.internal.client.MetricsEmbeddableCartridge;
 import com.openshift.express.internal.client.MySqlEmbeddableCartridge;
 import com.openshift.express.internal.client.PHPMyAdminEmbeddableCartridge;
 import com.openshift.express.internal.client.test.fakes.TestUser;
@@ -69,6 +70,14 @@ public class EmbedIntegrationTest {
 		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), mysql, user);
 		assertEquals(mysql.getName(), cartridge.getName());
 		assertThatContainsCartridge(mysql.getName(), application.getEmbeddedCartridges());
+	}
+	
+	@Test
+	public void canEmbedMetrics() throws Exception {
+		MetricsEmbeddableCartridge metrics = new MetricsEmbeddableCartridge(service, user);
+		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), metrics, user);
+		assertEquals(metrics.getName(), cartridge.getName());
+		assertThatContainsCartridge(metrics.getName(), application.getEmbeddedCartridges());
 	}
 
 	@Test

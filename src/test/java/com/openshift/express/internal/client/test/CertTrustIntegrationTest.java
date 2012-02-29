@@ -16,12 +16,14 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Test;
 
 import com.openshift.express.client.IOpenShiftService;
 import com.openshift.express.client.IUser;
 import com.openshift.express.client.OpenShiftException;
 import com.openshift.express.client.OpenShiftService;
 import com.openshift.express.client.configuration.DefaultConfiguration;
+import com.openshift.express.client.configuration.OpenShiftConfiguration;
 import com.openshift.express.client.configuration.SystemConfiguration;
 import com.openshift.express.client.configuration.UserConfiguration;
 import com.openshift.express.internal.client.test.fakes.TestUser;
@@ -36,14 +38,13 @@ public class CertTrustIntegrationTest {
 	
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
-		UserConfiguration userConfiguration = new UserConfiguration(new SystemConfiguration(new DefaultConfiguration()));
-		service = new OpenShiftService(TestUser.ID, userConfiguration.getLibraServer());
+		service = new OpenShiftService(TestUser.ID, new OpenShiftConfiguration().getLibraServer());
 		service.setEnableSSLCertChecks(Boolean.parseBoolean(System.getProperty("enableSSLCertChecks")));
 		
-		user = new TestUser(System.getProperty("RHLOGIN"), System.getProperty("PASSWORD"), service);
+		user = new TestUser(service);
 	}
 
-	//@Test
+	@Test
 	public void testValidationSwitch() throws Exception {
 		
 		try {

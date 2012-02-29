@@ -26,6 +26,7 @@ import com.openshift.express.client.IOpenShiftService;
 import com.openshift.express.client.OpenShiftException;
 import com.openshift.express.client.OpenShiftService;
 import com.openshift.express.client.configuration.DefaultConfiguration;
+import com.openshift.express.client.configuration.OpenShiftConfiguration;
 import com.openshift.express.client.configuration.SystemConfiguration;
 import com.openshift.express.client.configuration.UserConfiguration;
 import com.openshift.express.internal.client.test.fakes.TestUser;
@@ -44,10 +45,10 @@ public class ApplicationLogReaderIntegrationTest {
 
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
-		UserConfiguration userConfiguration = new UserConfiguration(new SystemConfiguration(new DefaultConfiguration()));
-		this.service = new OpenShiftService(TestUser.ID, userConfiguration.getLibraServer());
+		service = new OpenShiftService(TestUser.ID, new OpenShiftConfiguration().getLibraServer());
 		service.setEnableSSLCertChecks(Boolean.parseBoolean(System.getProperty("enableSSLCertChecks")));
-		this.user = new TestUser(service);
+		
+		user = new TestUser(service);
 	}
 
 	/**

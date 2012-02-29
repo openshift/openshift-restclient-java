@@ -22,12 +22,12 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	ApplicationIntegrationTest.class,
 	EmbedIntegrationTest.class,
-//	ApplicationLogReaderIntegrationTest.class,
-	CartridgesIntegrationTest.class
-//	DomainIntegrationTest.class,
-//	UserInfoIntegrationTest.class,
-//	UserIntegrationTest.class,
-//	CertTrustIntegrationTest.class
+	ApplicationLogReaderIntegrationTest.class,
+	CartridgesIntegrationTest.class,
+	DomainIntegrationTest.class,
+	UserInfoIntegrationTest.class,
+	UserIntegrationTest.class,
+	CertTrustIntegrationTest.class
 })
 
 

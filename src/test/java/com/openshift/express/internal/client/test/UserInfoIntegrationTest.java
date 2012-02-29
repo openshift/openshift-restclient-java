@@ -26,6 +26,7 @@ import com.openshift.express.client.NotFoundOpenShiftException;
 import com.openshift.express.client.OpenShiftException;
 import com.openshift.express.client.OpenShiftService;
 import com.openshift.express.client.configuration.DefaultConfiguration;
+import com.openshift.express.client.configuration.OpenShiftConfiguration;
 import com.openshift.express.client.configuration.SystemConfiguration;
 import com.openshift.express.client.configuration.UserConfiguration;
 import com.openshift.express.internal.client.ApplicationInfo;
@@ -33,26 +34,27 @@ import com.openshift.express.internal.client.InternalUser;
 import com.openshift.express.internal.client.UserInfo;
 import com.openshift.express.internal.client.test.fakes.TestUser;
 import com.openshift.express.internal.client.test.utils.ApplicationInfoAsserts;
+import com.openshift.express.internal.client.test.utils.ApplicationUtils;
 
 /**
  * @author André Dietisheim
  */
 public class UserInfoIntegrationTest {
 
-	private OpenShiftService openShiftService;
+	private IOpenShiftService service;
 	private TestUser user;
 
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
-		UserConfiguration userConfiguration = new UserConfiguration(new SystemConfiguration(new DefaultConfiguration()));
-		this.openShiftService = new OpenShiftService(TestUser.ID, userConfiguration.getLibraServer());
-		openShiftService.setEnableSSLCertChecks(Boolean.parseBoolean(System.getProperty("enableSSLCertChecks")));
-		this.user = new TestUser(openShiftService);
+		service = new OpenShiftService(TestUser.ID, new OpenShiftConfiguration().getLibraServer());
+		service.setEnableSSLCertChecks(Boolean.parseBoolean(System.getProperty("enableSSLCertChecks")));
+		
+		user = new TestUser(service);
 	}
 
 	@Test
 	public void canGetUserInfo() throws Exception {
-		UserInfo userInfo = openShiftService.getUserInfo(user);
+		UserInfo userInfo = service.getUserInfo(user);
 		assertNotNull(userInfo);
 
 		assertEquals(user.getRhlogin(), userInfo.getRhLogin());
@@ -60,23 +62,23 @@ public class UserInfoIntegrationTest {
 
 	//@Test(expected = InvalidCredentialsOpenShiftException.class)
 	public void getUserInfoForInexistantUserThrowsException() throws Exception {
-		TestUser inexistantUser = new TestUser("inexistantUsername", "bogusPassword", openShiftService);
-		openShiftService.getUserInfo(inexistantUser);
+		TestUser inexistantUser = new TestUser("inexistantUsername", "bogusPassword", service);
+		service.getUserInfo(inexistantUser);
 	}
 
 	/**
-	 * {@link OpenShiftService#getUserInfo(InternalUser)} for a user without
+	 * {@link service#getUserInfo(InternalUser)} for a user without
 	 * domain throws {@link NotFoundOpenShiftException}
 	 */
 	@Test(expected = NotFoundOpenShiftException.class)
 	public void canGetUserInfoForUserWithoutDomain() throws Exception {
-		TestUser inexistantUser = new TestUser(TestUser.RHLOGIN_USER_WITHOUT_DOMAIN, TestUser.PASSWORD_USER_WITHOUT_DOMAIN, openShiftService);
-		openShiftService.getUserInfo(inexistantUser);
+		TestUser inexistantUser = new TestUser(TestUser.RHLOGIN_USER_WITHOUT_DOMAIN, TestUser.PASSWORD_USER_WITHOUT_DOMAIN, service);
+		service.getUserInfo(inexistantUser);
 	}
 
 	@Test
 	public void userInfoContainsOneMoreApplicationAfterCreatingNewApplication() throws Exception {
-		UserInfo userInfo = openShiftService.getUserInfo(user);
+		UserInfo userInfo = service.getUserInfo(user);
 		assertNotNull(userInfo);
 
 		List<ApplicationInfo> applicationInfos = userInfo.getApplicationInfos();
@@ -85,34 +87,26 @@ public class UserInfoIntegrationTest {
 
 		String applicationName = createRandomName();
 		try {
-			openShiftService.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
 
-			UserInfo userInfo2 = openShiftService.getUserInfo(user);
+			UserInfo userInfo2 = service.getUserInfo(user);
 			assertEquals(numberOfApplicationInfos + 1, userInfo2.getApplicationInfos().size());
 			ApplicationInfoAsserts.assertThatContainsApplicationInfo(applicationName, userInfo2.getApplicationInfos());
 		} finally {
-			silentlyDestroyAS7Application(applicationName, openShiftService);
+			ApplicationUtils.silentlyDestroyApplication(applicationName, ICartridge.JBOSSAS_7, user, service);
 		}
 	}
 
 	@Test
 	public void canUseReturnedSSHKeyToChangeDomain() throws Exception {
-		UserInfo userInfo = openShiftService.getUserInfo(user);
+		UserInfo userInfo = service.getUserInfo(user);
 		assertNotNull(userInfo);
 
 		ISSHPublicKey sshKey = userInfo.getSshPublicKey();
-		openShiftService.changeDomain(createRandomName(), sshKey, user);
+		service.changeDomain(createRandomName(), sshKey, user);
 	}
 
 	private String createRandomName() {
 		return String.valueOf(System.currentTimeMillis());
-	}
-
-	private void silentlyDestroyAS7Application(String name, IOpenShiftService service) {
-		try {
-			service.destroyApplication(name, ICartridge.JBOSSAS_7, user);
-		} catch (OpenShiftException e) {
-			e.printStackTrace();
-		}
 	}
 }

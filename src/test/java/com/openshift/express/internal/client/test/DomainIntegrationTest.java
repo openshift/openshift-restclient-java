@@ -30,6 +30,7 @@ import com.openshift.express.client.OpenShiftException;
 import com.openshift.express.client.OpenShiftService;
 import com.openshift.express.client.SSHKeyPair;
 import com.openshift.express.client.configuration.DefaultConfiguration;
+import com.openshift.express.client.configuration.OpenShiftConfiguration;
 import com.openshift.express.client.configuration.SystemConfiguration;
 import com.openshift.express.client.configuration.UserConfiguration;
 import com.openshift.express.internal.client.test.fakes.TestSSHKey;
@@ -37,15 +38,15 @@ import com.openshift.express.internal.client.test.fakes.TestUser;
 
 public class DomainIntegrationTest {
 
-	private OpenShiftService openShiftService;
+	private OpenShiftService service;
 	private TestUser user;
 
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
-		UserConfiguration userConfiguration = new UserConfiguration(new SystemConfiguration(new DefaultConfiguration()));
-		this.openShiftService = new OpenShiftService(TestUser.ID, userConfiguration.getLibraServer());
-		openShiftService.setEnableSSLCertChecks(Boolean.parseBoolean(System.getProperty("enableSSLCertChecks")));
-		this.user = new TestUser(openShiftService);
+		service = new OpenShiftService(TestUser.ID, new OpenShiftConfiguration().getLibraServer());
+		service.setEnableSSLCertChecks(Boolean.parseBoolean(System.getProperty("enableSSLCertChecks")));
+		
+		user = new TestUser(service);
 		ensureDomainExists(user);
 		ensureNoApplicationsExist(user);
 	}
@@ -54,7 +55,7 @@ public class DomainIntegrationTest {
 	public void canChangeDomain() throws Exception {
 		String domainName = createRandomString();
 		SSHKeyPair sshKey = TestSSHKey.create();
-		IDomain domain = openShiftService.changeDomain(domainName, sshKey, user);
+		IDomain domain = service.changeDomain(domainName, sshKey, user);
 
 		assertNotNull(domain);
 		assertEquals(domainName, domain.getNamespace());
@@ -100,7 +101,7 @@ public class DomainIntegrationTest {
 
 		String domainName = createRandomString();
 		SSHKeyPair sshKey = TestSSHKey.create();
-		domain = openShiftService.createDomain(domainName, sshKey, user);
+		domain = service.createDomain(domainName, sshKey, user);
 
 		assertNotNull(domain);
 		assertEquals(domainName, domain.getNamespace());
@@ -133,7 +134,7 @@ public class DomainIntegrationTest {
 		} catch (OpenShiftException e) {
 			// no domain present
 			SSHKeyPair sshKey = TestSSHKey.create();
-			openShiftService.createDomain(createRandomString(), sshKey, user);
+			service.createDomain(createRandomString(), sshKey, user);
 		}
 	}
 
