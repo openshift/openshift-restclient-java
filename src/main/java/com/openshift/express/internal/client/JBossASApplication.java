@@ -37,5 +37,13 @@ public class JBossASApplication extends Application implements IJBossASApplicati
 		
 		return "stdout.log";
 	}
+	
+	public String getHealthCheckUrl() throws OpenShiftException {
+		return getApplicationUrl() + "/health";
+	}
+	
+	public String getHealthCheckResponse() throws OpenShiftException {
+		return "1";
+	}
 
 }

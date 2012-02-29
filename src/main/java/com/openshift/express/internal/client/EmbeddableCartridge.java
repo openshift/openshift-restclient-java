@@ -11,9 +11,14 @@
 package com.openshift.express.internal.client;
 
 import java.text.MessageFormat;
+import java.util.Iterator;
+import java.util.List;
 
 import com.openshift.express.client.Cartridge;
+import com.openshift.express.client.ICartridge;
 import com.openshift.express.client.IEmbeddableCartridge;
+import com.openshift.express.client.IOpenShiftService;
+import com.openshift.express.client.IUser;
 import com.openshift.express.client.OpenShiftException;
 
 /**
@@ -23,10 +28,35 @@ import com.openshift.express.client.OpenShiftException;
  * @author André Dietisheim
  */
 public class EmbeddableCartridge extends Cartridge implements IEmbeddableCartridge {
+	
+	protected static final String JENKINS_CLIENT = "jenkins-client";
+	protected static final String MYSQL = "mysql";
+	protected static final String PHPMYADMIN = "phpmyadmin";
 
 	private String creationLog;
 	private String url;
 	private Application application;
+	
+	public EmbeddableCartridge(IOpenShiftService service, IUser user) {
+		super(service, user);
+	}
+	
+	public EmbeddableCartridge(IOpenShiftService service, IUser user, Application application) {
+		super(service, user);
+		this.application = application;
+	}
+	
+	public EmbeddableCartridge(IOpenShiftService service, IUser user, String url) {
+		super(service, user);
+		this.url = url;
+	}
+	
+	public EmbeddableCartridge(IOpenShiftService service, IUser user, String url, Application application) {
+		super(service, user);
+		this.url = url;
+		this.application = application;
+	}
+
 
 	public EmbeddableCartridge(String name) {
 		this(name, (Application) null);
@@ -77,6 +107,19 @@ public class EmbeddableCartridge extends Cartridge implements IEmbeddableCartrid
 	
 	protected void setApplication(Application application) {
 		this.application = application;
+	}
+	
+	protected String getCartridgeName(String cartridgeType) throws OpenShiftException {
+		List<IEmbeddableCartridge> cartridges = service.getEmbeddableCartridges(user);
+		
+		Iterator<IEmbeddableCartridge> i = cartridges.iterator();
+		while (i.hasNext()){
+			IEmbeddableCartridge cartridge = i.next();
+			if (cartridge.getName().contains(cartridgeType))
+				return cartridge.getName();
+		}
+		
+		throw new OpenShiftException("No cartridge found for type " + cartridgeType);
 	}
 
 }

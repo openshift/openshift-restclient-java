@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.openshift.express.client;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 
 /**
  * A cartridge that is available on the openshift server. This class is no enum
@@ -18,8 +22,23 @@ package com.openshift.express.client;
  * @author André Dietisheim
  */
 public class Cartridge implements ICartridge {
+	
+	protected static final String JBOSS = "jboss";
+	protected static final String RUBY = "ruby";
+	protected static final String PYTHON = "python";
+	protected static final String PHP = "php";
+	protected static final String PERL = "perl";
+	protected static final String NODEJS = "nodejs";
+	protected static final String JENKINS = "jenkins";
 
-	private String name;
+	protected IOpenShiftService service;
+	protected IUser user;
+	protected String name;
+	
+	public Cartridge(IOpenShiftService service, IUser user) {
+		this.service = service;
+		this.user = user;
+	}
 
 	public Cartridge(String name) {
 		this.name = name;
@@ -32,9 +51,15 @@ public class Cartridge implements ICartridge {
 	public String getName() {
 		return name;
 	}
+	
+	public String getLogLocation() {
+		return "/";
+	}
 
 	public static ICartridge valueOf(String name) {
-		return new Cartridge(name);
+		if (name.contains(JBOSS))
+			return new JBossCartridge(name);
+		else return new Cartridge(name);
 	}
 
 	public int hashCode() {
@@ -62,6 +87,19 @@ public class Cartridge implements ICartridge {
 
 	public String toString() {
 		return "Cartridge [name=" + name + "]";
+	}
+	
+	protected String getCartridgeName(String cartridgeType) throws OpenShiftException {
+		List<ICartridge> cartridges = service.getCartridges(user);
+		
+		Iterator<ICartridge> i = cartridges.iterator();
+		while (i.hasNext()){
+			ICartridge cartridge = i.next();
+			if (cartridge.getName().contains(cartridgeType))
+				return cartridge.getName();
+		}
+		
+		throw new OpenShiftException("No cartridge found for type " + cartridgeType);
 	}
 
 }

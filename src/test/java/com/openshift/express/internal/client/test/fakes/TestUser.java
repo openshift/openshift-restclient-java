@@ -33,13 +33,13 @@ public class TestUser extends User {
 	 public static final String PASSWORD_USER_WITHOUT_DOMAIN = "1q2w3e";
 
 	public TestUser(IOpenShiftService service) throws OpenShiftException, IOException {
-//		super(System.getProperty("RHLOGIN"), System.getProperty("PASSWORD"), ID, service);
-		super(new OpenShiftConfiguration().getRhlogin(), System.getProperty(SYSPROPERTY_PASSWORD), ID, service);
+		super(System.getProperty("RHLOGIN"), System.getProperty("PASSWORD"), ID, service);
+//		super(new OpenShiftConfiguration().getRhlogin(), System.getProperty(SYSPROPERTY_PASSWORD), ID, service);
 	}
 
 	public TestUser(String password, IOpenShiftService service) throws OpenShiftException, IOException {
-//		super(System.getProperty("RHLOGIN"), password, ID, service);
-		super(new OpenShiftConfiguration().getRhlogin(), password, ID, service);
+		super(System.getProperty("RHLOGIN"), password, ID, service);
+//		super(new OpenShiftConfiguration().getRhlogin(), password, ID, service);
 	}
 
 	public TestUser(String rhlogin, String password, IOpenShiftService service) throws OpenShiftException, IOException {

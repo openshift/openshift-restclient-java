@@ -142,7 +142,11 @@ public class Application extends UserInfoAware implements IApplication {
 	}
 
 	public String getHealthCheckUrl() throws OpenShiftException {
-		return getApplicationUrl() + '/' + healthCheckPath;
+		throw new OpenShiftException("NOT SUPPORTED FOR GENERIC APPLICATION");
+	}
+	
+	public String getHealthCheckResponse() throws OpenShiftException {
+		throw new OpenShiftException("NOT SUPPORTED FOR GENERIC APPLICATION");
 	}
 
 	public void addEmbbedCartridge(IEmbeddableCartridge embeddedCartridge) throws OpenShiftException {
@@ -178,11 +182,9 @@ public class Application extends UserInfoAware implements IApplication {
 	}
 
 	public List<IEmbeddableCartridge> getEmbeddedCartridges() throws OpenShiftException {
-		if (embeddedCartridges == null) {
-			this.embeddedCartridges = new ArrayList<IEmbeddableCartridge>();
-			for (EmbeddableCartridgeInfo cartridgeInfo : getApplicationInfo().getEmbeddedCartridges()) {
-				embeddedCartridges.add(new EmbeddableCartridge(cartridgeInfo.getName(), this));
-			}
+		this.embeddedCartridges = new ArrayList<IEmbeddableCartridge>();
+		for (EmbeddableCartridgeInfo cartridgeInfo : getApplicationInfo().getEmbeddedCartridges()) {
+			embeddedCartridges.add(new EmbeddableCartridge(cartridgeInfo.getName(), this));
 		}
 		return embeddedCartridges;
 	}
@@ -217,10 +219,7 @@ public class Application extends UserInfoAware implements IApplication {
 	}
 
 	public boolean waitForAccessible(long timeout) throws OpenShiftException {
-		if (healthCheckPath == null) {
-			return true;
-		}
-		return service.waitForApplication(getHealthCheckUrl(), timeout);
+		return service.waitForApplication(getHealthCheckUrl(), timeout, getHealthCheckResponse());
 	}
 
 	public IUser getUser() {

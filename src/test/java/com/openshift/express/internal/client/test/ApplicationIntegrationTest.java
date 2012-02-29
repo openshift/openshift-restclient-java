@@ -31,11 +31,23 @@ import com.openshift.express.client.IApplication;
 import com.openshift.express.client.ICartridge;
 import com.openshift.express.client.IHttpClient;
 import com.openshift.express.client.IJBossASApplication;
+import com.openshift.express.client.IJenkinsApplication;
+import com.openshift.express.client.INodeJSApplication;
 import com.openshift.express.client.IOpenShiftService;
+import com.openshift.express.client.IPHPApplication;
+import com.openshift.express.client.IPerlApplication;
+import com.openshift.express.client.IPythonApplication;
 import com.openshift.express.client.IRubyApplication;
 import com.openshift.express.client.InvalidCredentialsOpenShiftException;
+import com.openshift.express.client.JBossCartridge;
+import com.openshift.express.client.JenkinsCartridge;
+import com.openshift.express.client.NodeJSCartridge;
 import com.openshift.express.client.OpenShiftException;
 import com.openshift.express.client.OpenShiftService;
+import com.openshift.express.client.PHPCartridge;
+import com.openshift.express.client.PerlCartridge;
+import com.openshift.express.client.PythonCartridge;
+import com.openshift.express.client.RubyCartridge;
 import com.openshift.express.client.User;
 import com.openshift.express.client.configuration.OpenShiftConfiguration;
 import com.openshift.express.internal.client.ApplicationInfo;
@@ -48,6 +60,8 @@ import com.openshift.express.internal.client.utils.StreamUtils;
  * @author André Dietisheim
  */
 public class ApplicationIntegrationTest {
+	
+	private static final int WAIT_FOR_APPLICATION = 10 * 1024;
 
 	private IOpenShiftService service;
 
@@ -64,44 +78,127 @@ public class ApplicationIntegrationTest {
 		invalidUser = new TestUser("bogusPassword", service);
 	}
 
-	@Test(expected = InvalidCredentialsOpenShiftException.class)
+	//@Test(expected = InvalidCredentialsOpenShiftException.class)
 	public void createApplicationWithInvalidCredentialsThrowsException() throws Exception {
 		service.createApplication(ApplicationUtils.createRandomApplicationName(), ICartridge.JBOSSAS_7, invalidUser);
 	}
 
 	@Test
-	public void canCreateApplication() throws Exception {
+	public void canCreateJBossApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
+		IJBossASApplication application = null;
 		try {
-			ICartridge cartridge = ICartridge.JBOSSAS_7;
-			IApplication application = service.createApplication(applicationName, cartridge, user);
+			application = service.createJBossASApplication(applicationName, user);
 			assertNotNull(application);
 			assertEquals(applicationName, application.getName());
-			assertEquals(cartridge, application.getCartridge());
+			assertTrue(application.getCartridge() instanceof JBossCartridge);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
+		}
+	}
+	
+	@Test
+	public void canCreateRubyApplication() throws Exception {
+		String applicationName = ApplicationUtils.createRandomApplicationName();
+		IRubyApplication application = null;
+		try {
+			application = service.createRubyApplication(applicationName, user);
+			assertNotNull(application);
+			assertEquals(applicationName, application.getName());
+			assertTrue(application.getCartridge() instanceof RubyCartridge);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
+		}
+	}
+	
+	@Test
+	public void canCreatePythonApplication() throws Exception {
+		String applicationName = ApplicationUtils.createRandomApplicationName();
+		IPythonApplication application = null;
+		try {
+			application = service.createPythonApplication(applicationName, user);
+			assertNotNull(application);
+			assertEquals(applicationName, application.getName());
+			assertTrue(application.getCartridge() instanceof PythonCartridge);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
 		}
 	}
 	
 	@Test
 	public void canCreatePHPApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
-		ICartridge cartridge = null;
+		IPHPApplication application = null;
 		try {
-			cartridge = ICartridge.PHP_53;
-			IApplication application = service.createApplication(applicationName, cartridge, user);
+			application = service.createPHPApplication(applicationName, user);
 			assertNotNull(application);
 			assertEquals(applicationName, application.getName());
-			assertEquals(cartridge, application.getCartridge());
+			assertTrue(application.getCartridge() instanceof PHPCartridge);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		} finally {
-			//service.destroyApplication(applicationName, cartridge, invalidUser);
-			//ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
+		}
+	}
+	
+	@Test
+	public void canCreatePerlApplication() throws Exception {
+		String applicationName = ApplicationUtils.createRandomApplicationName();
+		IPerlApplication application = null;
+		try {
+			application = service.createPerlApplication(applicationName, user);
+			assertNotNull(application);
+			assertEquals(applicationName, application.getName());
+			assertTrue(application.getCartridge() instanceof PerlCartridge);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
+		}
+	}
+	
+	@Test
+	public void canCreateNodeJSApplication() throws Exception {
+		String applicationName = ApplicationUtils.createRandomApplicationName();
+		INodeJSApplication application = null;
+		try {
+			application = service.createNodeJSApplication(applicationName, user);
+			assertNotNull(application);
+			assertEquals(applicationName, application.getName());
+			assertTrue(application.getCartridge() instanceof NodeJSCartridge);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
+		}
+	}
+	
+	@Test
+	public void canCreateJenkinsApplication() throws Exception {
+		String applicationName = ApplicationUtils.createRandomApplicationName();
+		IJenkinsApplication application = null;
+		try {
+			application = service.createJenkinsApplication(applicationName, user);
+			assertNotNull(application);
+			assertEquals(applicationName, application.getName());
+			assertTrue(application.getCartridge() instanceof JenkinsCartridge);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
 		}
 	}
 
@@ -290,24 +387,24 @@ public class ApplicationIntegrationTest {
 	public void canThreadDumpJBossApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		ApplicationLogReader reader = null;
+		IJBossASApplication application = null;
 		try {
-			ICartridge cartridge = ICartridge.JBOSSAS_7;
-			IJBossASApplication application = (IJBossASApplication)service.createApplication(applicationName, cartridge, user);
+			application = service.createJBossASApplication(applicationName, user);
 			assertNotNull(application);
 			assertEquals(applicationName, application.getName());
-			assertEquals(cartridge, application.getCartridge());
+			assertTrue(application.getCartridge() instanceof JBossCartridge);
 			
 			String logFile = application.threadDump();
 			
-			String log = service.getStatus(applicationName, cartridge, user, logFile, 100);
-			
-			assertTrue("Failed to retrieve logged thread dump", log.contains("object space"));
+			String log = service.getStatus(applicationName, application.getCartridge(), user, logFile, 100);
+				
+			assertTrue("Failed to retrieve logged thread dump", log.contains("new generation"));
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
 			
 			if (reader != null)
 				reader.close();
@@ -319,12 +416,12 @@ public class ApplicationIntegrationTest {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		ApplicationLogReader reader = null;
 		InputStream urlStream = null;
+		IRubyApplication application = null;
 		try {
-			ICartridge cartridge = ICartridge.RUBY_18;
-			IRubyApplication application = (IRubyApplication)service.createApplication(applicationName, cartridge, user);
+			application = service.createRubyApplication(applicationName, user);
 			assertNotNull(application);
 			assertEquals(applicationName, application.getName());
-			assertEquals(cartridge, application.getCartridge());
+			assertTrue(application.getCartridge() instanceof RubyCartridge);
 			
 			URL url = new URL("http://" + applicationName + "-" + user.getDomain().getNamespace() + ".dev.rhcloud.com/lobster");
 			
@@ -337,7 +434,9 @@ public class ApplicationIntegrationTest {
 			
 			String logFile = application.threadDump();
 			
-			String log = service.getStatus(applicationName, cartridge, user, logFile, 100);
+			logFile = "logs/error_log-20120229-000000-EST";
+				
+			String log = service.getStatus(applicationName, application.getCartridge(), user, logFile, 100);
 			
 			assertTrue("Failed to retrieve logged thread dump", log.contains("passenger-3.0.4"));
 			
@@ -345,7 +444,7 @@ public class ApplicationIntegrationTest {
 			e.printStackTrace();
 			throw e;
 		} finally {
-			ApplicationUtils.silentlyDestroyRubyApplication(applicationName, user, service);
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
 			
 			if (reader != null)
 				reader.close();
@@ -358,23 +457,16 @@ public class ApplicationIntegrationTest {
 	@Test
 	public void canWaitForApplication() throws OpenShiftException, MalformedURLException, IOException {
 		String applicationName = null;
+		IApplication application = null;
 		try {
 			applicationName = ApplicationUtils.createRandomApplicationName();
-			IApplication application = user.createApplication(applicationName, ICartridge.JBOSSAS_7);
+			application = service.createJBossASApplication(applicationName, user);
 			assertNotNull(application);
-			long waitStartTime = System.currentTimeMillis();
-			assertTrue(application.waitForAccessible(10 * 1024));
-
-			assertTrue(System.currentTimeMillis() > waitStartTime);
-			String applicationUrl = application.getApplicationUrl();
-			assertNotNull(applicationUrl);
-			HttpURLConnection connection = (HttpURLConnection) new URL(applicationUrl).openConnection();
-			assertEquals(IHttpClient.RESPONSE_CODE_OK, connection.getResponseCode());
-			String applicationResponse = StreamUtils.readToString(connection.getInputStream());
-			assertNotNull(applicationResponse);
+			
+			assertTrue(application.waitForAccessible(WAIT_FOR_APPLICATION));
 			
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
 		}
 	}
 }

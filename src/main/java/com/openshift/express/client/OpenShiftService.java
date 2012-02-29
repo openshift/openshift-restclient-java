@@ -71,7 +71,6 @@ public class OpenShiftService implements IOpenShiftService {
 	// TODO extract to properties file
 	private static final String USERAGENT_FORMAT = "Java OpenShift/{0} ({1})";
 	private static final long APPLICATION_WAIT_DELAY = 2;
-	private static final String HEALTH_RESPONSE_OK = "1";
 
 	private String baseUrl;
 	private String id;
@@ -191,6 +190,76 @@ public class OpenShiftService implements IOpenShiftService {
 			throws OpenShiftException {
 		return createApplication(name, cartridge, user, null);
 	}
+	
+	public IJBossASApplication createJBossASApplication(final String name, final IUser user)
+			throws OpenShiftException {
+		return (IJBossASApplication)createApplication(name, new JBossCartridge(this, user), user, null);
+	}
+	
+	public IJBossASApplication createJBossASApplication(final String name, final IUser user, final String size)
+			throws OpenShiftException {
+		return (IJBossASApplication)createApplication(name, new JBossCartridge(this, user), user, size);
+	}
+	
+	public IRubyApplication createRubyApplication(final String name, final IUser user)
+			throws OpenShiftException {
+		return (IRubyApplication)createApplication(name, new RubyCartridge(this, user), user, null);
+	}
+	
+	public IRubyApplication createRubyApplication(final String name, final IUser user, final String size)
+			throws OpenShiftException {
+		return (IRubyApplication)createApplication(name, new RubyCartridge(this, user), user, size);
+	}
+	
+	public IPythonApplication createPythonApplication(final String name, final IUser user)
+			throws OpenShiftException {
+		return (IPythonApplication)createApplication(name, new PythonCartridge(this, user), user, null);
+	}
+	
+	public IPythonApplication createPythonApplication(final String name, final IUser user, final String size)
+			throws OpenShiftException {
+		return (IPythonApplication)createApplication(name, new PythonCartridge(this, user), user, size);
+	}
+	
+	public IPHPApplication createPHPApplication(final String name, final IUser user)
+			throws OpenShiftException {
+		return (IPHPApplication)createApplication(name, new PHPCartridge(this, user), user, null);
+	}
+	
+	public IPHPApplication createPHPApplication(final String name, final IUser user, final String size)
+			throws OpenShiftException {
+		return (IPHPApplication)createApplication(name, new PHPCartridge(this, user), user, size);
+	}
+
+	public IPerlApplication createPerlApplication(final String name, final IUser user)
+			throws OpenShiftException {
+		return (IPerlApplication)createApplication(name, new PerlCartridge(this, user), user, null);
+	}
+	
+	public IPerlApplication createPerlApplication(final String name, final IUser user, final String size)
+			throws OpenShiftException {
+		return (IPerlApplication)createApplication(name, new PerlCartridge(this, user), user, size);
+	}
+	
+	public IJenkinsApplication createJenkinsApplication(final String name, final IUser user)
+			throws OpenShiftException {
+		return (IJenkinsApplication)createApplication(name, new JenkinsCartridge(this, user), user, null);
+	}
+	
+	public IJenkinsApplication createJenkinsApplication(final String name, final IUser user, final String size)
+			throws OpenShiftException {
+		return (IJenkinsApplication)createApplication(name, new JenkinsCartridge(this, user), user, size);
+	}
+	
+	public INodeJSApplication createNodeJSApplication(final String name, final IUser user)
+			throws OpenShiftException {
+		return (INodeJSApplication)createApplication(name, new NodeJSCartridge(this, user), user, null);
+	}
+	
+	public INodeJSApplication createNodeJSApplication(final String name, final IUser user, final String size)
+			throws OpenShiftException {
+		return (INodeJSApplication)createApplication(name, new NodeJSCartridge(this, user), user, size);
+	}
 
 	public IApplication createApplication(final String name, final ICartridge cartridge, final IUser user,
 			final String size)
@@ -295,9 +364,8 @@ public class OpenShiftService implements IOpenShiftService {
 			((ChannelExec) channel).setErrStream(System.err);
 			InputStream in = channel.getInputStream();
 
-			String logLocation = "/";
-			if (cartridge == Cartridge.JBOSSAS_7)
-				logLocation = "/jbossas-7/";
+			
+			String logLocation = cartridge.getLogLocation();
 
 			String command =
 					"tail "
@@ -353,13 +421,13 @@ public class OpenShiftService implements IOpenShiftService {
 		return openshiftResponse.getOpenShiftObject();
 	}
 
-	public boolean waitForApplication(final String healthCheckUrl, final long timeout)
+	public boolean waitForApplication(final String healthCheckUrl, final long timeout, final String expectedResponse)
 			throws OpenShiftException {
 		try {
 			IHttpClient client = createHttpClient(id, healthCheckUrl, false);
-			String response = null;
+			String response = "";
 			long startTime = System.currentTimeMillis();
-			while (!HEALTH_RESPONSE_OK.equals(response)
+			while (!response.startsWith(expectedResponse)
 					&& System.currentTimeMillis() < startTime + timeout) {
 				try {
 					Thread.sleep(APPLICATION_WAIT_DELAY);
@@ -368,7 +436,8 @@ public class OpenShiftService implements IOpenShiftService {
 					// not available yet
 				}
 			}
-			return HEALTH_RESPONSE_OK.equals(response);
+			
+			return response.startsWith(expectedResponse);
 		} catch (InterruptedException e) {
 			return false;
 		} catch (MalformedURLException e) {

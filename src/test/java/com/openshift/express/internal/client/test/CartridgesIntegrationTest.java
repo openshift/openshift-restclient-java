@@ -50,7 +50,6 @@ public class CartridgesIntegrationTest {
 		List<ICartridge> cartridges = openShiftService.getCartridges(user);
 		assertNotNull(cartridges);
 		assertTrue(cartridges.size() > 0);
-		System.out.println("!!!!!! " + cartridges);
 	}
 
 	@Test

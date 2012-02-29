@@ -97,6 +97,27 @@ public interface IOpenShiftService {
 	public IApplication createApplication(String name, ICartridge cartridge, IUser user)
 			throws OpenShiftException;
 	
+	public IJBossASApplication createJBossASApplication(String name, IUser user)
+			throws OpenShiftException;
+	
+	public IRubyApplication createRubyApplication(String name, IUser user)
+			throws OpenShiftException;
+	
+	public IPythonApplication createPythonApplication(String name, IUser user)
+			throws OpenShiftException;
+	
+	public IPerlApplication createPerlApplication(String name, IUser user)
+			throws OpenShiftException;
+	
+	public IPHPApplication createPHPApplication(String name, IUser user)
+			throws OpenShiftException;
+	
+	public IJenkinsApplication createJenkinsApplication(String name, IUser user)
+			throws OpenShiftException;
+	
+	public INodeJSApplication createNodeJSApplication(String name, IUser user)
+			throws OpenShiftException;
+	
 	/**
 	 * Creates an application with the given name and cartridge for the given
 	 * user.
@@ -117,6 +138,27 @@ public interface IOpenShiftService {
 	 * @see IApplication
 	 */
 	public IApplication createApplication(String name, ICartridge cartridge, IUser user, String nodeProfile)
+			throws OpenShiftException;
+	
+	public IJBossASApplication createJBossASApplication(String name, IUser user, String nodeProfile)
+			throws OpenShiftException;
+	
+	public IRubyApplication createRubyApplication(String name, IUser user, String nodeProfile)
+			throws OpenShiftException;
+	
+	public IPythonApplication createPythonApplication(String name, IUser user, String nodeProfile)
+			throws OpenShiftException;
+	
+	public IPerlApplication createPerlApplication(String name, IUser user, String nodeProfile)
+			throws OpenShiftException;
+	
+	public IPHPApplication createPHPApplication(String name, IUser user, String nodeProfile)
+			throws OpenShiftException;
+	
+	public IJenkinsApplication createJenkinsApplication(String name, IUser user, String nodeProfile)
+			throws OpenShiftException;
+	
+	public INodeJSApplication createNodeJSApplication(String name, IUser user, String nodeProfile)
 			throws OpenShiftException;
 
 
@@ -377,7 +419,7 @@ public interface IOpenShiftService {
 	 *             the open shift exception
 	 * @see IApplication#getApplicationUrl()
 	 */
-	public boolean waitForApplication(String applicationHealthCheckUrl, long timeout) throws OpenShiftException;
+	public boolean waitForApplication(String applicationHealthCheckUrl, long timeout, String expectedResponse) throws OpenShiftException;
 	
 	public boolean waitForHostResolves(String url, long timeout) throws OpenShiftException;
 	

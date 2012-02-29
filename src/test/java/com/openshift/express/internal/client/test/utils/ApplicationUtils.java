@@ -26,18 +26,17 @@ public class ApplicationUtils {
 		return String.valueOf(System.currentTimeMillis());
 	}
 
-	public static IApplication createApplication(User user, IOpenShiftService service) throws OpenShiftException {
-		return service.createApplication(createRandomApplicationName(), Cartridge.JBOSSAS_7, user);
-	}
-
+	@Deprecated
 	public static void silentlyDestroyAS7Application(String name, User user, IOpenShiftService service) {
 		silentlyDestroyApplication(name, ICartridge.JBOSSAS_7, user, service);
 	}
 	
+	@Deprecated
 	public static void silentlyDestroyRubyApplication(String name, User user, IOpenShiftService service) {
 		silentlyDestroyApplication(name, ICartridge.RUBY_18, user, service);
 	}
 
+	@Deprecated
 	public static void silentlyDestroyJenkinsApplication(String name, User user, IOpenShiftService service) {
 		silentlyDestroyApplication(name, ICartridge.JENKINS_14, user, service);
 	}

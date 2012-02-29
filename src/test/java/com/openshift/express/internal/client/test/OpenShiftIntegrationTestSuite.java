@@ -20,8 +20,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-//	ApplicationIntegrationTest.class,
-//	EmbedIntegrationTest.class,
+	ApplicationIntegrationTest.class,
+	EmbedIntegrationTest.class,
 //	ApplicationLogReaderIntegrationTest.class,
 	CartridgesIntegrationTest.class
 //	DomainIntegrationTest.class,

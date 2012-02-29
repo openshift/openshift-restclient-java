@@ -16,11 +16,21 @@ import com.openshift.express.client.IApplication;
 import com.openshift.express.client.ICartridge;
 import com.openshift.express.client.IUser;
 import com.openshift.express.client.JBossCartridge;
+import com.openshift.express.client.JenkinsCartridge;
+import com.openshift.express.client.NodeJSCartridge;
 import com.openshift.express.client.OpenShiftService;
+import com.openshift.express.client.PHPCartridge;
+import com.openshift.express.client.PerlCartridge;
+import com.openshift.express.client.PythonCartridge;
 import com.openshift.express.client.RubyCartridge;
 import com.openshift.express.internal.client.Application;
 import com.openshift.express.internal.client.InternalUser;
 import com.openshift.express.internal.client.JBossASApplication;
+import com.openshift.express.internal.client.JenkinsApplication;
+import com.openshift.express.internal.client.NodeJSApplication;
+import com.openshift.express.internal.client.PHPApplication;
+import com.openshift.express.internal.client.PerlApplication;
+import com.openshift.express.internal.client.PythonApplication;
 import com.openshift.express.internal.client.RubyApplication;
 import com.openshift.express.internal.client.utils.IOpenShiftJsonConstants;
 
@@ -46,11 +56,21 @@ public class ApplicationResponseUnmarshaller extends AbstractOpenShiftJsonRespon
 		String creationLog = getString(IOpenShiftJsonConstants.PROPERTY_RESULT, node);
 		String healthCheckPath = getDataNodeProperty(IOpenShiftJsonConstants.PROPERTY_HEALTH_CHECK_PATH, node);
 		String uuid = getDataNodeProperty(IOpenShiftJsonConstants.PROPERTY_UUID, node);
-
+		
 		if (cartridge instanceof JBossCartridge) {
 			return new JBossASApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
 		} else if (cartridge instanceof RubyCartridge) {
 			return new RubyApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
+		} else if (cartridge instanceof PythonCartridge) {
+			return new PythonApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
+		} else if (cartridge instanceof PHPCartridge) {
+			return new PHPApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
+		} else if (cartridge instanceof PerlCartridge) {
+			return new PerlApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
+		} else if (cartridge instanceof NodeJSCartridge) {
+			return new NodeJSApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
+		} else if (cartridge instanceof JenkinsCartridge) {
+			return new JenkinsApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
 		} else {
 			return new Application(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
 		}

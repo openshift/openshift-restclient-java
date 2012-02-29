@@ -18,9 +18,13 @@ import com.openshift.express.internal.client.EmbeddableCartridge;
  */
 public interface IEmbeddableCartridge {
 
+	@Deprecated
 	public static final IEmbeddableCartridge PHPMYADMIN_34 = new EmbeddableCartridge("phpmyadmin-3.4");
+	@Deprecated
 	public static final IEmbeddableCartridge MYSQL_51 = new EmbeddableCartridge("mysql-5.1");
+	@Deprecated
 	public static final IEmbeddableCartridge JENKINS_14 = new EmbeddableCartridge("jenkins-client-1.4");
+	@Deprecated
 	public static final IEmbeddableCartridge METRICS_01 = new EmbeddableCartridge("metrics-0.1");
 
 	public String getName();
