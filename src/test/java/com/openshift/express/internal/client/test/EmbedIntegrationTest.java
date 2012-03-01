@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.After;
@@ -34,10 +35,15 @@ import com.openshift.express.client.configuration.DefaultConfiguration;
 import com.openshift.express.client.configuration.OpenShiftConfiguration;
 import com.openshift.express.client.configuration.SystemConfiguration;
 import com.openshift.express.client.configuration.UserConfiguration;
+import com.openshift.express.internal.client.CronEmbeddableCartridge;
+import com.openshift.express.internal.client.EmbeddableCartridge;
+import com.openshift.express.internal.client.GenMMSAgentEmbeddableCartridge;
 import com.openshift.express.internal.client.JenkinsClientEmbeddableCartridge;
 import com.openshift.express.internal.client.MetricsEmbeddableCartridge;
+import com.openshift.express.internal.client.MongoEmbeddableCartridge;
 import com.openshift.express.internal.client.MySqlEmbeddableCartridge;
 import com.openshift.express.internal.client.PHPMyAdminEmbeddableCartridge;
+import com.openshift.express.internal.client.PostgresEmbeddableCartridge;
 import com.openshift.express.internal.client.test.fakes.TestUser;
 import com.openshift.express.internal.client.test.utils.ApplicationUtils;
 
@@ -64,6 +70,70 @@ public class EmbedIntegrationTest {
 		ApplicationUtils.silentlyDestroyApplication(application.getName(), application.getCartridge(), user, service);
 	}
 
+	@Test
+	public void canEmbedPostgres() throws Exception {
+		PostgresEmbeddableCartridge postgres = new PostgresEmbeddableCartridge(service, user);
+		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), postgres, user);
+		assertEquals(postgres.getName(), cartridge.getName());
+		System.out.println("!!!! postgres " + postgres.getName());
+		assertThatContainsCartridge(postgres.getName(), application.getEmbeddedCartridges());
+	}
+	
+	@Test
+	public void canEmbedMongo() throws Exception {
+		MongoEmbeddableCartridge mongo = new MongoEmbeddableCartridge(service, user);
+		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), mongo, user);
+		assertEquals(mongo.getName(), cartridge.getName());
+		System.out.println("!!!! mongo " + mongo.getName());
+		assertThatContainsCartridge(mongo.getName(), application.getEmbeddedCartridges());
+	}
+	
+	@Test
+	public void canEmbedCron() throws Exception {
+		CronEmbeddableCartridge cron = new CronEmbeddableCartridge(service, user);
+		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), cron, user);
+		assertEquals(cron.getName(), cartridge.getName());
+		System.out.println("!!!! cron " + cron.getName());
+		assertThatContainsCartridge(cron.getName(), application.getEmbeddedCartridges());
+	}
+	
+	//@Test
+	public void canEmbedGenMMSAgent() throws Exception {
+		MongoEmbeddableCartridge mongo = new MongoEmbeddableCartridge(service, user);
+		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), mongo, user);
+		assertEquals(mongo.getName(), cartridge.getName());
+		System.out.println("!!!! mongo " + mongo.getName());
+		assertThatContainsCartridge(mongo.getName(), application.getEmbeddedCartridges());
+		
+		GenMMSAgentEmbeddableCartridge mms = new GenMMSAgentEmbeddableCartridge(service, user);
+		cartridge = service.addEmbeddedCartridge(application.getName(), mms, user);
+		assertEquals(mms.getName(), cartridge.getName());
+		System.out.println("!!!! mms " + mms.getName());
+		assertThatContainsCartridge(mms.getName(), application.getEmbeddedCartridges());
+	}
+	
+	@Test(expected=OpenShiftException.class)
+	public void canEmbedBogusGeneric() throws Exception {
+		List<IEmbeddableCartridge> cartridges = service.getEmbeddableCartridges(user);
+		
+		Iterator<IEmbeddableCartridge> i = cartridges.iterator();
+		while (i.hasNext()){
+			IEmbeddableCartridge cartridge = i.next();
+			System.out.println("embeddable " + cartridge.getName());
+		}
+		EmbeddableCartridge bogus = new EmbeddableCartridge("bogus-1.0");
+		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), bogus, user);
+	}
+	
+	@Test
+	public void canEmbedGeneric() throws Exception {
+		EmbeddableCartridge mysql = new EmbeddableCartridge("mysql-5.1");
+		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), mysql, user);
+		assertEquals(mysql.getName(), cartridge.getName());
+		System.out.println("!!!! mysql " + mysql.getName());
+		assertThatContainsCartridge(mysql.getName(), application.getEmbeddedCartridges());
+	}
+	
 	@Test
 	public void canEmbedMySQL() throws Exception {
 		MySqlEmbeddableCartridge mysql = new MySqlEmbeddableCartridge(service, user);

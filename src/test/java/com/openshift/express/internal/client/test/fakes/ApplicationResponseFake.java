@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.openshift.express.client.ICartridge;
+import com.openshift.express.client.JBossCartridge;
 import com.openshift.express.internal.client.EmbeddableCartridgeInfo;
 
 /**
@@ -35,7 +36,7 @@ public class ApplicationResponseFake {
 
 	public static final String APPLICATION_NAME = "1316010645406";
 	public static final String APPLICATION_CREATION_LOG = "Successfully created application: " + APPLICATION_NAME;
-	public static final ICartridge APPLICATION_CARTRIDGE = ICartridge.JBOSSAS_7;
+	public static final ICartridge APPLICATION_CARTRIDGE = new JBossCartridge(ICartridge.JBOSSAS_7.getName());
 
 	public static final String APPLICATION_UUID = "0123456789abcdefg";
 	public static final List<EmbeddableCartridgeInfo> APPLICATION_EMBEDDED = null;

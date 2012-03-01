@@ -33,6 +33,10 @@ public class EmbeddableCartridge extends Cartridge implements IEmbeddableCartrid
 	protected static final String MYSQL = "mysql";
 	protected static final String PHPMYADMIN = "phpmyadmin";
 	protected static final String METRICS = "metrics";
+	protected static final String POSTGRES = "postgresql";
+	protected static final String MONGO = "mongodb";
+	protected static final String CRON = "cron";
+	protected static final String GEN_MMS_AGENT = "10gen-mms-agent";
 
 	private String creationLog;
 	private String url;
