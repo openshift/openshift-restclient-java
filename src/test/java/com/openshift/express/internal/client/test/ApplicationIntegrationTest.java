@@ -22,13 +22,19 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.express.client.ApplicationLogReader;
+import com.openshift.express.client.Cartridge;
+import com.openshift.express.client.HAProxyCartridge;
 import com.openshift.express.client.IApplication;
 import com.openshift.express.client.ICartridge;
+import com.openshift.express.client.IEmbeddableCartridge;
+import com.openshift.express.client.IHAProxyApplication;
 import com.openshift.express.client.IHttpClient;
 import com.openshift.express.client.IJBossASApplication;
 import com.openshift.express.client.IJenkinsApplication;
@@ -37,6 +43,7 @@ import com.openshift.express.client.IOpenShiftService;
 import com.openshift.express.client.IPHPApplication;
 import com.openshift.express.client.IPerlApplication;
 import com.openshift.express.client.IPythonApplication;
+import com.openshift.express.client.IRawApplication;
 import com.openshift.express.client.IRubyApplication;
 import com.openshift.express.client.InvalidCredentialsOpenShiftException;
 import com.openshift.express.client.JBossCartridge;
@@ -47,10 +54,12 @@ import com.openshift.express.client.OpenShiftService;
 import com.openshift.express.client.PHPCartridge;
 import com.openshift.express.client.PerlCartridge;
 import com.openshift.express.client.PythonCartridge;
+import com.openshift.express.client.RawCartridge;
 import com.openshift.express.client.RubyCartridge;
 import com.openshift.express.client.User;
 import com.openshift.express.client.configuration.OpenShiftConfiguration;
 import com.openshift.express.internal.client.ApplicationInfo;
+import com.openshift.express.internal.client.EmbeddableCartridge;
 import com.openshift.express.internal.client.UserInfo;
 import com.openshift.express.internal.client.test.fakes.TestUser;
 import com.openshift.express.internal.client.test.utils.ApplicationUtils;
@@ -76,6 +85,22 @@ public class ApplicationIntegrationTest {
 		
 		user = new TestUser(service);
 		invalidUser = new TestUser("bogusPassword", service);
+	}
+	
+	@Test(expected=OpenShiftException.class)
+	public void canCreateBogusApplication() throws Exception {
+		List<ICartridge> cartridges = service.getCartridges(user);
+		
+		Iterator<ICartridge> i = cartridges.iterator();
+		while (i.hasNext()){
+			ICartridge cartridge = i.next();
+			System.out.println("cartridge " + cartridge.getName());
+		}
+		
+		String applicationName = ApplicationUtils.createRandomApplicationName();
+		
+		ICartridge bogus = new Cartridge("bogus-1.0");
+		IApplication application = service.createApplication(applicationName, bogus, user);
 	}
 
 	//@Test(expected = InvalidCredentialsOpenShiftException.class)
@@ -109,6 +134,40 @@ public class ApplicationIntegrationTest {
 			assertNotNull(application);
 			assertEquals(applicationName, application.getName());
 			assertTrue(application.getCartridge() instanceof RubyCartridge);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
+		}
+	}
+	
+	@Test
+	public void canCreateHAProxyApplication() throws Exception {
+		String applicationName = ApplicationUtils.createRandomApplicationName();
+		IHAProxyApplication application = null;
+		try {
+			application = service.createHAProxyApplication(applicationName, user);
+			assertNotNull(application);
+			assertEquals(applicationName, application.getName());
+			assertTrue(application.getCartridge() instanceof HAProxyCartridge);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
+		}
+	}
+	
+	@Test
+	public void canRawProxyApplication() throws Exception {
+		String applicationName = ApplicationUtils.createRandomApplicationName();
+		IRawApplication application = null;
+		try {
+			application = service.createRawApplication(applicationName, user);
+			assertNotNull(application);
+			assertEquals(applicationName, application.getName());
+			assertTrue(application.getCartridge() instanceof RawCartridge);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

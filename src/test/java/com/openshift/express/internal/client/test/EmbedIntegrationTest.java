@@ -44,6 +44,7 @@ import com.openshift.express.internal.client.MongoEmbeddableCartridge;
 import com.openshift.express.internal.client.MySqlEmbeddableCartridge;
 import com.openshift.express.internal.client.PHPMyAdminEmbeddableCartridge;
 import com.openshift.express.internal.client.PostgresEmbeddableCartridge;
+import com.openshift.express.internal.client.RockMongoEmbeddableCartridge;
 import com.openshift.express.internal.client.test.fakes.TestUser;
 import com.openshift.express.internal.client.test.utils.ApplicationUtils;
 
@@ -75,7 +76,6 @@ public class EmbedIntegrationTest {
 		PostgresEmbeddableCartridge postgres = new PostgresEmbeddableCartridge(service, user);
 		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), postgres, user);
 		assertEquals(postgres.getName(), cartridge.getName());
-		System.out.println("!!!! postgres " + postgres.getName());
 		assertThatContainsCartridge(postgres.getName(), application.getEmbeddedCartridges());
 	}
 	
@@ -84,8 +84,20 @@ public class EmbedIntegrationTest {
 		MongoEmbeddableCartridge mongo = new MongoEmbeddableCartridge(service, user);
 		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), mongo, user);
 		assertEquals(mongo.getName(), cartridge.getName());
-		System.out.println("!!!! mongo " + mongo.getName());
 		assertThatContainsCartridge(mongo.getName(), application.getEmbeddedCartridges());
+	}
+	
+	@Test
+	public void canEmbedRockMongo() throws Exception {
+		MongoEmbeddableCartridge mongo = new MongoEmbeddableCartridge(service, user);
+		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), mongo, user);
+		assertEquals(mongo.getName(), cartridge.getName());
+		assertThatContainsCartridge(mongo.getName(), application.getEmbeddedCartridges());
+		
+		RockMongoEmbeddableCartridge rockmongo = new RockMongoEmbeddableCartridge(service, user);
+		cartridge = service.addEmbeddedCartridge(application.getName(), rockmongo, user);
+		assertEquals(rockmongo.getName(), cartridge.getName());
+//		assertThatContainsCartridge(rockmongo.getName(), application.getEmbeddedCartridges());
 	}
 	
 	@Test
@@ -93,7 +105,6 @@ public class EmbedIntegrationTest {
 		CronEmbeddableCartridge cron = new CronEmbeddableCartridge(service, user);
 		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), cron, user);
 		assertEquals(cron.getName(), cartridge.getName());
-		System.out.println("!!!! cron " + cron.getName());
 		assertThatContainsCartridge(cron.getName(), application.getEmbeddedCartridges());
 	}
 	
@@ -102,13 +113,11 @@ public class EmbedIntegrationTest {
 		MongoEmbeddableCartridge mongo = new MongoEmbeddableCartridge(service, user);
 		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), mongo, user);
 		assertEquals(mongo.getName(), cartridge.getName());
-		System.out.println("!!!! mongo " + mongo.getName());
 		assertThatContainsCartridge(mongo.getName(), application.getEmbeddedCartridges());
 		
 		GenMMSAgentEmbeddableCartridge mms = new GenMMSAgentEmbeddableCartridge(service, user);
 		cartridge = service.addEmbeddedCartridge(application.getName(), mms, user);
 		assertEquals(mms.getName(), cartridge.getName());
-		System.out.println("!!!! mms " + mms.getName());
 		assertThatContainsCartridge(mms.getName(), application.getEmbeddedCartridges());
 	}
 	
@@ -130,7 +139,6 @@ public class EmbedIntegrationTest {
 		EmbeddableCartridge mysql = new EmbeddableCartridge("mysql-5.1");
 		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), mysql, user);
 		assertEquals(mysql.getName(), cartridge.getName());
-		System.out.println("!!!! mysql " + mysql.getName());
 		assertThatContainsCartridge(mysql.getName(), application.getEmbeddedCartridges());
 	}
 	

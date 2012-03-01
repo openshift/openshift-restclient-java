@@ -12,6 +12,7 @@ package com.openshift.express.internal.client.response.unmarshalling;
 
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.express.client.HAProxyCartridge;
 import com.openshift.express.client.IApplication;
 import com.openshift.express.client.ICartridge;
 import com.openshift.express.client.IUser;
@@ -22,8 +23,10 @@ import com.openshift.express.client.OpenShiftService;
 import com.openshift.express.client.PHPCartridge;
 import com.openshift.express.client.PerlCartridge;
 import com.openshift.express.client.PythonCartridge;
+import com.openshift.express.client.RawCartridge;
 import com.openshift.express.client.RubyCartridge;
 import com.openshift.express.internal.client.Application;
+import com.openshift.express.internal.client.HAProxyApplication;
 import com.openshift.express.internal.client.InternalUser;
 import com.openshift.express.internal.client.JBossASApplication;
 import com.openshift.express.internal.client.JenkinsApplication;
@@ -31,6 +34,7 @@ import com.openshift.express.internal.client.NodeJSApplication;
 import com.openshift.express.internal.client.PHPApplication;
 import com.openshift.express.internal.client.PerlApplication;
 import com.openshift.express.internal.client.PythonApplication;
+import com.openshift.express.internal.client.RawApplication;
 import com.openshift.express.internal.client.RubyApplication;
 import com.openshift.express.internal.client.utils.IOpenShiftJsonConstants;
 
@@ -71,6 +75,10 @@ public class ApplicationResponseUnmarshaller extends AbstractOpenShiftJsonRespon
 			return new NodeJSApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
 		} else if (cartridge instanceof JenkinsCartridge) {
 			return new JenkinsApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
+		} else if (cartridge instanceof HAProxyCartridge) {
+			return new HAProxyApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
+		} else if (cartridge instanceof RawCartridge) {
+			return new RawApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
 		} else {
 			return new Application(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
 		}

@@ -260,6 +260,26 @@ public class OpenShiftService implements IOpenShiftService {
 			throws OpenShiftException {
 		return (INodeJSApplication)createApplication(name, new NodeJSCartridge(this, user), user, size);
 	}
+	
+	public IHAProxyApplication createHAProxyApplication(final String name, final IUser user)
+			throws OpenShiftException {
+		return (IHAProxyApplication)createApplication(name, new HAProxyCartridge(this, user), user, null);
+	}
+	
+	public IHAProxyApplication createHAProxyApplication(final String name, final IUser user, final String size)
+			throws OpenShiftException {
+		return (IHAProxyApplication)createApplication(name, new HAProxyCartridge(this, user), user, size);
+	}
+	
+	public IRawApplication createRawApplication(final String name, final IUser user)
+			throws OpenShiftException {
+		return (IRawApplication)createApplication(name, new RawCartridge(this, user), user, null);
+	}
+	
+	public IRawApplication createRawApplication(final String name, final IUser user, final String size)
+			throws OpenShiftException {
+		return (IRawApplication)createApplication(name, new RawCartridge(this, user), user, size);
+	}
 
 	public IApplication createApplication(final String name, final ICartridge cartridge, final IUser user,
 			final String size)

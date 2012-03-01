@@ -118,6 +118,12 @@ public interface IOpenShiftService {
 	public INodeJSApplication createNodeJSApplication(String name, IUser user)
 			throws OpenShiftException;
 	
+	public IHAProxyApplication createHAProxyApplication(String name, IUser user)
+			throws OpenShiftException;
+	
+	public IRawApplication createRawApplication(String name, IUser user)
+			throws OpenShiftException;
+	
 	/**
 	 * Creates an application with the given name and cartridge for the given
 	 * user.
@@ -159,6 +165,12 @@ public interface IOpenShiftService {
 			throws OpenShiftException;
 	
 	public INodeJSApplication createNodeJSApplication(String name, IUser user, String nodeProfile)
+			throws OpenShiftException;
+	
+	public IHAProxyApplication createHAProxyApplication(String name, IUser user, String nodeProfile)
+			throws OpenShiftException;
+	
+	public IRawApplication createRawApplication(String name, IUser user, String nodeProfile)
 			throws OpenShiftException;
 
 

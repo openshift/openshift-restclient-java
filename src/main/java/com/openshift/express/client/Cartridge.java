@@ -30,6 +30,8 @@ public class Cartridge implements ICartridge {
 	protected static final String PERL = "perl";
 	protected static final String NODEJS = "nodejs";
 	protected static final String JENKINS = "jenkins";
+	protected static final String HAPROXY = "haproxy";
+	protected static final String RAW = "raw";
 
 	protected IOpenShiftService service;
 	protected IUser user;
