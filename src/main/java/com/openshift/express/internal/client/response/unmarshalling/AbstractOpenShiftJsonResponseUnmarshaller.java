@@ -21,6 +21,7 @@ import com.openshift.express.client.OpenShiftException;
 import com.openshift.express.client.utils.RFC822DateUtils;
 import com.openshift.express.internal.client.response.OpenShiftResponse;
 import com.openshift.express.internal.client.utils.IOpenShiftJsonConstants;
+import com.openshift.express.internal.client.utils.StringUtils;
 
 /**
  * @author André Dietisheim
@@ -66,6 +67,14 @@ public abstract class AbstractOpenShiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 			return null;
 		}
 		return child.asString();
+	}
+
+	protected String getNonEmptyString(String property, ModelNode node) {
+		String value = getString(property, node);
+		if (StringUtils.isEmpty(value)) {
+			return null;
+		}
+		return value;
 	}
 
 	protected ModelNode getChild(String property, ModelNode node) {

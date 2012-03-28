@@ -37,12 +37,21 @@ public class UserInfo {
 			throws OpenShiftUnknonwSSHKeyTypeException {
 		this.rhLogin = rhLogin;
 		this.uuid = uuid;
-		this.sshPublicKey = new SSHPublicKey(sshPublicKey, sshKeyType);
+		this.sshPublicKey = createSshPublicKey(sshKeyType, sshPublicKey);
 		this.rhcDomain = rhcDomain;
 		this.namespace = namespace;
 		this.applicationInfos = applicationInfos;
 		this.maxGears = maxGears;
 		this.consumedGears = consumedGears;
+	}
+
+	private SSHPublicKey createSshPublicKey(String sshKeyType, String sshPublicKey) throws OpenShiftUnknonwSSHKeyTypeException {
+		SSHPublicKey key = null;
+		if (sshPublicKey != null
+				&& sshKeyType != null) {
+			key = new SSHPublicKey(sshPublicKey, sshKeyType);
+		}
+		return key;
 	}
 
 	public String getUuid() {

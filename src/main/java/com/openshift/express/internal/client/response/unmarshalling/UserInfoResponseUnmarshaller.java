@@ -13,6 +13,7 @@ package com.openshift.express.internal.client.response.unmarshalling;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,6 @@ import com.openshift.express.internal.client.ApplicationInfo;
 import com.openshift.express.internal.client.EmbeddableCartridgeInfo;
 import com.openshift.express.internal.client.UserInfo;
 import com.openshift.express.internal.client.utils.IOpenShiftJsonConstants;
-import com.openshift.express.internal.client.utils.StringUtils;
 
 /**
  * @author André Dietisheim
@@ -47,8 +47,7 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenShiftJsonResponseU
 			return null;
 		}
 		
-		String sshPublicKey = getSshPublicKey(userInfoNode);
-		String sshKeyType = getSshKeyType(userInfoNode);
+		SSHKeyProperties keyProperties = getSSHKeyProperties(userInfoNode);
 		String rhlogin = getString(IOpenShiftJsonConstants.PROPERTY_RHLOGIN, userInfoNode);
 		String uuid = getString(IOpenShiftJsonConstants.PROPERTY_UUID, userInfoNode);
 		String namespace = getString(IOpenShiftJsonConstants.PROPERTY_NAMESPACE, userInfoNode);
@@ -59,25 +58,40 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenShiftJsonResponseU
 		List<ApplicationInfo> applicationInfos = createApplicationInfos(dataNode
 				.get(IOpenShiftJsonConstants.PROPERTY_APP_INFO));
 
-		return new UserInfo(rhlogin, uuid, sshPublicKey, rhcDomain, namespace, applicationInfos, sshKeyType, maxGears, consumedGears);
+		return new UserInfo(rhlogin, uuid, keyProperties.sshPublicKey, rhcDomain, namespace, applicationInfos, keyProperties.sshKeyType, maxGears, consumedGears);
 	}
 	
-	private String getSshPublicKey(ModelNode userInfoNode) {
-		String sshPublicKey = getString(IOpenShiftJsonConstants.PROPERTY_SSH_KEY, userInfoNode);
-		if (StringUtils.isEmpty(sshPublicKey)) {
-			sshPublicKey = null;
+	private SSHKeyProperties getSSHKeyProperties(ModelNode userInfoNode) {
+		SSHKeyProperties keyProperties = new SSHKeyProperties();
+		if (hasSshKeyProperties(userInfoNode)) {
+			keyProperties.sshKeyType = getNonEmptyString(IOpenShiftJsonConstants.PROPERTY_SSH_TYPE, userInfoNode);
+			keyProperties.sshPublicKey = getNonEmptyString(IOpenShiftJsonConstants.PROPERTY_SSH_KEY, userInfoNode);
+		} else {
+			ModelNode sshKeyNode = getFirstKeyOfSeveral(userInfoNode);
+			if (isSet(sshKeyNode)) {
+				keyProperties.sshKeyType = getNonEmptyString(IOpenShiftJsonConstants.PROPERTY_TYPE, sshKeyNode);
+				keyProperties.sshPublicKey = getNonEmptyString(IOpenShiftJsonConstants.PROPERTY_KEY, sshKeyNode);
+			}
 		}
-		return sshPublicKey;
+
+		return keyProperties;
 	}
 
-	private String getSshKeyType(ModelNode userInfoNode) {
-		String sshKeyType = getString(IOpenShiftJsonConstants.PROPERTY_SSH_TYPE, userInfoNode);
-		if (sshKeyType == null) {
-			ModelNode sshKeyNode = this.getChild(IOpenShiftJsonConstants.PROPERTY_SSH_KEY, userInfoNode);
-			if (sshKeyNode != null)
-				sshKeyType = getString(IOpenShiftJsonConstants.PROPERTY_TYPE, sshKeyNode);
+	private boolean hasSshKeyProperties(ModelNode userInfoNode) {
+		return getNonEmptyString(IOpenShiftJsonConstants.PROPERTY_SSH_TYPE, userInfoNode) != null;
+	}
+	
+	private ModelNode getFirstKeyOfSeveral(ModelNode userInfoNode) {
+		ModelNode sshKeyNode = null;
+		ModelNode sshKeysNode = getChild(IOpenShiftJsonConstants.PROPERTY_SSH_KEYS, userInfoNode);
+		if (sshKeysNode != null) {
+			Set<String> keys = sshKeysNode.keys();
+			if (!keys.isEmpty()) {
+				String firstKey = keys.iterator().next();
+				sshKeyNode = sshKeysNode.get(firstKey);
+			}
 		}
-		return sshKeyType;
+		return sshKeyNode;
 	}
 
 	private List<ApplicationInfo> createApplicationInfos(ModelNode appInfoNode) throws DatatypeConfigurationException {
@@ -125,5 +139,10 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenShiftJsonResponseU
 		} else {
 			return infoPropertyValue;
 		}
+	}
+
+	private static class SSHKeyProperties {
+		private String sshKeyType;
+		private String sshPublicKey;
 	}
 }
