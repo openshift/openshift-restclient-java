@@ -25,7 +25,7 @@ import com.openshift.express.internal.client.response.unmarshalling.UserInfoResp
 public class JBIDE_11418_Test {
 
 	@Test
-	public void canUnmarshallUserInfoWihtEmptySSHKey() throws OpenShiftException {
+	public void canUnmarshallUserInfoWithEmptySSHKey() throws OpenShiftException {
 		String responseString =
 				"{"
 						+" 	\"api_c\":[\"placeholder\"],"
@@ -67,5 +67,4 @@ public class JBIDE_11418_Test {
 		OpenShiftResponse<UserInfo> response = new UserInfoResponseUnmarshaller().unmarshall(responseString);
 		assertNotNull(response);
 	}
-	
 }
