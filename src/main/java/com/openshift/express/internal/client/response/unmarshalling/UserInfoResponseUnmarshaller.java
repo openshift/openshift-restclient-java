@@ -27,6 +27,7 @@ import com.openshift.express.internal.client.ApplicationInfo;
 import com.openshift.express.internal.client.EmbeddableCartridgeInfo;
 import com.openshift.express.internal.client.UserInfo;
 import com.openshift.express.internal.client.utils.IOpenShiftJsonConstants;
+import com.openshift.express.internal.client.utils.StringUtils;
 
 /**
  * @author André Dietisheim
@@ -46,7 +47,7 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenShiftJsonResponseU
 			return null;
 		}
 		
-		String sshPublicKey = getString(IOpenShiftJsonConstants.PROPERTY_SSH_KEY, userInfoNode);
+		String sshPublicKey = getSshPublicKey(userInfoNode);
 		String sshKeyType = getSshKeyType(userInfoNode);
 		String rhlogin = getString(IOpenShiftJsonConstants.PROPERTY_RHLOGIN, userInfoNode);
 		String uuid = getString(IOpenShiftJsonConstants.PROPERTY_UUID, userInfoNode);
@@ -59,6 +60,14 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenShiftJsonResponseU
 				.get(IOpenShiftJsonConstants.PROPERTY_APP_INFO));
 
 		return new UserInfo(rhlogin, uuid, sshPublicKey, rhcDomain, namespace, applicationInfos, sshKeyType, maxGears, consumedGears);
+	}
+	
+	private String getSshPublicKey(ModelNode userInfoNode) {
+		String sshPublicKey = getString(IOpenShiftJsonConstants.PROPERTY_SSH_KEY, userInfoNode);
+		if (StringUtils.isEmpty(sshPublicKey)) {
+			sshPublicKey = null;
+		}
+		return sshPublicKey;
 	}
 
 	private String getSshKeyType(ModelNode userInfoNode) {
