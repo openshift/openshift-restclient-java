@@ -66,6 +66,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		try {
 			connection = createConnection(userAgent, url);
 			connection.setDoOutput(true);
+			System.out.println("!!!!!!!! post " + data);
 			StreamUtils.writeTo(data.getBytes(), connection.getOutputStream());
 			return StreamUtils.readToString(connection.getInputStream());
 		} catch (FileNotFoundException e) {
