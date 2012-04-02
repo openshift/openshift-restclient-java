@@ -142,11 +142,11 @@ public class Application extends UserInfoAware implements IApplication {
 	}
 
 	public String getHealthCheckUrl() throws OpenShiftException {
-		throw new OpenShiftException("NOT SUPPORTED FOR GENERIC APPLICATION");
+		return getApplicationUrl() + healthCheckPath;
 	}
 	
 	public String getHealthCheckResponse() throws OpenShiftException {
-		throw new OpenShiftException("NOT SUPPORTED FOR GENERIC APPLICATION");
+		return "1";
 	}
 
 	public void addEmbbedCartridge(IEmbeddableCartridge embeddedCartridge) throws OpenShiftException {
@@ -219,7 +219,11 @@ public class Application extends UserInfoAware implements IApplication {
 	}
 
 	public boolean waitForAccessible(long timeout) throws OpenShiftException {
-		return service.waitForApplication(getHealthCheckUrl(), timeout, getHealthCheckResponse());
+		String url = getHealthCheckUrl();
+		String response = getHealthCheckResponse();
+		boolean success = service.waitForApplication(url, timeout, response);
+		System.out.println("!!!!!!!!!!!!!!!! waitForAccessible " + success + " " + url + " " + response);
+		return success;
 	}
 
 	public IUser getUser() {

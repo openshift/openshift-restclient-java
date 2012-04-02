@@ -32,12 +32,5 @@ public class JenkinsApplication extends Application implements IJenkinsApplicati
 			IOpenShiftService service) {
 		super(name, uuid, cartridge, applicationInfo, user, service);
 	}
-	
-	public String getHealthCheckUrl() throws OpenShiftException {
-		return getApplicationUrl() + "login?from=%2F";
-	}
-	
-	public String getHealthCheckResponse() throws OpenShiftException {
-		return "<html>";
-	}
+
 }

@@ -70,7 +70,7 @@ import com.openshift.express.internal.client.utils.StreamUtils;
  */
 public class ApplicationIntegrationTest {
 	
-	private static final int WAIT_FOR_APPLICATION = 10 * 1024;
+	private static final int WAIT_FOR_APPLICATION = 60 * 1024;
 
 	private IOpenShiftService service;
 
@@ -87,7 +87,7 @@ public class ApplicationIntegrationTest {
 		invalidUser = new TestUser("bogusPassword", service);
 	}
 	
-	//@Test(expected=OpenShiftException.class)
+	@Test(expected=OpenShiftException.class)
 	public void canCreateBogusApplication() throws Exception {
 		List<ICartridge> cartridges = service.getCartridges(user);
 		
@@ -103,7 +103,7 @@ public class ApplicationIntegrationTest {
 		IApplication application = service.createApplication(applicationName, bogus, user);
 	}
 
-	////@Test(expected = InvalidCredentialsOpenShiftException.class)
+	//@Test(expected = InvalidCredentialsOpenShiftException.class)
 	public void createApplicationWithInvalidCredentialsThrowsException() throws Exception {
 		service.createApplication(ApplicationUtils.createRandomApplicationName(), ICartridge.JBOSSAS_7, invalidUser);
 	}
@@ -125,7 +125,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void canCreateRubyApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		IRubyApplication application = null;
@@ -159,7 +159,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void canRawProxyApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		IRawApplication application = null;
@@ -176,7 +176,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void canCreatePythonApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		IPythonApplication application = null;
@@ -193,7 +193,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void canCreatePHPApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		IPHPApplication application = null;
@@ -210,7 +210,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void canCreatePerlApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		IPerlApplication application = null;
@@ -227,7 +227,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void canCreateNodeJSApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		INodeJSApplication application = null;
@@ -244,7 +244,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void canCreateJenkinsApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		IJenkinsApplication application = null;
@@ -262,14 +262,14 @@ public class ApplicationIntegrationTest {
 	}
 
 
-	//@Test
+	@Test
 	public void canDestroyApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
 		service.destroyApplication(applicationName, ICartridge.JBOSSAS_7, user);
 	}
 
-	//@Test(expected = OpenShiftException.class)
+	@Test(expected = OpenShiftException.class)
 	public void createDuplicateApplicationThrowsException() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
@@ -280,7 +280,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void canStopApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
@@ -291,7 +291,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void canStartStoppedApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
@@ -303,7 +303,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void canStartStartedApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
@@ -321,7 +321,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void canStopStoppedApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
@@ -340,7 +340,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void canRestartApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
@@ -358,7 +358,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void canGetStatus() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
@@ -370,7 +370,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void returnsValidGitUri() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
@@ -383,7 +383,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void returnsValidApplicationUrl() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
@@ -396,7 +396,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void returnsCreationTime() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
@@ -422,7 +422,7 @@ public class ApplicationIntegrationTest {
 	 * @see UserInfo
 	 * @see ApplicationInfo
 	 */
-	//@Test
+	@Test
 	public void returnsCreationTimeOn2ndApplication() throws Exception {
 		String applicationName = null;
 		String applicationName2 = null;
@@ -442,7 +442,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void canThreadDumpJBossApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		ApplicationLogReader reader = null;
@@ -470,7 +470,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void canThreadDumpRackApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		ApplicationLogReader reader = null;
@@ -484,7 +484,7 @@ public class ApplicationIntegrationTest {
 			
 			URL url = new URL("http://" + applicationName + "-" + user.getDomain().getNamespace() + ".dev.rhcloud.com/lobster");
 			
-			Thread.sleep(20 * 1000);
+			Thread.sleep(WAIT_FOR_APPLICATION);
 			
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			
@@ -492,9 +492,7 @@ public class ApplicationIntegrationTest {
 			String result = StreamUtils.readToString(connection.getInputStream());
 			
 			String logFile = application.threadDump();
-			
-			logFile = "logs/error_log-20120229-000000-EST";
-				
+							
 			String log = service.getStatus(applicationName, application.getCartridge(), user, logFile, 100);
 			
 			assertTrue("Failed to retrieve logged thread dump", log.contains("passenger-3.0.4"));
@@ -513,13 +511,29 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	//@Test
-	public void canWaitForApplication() throws OpenShiftException, MalformedURLException, IOException {
+	@Test
+	public void canWaitForJBossApplication() throws OpenShiftException, MalformedURLException, IOException {
 		String applicationName = null;
 		IApplication application = null;
 		try {
 			applicationName = ApplicationUtils.createRandomApplicationName();
 			application = service.createJBossASApplication(applicationName, user);
+			assertNotNull(application);
+			
+			assertTrue(application.waitForAccessible(WAIT_FOR_APPLICATION));
+			
+		} finally {
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
+		}
+	}
+	
+	@Test
+	public void canWaitForJenkinsApplication() throws OpenShiftException, MalformedURLException, IOException {
+		String applicationName = null;
+		IApplication application = null;
+		try {
+			applicationName = ApplicationUtils.createRandomApplicationName();
+			application = service.createJenkinsApplication(applicationName, user);
 			assertNotNull(application);
 			
 			assertTrue(application.waitForAccessible(WAIT_FOR_APPLICATION));
