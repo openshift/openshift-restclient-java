@@ -94,7 +94,6 @@ public class ApplicationIntegrationTest {
 		Iterator<ICartridge> i = cartridges.iterator();
 		while (i.hasNext()){
 			ICartridge cartridge = i.next();
-			System.out.println("cartridge " + cartridge.getName());
 		}
 		
 		String applicationName = ApplicationUtils.createRandomApplicationName();

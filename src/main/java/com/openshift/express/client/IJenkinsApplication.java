@@ -14,6 +14,8 @@ package com.openshift.express.client;
  * @author William DeCoste
  */
 public interface IJenkinsApplication extends IApplication {
-
+	String getUsername();
+	
+	String getPassword();
 
 }

@@ -10,6 +10,9 @@
  ******************************************************************************/
 package com.openshift.express.internal.client;
 
+import java.io.StringReader;
+import java.util.StringTokenizer;
+
 import com.openshift.express.client.ICartridge;
 import com.openshift.express.client.IJenkinsApplication;
 import com.openshift.express.client.IOpenShiftService;
@@ -22,10 +25,14 @@ import com.openshift.express.client.OpenShiftException;
  * @author Andre Dietisheim
  */
 public class JenkinsApplication extends Application implements IJenkinsApplication {
+	protected String username = null;
+	protected String password = null;
 
 	public JenkinsApplication(String name, String uuid, String creationLog, String healthCheckPath, ICartridge cartridge,
 			InternalUser user, IOpenShiftService service) {
 		super(name, uuid, creationLog, healthCheckPath, cartridge, user, service);
+		
+		parseUsernamePassword(creationLog);
 	}
 
 	public JenkinsApplication(String name, String uuid, ICartridge cartridge, ApplicationInfo applicationInfo, InternalUser user,
@@ -39,5 +46,24 @@ public class JenkinsApplication extends Application implements IJenkinsApplicati
 	
 	public String getHealthCheckResponse() throws OpenShiftException {
 		return "<html>";
+	}
+	
+	public String getUsername(){
+		return username;
+	}
+	
+	public String getPassword(){
+		return password;
+	}
+	
+	protected void parseUsernamePassword(String creationLog) {
+		StringTokenizer tokenizer = new StringTokenizer(creationLog, ": ");
+		while (tokenizer.hasMoreTokens()){
+			String token = tokenizer.nextToken().trim();
+			if (token.equals("User"))
+				username = tokenizer.nextToken().trim();
+			else if (token.equals("Password"))
+				password = tokenizer.nextToken().trim();
+		}
 	}
 }

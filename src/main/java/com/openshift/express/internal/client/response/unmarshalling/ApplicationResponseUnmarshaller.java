@@ -74,6 +74,7 @@ public class ApplicationResponseUnmarshaller extends AbstractOpenShiftJsonRespon
 		} else if (cartridge instanceof NodeJSCartridge) {
 			return new NodeJSApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
 		} else if (cartridge instanceof JenkinsCartridge) {
+			String result = getDataNodeProperty(IOpenShiftJsonConstants.PROPERTY_RESULT, node);
 			return new JenkinsApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);
 		} else if (cartridge instanceof HAProxyCartridge) {
 			return new HAProxyApplication(applicationName, uuid, creationLog, healthCheckPath, cartridge, user, service);

@@ -128,7 +128,6 @@ public class EmbedIntegrationTest {
 		Iterator<IEmbeddableCartridge> i = cartridges.iterator();
 		while (i.hasNext()){
 			IEmbeddableCartridge cartridge = i.next();
-			System.out.println("embeddable " + cartridge.getName());
 		}
 		EmbeddableCartridge bogus = new EmbeddableCartridge("bogus-1.0");
 		IEmbeddableCartridge cartridge = service.addEmbeddedCartridge(application.getName(), bogus, user);
@@ -178,6 +177,9 @@ public class EmbedIntegrationTest {
 		try {
 			jenkins = service.createJenkinsApplication(jenkinsAppName, user);
 			assertTrue(jenkins.waitForAccessible(WAIT_FOR_APPLICATION * 10));
+			assertEquals(jenkins.getUsername(), "admin");
+			assertNotNull(jenkins.getPassword());
+			
 			service.addEmbeddedCartridge(application.getName(), new JenkinsClientEmbeddableCartridge(service, user), user);
 		} finally {
 			ApplicationUtils.silentlyDestroyApplication(jenkinsAppName, jenkins.getCartridge(), user, service);
