@@ -1,7 +1,7 @@
-OpenShift Express Java Client
+OpenShift Java Client
 =============================
 
-This is a client for OpenShift Express written in java. The client is an osgi bundle but may also be used in a non-osgi environment.
+This is a client for OpenShift written in java. The client is an osgi bundle but may also be used in a non-osgi environment.
 
 Downloads
 ---------

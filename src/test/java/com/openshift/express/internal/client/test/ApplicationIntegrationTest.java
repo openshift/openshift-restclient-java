@@ -70,7 +70,7 @@ import com.openshift.express.internal.client.utils.StreamUtils;
  */
 public class ApplicationIntegrationTest {
 	
-	private static final int WAIT_FOR_APPLICATION = 10 * 1024;
+	private static final int WAIT_FOR_APPLICATION = 60 * 1024;
 
 	private IOpenShiftService service;
 
@@ -141,7 +141,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void canCreateHAProxyApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		IHAProxyApplication application = null;
@@ -483,7 +483,7 @@ public class ApplicationIntegrationTest {
 			
 			URL url = new URL("http://" + applicationName + "-" + user.getDomain().getNamespace() + ".dev.rhcloud.com/lobster");
 			
-			Thread.sleep(20 * 1000);
+			Thread.sleep(WAIT_FOR_APPLICATION);
 			
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			
@@ -491,9 +491,7 @@ public class ApplicationIntegrationTest {
 			String result = StreamUtils.readToString(connection.getInputStream());
 			
 			String logFile = application.threadDump();
-			
-			logFile = "logs/error_log-20120229-000000-EST";
-				
+							
 			String log = service.getStatus(applicationName, application.getCartridge(), user, logFile, 100);
 			
 			assertTrue("Failed to retrieve logged thread dump", log.contains("passenger-3.0.4"));
@@ -513,12 +511,28 @@ public class ApplicationIntegrationTest {
 	}
 	
 	@Test
-	public void canWaitForApplication() throws OpenShiftException, MalformedURLException, IOException {
+	public void canWaitForJBossApplication() throws OpenShiftException, MalformedURLException, IOException {
 		String applicationName = null;
 		IApplication application = null;
 		try {
 			applicationName = ApplicationUtils.createRandomApplicationName();
 			application = service.createJBossASApplication(applicationName, user);
+			assertNotNull(application);
+			
+			assertTrue(application.waitForAccessible(WAIT_FOR_APPLICATION));
+			
+		} finally {
+			ApplicationUtils.silentlyDestroyApplication(applicationName, application.getCartridge(), user, service);
+		}
+	}
+	
+	@Test
+	public void canWaitForJenkinsApplication() throws OpenShiftException, MalformedURLException, IOException {
+		String applicationName = null;
+		IApplication application = null;
+		try {
+			applicationName = ApplicationUtils.createRandomApplicationName();
+			application = service.createJenkinsApplication(applicationName, user);
 			assertNotNull(application);
 			
 			assertTrue(application.waitForAccessible(WAIT_FOR_APPLICATION));

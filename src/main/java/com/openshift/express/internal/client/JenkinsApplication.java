@@ -66,4 +66,5 @@ public class JenkinsApplication extends Application implements IJenkinsApplicati
 				password = tokenizer.nextToken().trim();
 		}
 	}
+
 }

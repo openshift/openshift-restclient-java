@@ -390,7 +390,7 @@ public class OpenShiftService implements IOpenShiftService {
 			String command =
 					"tail "
 							+ "-" + numLines
-							+ " /var/lib/libra/" + applicationName
+							+ " /var/lib/stickshift/" + applicationName
 							+ "-" + user.getDomain().getNamespace() + "/" + applicationName + logLocation + logFile;
 
 			((ChannelExec) channel).setCommand(command);
@@ -453,7 +453,6 @@ public class OpenShiftService implements IOpenShiftService {
 					Thread.sleep(APPLICATION_WAIT_DELAY);
 					response = client.get();
 				} catch (HttpClientException e) {
-					// not available yet
 				}
 			}
 			

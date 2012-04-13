@@ -30,7 +30,7 @@ public class JBossCartridge extends Cartridge {
 	}
 
 	public String getLogLocation() {
-		return "/" + name + "/";
+		return "/" + name + "/standalone/tmp/";
 	}
 
 }

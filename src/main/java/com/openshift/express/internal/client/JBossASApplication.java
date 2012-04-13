@@ -35,15 +35,7 @@ public class JBossASApplication extends Application implements IJBossASApplicati
 	public String threadDump() throws OpenShiftException {
 		service.threadDumpApplication(name, cartridge, getInternalUser());
 		
-		return "stdout.log";
-	}
-	
-	public String getHealthCheckUrl() throws OpenShiftException {
-		return getApplicationUrl() + "/health";
-	}
-	
-	public String getHealthCheckResponse() throws OpenShiftException {
-		return "1";
+		return getName() + ".log";
 	}
 
 }
