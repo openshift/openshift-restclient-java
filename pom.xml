@@ -160,8 +160,29 @@
 			</build>
 		</profile>
 
+		<!-- profile is enabled in Jenkins by -Daxis=defaultprofile -->
+		<profile>
+			<id>defaultprofile</id>
+			<activation>
+				<property>
+					<name>axis</name>
+					<value>defaultprofile</value>
+				</property>
+			</activation>
+			<properties>
+				<defaultprofile>true</defaultprofile>
+			</properties>
+		</profile>
+
+		<!-- profile is enabled in Jenkins by -Daxis=integration-tests -->
 		<profile>
 			<id>integration-tests</id>
+			<activation>
+				<property>
+					<name>axis</name>
+					<value>integration-tests</value>
+				</property>
+			</activation>
 			<build>
 				<plugins>
 					<plugin>
