@@ -53,7 +53,7 @@ public interface IOpenShiftService {
 	public boolean isValid(IUser user) throws OpenShiftException;
 
 	/**
-	 * List all cartridges that are available on the OpenShift Express platform.
+	 * List all cartridges that are available on the OpenShift platform.
 	 * 
 	 * @param user
 	 *            the user account that shall be used
