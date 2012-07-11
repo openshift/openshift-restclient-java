@@ -119,6 +119,7 @@ public class OpenShiftService implements IOpenShiftService {
 	}
 
 	public UserInfo getUserInfo(final IUser user) throws OpenShiftException {
+		System.out.println("**** getUserInfo " + user);
 		UserInfoRequest userInfoRequest = new UserInfoRequest(user.getRhlogin(), true);
 		String url = userInfoRequest.getUrlString(getServiceUrl());
 

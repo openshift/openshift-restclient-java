@@ -63,6 +63,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	public String post(String data) throws HttpClientException, SocketTimeoutException {
 		HttpURLConnection connection = null;
+		System.out.println("***** post " + url + " " + data);
 		try {
 			connection = createConnection(userAgent, url);
 			connection.setDoOutput(true);
@@ -125,6 +126,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		if (isHttps(url)
 				&& !doSSLChecks) {
+			System.out.println("*** createConnection HTTPS " + url);
 			HttpsURLConnection httpsConnection = (HttpsURLConnection) connection;
 			httpsConnection.setHostnameVerifier(new NoopHostnameVerifier());
 			setPermissiveSSLSocketFactory(httpsConnection);
