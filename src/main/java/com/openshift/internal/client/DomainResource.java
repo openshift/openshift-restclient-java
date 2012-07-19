@@ -225,8 +225,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		this.id = domainResourceDTO.getNamespace();
 		this.suffix = domainResourceDTO.getSuffix();
 		if(this.applications != null) {
-			this.applications = null;
-			loadApplications();
+			this.applications = loadApplications();
 		}
 		
 	}

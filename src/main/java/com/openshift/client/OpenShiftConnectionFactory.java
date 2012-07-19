@@ -43,7 +43,7 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * @throws OpenShiftException
 	 */
 	public IOpenShiftConnection getConnection(final String clientId, final String password) throws OpenShiftException {
-		IOpenShiftConfiguration configuration;
+		IOpenShiftConfiguration configuration = null;
 		try {
 			configuration = new OpenShiftConfiguration();
 		} catch (FileNotFoundException e) {
