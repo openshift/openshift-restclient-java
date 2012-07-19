@@ -1,0 +1,156 @@
+{
+    "status":"ok",
+    "messages":[
+        
+    ],
+    "type":"domain",
+    "data":{
+        "suffix":"stg.rhcloud.com",
+        "links":{
+            "DELETE":{
+                "rel":"Delete domain",
+                "optional_params":[
+                    {
+                        "name":"force",
+                        "description":"Force delete domain.  i.e. delete any applications under this domain",
+                        "type":"boolean",
+                        "default_value":false,
+                        "valid_options":[
+                            true,
+                            false
+                        ]
+                    }
+                ],
+                "href":"/domains/foobarbaz",
+                "required_params":[
+                    
+                ],
+                "method":"DELETE"
+            },
+            "LIST_APPLICATIONS":{
+                "rel":"List applications",
+                "optional_params":[
+                    
+                ],
+                "href":"/domains/foobarbaz/applications",
+                "required_params":[
+                    
+                ],
+                "method":"GET"
+            },
+            "ADD_APPLICATION":{
+                "rel":"Create new application",
+                "optional_params":[
+                    {
+                        "name":"scale",
+                        "description":"Mark application as scalable",
+                        "type":"boolean",
+                        "default_value":false,
+                        "valid_options":[
+                            true,
+                            false
+                        ]
+                    },
+                    {
+                        "name":"gear_profile",
+                        "description":"The size of the gear",
+                        "type":"string",
+                        "default_value":"small",
+                        "valid_options":[
+                            "small",
+                            "micro",
+                            "medium",
+                            "large",
+                            "exlarge",
+                            "jumbo"
+                        ]
+                    }
+                ],
+                "href":"/domains/foobarbaz/applications",
+                "required_params":[
+                    {
+                        "name":"name",
+                        "description":"Name of the application",
+                        "type":"string",
+                        "valid_options":[
+                            
+                        ]
+                    },
+                    {
+                        "name":"cartridge",
+                        "description":"framework-type, e.g: php-5.3",
+                        "type":"string",
+                        "valid_options":[
+                            "nodejs-0.6",
+                            "jbossas-7",
+                            "python-2.6",
+                            "jenkins-1.4",
+                            "ruby-1.8",
+                            "diy-0.1",
+                            "php-5.3",
+                            "perl-5.10"
+                        ]
+                    }
+                ],
+                "method":"POST"
+            },
+            "UPDATE":{
+                "rel":"Update domain",
+                "optional_params":[
+                    
+                ],
+                "href":"/domains/foobarbaz",
+                "required_params":[
+                    {
+                        "name":"id",
+                        "description":"Name of the domain",
+                        "type":"string",
+                        "valid_options":[
+                            
+                        ]
+                    }
+                ],
+                "method":"PUT"
+            },
+            "ADD_APPLICATION_FROM_TEMPLATE":{
+                "rel":"Create new application",
+                "optional_params":[
+                    
+                ],
+                "href":"/domains/foobarbaz/applications",
+                "required_params":[
+                    {
+                        "name":"name",
+                        "description":"Name of the application",
+                        "type":"string",
+                        "valid_options":[
+                            
+                        ]
+                    },
+                    {
+                        "name":"template",
+                        "description":"UUID of the application template",
+                        "type":"string",
+                        "valid_options":[
+                            
+                        ]
+                    }
+                ],
+                "method":"POST"
+            },
+            "GET":{
+                "rel":"Get domain",
+                "optional_params":[
+                    
+                ],
+                "href":"/domains/foobarbaz",
+                "required_params":[
+                    
+                ],
+                "method":"GET"
+            }
+        },
+        "id":"foobarbaz"
+    },
+    "version":"1.0"
+}

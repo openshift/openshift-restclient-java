@@ -1,0 +1,14 @@
+{
+    "version":"1.0",
+    "messages":[
+        {
+            "severity":"error",
+            "exit_code":255,
+            "text":"Failed to add event remove-alias to application sample due to: Alias 'an_alias' does not exist for 'sample'",
+            "field":null
+        }
+    ],
+    "type":null,
+    "status":"internal_server_error",
+    "data":null
+}

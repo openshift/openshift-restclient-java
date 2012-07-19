@@ -1,0 +1,14 @@
+{
+    "data":null,
+    "type":null,
+    "messages":[
+        {
+            "severity":"error",
+            "exit_code":124,
+            "field":null,
+            "text":"Failed to delete SSH key default for user foobar+test@redhat.com due to:ERROR: Can't remove 'default' ssh key for user foobar+test@redhat.com"
+        }
+    ],
+    "version":"1.0",
+    "status":"internal_server_error"
+}

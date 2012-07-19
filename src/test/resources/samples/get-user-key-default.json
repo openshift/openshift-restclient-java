@@ -1,0 +1,64 @@
+{
+    "type":"key",
+    "messages":[
+        
+    ],
+    "data":{
+        "type":"ssh-rsa",
+        "links":{
+            "GET":{
+                "optional_params":[
+                    
+                ],
+                "required_params":[
+                    
+                ],
+                "rel":"Get SSH key",
+                "method":"GET",
+                "href":"/user/keys/default"
+            },
+            "DELETE":{
+                "optional_params":[
+                    
+                ],
+                "required_params":[
+                    
+                ],
+                "rel":"Delete SSH key",
+                "method":"DELETE",
+                "href":"/user/keys/default"
+            },
+            "UPDATE":{
+                "optional_params":[
+                    
+                ],
+                "required_params":[
+                    {
+                        "type":"string",
+                        "valid_options":[
+                            "ssh-rsa",
+                            "ssh-dss"
+                        ],
+                        "name":"type",
+                        "description":"Type of Key"
+                    },
+                    {
+                        "type":"string",
+                        "valid_options":[
+                            
+                        ],
+                        "name":"content",
+                        "description":"The key portion of an rsa key (excluding ssh-rsa and comment)"
+                    }
+                ],
+                "rel":"Update SSH key",
+                "method":"PUT",
+                "href":"/user/keys/default"
+            }
+        },
+        "name":"default",
+        "content":"AAAAB...3"
+    },
+    "status":"ok",
+    "version":"1.0"
+}

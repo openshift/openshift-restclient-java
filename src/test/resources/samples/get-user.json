@@ -1,0 +1,70 @@
+{
+    "type":"user",
+    "messages":[
+        
+    ],
+    "version":"1.0",
+    "status":"ok",
+    "data":{
+        "login":"foo@redhat.com",
+        "links":{
+            "GET":{
+                "method":"GET",
+                "optional_params":[
+                    
+                ],
+                "rel":"Get user information",
+                "required_params":[
+                    
+                ],
+                "href":"/user"
+            },
+            "ADD_KEY":{
+                "method":"POST",
+                "optional_params":[
+                    
+                ],
+                "rel":"Add new SSH key",
+                "required_params":[
+                    {
+                        "type":"string",
+                        "valid_options":[
+                            
+                        ],
+                        "name":"name",
+                        "description":"Name of the application"
+                    },
+                    {
+                        "type":"string",
+                        "valid_options":[
+                            "ssh-rsa",
+                            "ssh-dss"
+                        ],
+                        "name":"type",
+                        "description":"Type of Key"
+                    },
+                    {
+                        "type":"string",
+                        "valid_options":[
+                            
+                        ],
+                        "name":"content",
+                        "description":"The key portion of an rsa key (excluding ssh-rsa and comment)"
+                    }
+                ],
+                "href":"/user/keys"
+            },
+            "LIST_KEYS":{
+                "method":"GET",
+                "optional_params":[
+                    
+                ],
+                "rel":"Get SSH keys",
+                "required_params":[
+                    
+                ],
+                "href":"/user/keys"
+            }
+        }
+    }
+}

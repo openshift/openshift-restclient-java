@@ -1,0 +1,100 @@
+{
+    "version":"1.0",
+    "messages":[
+        
+    ],
+    "type":"cartridge",
+    "status":"ok",
+    "data":{
+        "name":"mongodb-2.0",
+        "type":"embedded",
+        "links":{
+            "RESTART":{
+                "href":"/domains/foobar/applications/sample/cartridges/mongodb-2.0/events",
+                "rel":"Restart embedded cartridge",
+                "optional_params":[
+                    
+                ],
+                "required_params":[
+                    {
+                        "description":"event",
+                        "valid_options":"restart",
+                        "name":"event",
+                        "type":"string"
+                    }
+                ],
+                "method":"POST"
+            },
+            "DELETE":{
+                "href":"/domains/foobar/applications/sample/cartridges/mongodb-2.0",
+                "rel":"Delete embedded cartridge",
+                "optional_params":[
+                    
+                ],
+                "required_params":[
+                    
+                ],
+                "method":"DELETE"
+            },
+            "GET":{
+                "href":"/domains/foobar/applications/sample/cartridges/mongodb-2.0",
+                "rel":"Get embedded cartridge",
+                "optional_params":[
+                    
+                ],
+                "required_params":[
+                    
+                ],
+                "method":"GET"
+            },
+            "STOP":{
+                "href":"/domains/foobar/applications/sample/cartridges/mongodb-2.0/events",
+                "rel":"Stop embedded cartridge",
+                "optional_params":[
+                    
+                ],
+                "required_params":[
+                    {
+                        "description":"event",
+                        "valid_options":"stop",
+                        "name":"event",
+                        "type":"string"
+                    }
+                ],
+                "method":"POST"
+            },
+            "START":{
+                "href":"/domains/foobar/applications/sample/cartridges/mongodb-2.0/events",
+                "rel":"Start embedded cartridge",
+                "optional_params":[
+                    
+                ],
+                "required_params":[
+                    {
+                        "description":"event",
+                        "valid_options":"start",
+                        "name":"event",
+                        "type":"string"
+                    }
+                ],
+                "method":"POST"
+            },
+            "RELOAD":{
+                "href":"/domains/foobar/applications/sample/cartridges/mongodb-2.0/events",
+                "rel":"Reload embedded cartridge",
+                "optional_params":[
+                    
+                ],
+                "required_params":[
+                    {
+                        "description":"event",
+                        "valid_options":"reload",
+                        "name":"event",
+                        "type":"string"
+                    }
+                ],
+                "method":"POST"
+            }
+        }
+    }
+}

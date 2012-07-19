@@ -1,0 +1,14 @@
+{
+    "data":null,
+    "type":null,
+    "messages":[
+        {
+            "severity":"error",
+            "exit_code":127,
+            "field":null,
+            "text":"Domain foo not found."
+        }
+    ],
+    "version":"1.0",
+    "status":"not_found"
+}

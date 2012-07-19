@@ -1,0 +1,14 @@
+{
+    "version":"1.0",
+    "messages":[
+        {
+            "field":null,
+            "text":"Error updating apps: [\"sample\"].  Updates will not be completed until all apps can be updated successfully.  If the problem persists please contact support.",
+            "exit_code":143,
+            "severity":"error"
+        }
+    ],
+    "data":null,
+    "status":"internal_server_error",
+    "type":null
+}

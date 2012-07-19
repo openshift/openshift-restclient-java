@@ -1,0 +1,14 @@
+{
+    "version":"1.0",
+    "status":"conflict",
+    "type":null,
+    "messages":[
+        {
+            "severity":"error",
+            "exit_code":102,
+            "field":null,
+            "text":"User already has a domain associated. Update the domain to modify."
+        }
+    ],
+    "data":null
+}

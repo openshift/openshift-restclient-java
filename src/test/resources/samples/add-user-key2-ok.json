@@ -1,0 +1,69 @@
+{
+    "data":{
+        "links":{
+            "DELETE":{
+                "href":"/user/keys/default2",
+                "method":"DELETE",
+                "rel":"Delete SSH key",
+                "required_params":[
+                    
+                ],
+                "optional_params":[
+                    
+                ]
+            },
+            "UPDATE":{
+                "href":"/user/keys/default2",
+                "method":"PUT",
+                "rel":"Update SSH key",
+                "required_params":[
+                    {
+                        "valid_options":[
+                            "ssh-rsa",
+                            "ssh-dss"
+                        ],
+                        "type":"string",
+                        "description":"Type of Key",
+                        "name":"type"
+                    },
+                    {
+                        "valid_options":[
+                            
+                        ],
+                        "type":"string",
+                        "description":"The key portion of an rsa key (excluding ssh-rsa and comment)",
+                        "name":"content"
+                    }
+                ],
+                "optional_params":[
+                    
+                ]
+            },
+            "GET":{
+                "href":"/user/keys/default2",
+                "method":"GET",
+                "rel":"Get SSH key",
+                "required_params":[
+                    
+                ],
+                "optional_params":[
+                    
+                ]
+            }
+        },
+        "type":"ssh-rsa",
+        "name":"default2",
+        "content":"AAAAB3Nz"
+    },
+    "type":"key",
+    "messages":[
+        {
+            "severity":"info",
+            "exit_code":null,
+            "field":null,
+            "text":"Created SSH key default2 for user foobar+test@redhat.com"
+        }
+    ],
+    "version":"1.0",
+    "status":"created"
+}

@@ -1,0 +1,14 @@
+{
+    "type":null,
+    "messages":[
+        {
+            "field":null,
+            "severity":"error",
+            "exit_code":"-100",
+            "text":"Failed to add event scale-up to application sample1 due to: Cannot scale a non-scalable application"
+        }
+    ],
+    "version":"1.0",
+    "data":null,
+    "status":"internal_server_error"
+}

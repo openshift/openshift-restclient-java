@@ -1,0 +1,14 @@
+{
+   "type":null,
+   "status":"not_found",
+   "data":null,
+   "messages":[
+      {
+         "field":null,
+         "severity":"error",
+         "text":"Domain 33 not found.",
+         "exit_code":127
+      }
+   ],
+   "version":"1.0"
+}

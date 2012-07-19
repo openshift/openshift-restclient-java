@@ -1,0 +1,94 @@
+{
+    "type":"links",
+    "messages":[
+        
+    ],
+    "data":{
+        "ADD_DOMAIN":{
+            "optional_params":[
+                
+            ],
+            "required_params":[
+                {
+                    "type":"string",
+                    "valid_options":[
+                        
+                    ],
+                    "name":"id",
+                    "description":"Name of the domain"
+                }
+            ],
+            "rel":"Create new domain",
+            "method":"POST",
+            "href":"/domains"
+        },
+        "GET_USER":{
+            "optional_params":[
+                
+            ],
+            "required_params":[
+                
+            ],
+            "rel":"Get user information",
+            "method":"GET",
+            "href":"/user"
+        },
+        "LIST_CARTRIDGES":{
+            "optional_params":[
+                
+            ],
+            "required_params":[
+                
+            ],
+            "rel":"List cartridges",
+            "method":"GET",
+            "href":"/cartridges"
+        },
+        "API":{
+            "optional_params":[
+                
+            ],
+            "required_params":[
+                
+            ],
+            "rel":"API entry point",
+            "method":"GET",
+            "href":"/api"
+        },
+        "LIST_DOMAINS":{
+            "optional_params":[
+                
+            ],
+            "required_params":[
+                
+            ],
+            "rel":"List domains",
+            "method":"GET",
+            "href":"/domains"
+        },
+        "GET_ESTIMATES":{
+            "optional_params":[
+                
+            ],
+            "required_params":[
+                
+            ],
+            "rel":"List available estimates",
+            "method":"GET",
+            "href":"/estimates"
+        },
+        "LIST_TEMPLATES":{
+            "optional_params":[
+                
+            ],
+            "required_params":[
+                
+            ],
+            "rel":"List application templates",
+            "method":"GET",
+            "href":"/application_template"
+        }
+    },
+    "status":"ok",
+    "version":"1.0"
+}

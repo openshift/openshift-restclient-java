@@ -1,0 +1,94 @@
+{
+    "type":"links",
+    "version":"1.0",
+    "data":{
+        "LIST_DOMAINS":{
+            "required_params":[
+                
+            ],
+            "optional_params":[
+                
+            ],
+            "href":"https://stg.openshift.redhat.com/broker/rest/domains",
+            "method":"GET",
+            "rel":"List domains"
+        },
+        "LIST_TEMPLATES":{
+            "required_params":[
+                
+            ],
+            "optional_params":[
+                
+            ],
+            "href":"https://stg.openshift.redhat.com/broker/rest/application_template",
+            "method":"GET",
+            "rel":"List application templates"
+        },
+        "API":{
+            "required_params":[
+                
+            ],
+            "optional_params":[
+                
+            ],
+            "href":"https://stg.openshift.redhat.com/broker/rest/api",
+            "method":"GET",
+            "rel":"API entry point"
+        },
+        "LIST_CARTRIDGES":{
+            "required_params":[
+                
+            ],
+            "optional_params":[
+                
+            ],
+            "href":"https://stg.openshift.redhat.com/broker/rest/cartridges",
+            "method":"GET",
+            "rel":"List cartridges"
+        },
+        "ADD_DOMAIN":{
+            "required_params":[
+                {
+                    "valid_options":[
+                        
+                    ],
+                    "name":"id",
+                    "type":"string",
+                    "description":"Name of the domain"
+                }
+            ],
+            "optional_params":[
+                
+            ],
+            "href":"https://stg.openshift.redhat.com/broker/rest/domains",
+            "method":"POST",
+            "rel":"Create new domain"
+        },
+        "LIST_ESTIMATES":{
+            "required_params":[
+                
+            ],
+            "optional_params":[
+                
+            ],
+            "href":"https://stg.openshift.redhat.com/broker/rest/estimates",
+            "method":"GET",
+            "rel":"List available estimates"
+        },
+        "GET_USER":{
+            "required_params":[
+                
+            ],
+            "optional_params":[
+                
+            ],
+            "href":"https://stg.openshift.redhat.com/broker/rest/user",
+            "method":"GET",
+            "rel":"Get user information"
+        }
+    },
+    "status":"ok",
+    "messages":[
+        
+    ]
+}

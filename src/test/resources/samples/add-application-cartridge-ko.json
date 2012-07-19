@@ -1,0 +1,14 @@
+{
+    "type":null,
+    "messages":[
+        {
+            "field":null,
+            "severity":"error",
+            "exit_code":101,
+            "text":"Failed to add mongodb-2.0 to application sample1 : mongodb-2.0 already embedded in 'sample1'"
+        }
+    ],
+    "version":"1.0",
+    "data":null,
+    "status":"internal_server_error"
+}

@@ -1,0 +1,69 @@
+{
+    "data":{
+        "links":{
+            "DELETE":{
+                "href":"/user/keys/default",
+                "method":"DELETE",
+                "rel":"Delete SSH key",
+                "required_params":[
+                    
+                ],
+                "optional_params":[
+                    
+                ]
+            },
+            "UPDATE":{
+                "href":"/user/keys/default",
+                "method":"PUT",
+                "rel":"Update SSH key",
+                "required_params":[
+                    {
+                        "valid_options":[
+                            "ssh-rsa",
+                            "ssh-dss"
+                        ],
+                        "type":"string",
+                        "description":"Type of Key",
+                        "name":"type"
+                    },
+                    {
+                        "valid_options":[
+                            
+                        ],
+                        "type":"string",
+                        "description":"The key portion of an rsa key (excluding ssh-rsa and comment)",
+                        "name":"content"
+                    }
+                ],
+                "optional_params":[
+                    
+                ]
+            },
+            "GET":{
+                "href":"/user/keys/default",
+                "method":"GET",
+                "rel":"Get SSH key",
+                "required_params":[
+                    
+                ],
+                "optional_params":[
+                    
+                ]
+            }
+        },
+        "type":"ssh-dss",
+        "name":"default",
+        "content":"AAAAB3Nza..."
+    },
+    "type":"key",
+    "messages":[
+        {
+            "severity":"info",
+            "exit_code":null,
+            "field":null,
+            "text":"Updated SSH key with name default for user foobar+test@redhat.com"
+        }
+    ],
+    "version":"1.0",
+    "status":"ok"
+}
