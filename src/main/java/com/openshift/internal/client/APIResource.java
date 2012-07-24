@@ -44,7 +44,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	private boolean doSSLChecks = false;
 	private final List<ICartridge> standaloneCartridgeNames = new ArrayList<ICartridge>();
 	private final List<IEmbeddableCartridge> embeddedCartridgeNames = new ArrayList<IEmbeddableCartridge>();
-
+	
 	protected APIResource(final String login, final String password, final IRestService service,
 			final Map<String, Link> links) {
 		super(service, links, null);

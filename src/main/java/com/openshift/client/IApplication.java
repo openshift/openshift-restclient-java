@@ -215,7 +215,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @throws OpenShiftException
 	 */
 	public void start() throws OpenShiftException;
-
+	
 	/**
 	 * Restarts this application.
 	 * 

@@ -72,6 +72,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private static final String LINK_DELETE_APPLICATION = "DELETE";
 	private static final String LINK_START_APPLICATION = "START";
 	private static final String LINK_STOP_APPLICATION = "STOP";
+	private static final String LINK_STATUS_APPLICATION = "STATUS";
 	private static final String LINK_FORCE_STOP_APPLICATION = "FORCE_STOP";
 	private static final String LINK_RESTART_APPLICATION = "RESTART";
 	private static final String LINK_SCALE_UP = "SCALE_UP";

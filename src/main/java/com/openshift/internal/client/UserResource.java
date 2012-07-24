@@ -84,7 +84,8 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 	}
 
 	public List<IDomain> getDomains() throws OpenShiftException {
-		return api.getDomains();
+		List<IDomain> domains = api.getDomains();
+		return domains;
 	}
 
 	public IDomain getDefaultDomain() throws OpenShiftException {
