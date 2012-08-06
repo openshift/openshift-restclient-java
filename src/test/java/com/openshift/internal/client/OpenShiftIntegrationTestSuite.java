@@ -13,10 +13,13 @@ package com.openshift.internal.client;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import com.openshift.internal.client.test.UserResourceIntegrationTest;
+
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	SSHKeyIntegrationTest.class,
+	UserResourceIntegrationTest.class,
 	DomainResourceIntegrationTest.class,
 	ApplicationResourceIntegrationTest.class,
 	CartridgesIntegrationTest.class,

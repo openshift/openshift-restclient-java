@@ -25,12 +25,10 @@ import com.jcraft.jsch.JSchException;
 import com.openshift.client.IOpenShiftSSHKey;
 import com.openshift.client.ISSHPublicKey;
 import com.openshift.client.IUser;
-import com.openshift.client.InvalidCredentialsOpenShiftException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.SSHKeyPair;
 import com.openshift.client.SSHKeyType;
 import com.openshift.client.SSHPublicKey;
-import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.client.utils.SSHKeyTestUtils;
 import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.HttpClientException;
@@ -47,12 +45,6 @@ public class SSHKeyIntegrationTest {
 		this.user = new TestConnectionFactory().getConnection().getUser();
 	}
 
-	@Test(expected = InvalidCredentialsOpenShiftException.class)
-	public void shouldThrowIfInvalidCredentials() throws Exception {
-		new TestConnectionFactory().getConnection(
-				new OpenShiftTestConfiguration().getClientId(), "bogus-password").getUser();	
-	}
-	
 	@Test
 	public void shouldReturnExistingKeys() throws HttpClientException, Throwable {
 		// pre-conditions
