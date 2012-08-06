@@ -15,7 +15,7 @@ import java.text.MessageFormat;
 /**
  * @author André Dietisheim
  */
-public class OpenShiftException extends Exception {
+public class OpenShiftException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

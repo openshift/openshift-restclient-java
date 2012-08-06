@@ -13,7 +13,7 @@ package com.openshift.internal.client.httpclient;
 /**
  * @author André Dietisheim
  */
-public class HttpClientException extends Exception {
+public class HttpClientException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
