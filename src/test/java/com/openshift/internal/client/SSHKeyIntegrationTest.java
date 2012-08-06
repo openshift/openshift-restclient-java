@@ -13,6 +13,7 @@ package com.openshift.internal.client;
 import static com.openshift.client.utils.FileUtils.createRandomTempFile;
 import static org.fest.assertions.Assertions.assertThat;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.List;
@@ -21,12 +22,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.jcraft.jsch.JSchException;
-import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IOpenShiftSSHKey;
 import com.openshift.client.ISSHPublicKey;
 import com.openshift.client.IUser;
 import com.openshift.client.InvalidCredentialsOpenShiftException;
-import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.SSHKeyPair;
 import com.openshift.client.SSHKeyType;
@@ -44,14 +43,8 @@ public class SSHKeyIntegrationTest {
 	private IUser user;
 	
 	@Before
-	public void setUp() throws SocketTimeoutException, HttpClientException, Throwable {
-		final OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
-		final IOpenShiftConnection connection = new OpenShiftConnectionFactory().getConnection(
-				configuration.getClientId(), 
-				configuration.getRhlogin(), 
-				configuration.getPassword(),
-				configuration.getLibraServer());
-		this.user = connection.getUser();
+	public void setUp() throws FileNotFoundException, IOException, OpenShiftException {
+		this.user = new TestConnectionFactory().getConnection().getUser();
 	}
 
 	@Test(expected = InvalidCredentialsOpenShiftException.class)
