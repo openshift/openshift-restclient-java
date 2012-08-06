@@ -27,15 +27,13 @@ import com.openshift.client.IApplication;
 import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
 import com.openshift.client.IGearProfile;
-import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
-import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
-import com.openshift.client.utils.OpenShiftTestConfiguration;
+import com.openshift.client.utils.TestConnectionFactory;
 
 /**
  * @author André Dietisheim
@@ -46,14 +44,7 @@ public class ApplicationResourceIntegrationTest {
 
 	@Before
 	public void setUp() throws FileNotFoundException, IOException, OpenShiftException {
-		final OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
-		final IOpenShiftConnection connection =
-				new OpenShiftConnectionFactory().getConnection(
-						configuration.getClientId(),
-						configuration.getRhlogin(),
-						configuration.getPassword(),
-						configuration.getLibraServer());
-		IUser user = connection.getUser();
+		IUser user = new TestConnectionFactory().getConnection().getUser();
 		domain = DomainTestUtils.getFirstDomainOrCreate(user);
 	}
 
