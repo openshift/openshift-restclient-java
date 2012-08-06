@@ -13,8 +13,10 @@ package com.openshift.internal.client.test;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -102,4 +104,23 @@ public class UserResourceIntegrationTest {
 		// verification
 		assertThat(domains).isNotEmpty();
 	}
+
+	@Test
+	public void shouldNoDefaultDomainAfterRefresh() throws OpenShiftException, FileNotFoundException, IOException {
+		// precondition
+		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		assertNotNull(user.getDefaultDomain());
+		assertNotNull(domain);
+
+		IUser otherUser = new TestConnectionFactory().getConnection().getUser();
+		DomainTestUtils.silentlyDestroyAllDomains(otherUser);
+		assertNull(otherUser.getDefaultDomain());
+		
+		// operation
+		user.refresh();
+
+		// verification
+		assertNull(user.getDefaultDomain());
+	}
+
 }

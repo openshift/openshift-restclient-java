@@ -11,6 +11,7 @@
 package com.openshift.internal.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	private final String password;
 	private List<IDomain> domains;
 	private UserResource user;
+	//TODO: implement switch that allows to turn ssl checks on/off 
 	private boolean doSSLChecks = false;
 	private final List<ICartridge> standaloneCartridgeNames = new ArrayList<ICartridge>();
 	private final List<IEmbeddableCartridge> embeddedCartridgeNames = new ArrayList<IEmbeddableCartridge>();
@@ -59,9 +61,6 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		return login;
 	}
 
-	/**
-	 * @return the password
-	 */
 	protected final String getPassword() {
 		return password;
 	}
@@ -94,7 +93,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	}
 
 	public List<IDomain> getDomains() throws OpenShiftException {
-		if (this.domains == null) {
+		if (domains == null) {
 			this.domains = loadDomains();
 		}
 		return CollectionUtils.toUnmodifiableCopy(this.domains);
@@ -117,6 +116,14 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		return null;
 	}
 
+	public IDomain getDefaultDomain() {
+		final List<IDomain> domains = getDomains();
+		if (domains.size() > 0) {
+			return domains.get(0);
+		}
+		return null;
+	}
+	
 	public IDomain createDomain(String id) throws OpenShiftException {
 		if (hasDomain(id)) {
 			throw new OpenShiftException("Domain {0} already exists", id);
@@ -160,6 +167,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	
 	@Override
 	public void refresh() throws OpenShiftException {
+		this.domains = null;
 	}
 
 	/**
@@ -219,5 +227,4 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 			return super.execute();
 		}
 	}
-
 }

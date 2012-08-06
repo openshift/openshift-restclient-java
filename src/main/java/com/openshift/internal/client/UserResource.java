@@ -89,11 +89,7 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 	}
 
 	public IDomain getDefaultDomain() throws OpenShiftException {
-		final List<IDomain> domains = api.getDomains();
-		if (domains.size() > 0) {
-			return domains.get(0);
-		}
-		return null;
+		return api.getDefaultDomain();
 	}
 
 	public IDomain getDomain(String namespace) throws OpenShiftException {
@@ -109,6 +105,8 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 			this.sshKeys = null;
 			loadKeys();
 		}
+		
+		api.refresh();
 		DomainResource defaultDomain = (DomainResource) getDefaultDomain();
 		if (defaultDomain != null) {
 			defaultDomain.refresh();
