@@ -30,15 +30,17 @@ public interface IUser extends IOpenShiftResource {
 	
 	public IOpenShiftConnection getConnection();
 
-	public IDomain createDomain(String name) throws OpenShiftException;
+	public IDomain createDomain(String id) throws OpenShiftException;
 
 	public List<IDomain> getDomains() throws OpenShiftException;
 	
 	public IDomain getDefaultDomain() throws OpenShiftException;
 	
-	public IDomain getDomain(String namespace) throws OpenShiftException;
+	public IDomain getDomain(String id) throws OpenShiftException;
 	
 	public boolean hasDomain() throws OpenShiftException;
+
+	public boolean hasDomain(String id) throws OpenShiftException;
 
 	public List<IOpenShiftSSHKey> getSSHKeys() throws OpenShiftException;
 

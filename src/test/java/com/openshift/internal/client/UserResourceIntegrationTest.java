@@ -31,6 +31,7 @@ import com.openshift.client.InvalidCredentialsOpenShiftException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
+import com.openshift.client.utils.StringUtils;
 import com.openshift.client.utils.TestConnectionFactory;
 
 /**
@@ -76,6 +77,16 @@ public class UserResourceIntegrationTest {
 	}
 
 	@Test
+	public void shouldReturnThatHasNoDomain() throws OpenShiftException {
+		// precondition
+		DomainTestUtils.silentlyDestroyAllDomains(user);
+		// operation
+		Boolean hasDomain = user.hasDomain();
+		// verification
+		assertFalse(hasDomain);
+	}
+
+	@Test
 	public void shouldReturnThatHasNamedDomain() throws OpenShiftException {
 		// precondition
 		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
@@ -86,14 +97,14 @@ public class UserResourceIntegrationTest {
 	}
 
 	@Test
-	public void shouldReturnThatHasNoDomain() throws OpenShiftException {
+	public void shouldReturnThatHasntNamedDomain() throws OpenShiftException {
 		// precondition
-		DomainTestUtils.silentlyDestroyAllDomains(user);
 		// operation
-		Boolean hasDomain = user.hasDomain();
+		Boolean hasDomain = user.hasDomain(StringUtils.createRandomString());
 		// verification
 		assertFalse(hasDomain);
 	}
+
 
 	@Test
 	public void shouldReturnEmptyDomains() throws OpenShiftException {

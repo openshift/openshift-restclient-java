@@ -100,6 +100,10 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		return (api.getDomains().size() > 0);
 	}
 
+	public boolean hasDomain(String id) throws OpenShiftException {
+		return api.getDomain(id) != null;
+	}
+
 	public void refresh() throws OpenShiftException {
 		if (this.sshKeys != null) {
 			this.sshKeys = null;
