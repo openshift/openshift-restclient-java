@@ -79,8 +79,8 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		return null;
 	}
 
-	public IDomain createDomain(String name) throws OpenShiftException {
-		return api.createDomain(name);
+	public IDomain createDomain(String id) throws OpenShiftException {
+		return api.createDomain(id);
 	}
 
 	public List<IDomain> getDomains() throws OpenShiftException {
@@ -92,8 +92,8 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		return api.getDefaultDomain();
 	}
 
-	public IDomain getDomain(String namespace) throws OpenShiftException {
-		return api.getDomain(namespace);
+	public IDomain getDomain(String id) throws OpenShiftException {
+		return api.getDomain(id);
 	}
 
 	public boolean hasDomain() throws OpenShiftException {
