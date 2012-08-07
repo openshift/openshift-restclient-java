@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client.test;
+package com.openshift.internal.client;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -71,6 +71,16 @@ public class UserResourceIntegrationTest {
 		DomainTestUtils.getFirstDomainOrCreate(user);
 		// operation
 		Boolean hasDomain = user.hasDomain();
+		// verification
+		assertTrue(hasDomain);
+	}
+
+	@Test
+	public void shouldReturnThatHasNamedDomain() throws OpenShiftException {
+		// precondition
+		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		// operation
+		Boolean hasDomain = user.hasDomain(domain.getId());
 		// verification
 		assertTrue(hasDomain);
 	}
