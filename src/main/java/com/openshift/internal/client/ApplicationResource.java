@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
@@ -42,6 +44,7 @@ import com.openshift.client.IDomain;
 import com.openshift.client.IEmbeddableCartridge;
 import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.IGearProfile;
+import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftSSHOperationException;
@@ -462,6 +465,16 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		} catch (InterruptedException e) {
 			return false;
 		}
+	}
+
+	public Future<Boolean> waitForAccessibleAsync(final long timeout) throws OpenShiftException {
+		IOpenShiftConnection connection = getDomain().getUser().getConnection();
+		return connection.getExecutorService().submit(new Callable<Boolean>() {
+
+			public Boolean call() throws Exception {
+				return waitForAccessible(timeout);
+			}
+		});
 	}
 
 	private boolean waitForPositiveHealthResponse(long timeout, long startTime) throws OpenShiftException,
@@ -905,5 +918,4 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			super(LINK_LIST_GEARS);
 		}
 	}
-
 }

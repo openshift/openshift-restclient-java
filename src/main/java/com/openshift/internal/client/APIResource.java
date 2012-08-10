@@ -13,6 +13,9 @@ package com.openshift.internal.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
@@ -45,12 +48,14 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	private boolean doSSLChecks = false;
 	private final List<ICartridge> standaloneCartridgeNames = new ArrayList<ICartridge>();
 	private final List<IEmbeddableCartridge> embeddedCartridgeNames = new ArrayList<IEmbeddableCartridge>();
+	private final ExecutorService executorService;
 	
 	protected APIResource(final String login, final String password, final IRestService service,
 			final Map<String, Link> links) {
 		super(service, links, null);
 		this.login = login;
 		this.password = password;
+		this.executorService = Executors.newFixedThreadPool(10);
 	}
 
 	/**
@@ -183,6 +188,17 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		return getDomain(name) != null;
 	}
 
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+	
+	public void disconnect() {
+		standaloneCartridgeNames.clear();
+		embeddedCartridgeNames.clear();
+		domains = null;
+		executorService.shutdownNow();
+	}
+	
 	private class AddDomainRequest extends ServiceRequest {
 
 		public AddDomainRequest() throws OpenShiftException {

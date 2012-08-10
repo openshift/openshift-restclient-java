@@ -12,6 +12,7 @@ package com.openshift.client;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -177,7 +178,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @param cartridge
 	 * @throws OpenShiftException
 	 */
-	public void removeEmbeddedCartridge(IEmbeddableCartridge cartridge) 
+	public void removeEmbeddedCartridge(IEmbeddableCartridge cartridge)
 			throws OpenShiftException;
 
 	/**
@@ -215,7 +216,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @throws OpenShiftException
 	 */
 	public void start() throws OpenShiftException;
-	
+
 	/**
 	 * Restarts this application.
 	 * 
@@ -252,6 +253,21 @@ public interface IApplication extends IOpenShiftResource {
 	public boolean waitForAccessible(long timeout) throws OpenShiftException;
 
 	/**
+	 * Returns a Future that the caller can use to wait for the application to
+	 * become accessible on its public url.
+	 * 
+	 * @param timeout
+	 * @return
+	 * @throws OpenShiftException
+	 * 
+	 * @see IApplication#getApplicationUrl()
+	 * @see IApplication#waitForAccessible(long)
+	 * @see IOpenShiftConnection#getExecutorService()
+	 * @see Future
+	 */
+	public Future<Boolean> waitForAccessibleAsync(final long timeout) throws OpenShiftException;
+
+	/**
 	 * Get the domain of the application.
 	 * 
 	 * @return the domain
@@ -263,42 +279,42 @@ public interface IApplication extends IOpenShiftResource {
 	 * 
 	 * @throws OpenShiftException
 	 */
-	public void exposePort() throws  OpenShiftException;
+	public void exposePort() throws OpenShiftException;
 
 	/**
 	 * Conceal application port
 	 * 
 	 * @throws OpenShiftException
 	 */
-	public void concealPort() throws  OpenShiftException;
+	public void concealPort() throws OpenShiftException;
 
 	/**
 	 * Show application port
 	 * 
 	 * @throws OpenShiftException
 	 */
-	public void showPort() throws  OpenShiftException;
+	public void showPort() throws OpenShiftException;
 
 	/**
 	 * Scale down application
 	 * 
 	 * @throws OpenShiftException
 	 */
-	public void scaleDown() throws  OpenShiftException;
+	public void scaleDown() throws OpenShiftException;
 
 	/**
 	 * Scale up application
 	 * 
 	 * @throws OpenShiftException
 	 */
-	public void scaleUp() throws  OpenShiftException;
+	public void scaleUp() throws OpenShiftException;
 
 	/**
 	 * Add application alias
 	 * 
 	 * @throws OpenShiftException
 	 */
-	public void addAlias(String string) throws  OpenShiftException;
+	public void addAlias(String string) throws OpenShiftException;
 
 	/**
 	 * Retrieve all application aliases
@@ -314,7 +330,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * 
 	 * @throws OpenShiftException
 	 */
-	public void removeAlias(String alias) throws  OpenShiftException;
+	public void removeAlias(String alias) throws OpenShiftException;
 
 	/**
 	 * Refresh the application but reloading its content from OpenShift. At the
@@ -323,7 +339,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * 
 	 * @throws OpenShiftException
 	 */
-	public void refresh() throws  OpenShiftException;
+	public void refresh() throws OpenShiftException;
 
 	/**
 	 * Sets the SSH session that this application will use to connect to
