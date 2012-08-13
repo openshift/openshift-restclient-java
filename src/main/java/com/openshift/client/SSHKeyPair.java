@@ -14,7 +14,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.KeyPair;
 import com.openshift.client.utils.Base64Coder;
-import com.openshift.internal.client.AbstractSSHKey;
+import com.openshift.internal.client.ssh.AbstractSSHKey;
 
 /**
  * @author André Dietisheim

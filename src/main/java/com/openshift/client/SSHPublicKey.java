@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.openshift.internal.client.AbstractSSHKey;
+import com.openshift.internal.client.ssh.AbstractSSHKey;
 import com.openshift.internal.client.utils.StreamUtils;
 
 /**

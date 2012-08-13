@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client;
+package com.openshift.internal.client.ssh;
 
 import com.openshift.client.ISSHPublicKey;
 import com.openshift.client.OpenShiftUnknonwSSHKeyTypeException;
