@@ -23,6 +23,7 @@
             "an_alias"
         ],
         "framework":"jbossas-7",
+        "gear_profile":"small",
         "links":{
             "GET_DESCRIPTOR":{
                 "optional_params":[

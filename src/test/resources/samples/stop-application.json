@@ -29,6 +29,7 @@
         },
         "domain_id":"foobar",
         "app_url":"http://sample-foobar.stg.rhcloud.com/",
+ 		"gear_profile":"small",
         "links":{
             "RESTART":{
                 "href":"/domains/foobar/applications/sample/events",
