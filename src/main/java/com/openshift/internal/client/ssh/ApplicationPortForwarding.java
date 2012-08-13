@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2012 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/
 package com.openshift.internal.client.ssh;
 
 import java.util.Arrays;
@@ -7,19 +17,19 @@ import com.jcraft.jsch.Session;
 import com.openshift.client.IApplication;
 import com.openshift.client.IApplicationPortForwarding;
 import com.openshift.client.OpenShiftSSHOperationException;
+import com.openshift.internal.client.utils.Assert;
 
+/**
+ * @author Xavier Coulon
+ */
 public class ApplicationPortForwarding implements IApplicationPortForwarding {
 
-	/** the remote application. */
 	private final IApplication application;
 
-	/** the remote binding name. */
 	private final String name;
 
-	/** the remote binding address. */
 	private final String remoteAddress;
 
-	/** the remote binding port number. */
 	private final int remotePort;
 
 	/** the local binding address, or null if not configured yet. */
@@ -37,9 +47,6 @@ public class ApplicationPortForwarding implements IApplicationPortForwarding {
 		this.remotePort = remotePort;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public void start(final Session session) throws OpenShiftSSHOperationException {
 		if (localAddress == null || localAddress.isEmpty()) {
 			throw new IllegalArgumentException("Cannot enable port-forwarding from an undefined local address");
@@ -58,10 +65,7 @@ public class ApplicationPortForwarding implements IApplicationPortForwarding {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void stop(final Session session) throws OpenShiftSSHOperationException {
+	public void stop(final Session session) throws OpenShiftSSHOperationException {		
 		if (isStarted(session)) {
 			try {
 				session.delPortForwardingL(localAddress, localPort);
@@ -72,9 +76,6 @@ public class ApplicationPortForwarding implements IApplicationPortForwarding {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public boolean isStarted(final Session session) throws OpenShiftSSHOperationException {
 		if (session == null || !session.isConnected()) {
 			return false;
@@ -91,34 +92,20 @@ public class ApplicationPortForwarding implements IApplicationPortForwarding {
 		}
 	}
 
-	/**
-	 * @return the application
-	 */
 	protected final IApplication getApplication() {
 		return application;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.openshift.internal.client.ssh.IApplicationPortForwarding#getName()
-	 */
 	public final String getName() {
 		return name;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.openshift.internal.client.ssh.IApplicationPortForwarding#getLocalAddress()
-	 */
 	public final String getLocalAddress() {
 		return localAddress;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.openshift.internal.client.ssh.IApplicationPortForwarding#setLocalAddress(java.lang.String)
-	 */
 	public final void setLocalAddress(String localAddress) {
+		Assert.notNull(localAddress);
 		this.localAddress = localAddress;
 	}
 
@@ -127,6 +114,7 @@ public class ApplicationPortForwarding implements IApplicationPortForwarding {
 	}
 
 	public final void setLocalPort(final int localPort) {
+		Assert.notNull(localPort);
 		this.localPort = localPort;
 	}
 
@@ -140,7 +128,8 @@ public class ApplicationPortForwarding implements IApplicationPortForwarding {
 
 	@Override
 	public String toString() {
-		return "ApplicationForwardablePort [" + name + ": " + localAddress + ":" + localPort + " -> " + remoteAddress
+		return "ApplicationForwardablePort [" 
+				+ name + ": " + localAddress + ":" + localPort + " -> " + remoteAddress
 				+ ":" + remotePort + "]";
 	}
 

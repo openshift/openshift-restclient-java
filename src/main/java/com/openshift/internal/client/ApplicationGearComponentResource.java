@@ -14,36 +14,20 @@ import com.openshift.client.IApplicationGearComponent;
 import com.openshift.client.OpenShiftException;
 import com.openshift.internal.client.response.GearComponentDTO;
 
+/**
+ * @author Xavier Coulon
+ */
 public class ApplicationGearComponentResource extends AbstractOpenShiftResource implements IApplicationGearComponent {
 
-	/** the component name. */
 	private final String name;
-
-	/** the component internal port. */
 	private final String internalPort;
-
-	/** the component proxy host. */
 	private final String proxyHost;
-
-	/** the component proxy port. */
 	private final String proxyPort;
 
 	protected ApplicationGearComponentResource(GearComponentDTO dto) {
 		this(dto.getName(), dto.getInternalPort(), dto.getProxyHost(), dto.getProxyPort());
 	}
 
-	/**
-	 * Instantiates a new gear component dto.
-	 * 
-	 * @param name
-	 *            the name
-	 * @param internalPort
-	 *            the internal port
-	 * @param proxyPort
-	 *            the proxy port
-	 * @param proxyHost
-	 *            the proxy host
-	 */
 	protected ApplicationGearComponentResource(final String name, final String internalPort, final String proxyHost,
 			final String proxyPort) {
 		super(null);
@@ -53,30 +37,18 @@ public class ApplicationGearComponentResource extends AbstractOpenShiftResource 
 		this.proxyPort = proxyPort;
 	}
 
-	/**
-	 * @return the name
-	 */
 	protected final String getName() {
 		return name;
 	}
 
-	/**
-	 * @return the internalPort
-	 */
 	protected final String getInternalPort() {
 		return internalPort;
 	}
 
-	/**
-	 * @return the proxyHost
-	 */
 	protected final String getProxyHost() {
 		return proxyHost;
 	}
 
-	/**
-	 * @return the proxyPort
-	 */
 	protected final String getProxyPort() {
 		return proxyPort;
 	}
