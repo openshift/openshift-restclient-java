@@ -10,11 +10,15 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
+import com.openshift.internal.client.utils.Assert;
+
 public enum CartridgeType {
 
 	EMBEDDED, STANDALONE;
 	
 	public static CartridgeType safeValueOf(String type) {
+		Assert.notNull(type);
+
 		try {
 			if (type == null) {
 				return null;

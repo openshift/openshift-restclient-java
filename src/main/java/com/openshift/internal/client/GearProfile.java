@@ -11,6 +11,7 @@
 package com.openshift.internal.client;
 
 import com.openshift.client.IGearProfile;
+import com.openshift.internal.client.utils.Assert;
 
 /**
  * @author Andre Dietisheim
@@ -20,6 +21,8 @@ public class GearProfile implements IGearProfile {
 	private String name;
 
 	public GearProfile(String name) {
+		Assert.notNull(name);
+
 		this.name = name;
 	}
 

@@ -57,6 +57,7 @@ import com.openshift.internal.client.response.GearResourceDTO;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.Message;
 import com.openshift.internal.client.ssh.ApplicationPortForwarding;
+import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
@@ -289,12 +290,16 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	public void addAlias(String alias) throws OpenShiftException {
+		Assert.notNull(alias);
+
 		ApplicationResourceDTO applicationDTO = new AddAliasRequest().execute(alias);
 		updateAliases(applicationDTO);
 
 	}
 
 	private void updateAliases(ApplicationResourceDTO applicationDTO) {
+		Assert.notNull(applicationDTO);
+
 		this.aliases.clear();
 		this.aliases.addAll(applicationDTO.getAliases());
 	}
@@ -304,10 +309,14 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	public boolean hasAlias(String name) {
+		Assert.notNull(name);
+
 		return aliases.contains(name);
 	}
 
 	public void removeAlias(String alias) throws OpenShiftException {
+		Assert.notNull(alias);
+
 		ApplicationResourceDTO applicationDTO = new RemoveAliasRequest().execute(alias);
 		updateAliases(applicationDTO);
 	}
@@ -336,6 +345,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 *            application
 	 */
 	public IEmbeddedCartridge addEmbeddableCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
+		Assert.notNull(cartridge);
+
 		if (this.embeddedCartridges == null) {
 			loadEmbeddedCartridges();
 		}
@@ -351,6 +362,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	public List<IEmbeddedCartridge> addEmbeddableCartridges(List<IEmbeddableCartridge> cartridges)
 			throws OpenShiftException {
+		Assert.notNull(cartridges);
+
 		final List<IEmbeddedCartridge> addedCartridge = new ArrayList<IEmbeddedCartridge>();
 		for (IEmbeddableCartridge cartridge : cartridges) {
 			// TODO: catch exceptions when removing cartridges, contine removing
@@ -367,6 +380,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * @throws OpenShiftException
 	 */
 	protected void removeEmbeddedCartridge(IEmbeddedCartridge embeddedCartridge) throws OpenShiftException {
+		Assert.notNull(embeddedCartridge);
+
 		this.embeddedCartridges.remove(embeddedCartridge);
 	}
 
@@ -392,6 +407,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	public boolean hasEmbeddedCartridge(String cartridgeName) throws OpenShiftException {
+		Assert.notNull(cartridgeName);
+
 		return getEmbeddedCartridge(cartridgeName) != null;
 	}
 
@@ -400,10 +417,14 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	public IEmbeddedCartridge getEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
+		Assert.notNull(cartridge);
+
 		return getEmbeddedCartridge(cartridge.getName());
 	}
 
 	public IEmbeddedCartridge getEmbeddedCartridge(String cartridgeName) throws OpenShiftException {
+		Assert.notNull(cartridgeName);
+
 		for (IEmbeddedCartridge embeddedCartridge : getEmbeddedCartridges()) {
 			if (cartridgeName.equals(embeddedCartridge.getName())) {
 				return embeddedCartridge;
@@ -413,6 +434,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	public void removeEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
+		Assert.notNull(cartridge);
+
 		IEmbeddedCartridge embeddedCartridge = getEmbeddedCartridge(cartridge);
 		if (embeddedCartridge != null) {
 			embeddedCartridge.destroy();

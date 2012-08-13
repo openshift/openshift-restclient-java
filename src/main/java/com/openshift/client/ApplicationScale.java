@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.client;
 
+import com.openshift.internal.client.utils.Assert;
+
 /**
  * Enum to indicate the support for scalability when creating a new application
  * @author Xavier Coulon
@@ -24,6 +26,8 @@ public enum ApplicationScale {
 	private final String value;
 	
 	public static ApplicationScale safeValueOf(final String value) {
+		Assert.notNull(value);
+
 		if(value == null 
 				|| !SCALING_TRUE.equals(value.toUpperCase())) {
 			return NO_SCALE;

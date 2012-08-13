@@ -20,6 +20,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.StreamUtils;
 
 /**
@@ -45,18 +46,20 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 
 	private Properties properties;
 	private File file;
+	
+	// TODO: implement
 	private boolean doSSLChecks = false;
 
-	public AbstractOpenshiftConfiguration() throws FileNotFoundException, IOException {
+	protected AbstractOpenshiftConfiguration() throws FileNotFoundException, IOException {
 		this(null, null);
 	}
 
-	public AbstractOpenshiftConfiguration(IOpenShiftConfiguration parentConfiguration) throws FileNotFoundException,
+	protected AbstractOpenshiftConfiguration(IOpenShiftConfiguration parentConfiguration) throws FileNotFoundException,
 			IOException {
 		this(null, parentConfiguration);
 	}
 
-	public AbstractOpenshiftConfiguration(File file, IOpenShiftConfiguration parentConfiguration)
+	protected AbstractOpenshiftConfiguration(File file, IOpenShiftConfiguration parentConfiguration)
 			throws FileNotFoundException, IOException {
 		initProperties(file, parentConfiguration == null ? null : parentConfiguration.getProperties());
 	}

@@ -26,6 +26,7 @@ import com.openshift.internal.client.response.DomainResourceDTO;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.LinkParameter;
 import com.openshift.internal.client.response.Message;
+import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
@@ -69,6 +70,8 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	}
 
 	public void rename(String id) throws OpenShiftException {
+		Assert.notNull(id);
+
 		DomainResourceDTO domainDTO = new UpdateDomainRequest().execute(id);
 		this.id = domainDTO.getNamespace();
 		this.suffix = domainDTO.getSuffix();
@@ -82,6 +85,8 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 
 	public boolean waitForAccessible(long timeout) throws OpenShiftException {
 		throw new UnsupportedOperationException();
+		//TODO: implement
+		
 		// boolean accessible = true;
 		// for (IApplication application : getInternalUser().getApplications())
 		// {
@@ -130,6 +135,8 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	}
 
 	public IApplication getApplicationByName(String name) throws OpenShiftException {
+		Assert.notNull(name);
+
 		IApplication matchingApplication = null;
 		for (IApplication application : getApplications()) {
 			if (application.getName().equals(name)) {

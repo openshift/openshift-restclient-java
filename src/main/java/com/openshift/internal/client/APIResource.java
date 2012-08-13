@@ -13,7 +13,6 @@ package com.openshift.internal.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,6 +26,7 @@ import com.openshift.internal.client.response.CartridgeResourceDTO;
 import com.openshift.internal.client.response.DomainResourceDTO;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.UserResourceDTO;
+import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
@@ -58,9 +58,6 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		this.executorService = Executors.newFixedThreadPool(10);
 	}
 
-	/**
-	 * @return the login
-	 */
 	protected final String getLogin() {
 		return login;
 	}
@@ -86,6 +83,8 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	}
 
 	public void setProxyPort(String proxyPort) {
+		Assert.notNull(proxyPort);
+
 		System.setProperty(SYSPROPERTY_PROXY_PORT, proxyPort);
 	}
 
@@ -112,6 +111,8 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	}
 
 	public IDomain getDomain(String id) throws OpenShiftException {
+		Assert.notNull(id);
+
 		for (IDomain domain : getDomains()) {
 			if (domain.getId().equals(id)) {
 				return domain;
@@ -129,6 +130,8 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	}
 	
 	public IDomain createDomain(String id) throws OpenShiftException {
+		Assert.notNull(id);
+
 		if (hasDomain(id)) {
 			throw new OpenShiftException("Domain {0} already exists", id);
 		}

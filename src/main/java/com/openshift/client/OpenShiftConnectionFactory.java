@@ -19,6 +19,7 @@ import com.openshift.internal.client.AbstractOpenShiftConnectionFactory;
 import com.openshift.internal.client.IRestService;
 import com.openshift.internal.client.RestService;
 import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
+import com.openshift.internal.client.utils.Assert;
 
 /**
  * Connection Factory, used to establish a connection and retrieve a user.
@@ -121,6 +122,11 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 */
 	public IOpenShiftConnection getConnection(final String clientId, final String login, final String password,
 			final String authKey, final String authIV, final String serverUrl) throws OpenShiftException {
+		Assert.notNull(clientId);
+		Assert.notNull(login);
+		Assert.notNull(password);
+		Assert.notNull(serverUrl);
+
 		try {
 			final IHttpClient httpClient = new UrlConnectionHttpClientBuilder().setCredentials(login, password, authKey, authIV)
 					.client();

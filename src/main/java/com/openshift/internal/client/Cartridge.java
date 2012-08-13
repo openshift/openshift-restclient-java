@@ -13,6 +13,7 @@ package com.openshift.internal.client;
 import com.openshift.client.ICartridge;
 import com.openshift.client.JBossCartridge;
 import com.openshift.client.OpenShiftException;
+import com.openshift.internal.client.utils.Assert;
 
 
 /**
@@ -48,6 +49,8 @@ public class Cartridge implements ICartridge {
 	}
 
 	public static ICartridge valueOf(String name) {
+		Assert.notNull(name);
+
 		if (name.contains(JBOSS))
 			return new JBossCartridge(name);
 		else return new Cartridge(name);

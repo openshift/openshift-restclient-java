@@ -10,6 +10,9 @@
  ******************************************************************************/
 package com.openshift.internal.client.utils;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * @author André Dietisheim
@@ -31,6 +34,11 @@ public class Assert {
 			throw new AssertionFailedException();
 		}
 		return value;
+	}
+	
+	public static void notEmpty(String value) {
+		assertNotNull(value);
+		assertTrue(!value.isEmpty());
 	}
 	
 	public static void isTrue(boolean assertion) {

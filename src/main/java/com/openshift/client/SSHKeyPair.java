@@ -15,6 +15,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.KeyPair;
 import com.openshift.client.utils.Base64Coder;
 import com.openshift.internal.client.ssh.AbstractSSHKey;
+import com.openshift.internal.client.utils.Assert;
 
 /**
  * @author André Dietisheim
@@ -51,6 +52,9 @@ public class SSHKeyPair extends AbstractSSHKey {
 
 	public static SSHKeyPair create(String passPhrase, String privateKeyPath, String publicKeyPath)
 			throws OpenShiftException {
+		Assert.notNull(privateKeyPath);
+		Assert.notNull(publicKeyPath);
+
 		return create(SSHKeyType.SSH_RSA, passPhrase, privateKeyPath, publicKeyPath);
 	}
 

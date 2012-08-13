@@ -11,6 +11,7 @@
 package com.openshift.client;
 
 import com.jcraft.jsch.KeyPair;
+import com.openshift.internal.client.utils.Assert;
 
 /**
  * @author Andre Dietisheim
@@ -49,17 +50,19 @@ public enum SSHKeyType {
 	}
 
 	public static SSHKeyType getByTypeId(String keyTypeId) throws OpenShiftUnknonwSSHKeyTypeException {
-		if (keyTypeId != null) {
-			for (SSHKeyType sSHKeyType : values()) {
-				if (keyTypeId.equals(sSHKeyType.getTypeId())) {
-					return sSHKeyType;
-				}
+		Assert.notNull(keyTypeId);
+
+		for (SSHKeyType sSHKeyType : values()) {
+			if (keyTypeId.equals(sSHKeyType.getTypeId())) {
+				return sSHKeyType;
 			}
 		}
 		throw new OpenShiftUnknonwSSHKeyTypeException("OpenShift does not support keys of type \"{0}\"", keyTypeId);
 	}
 
 	public static SSHKeyType getByJSchKeyType(KeyPair keyPair) throws OpenShiftUnknonwSSHKeyTypeException {
+		Assert.notNull(keyPair);
+
 		return getByJSchKeyType(keyPair.getKeyType());
 	}
 
