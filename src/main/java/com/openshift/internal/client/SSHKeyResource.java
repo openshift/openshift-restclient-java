@@ -15,6 +15,7 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftUnknonwSSHKeyTypeException;
 import com.openshift.client.SSHKeyType;
 import com.openshift.internal.client.response.KeyResourceDTO;
+import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
 /**
@@ -36,6 +37,9 @@ public class SSHKeyResource extends AbstractOpenShiftResource implements IOpenSh
 	}
 
 	public void setKeyType(SSHKeyType type, String publicKey) throws OpenShiftException {
+		Assert.notNull(type);
+		Assert.notNull(publicKey);
+
 		KeyResourceDTO dto = new UpdateKeyRequest().execute(type, publicKey);
 		update(dto);
 	}
@@ -49,6 +53,8 @@ public class SSHKeyResource extends AbstractOpenShiftResource implements IOpenSh
 	}
 
 	public void setPublicKey(String publicKey) throws OpenShiftException {
+		Assert.notNull(publicKey);
+
 		KeyResourceDTO dto = new UpdateKeyRequest().execute(getKeyType(), publicKey);
 		update(dto);
 	}
@@ -59,6 +65,7 @@ public class SSHKeyResource extends AbstractOpenShiftResource implements IOpenSh
 
 	@Override
 	public void refresh() throws OpenShiftException {
+		//TODO: implement
 	}
 	
 	public void destroy() throws OpenShiftException {

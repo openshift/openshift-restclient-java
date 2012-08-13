@@ -24,6 +24,7 @@ import com.openshift.client.OpenShiftUnknonwSSHKeyTypeException;
 import com.openshift.client.SSHKeyType;
 import com.openshift.internal.client.response.KeyResourceDTO;
 import com.openshift.internal.client.response.UserResourceDTO;
+import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
@@ -80,6 +81,8 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 	}
 
 	public IDomain createDomain(String id) throws OpenShiftException {
+		Assert.notNull(id);
+		
 		return api.createDomain(id);
 	}
 
@@ -101,6 +104,8 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 	}
 
 	public boolean hasDomain(String id) throws OpenShiftException {
+		Assert.notNull(id);
+		
 		return api.getDomain(id) != null;
 	}
 
@@ -144,6 +149,8 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 
 	public IOpenShiftSSHKey getSSHKeyByName(String name) 
 			throws OpenShiftUnknonwSSHKeyTypeException, OpenShiftException {
+		Assert.notNull(name);
+
 		IOpenShiftSSHKey matchingKey = null;
 		if (name == null) {
 			return null;
@@ -160,6 +167,8 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 
 	public IOpenShiftSSHKey getSSHKeyByPublicKey(String publicKey)
 			throws OpenShiftUnknonwSSHKeyTypeException, OpenShiftException {
+		Assert.notNull(publicKey);
+
 		IOpenShiftSSHKey matchingKey = null;
 		if (publicKey == null) {
 			return null;
@@ -176,6 +185,8 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 
 	public boolean hasSSHKeyName(String name) throws OpenShiftUnknonwSSHKeyTypeException,
 			OpenShiftException {
+		Assert.notNull(name);
+
 		return getSSHKeyByName(name) != null;
 	}
 
@@ -196,6 +207,9 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 	 * @throws OpenShiftException
 	 */
 	public IOpenShiftSSHKey putSSHKey(String name, ISSHPublicKey key) throws OpenShiftException {
+		Assert.notNull(name);
+		Assert.notNull(key);
+
 		if (hasSSHKeyName(name)) {
 			throw new OpenShiftSSHKeyException(
 					"Could not add new key {0} with the name {1}. There already is a key for this name, key names must be unique.",
