@@ -466,6 +466,21 @@ public class ApplicationResourceIntegrationTest {
 		assertThat(application.getAliases()).contains(alias);
 	}
 
+	@Test
+	public void shouldRemoveAliasOfApplication() throws Throwable {
+		// pre-condition
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		String alias = String.valueOf(System.currentTimeMillis());
+		application.addAlias(alias);
+		assertThat(application.getAliases()).contains(alias);
+
+		// operation
+		application.removeAlias(alias);
+
+		// verification
+		assertThat(alias).isNotIn(application.getAliases());
+	}
+
 	@Test(expected = OpenShiftEndpointException.class)
 	public void shouldNotAddExistingAliasToApplication() throws Throwable {
 		// pre-condition
@@ -476,7 +491,6 @@ public class ApplicationResourceIntegrationTest {
 
 		// operation
 		application.addAlias(alias);
-
 	}
 
 	@Ignore
