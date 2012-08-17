@@ -33,6 +33,7 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
+import com.openshift.client.utils.StringUtils;
 import com.openshift.client.utils.TestConnectionFactory;
 
 /**
@@ -580,19 +581,23 @@ public class ApplicationResourceIntegrationTest {
 
 	@Test
 	public void shouldWaitForApplication() throws OpenShiftException, MalformedURLException, IOException {
-		// pre-condition
-		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
-		long startTime = System.currentTimeMillis();
-		long timeout = 180 * 1024;
-		IApplication application = domain.createApplication("waittest", ICartridge.JBOSSAS_7, null, null);
+		IApplication application = null;
+		try {
+			// pre-condition
+			long startTime = System.currentTimeMillis();
+			long timeout = 180 * 1024;
+			application = domain.createApplication(StringUtils.createRandomString(), ICartridge.JBOSSAS_7, null, null);
 
-		// operation
-		boolean successfull = application.waitForAccessible(timeout);
+			// operation
+			boolean successfull = application.waitForAccessible(timeout);
 
-		if (successfull) {
-			assertTrue(System.currentTimeMillis() <= startTime + timeout);
-		} else {
-			assertTrue(System.currentTimeMillis() >= startTime + timeout);
+			if (successfull) {
+				assertTrue(System.currentTimeMillis() <= startTime + timeout);
+			} else {
+				assertTrue(System.currentTimeMillis() >= startTime + timeout);
+			}
+		} finally {
+			ApplicationTestUtils.silentlyDestroy(application);
 		}
 	}
 }
