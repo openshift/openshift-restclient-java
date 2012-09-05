@@ -37,6 +37,7 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.utils.Base64Coder;
 import com.openshift.internal.client.utils.StreamUtils;
@@ -47,10 +48,6 @@ import com.openshift.internal.client.utils.StreamUtils;
 public class UrlConnectionHttpClient implements IHttpClient {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UrlConnectionHttpClient.class);
-
-	private static final String HTTP_METHOD_PUT = "PUT";
-	private static final String HTTP_METHOD_POST = "POST";
-	private static final String HTTP_METHOD_DELETE = "DELETE";
 
 	private static final int DEFAULT_CONNECT_TIMEOUT = 10 * 1024;
 	private static final int DEFAULT_READ_TIMEOUT = 60 * 1024;
@@ -116,7 +113,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 
 	protected String put(String data, URL url) throws HttpClientException, SocketTimeoutException {
-		return write(data, HTTP_METHOD_PUT, url);
+		return write(data, HttpMethod.PUT.toString(), url);
 	}
 
 	public String post(Map<String, Object> parameters, URL url)
@@ -125,7 +122,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 
 	protected String post(String data, URL url) throws HttpClientException, SocketTimeoutException {
-		return write(data, HTTP_METHOD_POST, url);
+		return write(data, HttpMethod.POST.toString(), url);
 	}
 
 	public String delete(Map<String, Object> parameters, URL url)
@@ -139,7 +136,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 
 	protected String delete(String data, URL url) throws HttpClientException, SocketTimeoutException {
-		return write(data, HTTP_METHOD_DELETE, url);
+		return write(data, HttpMethod.DELETE.toString(), url);
 	}
 
 	protected String write(String data, String requestMethod, URL url)
