@@ -42,7 +42,7 @@ public class SSHPublicKey extends AbstractSSHKey {
 		return publicKey;
 	}
 	
-	public void init(File publicKeyFile) throws OpenShiftException, FileNotFoundException, IOException {
+	private void init(File publicKeyFile) throws OpenShiftException, FileNotFoundException, IOException {
 		String keyWithIdAndComment = StreamUtils.readToString(new FileReader(publicKeyFile));
 		Matcher matcher = PUBLICKEY_PATTERN.matcher(keyWithIdAndComment);
 		if (!matcher.find()
