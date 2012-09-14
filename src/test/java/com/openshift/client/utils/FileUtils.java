@@ -47,4 +47,11 @@ public class FileUtils {
 	public static File createRandomTempFile() throws IOException {
 		return File.createTempFile(String.valueOf(System.currentTimeMillis()), null);
 	}
+
+	public static void silentlyDelete(File file) {
+		if (file == null) {
+			return;
+		}
+		file.delete();
+	}
 }
