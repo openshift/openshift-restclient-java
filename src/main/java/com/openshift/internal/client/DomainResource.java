@@ -11,6 +11,7 @@
 package com.openshift.internal.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -115,16 +116,11 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	public IApplication createApplication(final String name, final ICartridge cartridge,
 			final ApplicationScale scale, final IGearProfile gearProfile)
 			throws OpenShiftException {
-		// check that an application with the same does not already exists, and
-		// btw, loads the list of applications if needed (lazy)
 		if (cartridge == null) {
 			throw new OpenShiftException("Application type is mandatory but none was given.");
 		}
 		if (name == null) {
 			throw new OpenShiftException("Application name is mandatory but none was given.");
-		}
-		if (hasApplicationByName(name)) {
-			throw new OpenShiftException("Application with name \"{0}\" already exists.", name);
 		}
 
 		ApplicationResourceDTO applicationDTO = 
@@ -134,21 +130,26 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return application;
 	}
 
+	public boolean hasApplicationByName(String name) throws OpenShiftException {
+		return getApplicationByName(name) != null;
+	}
+
 	public IApplication getApplicationByName(String name) throws OpenShiftException {
+		Assert.notNull(name);
+		return getApplicationByName(name, getApplications());
+	}
+
+	private IApplication getApplicationByName(String name, Collection<IApplication> applications) throws OpenShiftException {
 		Assert.notNull(name);
 
 		IApplication matchingApplication = null;
-		for (IApplication application : getApplications()) {
+		for (IApplication application : applications) {
 			if (application.getName().equals(name)) {
 				matchingApplication = application;
 				break;
 			}
 		}
 		return matchingApplication;
-	}
-
-	public boolean hasApplicationByName(String name) throws OpenShiftException {
-		return getApplicationByName(name) != null;
 	}
 
 	public List<IApplication> getApplicationsByCartridge(ICartridge cartridge) throws OpenShiftException {
