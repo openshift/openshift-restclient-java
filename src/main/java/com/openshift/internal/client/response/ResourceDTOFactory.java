@@ -375,7 +375,7 @@ public class ResourceDTOFactory {
 		final String name = getAsString(appNode, PROPERTY_NAME);
 		final String uuid = getAsString(appNode, PROPERTY_UUID);
 		final ApplicationScale scalable = ApplicationScale.safeValueOf(getAsString(appNode, PROPERTY_SCALABLE));
-		final IGearProfile gearProfile = new GearProfile(getAsString(appNode, PROPERTY_GEAR_PROFILE));
+		final IGearProfile gearProfile = createGearProfile(appNode);
 		final String applicationUrl = getAsString(appNode, PROPERTY_APP_URL);
 		final String gitUrl = getAsString(appNode, PROPERTY_GIT_URL);
 		final String domainId = getAsString(appNode, PROPERTY_DOMAIN_ID);
@@ -398,6 +398,14 @@ public class ResourceDTOFactory {
 				embeddedCartridgesInfos, 
 				links, 
 				creationLog);
+	}
+
+	private static GearProfile createGearProfile(ModelNode appNode) {
+		String gearProfileName = getAsString(appNode, PROPERTY_GEAR_PROFILE);
+		if (gearProfileName == null) {
+			return null;
+		}
+		return new GearProfile(gearProfileName);
 	}
 
 	/**
