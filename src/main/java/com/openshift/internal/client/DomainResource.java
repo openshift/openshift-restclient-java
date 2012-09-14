@@ -122,11 +122,17 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		if (name == null) {
 			throw new OpenShiftException("Application name is mandatory but none was given.");
 		}
+		// this would trigger lazy loading list of available applications.
+		// this is needed anyhow since we're adding the new app to the list of
+		// available apps
+		if (hasApplicationByName(name)) {
+			throw new OpenShiftException("Application with name \"{0}\" already exists.", name);
+		}
 
-		ApplicationResourceDTO applicationDTO = 
-				new CreateApplicationRequest().execute(name, cartridge.getName(),scale, gearProfile);
+		ApplicationResourceDTO applicationDTO =
+				new CreateApplicationRequest().execute(name, cartridge.getName(), scale, gearProfile);
 		IApplication application = new ApplicationResource(applicationDTO, cartridge, this);
-		this.applications.add(application);
+		getOrLoadApplications().add(application);
 		return application;
 	}
 
@@ -175,11 +181,15 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		connectionResource.removeDomain(this);
 	}
 
-	public List<IApplication> getApplications() throws OpenShiftException {
-		if (this.applications == null) {
+	protected List<IApplication> getOrLoadApplications() throws OpenShiftException {
+		if (applications == null) {
 			this.applications = loadApplications();
 		}
-		return CollectionUtils.toUnmodifiableCopy(applications);
+		return applications;
+	}
+	
+	public List<IApplication> getApplications() throws OpenShiftException {
+		return CollectionUtils.toUnmodifiableCopy(getOrLoadApplications());
 	}
 
 	/**
