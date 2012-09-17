@@ -20,7 +20,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.StreamUtils;
 
 /**
@@ -122,7 +121,7 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	}
 
 	public String getRhlogin() {
-		return properties.getProperty(KEY_RHLOGIN);
+		return removeSingleQuotes(properties.getProperty(KEY_RHLOGIN));
 	}
 
 	public void setLibraServer(String libraServer) {
