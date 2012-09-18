@@ -208,4 +208,27 @@ public class SSHKeyIntegrationTest {
 		}
 	}
 	
+	@Test
+	public void shouldRemoveKeybyName() throws IOException, JSchException, OpenShiftException {
+		IOpenShiftSSHKey key = null;
+		try {
+			// pre-conditions
+			String keyName = String.valueOf(System.currentTimeMillis());
+			String publicKeyPath = createRandomTempFile().getAbsolutePath();
+			String privateKeyPath = createRandomTempFile().getAbsolutePath();
+			SSHKeyTestUtils.createDsaKeyPair(publicKeyPath, privateKeyPath);
+			key = user.putSSHKey(keyName, new SSHPublicKey(publicKeyPath));
+			int numOfKeys = user.getSSHKeys().size();
+			
+			// operation
+			user.deleteKey(keyName);
+			
+			// verification
+			assertThat(user.getSSHKeyByName(keyName)).isNull();
+			assertThat(user.getSSHKeys().size()).isEqualTo(numOfKeys -1);
+		} finally {
+			SSHKeyTestUtils.silentlyDestroyKey(key);
+		}
+	}
+
 }

@@ -147,6 +147,13 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		return keys;
 	}
 
+	public void deleteKey(String name) {
+		IOpenShiftSSHKey key = getSSHKeyByName(name);
+		if (key != null) {
+			key.destroy();
+		}
+	}
+	
 	public IOpenShiftSSHKey getSSHKeyByName(String name) 
 			throws OpenShiftUnknonwSSHKeyTypeException, OpenShiftException {
 		Assert.notNull(name);

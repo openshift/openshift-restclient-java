@@ -54,6 +54,8 @@ public interface IUser extends IOpenShiftResource {
 	
 	public boolean hasSSHPublicKey(String publicKey) throws OpenShiftUnknonwSSHKeyTypeException, OpenShiftException;
 	
+	public void deleteKey(String name);
+	
 	public int getMaxGears();
 
 	public int getConsumedGears();
