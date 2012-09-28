@@ -20,12 +20,8 @@ import org.junit.runners.model.Statement;
  */
 public class StateVerifier extends Verifier {
 
-	/* (non-Javadoc)
-	 * @see org.junit.rules.Verifier#apply(org.junit.runners.model.Statement, org.junit.runners.model.FrameworkMethod, java.lang.Object)
-	 */
 	@Override
 	public Statement apply(Statement base, FrameworkMethod method, Object target) {
-		// TODO Auto-generated method stub
 		return super.apply(base, method, target);
 	}
 
