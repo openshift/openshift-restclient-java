@@ -9,7 +9,8 @@ Usage
 -----
 An exemplary usage of the client may look like the following:
 
-		final IOpenShiftConnection connection = new OpenShiftConnectionFactory().getConnection("myApplicationId", "user", "password");
+		final IOpenShiftConnection connection = 
+				new OpenShiftConnectionFactory().getConnection("myApplicationId", "user", "password");
 		IUser user = connection.getUser();
 		IDomain domain = user.createDomain("myDomain");
 		IApplication as7Application = domain.createApplication("myApplication", ICartridge.JBOSSAS_7);
