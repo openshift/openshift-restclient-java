@@ -23,6 +23,8 @@ public interface IUser extends IOpenShiftResource {
 	public String getRhlogin();
 
 	public String getPassword();
+
+	public String getServer();
 	
 	public String getAuthKey();
 	

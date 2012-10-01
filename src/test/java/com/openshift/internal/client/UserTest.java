@@ -41,6 +41,7 @@ import com.openshift.internal.client.RestService;
  */
 public class UserTest {
 
+	private static final String SERVER_URL = "http://mock";
 	private IUser user;
 	private IHttpClient mockClient;
 
@@ -51,9 +52,15 @@ public class UserTest {
 		.thenReturn(Samples.GET_REST_API_JSON.getContentAsString());
 		when(mockClient.get(urlEndsWith("/user"))).thenReturn(
 				Samples.GET_USER_JSON.getContentAsString());
-		final IOpenShiftConnection connection = new OpenShiftConnectionFactory().getConnection(new RestService("http://mock",
+		final IOpenShiftConnection connection = new OpenShiftConnectionFactory().getConnection(new RestService(SERVER_URL,
 				"clientId", mockClient), "foo@redhat.com", "bar");
 		this.user = connection.getUser();
+	}
+
+	@Test
+	public void shouldReturnServer() throws Throwable {
+		// verifications
+		assertThat(user.getServer()).isEqualTo(SERVER_URL);
 	}
 
 	@Test
