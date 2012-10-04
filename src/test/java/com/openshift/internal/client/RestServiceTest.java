@@ -65,10 +65,13 @@ public class RestServiceTest {
 		when(clientMock.delete(anyForm(), any(URL.class))).thenReturn(jsonResponse);
 
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
+		this.service = createService(configuration.getStagingServer(), configuration.getClientId());
+	}
 
-		this.service = new RestService(
-				configuration.getStagingServer(),
-				configuration.getClientId(),
+	private IRestService createService(String server, String clientId) {
+		return new RestService(
+				server,
+				clientId,
 				clientMock);
 	}
 
@@ -192,5 +195,28 @@ public class RestServiceTest {
 					.hasExitCode(102)
 					.hasParameter(null);
 		}
+	}
+
+	@Test
+	public void shouldReturnPlatformWithSchema() throws Throwable {
+		// pre-conditions
+		final String serverUrl = "nonHttpUrl";		
+		IRestService service = createService(serverUrl, new OpenShiftTestConfiguration().getClientId());
+		// operation
+		String platformUrl = service.getPlatformUrl();
+		// verifications
+		assertThat(platformUrl).startsWith("http://");
+		assertThat(platformUrl).isEqualTo("http://" + serverUrl);
+	}
+
+	@Test
+	public void shouldReturnUnchangedPlatformUrl() throws Throwable {
+		// pre-conditions
+		final String serverUrl = "https://fakeUrl";		
+		IRestService service = createService(serverUrl, new OpenShiftTestConfiguration().getClientId());
+		// operation
+		String platformUrl = service.getPlatformUrl();
+		// verifications
+		assertThat(platformUrl).isEqualTo(serverUrl);
 	}
 }
