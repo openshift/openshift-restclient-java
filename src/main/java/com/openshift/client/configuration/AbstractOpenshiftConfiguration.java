@@ -21,13 +21,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.openshift.internal.client.utils.StreamUtils;
+import com.openshift.internal.client.utils.UrlUtils;
 
 /**
  * @author André Dietisheim
  */
 public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfiguration {
-
-	public static final String SCHEME_HTTPS = "https://";
 
 	protected static final String KEY_RHLOGIN = "default_rhlogin";
 	protected static final String KEY_LIBRA_SERVER = "libra_server";
@@ -129,7 +128,7 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	}
 
 	public String getLibraServer() {
-		return appendScheme(removeSingleQuotes(properties.getProperty(KEY_LIBRA_SERVER)));
+		return UrlUtils.ensureStartsWithHttps(removeSingleQuotes(properties.getProperty(KEY_LIBRA_SERVER)));
 	}
 
 	public void setLibraDomain(String libraDomain) {
@@ -138,13 +137,6 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 
 	public String getLibraDomain() {
 		return removeSingleQuotes(properties.getProperty(KEY_LIBRA_DOMAIN));
-	}
-
-	protected String appendScheme(String host) {
-		if (host == null) {
-			return host;
-		}
-		return SCHEME_HTTPS + host;
 	}
 
 	protected String ensureIsSingleQuoted(String value) {

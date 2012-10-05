@@ -205,14 +205,14 @@ public class RestServiceTest {
 		// operation
 		String platformUrl = service.getPlatformUrl();
 		// verifications
-		assertThat(platformUrl).startsWith("http://");
-		assertThat(platformUrl).isEqualTo("http://" + serverUrl);
+		assertThat(platformUrl).startsWith("https://");
+		assertThat(platformUrl).isEqualTo("https://" + serverUrl);
 	}
 
 	@Test
 	public void shouldReturnUnchangedPlatformUrl() throws Throwable {
 		// pre-conditions
-		final String serverUrl = "https://fakeUrl";		
+		final String serverUrl = "http://fakeUrl";		
 		IRestService service = createService(serverUrl, new OpenShiftTestConfiguration().getClientId());
 		// operation
 		String platformUrl = service.getPlatformUrl();

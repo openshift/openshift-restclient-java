@@ -38,6 +38,7 @@ import com.openshift.internal.client.response.Message;
 import com.openshift.internal.client.response.ResourceDTOFactory;
 import com.openshift.internal.client.response.RestResponse;
 import com.openshift.internal.client.utils.StringUtils;
+import com.openshift.internal.client.utils.UrlUtils;
 
 /**
  * @author André Dietisheim
@@ -47,7 +48,6 @@ public class RestService implements IRestService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RestService.class);
 
 	private static final String HTTP = "http";
-	private static final String SCHEMA_SEPARATOR = "://";
 	
 	private static final String SERVICE_PATH = "/broker/rest/";
 	private static final char SLASH = '/';
@@ -62,21 +62,10 @@ public class RestService implements IRestService {
 	private IHttpClient client;
 
 	public RestService(String baseUrl, String clientId, IHttpClient client) {
-		this.baseUrl = ensureStartsWithSchema(baseUrl);
+		this.baseUrl = UrlUtils.ensureStartsWithHttps(baseUrl);
 		this.client = client;
 		client.setUserAgent(new RestServiceProperties().getUseragent(clientId));
 		client.setVersion(SERVICE_VERSION);
-	}
-
-	private String ensureStartsWithSchema(String baseUrl) {
-		if (baseUrl.indexOf(SCHEMA_SEPARATOR) > 0) {
-			return baseUrl;
-		}
-
-		return new StringBuilder(HTTP)
-				.append(SCHEMA_SEPARATOR)
-				.append(baseUrl)
-				.toString();
 	}
 
 	public RestResponse request(Link link) throws OpenShiftException {

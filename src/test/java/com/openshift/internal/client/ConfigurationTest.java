@@ -30,12 +30,11 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.configuration.DefaultConfiguration;
 import com.openshift.client.configuration.IOpenShiftConfiguration;
 import com.openshift.client.configuration.SystemConfiguration;
-import com.openshift.client.configuration.UserConfiguration;
 import com.openshift.client.fakes.EmptySystemPropertiesFake;
 import com.openshift.client.fakes.SystemConfigurationFake;
 import com.openshift.client.fakes.UserConfigurationFake;
-import com.openshift.internal.client.RestServiceProperties;
 import com.openshift.internal.client.utils.StreamUtils;
+import com.openshift.internal.client.utils.UrlUtils;
 
 /**
  * @author André Dietisheim
@@ -169,7 +168,7 @@ public class ConfigurationTest {
 
 		};
 		UserConfigurationFake userConfiguration = new UserConfigurationFake(systemConfiguration);
-		assertEquals(UserConfiguration.SCHEME_HTTPS + LIBRA_SERVER, userConfiguration.getLibraServer());
+		assertEquals(UrlUtils.SCHEME_HTTPS + LIBRA_SERVER, userConfiguration.getLibraServer());
 	}
 
 	@Test
@@ -182,7 +181,7 @@ public class ConfigurationTest {
 
 		};
 		UserConfigurationFake userConfiguration = new UserConfigurationFake(systemConfiguration);
-		assertEquals(UserConfiguration.SCHEME_HTTPS + LIBRA_SERVER, userConfiguration.getLibraServer());
+		assertEquals(UrlUtils.SCHEME_HTTPS + LIBRA_SERVER, userConfiguration.getLibraServer());
 	}
 
 	@Test
