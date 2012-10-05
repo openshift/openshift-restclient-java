@@ -295,6 +295,8 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		connection.setAllowUserInteraction(false);
 		setConnectTimeout(connection);
 		setReadTimeout(connection);
+		// wont work when switching http->https
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4620571
 		connection.setInstanceFollowRedirects(true);
 		setAcceptHeader(connection);
 		
