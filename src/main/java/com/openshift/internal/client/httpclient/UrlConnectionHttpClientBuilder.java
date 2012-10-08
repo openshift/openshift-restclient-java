@@ -66,7 +66,7 @@ public class UrlConnectionHttpClientBuilder {
 
 	public IHttpClient client() {
 		if (authKey != null && authKey.trim().length() > 0)
-			userAgent = "StickShift";
+			userAgent = "OpenShift";
 		return new UrlConnectionHttpClient(username, password, userAgent, sslChecks, requestMediaType,
 				acceptedMediaType, version, authKey, authIV);
 	}

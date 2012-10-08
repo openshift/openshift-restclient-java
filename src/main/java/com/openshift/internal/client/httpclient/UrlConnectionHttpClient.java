@@ -301,7 +301,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		setAcceptHeader(connection);
 		
 		if (authKey != null && authKey.length() > 0)
-			setUserAgent("StickShift");
+			setUserAgent("OpenShift");
 		
 		setUserAgent(connection);
 		
