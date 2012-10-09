@@ -20,6 +20,10 @@ public class UrlUtils {
 
 	public static final String SCHEME_HTTPS = HTTPS + SCHEMA_SEPARATOR;
 	
+	private UrlUtils() {
+		// inhibit instantiation
+	}
+
 	public static String ensureStartsWithHttps(String url) {
 		if (url == null
 				|| url.isEmpty()) {
