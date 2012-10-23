@@ -130,6 +130,33 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 		try {
 			final IHttpClient httpClient = new UrlConnectionHttpClientBuilder().setCredentials(login, password, authKey, authIV)
 					.client();
+		
+			final IRestService service = new RestService(serverUrl, clientId, httpClient);
+			return getConnection(service, login, password);
+		} catch (FileNotFoundException e) {
+			throw new OpenShiftException(e, "Failed to establish connection for user ''{0}}''", login);
+		} catch (IOException e) {
+			throw new OpenShiftException(e, "Failed to establish connection for user ''{0}}''", login);
+		}
+	}
+	
+	public IOpenShiftConnection getConnection(final String clientId, final String login, final String password,
+			final String authKey, final String authIV, final String serverUrl,
+			final boolean proxySet, final String proxyHost, final String proxyPort) throws OpenShiftException {
+		Assert.notNull(clientId);
+		Assert.notNull(login);
+		Assert.notNull(password);
+		Assert.notNull(serverUrl);
+		
+		if (proxySet) {
+			System.setProperty("proxyHost", proxyHost);
+			System.setProperty("proxyPort", proxyPort);
+		}
+
+		try {
+			final IHttpClient httpClient = new UrlConnectionHttpClientBuilder().setCredentials(login, password, authKey, authIV)
+					.client();
+		
 			final IRestService service = new RestService(serverUrl, clientId, httpClient);
 			return getConnection(service, login, password);
 		} catch (FileNotFoundException e) {

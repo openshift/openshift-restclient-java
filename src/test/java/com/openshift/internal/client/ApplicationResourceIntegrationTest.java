@@ -27,6 +27,7 @@ import com.openshift.client.IApplication;
 import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
 import com.openshift.client.IGearProfile;
+import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
@@ -45,7 +46,8 @@ public class ApplicationResourceIntegrationTest {
 
 	@Before
 	public void setUp() throws FileNotFoundException, IOException, OpenShiftException {
-		IUser user = new TestConnectionFactory().getConnection().getUser();
+		IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
+		IUser user = connection.getUser();
 		domain = DomainTestUtils.getFirstDomainOrCreate(user);
 	}
 
@@ -56,6 +58,7 @@ public class ApplicationResourceIntegrationTest {
 	
 	@Test
 	public void shouldCreateNonScalableApplication() throws Exception {
+	
 		ApplicationTestUtils.silentlyDestroy1Application(domain);
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();

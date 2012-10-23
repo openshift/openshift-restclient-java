@@ -27,10 +27,18 @@ public class TestConnectionFactory extends OpenShiftConnectionFactory {
 
 	public IOpenShiftConnection getConnection() throws FileNotFoundException, IOException, OpenShiftException {
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
-		return getConnection(
+		
+		IOpenShiftConnection connection = getConnection(
 				configuration.getClientId()
 				, configuration.getRhlogin()
 				, configuration.getPassword()
-				, configuration.getLibraServer());
+				, null
+				, null
+				, configuration.getLibraServer()
+				, configuration.getProxySet()
+				, configuration.getProxyHost()
+				, configuration.getProxyPort());
+		
+		return connection;
 	}
 }

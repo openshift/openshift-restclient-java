@@ -167,21 +167,22 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	public void setEnableSSLCertChecks(boolean doSSLChecks) {
 		this.doSSLChecks = doSSLChecks;
 	}
-
-	public void setProxySet(boolean proxySet) {
-		if (proxySet) {
-			System.setProperty(SYSPROPERTY_PROXY_SET, "true");
-		} else {
-			System.setProperty(SYSPROPERTY_PROXY_SET, "false");
-		}
+	
+	public boolean getProxySet() {
+		String set = properties.getProperty(SYSPROPERTY_PROXY_SET);
+		
+		if (set != null)
+			return Boolean.parseBoolean(removeSingleQuotes(set));
+		else 
+			return false;
 	}
-
-	public void setProxyHost(String proxyHost) {
-		System.setProperty(SYSPROPERTY_PROXY_HOST, proxyHost);
+	
+	public String getProxyHost() {
+		return removeSingleQuotes(properties.getProperty(SYSPROPERTY_PROXY_HOST));
 	}
-
-	public void setProxyPort(String proxyPort) {
-		System.setProperty(SYSPROPERTY_PROXY_PORT, proxyPort);
+	
+	public String getProxyPort() {
+		return removeSingleQuotes(properties.getProperty(SYSPROPERTY_PROXY_PORT));
 	}
 
 }
