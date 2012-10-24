@@ -19,6 +19,7 @@ public class UrlUtils {
 	private static final String SCHEMA_SEPARATOR = "://";
 
 	public static final String SCHEME_HTTPS = HTTPS + SCHEMA_SEPARATOR;
+	public static final char USERNAME_SEPARATOR = '@';
 	
 	private UrlUtils() {
 		// inhibit instantiation
