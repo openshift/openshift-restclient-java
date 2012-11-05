@@ -41,6 +41,7 @@ import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.utils.Base64Coder;
 import com.openshift.internal.client.utils.StreamUtils;
+import com.openshift.internal.client.utils.StringUtils;
 
 /**
  * @author Andre Dietisheim
@@ -55,6 +56,8 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	private static final String SYSPROP_DEFAULT_CONNECT_TIMEOUT = "sun.net.client.defaultConnectTimeout";
 	private static final String SYSPROP_DEFAULT_READ_TIMEOUT = "sun.net.client.defaultReadTimeout";
 	private static final String SYSPROP_ENABLE_SNI_EXTENSION = "jsse.enableSNIExtension";
+
+	private static final String USERAGENT_FOR_KEYAUTH = "OpenShift";
 
 	private String userAgent;
 	private boolean sslChecks;
@@ -192,23 +195,93 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		}
 	}
 
-	private void setAuthorisation(String username, String password, String authKey, String authIV, HttpURLConnection connection) {
-		if (username == null
-				|| password == null || username.trim().length() == 0 || password.trim().length() == 0) {
-			if (authKey != null && authIV != null) {
+
+	private boolean isHttps(URL url) {
+		return "https".equals(url.getProtocol());
+	}
+
+	/**
+	 * Sets a trust manager that will always trust.
+	 * <p>
+	 * TODO: dont swallog exceptions and setup things so that they dont disturb
+	 * other components.
+	 */
+	private void setPermissiveSSLSocketFactory(HttpsURLConnection connection) {
+		try {
+			SSLContext sslContext = SSLContext.getInstance("SSL");
+			sslContext.init(
+					new KeyManager[0], new TrustManager[] { new PermissiveTrustManager() }, new SecureRandom());
+			SSLSocketFactory socketFactory = sslContext.getSocketFactory();
+			((HttpsURLConnection) connection).setSSLSocketFactory(socketFactory);
+		} catch (KeyManagementException e) {
+			// ignore
+		} catch (NoSuchAlgorithmException e) {
+			// ignore
+		}
+	}
+
+	protected HttpURLConnection createConnection(String username, String password, String userAgent, URL url)
+			throws IOException {
+		return createConnection(username, password, null, null, userAgent, url);
+	}
+	
+	protected HttpURLConnection createConnection(String username, String password, String authKey, String authIV, String userAgent, URL url)
+			throws IOException {
+		LOGGER.trace(
+				"creating connection to {} using username \"{}\" and password \"{}\"", new Object[] { url, username,
+						password });
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		setSSLChecks(url, connection);
+		setAuthorisation(username, password, authKey, authIV, connection);
+		connection.setUseCaches(false);
+		connection.setDoInput(true);
+		connection.setAllowUserInteraction(false);
+		setConnectTimeout(connection);
+		setReadTimeout(connection);
+		// wont work when switching http->https
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4620571
+		connection.setInstanceFollowRedirects(true);
+		setAcceptHeader(connection);
+		setUserAgent(connection);
 		
-				connection.setRequestProperty(PROPERTY_AUTHKEY,authKey);
-				connection.setRequestProperty(PROPERTY_AUTHIV,authIV);
-				
-			} else {
-				return;
-			}
+		connection.setRequestProperty(PROPERTY_CONTENT_TYPE, requestMediaType.getType());
+		return connection;
+	}
+
+	private void setUserAgent(HttpURLConnection connection) {
+		String userAgent = this.userAgent;
+		if (StringUtils.isEmpty(authKey)) {
+			userAgent = USERAGENT_FOR_KEYAUTH;
+		}
+		if (userAgent != null){
+			connection.setRequestProperty(PROPERTY_USER_AGENT, userAgent);
+		}
+	}
+
+	private void setAcceptHeader(HttpURLConnection connection) {
+		StringBuilder builder =
+				new StringBuilder(acceptedMediaType);
+		if (version != null) {
+			builder.append(SEMICOLON).append(SPACE)
+					.append(VERSION).append(EQUALS).append(version);
 		}
 
-		String credentials = Base64Coder.encodeString(
-				new StringBuilder().append(username).append(COLON).append(password).toString());
-		connection.setRequestProperty(PROPERTY_AUTHORIZATION,
-				new StringBuilder().append(AUTHORIZATION_BASIC).append(SPACE).append(credentials).toString());
+		connection.setRequestProperty(PROPERTY_ACCEPT, builder.toString());
+	}
+
+	private void setAuthorisation(String username, String password, String authKey, String authIV, HttpURLConnection connection) {
+		if (username == null || username.trim().length() == 0
+				|| password == null || password.trim().length() == 0) {
+			if (authKey != null && authIV != null) {
+				connection.setRequestProperty(PROPERTY_AUTHKEY, authKey);
+				connection.setRequestProperty(PROPERTY_AUTHIV, authIV);
+			}
+		} else {
+			String credentials = Base64Coder.encodeString(
+					new StringBuilder().append(username).append(COLON).append(password).toString());
+			connection.setRequestProperty(PROPERTY_AUTHORIZATION,
+					new StringBuilder().append(AUTHORIZATION_BASIC).append(SPACE).append(credentials).toString());
+		}
 	}
 
 	private void setSSLChecks(URL url, HttpURLConnection connection) {
@@ -248,85 +321,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		} catch (NumberFormatException e) {
 			return -1;
 		}
-	}
-
-	private boolean isHttps(URL url) {
-		return "https".equals(url.getProtocol());
-	}
-
-	/**
-	 * Sets a trust manager that will always trust.
-	 * <p>
-	 * TODO: dont swallog exceptions and setup things so that they dont disturb
-	 * other components.
-	 */
-	private void setPermissiveSSLSocketFactory(HttpsURLConnection connection) {
-		try {
-			SSLContext sslContext = SSLContext.getInstance("SSL");
-			sslContext.init(
-					new KeyManager[0], new TrustManager[] { new PermissiveTrustManager() }, new SecureRandom());
-			SSLSocketFactory socketFactory = sslContext.getSocketFactory();
-			((HttpsURLConnection) connection).setSSLSocketFactory(socketFactory);
-		} catch (KeyManagementException e) {
-			// ignore
-		} catch (NoSuchAlgorithmException e) {
-			// ignore
-		}
-	}
-
-	protected HttpURLConnection createConnection(String username, String password, String userAgent, URL url)
-			throws IOException {
-
-		return createConnection(username, password, null, null, userAgent, url);
-	}
-	
-	protected HttpURLConnection createConnection(String username, String password, String authKey, String authIV, String userAgent, URL url)
-			throws IOException {
-
-		LOGGER.trace(
-				"creating connection to {} using username \"{}\" and password \"{}\"", new Object[] { url, username,
-						password });
-
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		setSSLChecks(url, connection);
-		setAuthorisation(username, password, authKey, authIV, connection);
-		connection.setUseCaches(false);
-		connection.setDoInput(true);
-		connection.setAllowUserInteraction(false);
-		setConnectTimeout(connection);
-		setReadTimeout(connection);
-		// wont work when switching http->https
-		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4620571
-		connection.setInstanceFollowRedirects(true);
-		setAcceptHeader(connection);
-		
-		if (authKey != null && authKey.length() > 0)
-			setUserAgent("OpenShift");
-		
-		setUserAgent(connection);
-		
-		connection.setRequestProperty(PROPERTY_CONTENT_TYPE, requestMediaType.getType());
-		return connection;
-	}
-
-	private void setUserAgent(HttpURLConnection connection) {
-		if (userAgent != null) {
-			connection.setRequestProperty(PROPERTY_USER_AGENT, userAgent);
-		}
-	}
-
-	private void setAcceptHeader(HttpURLConnection connection) {
-		StringBuilder builder =
-				new StringBuilder(acceptedMediaType);
-		/*
-		 * Not supported on PROD/STG yet
-		 */
-		if (version != null) {
-			builder.append(SEMICOLON).append(SPACE)
-					.append(VERSION).append(EQUALS).append(version);
-		}
-
-		connection.setRequestProperty(PROPERTY_ACCEPT, builder.toString());
 	}
 
 	private class PermissiveTrustManager implements X509TrustManager {
