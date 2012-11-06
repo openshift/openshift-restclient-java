@@ -250,9 +250,10 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	private void setUserAgent(HttpURLConnection connection) {
 		String userAgent = this.userAgent;
-		if (StringUtils.isEmpty(authKey)) {
+		if (!StringUtils.isEmpty(authKey)) {
 			userAgent = USERAGENT_FOR_KEYAUTH;
 		}
+		
 		if (userAgent != null){
 			connection.setRequestProperty(PROPERTY_USER_AGENT, userAgent);
 		}
