@@ -86,6 +86,15 @@ public interface IApplication extends IOpenShiftResource {
 	public ICartridge getCartridge();
 
 	/**
+	 * Adds the embeddable cartridges that match the given constraint.
+	 * 
+	 * @param cartridgeConstraint the constraint that determines what cartridges shall be added
+	 * @throws OpenShiftException if no cartridge matches the constraint
+	 */
+	public List<IEmbeddedCartridge> addEmbeddableCartridge(IEmbeddableCartridgeConstraint cartridgeConstraint)
+			throws OpenShiftException;
+
+	/**
 	 * Adds the given embeddable cartridge to this application.
 	 * 
 	 * @param cartridge
@@ -159,7 +168,7 @@ public interface IApplication extends IOpenShiftResource {
 			throws OpenShiftException;
 
 	/**
-	 * Returns the embedded cartridge. Returns <code>null</code> if none was
+	 * Returns the embedded cartridge in this application. Returns <code>null</code> if none was
 	 * found.
 	 * 
 	 * @param cartridge
@@ -171,15 +180,36 @@ public interface IApplication extends IOpenShiftResource {
 			throws OpenShiftException;
 
 	/**
-	 * Removes the embedded cartridge in this cartridges that equals to the
+	 * Removes the embeddable cartridges that match the given constraint.
+	 * 
+	 * @param cartridgeConstraint
+	 *            the constraint that the cartridge shall match
+	 * @throws OpenShiftException
+	 *             if no cartridge matches the constraint
+	 */
+	public void removeEmbeddedCartridges(IEmbeddableCartridgeConstraint cartridgeConstraint)
+			throws OpenShiftException;
+
+	/**
+	 * Removes the given embedded cartridge that is equal to the given
+	 * embeddable cartridge. Does nothing if the cartridge is not present in
+	 * this application.
+	 * 
+	 * @param cartridge
+	 *            the cartridge that shall be removed
+	 * @throws OpenShiftException
+	 */
+	public void removeEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException;
+
+	/**
+	 * Removes the given embedded cartridges in this application that are equal to the
 	 * given IEmbeddableCartridge. Does nothing if the cartridge is not present
 	 * in this application.
 	 * 
-	 * @param cartridge
+	 * @param cartridges the cartridges that shall get removed
 	 * @throws OpenShiftException
 	 */
-	public void removeEmbeddedCartridge(IEmbeddableCartridge cartridge)
-			throws OpenShiftException;
+	public void removeEmbeddedCartridges(List<IEmbeddableCartridge> cartridges) throws OpenShiftException;
 
 	/**
 	 * Returns all gears.

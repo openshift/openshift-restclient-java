@@ -46,6 +46,7 @@ import com.openshift.client.IApplicationPortForwarding;
 import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
 import com.openshift.client.IEmbeddableCartridge;
+import com.openshift.client.IEmbeddableCartridgeConstraint;
 import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
@@ -349,6 +350,11 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return "1";
 	}
 
+	public List<IEmbeddedCartridge> addEmbeddableCartridge(IEmbeddableCartridgeConstraint cartridgeConstraint) throws OpenShiftException {
+		List<IEmbeddableCartridge> cartridges = cartridgeConstraint.getEmbeddableCartridges(getConnection());
+		return addEmbeddableCartridges(cartridges);
+	}
+
 	/**
 	 * Adds the given embedded cartridge to this application.
 	 * 
@@ -379,7 +385,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		final List<IEmbeddedCartridge> addedCartridge = new ArrayList<IEmbeddedCartridge>();
 		for (IEmbeddableCartridge cartridge : cartridges) {
 			// TODO: catch exceptions when removing cartridges, contine removing
-			// and report the exceptions that occurred<
+			// and report the exceptions that occurred
 			addedCartridge.add(addEmbeddableCartridge(cartridge));
 		}
 		return addedCartridge;
@@ -445,12 +451,27 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return null;
 	}
 
+	public void removeEmbeddedCartridges(IEmbeddableCartridgeConstraint cartridgeConstraint) throws OpenShiftException {
+		List<IEmbeddableCartridge> embeddableCartridges = cartridgeConstraint.getEmbeddableCartridges(getConnection());
+		removeEmbeddedCartridges(embeddableCartridges);
+	}
+	
 	public void removeEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
 		Assert.notNull(cartridge);
 
 		IEmbeddedCartridge embeddedCartridge = getEmbeddedCartridge(cartridge);
 		if (embeddedCartridge != null) {
 			embeddedCartridge.destroy();
+		}
+	}
+
+	public void removeEmbeddedCartridges(List<IEmbeddableCartridge> cartridges) throws OpenShiftException {
+		Assert.notNull(cartridges);
+
+		for(IEmbeddableCartridge cartridge : cartridges) {
+			// TODO: catch exceptions when removing cartridges, contine removing
+			// and report the exceptions that occurred
+			removeEmbeddedCartridge(cartridge);
 		}
 	}
 
@@ -503,7 +524,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	public Future<Boolean> waitForAccessibleAsync(final long timeout) throws OpenShiftException {
-		IOpenShiftConnection connection = getDomain().getUser().getConnection();
+		IOpenShiftConnection connection = getConnection();
 		return connection.getExecutorService().submit(new Callable<Boolean>() {
 
 			public Boolean call() throws Exception {
@@ -540,6 +561,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return null;
 	}
 
+
+	protected IOpenShiftConnection getConnection() {
+		return getDomain().getUser().getConnection();
+	}
 
 	private boolean waitForPositiveHealthResponse(long timeout, long startTime) throws OpenShiftException,
 			InterruptedException, OpenShiftEndpointException {

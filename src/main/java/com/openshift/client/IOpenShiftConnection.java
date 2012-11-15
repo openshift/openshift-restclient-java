@@ -21,6 +21,13 @@ import java.util.concurrent.Executors;
 public interface IOpenShiftConnection {
 
 	/**
+	 * Returns the server this connection is bound to.
+	 * 
+	 * @return the server
+	 */
+	public String getServer();
+	
+	/**
 	 * Returns the user associated with the current OpenShift connection.
 	 * 
 	 * @return the user

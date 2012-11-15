@@ -66,6 +66,10 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		return password;
 	}
 	
+	public String getServer() {
+		return getService().getPlatformUrl();
+	}
+	
 	public void setEnableSSLCertChecks(boolean doSSLChecks) {
 		this.doSSLChecks = doSSLChecks;
 	}

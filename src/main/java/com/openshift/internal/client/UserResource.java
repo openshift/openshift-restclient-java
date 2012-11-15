@@ -63,7 +63,7 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 	}
 	
 	public String getServer() {
-		return api.getService().getPlatformUrl();
+		return api.getServer();
 	}
 	
 	public int getMaxGears() {
