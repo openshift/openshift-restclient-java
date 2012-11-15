@@ -89,7 +89,7 @@ public class EmbeddableCartridgeNameConstraintTest {
 		List<IEmbeddableCartridge> embeddableCartridges = cartridgeConstraint.getEmbeddableCartridges(connection);
 
 		// verification
-		assertThat(embeddableCartridges.size()).isEqualTo(0);
+		assertThat(embeddableCartridges.size()).isEqualTo(1);
 		assertThat(embeddableCartridges.get(0).getName()).isEqualTo(mysql51Name);
 	}
 
