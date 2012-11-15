@@ -18,17 +18,18 @@ import com.openshift.internal.client.response.ResourceDTOFactoryTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-//	ConfigurationTest.class,
-//	HttpClientTest.class,
-//	RestServiceTest.class,
-//	ResourceDTOFactoryTest.class,
-//	DomainResourceTest.class,
-	ApplicationResourceTest.class
-//	CartridgesTest.class,
-//	EmbeddableCartridgeTest.class,
-//	UserTest.class,
-//	SSHKeyTest.class
-})
+	ConfigurationTest.class,
+	HttpClientTest.class,
+	RestServiceTest.class,
+	ResourceDTOFactoryTest.class,
+	DomainResourceTest.class,
+	ApplicationResourceTest.class,
+	CartridgesTest.class,
+	EmbeddableCartridgeTest.class,
+	EmbeddableCartridgeNameConstraintTest.class,
+	UserTest.class,
+	SSHKeyTest.class
+)}
 /**
  * @author André Dietisheim
  */
