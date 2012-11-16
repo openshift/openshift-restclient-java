@@ -25,7 +25,7 @@ public interface IEmbeddableCartridge {
 
 	public static final IEmbeddableCartridge POSTGRESQL_84 = new EmbeddableCartridge("postgresql-8.4");
 
-	public static final IEmbeddableCartridge MONGODB_20 = new EmbeddableCartridge("mongodb-2.0");
+	public static final IEmbeddableCartridge MONGODB_22 = new EmbeddableCartridge("mongodb-2.2");
 
 	public static final IEmbeddableCartridge ROCKMONGO_11 = new EmbeddableCartridge("rockmongo-1.1");
 	
