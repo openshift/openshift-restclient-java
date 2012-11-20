@@ -116,6 +116,10 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		this.userAgent = userAgent;
 	}
 
+	public String getUserAgent() {
+		return userAgent;
+	}
+	
 	public void setVersion(String version) {
 		this.version = version;
 	}

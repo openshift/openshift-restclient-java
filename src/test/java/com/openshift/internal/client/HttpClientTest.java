@@ -127,6 +127,24 @@ public class HttpClientTest {
 		assertNotNull(response);
 		assertTrue(response.indexOf(ACCEPT_APPLICATION_JSON) > 0);
 	}
+	
+	@Test
+	public void hasProperAgentWhenUsingKeys() {
+		httpClient = new UrlConnectionHttpClientBuilder()
+		.setUserAgent("com.needskey").setCredentials("blah", "bluh", "authkey", "authiv")
+		.client();
+		
+		assertEquals("OpenShift-com.needskey", httpClient.getUserAgent());
+	}
+
+	@Test
+	public void hasProperAgentWhenUsingKeysAndNoAgent() {
+		httpClient = new UrlConnectionHttpClientBuilder()
+		 .setCredentials("blah", "bluh", "authkey", "authiv")
+		.client();
+		
+		assertEquals("OpenShift", httpClient.getUserAgent());
+	}
 
 	@Test
 	public void shouldEncodeParametersCorrectly() throws HttpClientException, FileNotFoundException, IOException,

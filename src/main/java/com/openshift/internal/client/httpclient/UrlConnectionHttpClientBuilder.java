@@ -65,9 +65,15 @@ public class UrlConnectionHttpClientBuilder {
 	}
 
 	public IHttpClient client() {
-		if (authKey != null && authKey.trim().length() > 0)
-			userAgent = "OpenShift";
-		return new UrlConnectionHttpClient(username, password, userAgent, sslChecks, requestMediaType,
-				acceptedMediaType, version, authKey, authIV);
+		if (authKey != null && authKey.trim().length() > 0) {
+			if (userAgent == null) {
+				userAgent = "OpenShift";
+			} else if (!userAgent.startsWith("OpenShift")) {
+				userAgent = "OpenShift-" + userAgent;
+			}
+		}
+		return new UrlConnectionHttpClient(username, password, userAgent,
+				sslChecks, requestMediaType, acceptedMediaType, version,
+				authKey, authIV);
 	}
 }

@@ -52,6 +52,8 @@ public interface IHttpClient {
 	
 	public void setUserAgent(String userAgent);
 	
+	public String getUserAgent();
+	
 	public void setVersion(String serviceVersion);
 
 	public String get(URL url) throws HttpClientException, SocketTimeoutException;
