@@ -11,6 +11,7 @@
 package com.openshift.internal.client;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
@@ -45,15 +46,39 @@ public class ApplicationResourceIntegrationTest {
 	private static IDomain domain;
 
 	@Before
-	public void setUp() throws FileNotFoundException, IOException, OpenShiftException {
-		IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
-		IUser user = connection.getUser();
-		domain = DomainTestUtils.getFirstDomainOrCreate(user);
+	public void setUp() throws Exception {
+		try {
+			IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
+			IUser user = connection.getUser();
+			domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 
 	@AfterClass
 	public static void cleanup() {
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
+	}
+	
+	@Test
+	public void testLog() throws Exception {
+		
+		try {
+		
+			ApplicationTestUtils.silentlyDestroy1Application(domain);
+			String applicationName =
+					ApplicationTestUtils.createRandomApplicationName();
+			IApplication application = 
+					domain.createApplication(applicationName, ICartridge.JBOSSAS_7);
+						
+			assertEquals(application.getLogDirEnvName("jbossas-7"), "OPENSHIFT_JBOSSAS_LOG_DIR");
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	
 	@Test

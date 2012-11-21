@@ -1,0 +1,356 @@
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenShift Java Client 2.0.2-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ openshift-java-client ---
+[INFO] Deleting /home/bdecoste/workspaces/OpenShift/openshift-java-client/target
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-java-version) @ openshift-java-client ---
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-maven-version) @ openshift-java-client ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.5:resources (default-resources) @ openshift-java-client ---
+[debug] execute contextualize
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.3.1:compile (default-compile) @ openshift-java-client ---
+[INFO] Compiling 112 source files to /home/bdecoste/workspaces/OpenShift/openshift-java-client/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.5:testResources (default-testResources) @ openshift-java-client ---
+[debug] execute contextualize
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 63 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.3.1:testCompile (default-testCompile) @ openshift-java-client ---
+[INFO] Compiling 44 source files to /home/bdecoste/workspaces/OpenShift/openshift-java-client/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12:test (default-test) @ openshift-java-client ---
+[INFO] Surefire report directory: /home/bdecoste/workspaces/OpenShift/openshift-java-client/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running com.openshift.internal.client.OpenShiftIntegrationTestSuite
+2012-11-20 11:23:50|TRACE|[main]| com.openshift.internal.client.RestService.   request     | Requesting GET on https://ec2-23-23-45-64.compute-1.amazonaws.com /broker/rest/api
+2012-11-20 11:23:50|INFO |[main]| com.openshift.internal.client.RestService.   request     | Requesting GET on https://ec2-23-23-45-64.compute-1.amazonaws.com /broker/rest/api
+!!!!!!!!!!!!!!!!!!!!!!! get https://ec2-23-23-45-64.compute-1.amazonaws.com /broker/rest/api
+2012-11-20 11:23:50|TRACE|[main]| com.openshift.internal.client.httpclient.UrlConnectionHttpClient.createConnection     | creating connection to https://ec2-23-23-45-64.compute-1.amazonaws.com /broker/rest/api using username "bdecoste90c@gmail.com" and password "123456"
+!!!!! acceptedMediaType application/json
+2012-11-20 11:23:51|TRACE|[main]| com.openshift.internal.client.response.ResourceDTOFactory.       get     | Unmarshalling response
+{"data":{"API":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/api","method":"GET","optional_params":[],"rel":"API entry point","required_params":[]},"GET_ENVIRONMENT":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/environment","method":"GET","optional_params":[],"rel":"Get environment information","required_params":[]},"GET_USER":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/user","method":"GET","optional_params":[],"rel":"Get user information","required_params":[]},"LIST_DOMAINS":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains","method":"GET","optional_params":[],"rel":"List domains","required_params":[]},"ADD_DOMAIN":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains","method":"POST","optional_params":[],"rel":"Create new domain","required_params":[{"description":"Name of the domain","invalid_options":["amentra","aop","apiviz","arquillian","blacktie","boxgrinder","byteman","cirras","cloud","cloudforms","cygwin","davcache","dogtag","drools","drools","ejb3","errai","esb","fedora","freeipa","gatein","git","gfs","gravel","guvnor","hibernate","hornetq","iiop","infinispan","ironjacamar","javassist","jbcaa","jbcd","jboss","jbpm","jdcom","jgroups","jmx","jopr","jrunit","jsfunit","kosmos","liberation","makara","mass","maven","metajizer","metamatrix","mobicents","mod_cluster","modeshape","mugshot","mysql","netty","openshift","osgi","overlord","ovirt","penrose","picketbox","picketlink","portletbridge","portletswap","posse","pressgang","qumranet","railo","redhat","resteasy","rhca","rhcds","rhce","rhcsa","rhcss","rhct","rhcva","rhel","rhev","rhq","rhx","richfaces","riftsaw","savara","scribble","seam","shadowman","shotoku","shrinkwrap","snowdrop","solidice","spacewalk","spice","steamcannon","stormgrind","switchyard","tattletale","teiid","tohu","torquebox","weld","wise","xnio"],"name":"id","type":"string","valid_options":[]}]},"LIST_CARTRIDGES":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/cartridges","method":"GET","optional_params":[],"rel":"List cartridges","required_params":[]},"LIST_TEMPLATES":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/application_templates","method":"GET","optional_params":[],"rel":"List application templates","required_params":[]},"LIST_ESTIMATES":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/estimates","method":"GET","optional_params":[],"rel":"List available estimates","required_params":[]},"LIST_QUICKSTARTS":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/community/api/v1/quickstarts/promoted.json","method":"GET","optional_params":[],"rel":"List quickstarts","required_params":[]},"SHOW_QUICKSTART":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/community/api/v1/quickstarts/:id","method":"GET","optional_params":[],"rel":"Retrieve quickstart with :id","required_params":[{"description":"Unique identifier of the quickstart","invalid_options":[],"name":":id","type":"string","valid_options":[]}]},"SEARCH_QUICKSTARTS":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/community/api/v1/quickstarts.json","method":"GET","optional_params":[],"rel":"Search quickstarts","required_params":[{"description":"The search term to use for the quickstart","invalid_options":[],"name":"search","type":"string","valid_options":[]}]}},"messages":[],"status":"ok","supported_api_versions":[1.0,1.1,1.2,1.3],"type":"links","version":"1.3"}
+
+!!!!! name string
+!!!!! name string
+!!!!! name string
+************************** Rest Response 
+{LIST_ESTIMATES=Link [rel=List available estimates, httpMethod=GET, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/estimates], API=Link [rel=API entry point, httpMethod=GET, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/api], SHOW_QUICKSTART=Link [rel=Retrieve quickstart with :id, httpMethod=GET, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/community/api/v1/quickstarts/:id], SEARCH_QUICKSTARTS=Link [rel=Search quickstarts, httpMethod=GET, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/community/api/v1/quickstarts.json], LIST_QUICKSTARTS=Link [rel=List quickstarts, httpMethod=GET, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/community/api/v1/quickstarts/promoted.json], LIST_CARTRIDGES=Link [rel=List cartridges, httpMethod=GET, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/cartridges], LIST_TEMPLATES=Link [rel=List application templates, httpMethod=GET, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/application_templates], LIST_DOMAINS=Link [rel=List domains, httpMethod=GET, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains], GET_USER=Link [rel=Get user information, httpMethod=GET, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/user], GET_ENVIRONMENT=Link [rel=Get environment information, httpMethod=GET, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/environment], ADD_DOMAIN=Link [rel=Create new domain, httpMethod=POST, href=https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains]}
+************************** 
+2012-11-20 11:23:52|TRACE|[main]| com.openshift.internal.client.RestService.   request     | Requesting GET on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/user
+2012-11-20 11:23:52|INFO |[main]| com.openshift.internal.client.RestService.   request     | Requesting GET on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/user
+!!!!!!!!!!!!!!!!!!!!!!! get https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/user
+2012-11-20 11:23:52|TRACE|[main]| com.openshift.internal.client.httpclient.UrlConnectionHttpClient.createConnection     | creating connection to https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/user using username "bdecoste90c@gmail.com" and password "123456"
+!!!!! acceptedMediaType application/json
+2012-11-20 11:23:52|TRACE|[main]| com.openshift.internal.client.response.ResourceDTOFactory.       get     | Unmarshalling response
+{"data":{"capabilities":{"gear_sizes":["small"]},"consumed_gear_sizes":{},"consumed_gears":0,"links":{"LIST_KEYS":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/user/keys","method":"GET","optional_params":[],"rel":"Get SSH keys","required_params":[]},"ADD_KEY":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/user/keys","method":"POST","optional_params":[],"rel":"Add new SSH key","required_params":[{"description":"Name of the key","invalid_options":[],"name":"name","type":"string","valid_options":[]},{"description":"Type of Key","invalid_options":[],"name":"type","type":"string","valid_options":["ssh-rsa","ssh-dss","ecdsa-sha2-nistp256-cert-v01@openssh.com","ecdsa-sha2-nistp384-cert-v01@openssh.com","ecdsa-sha2-nistp521-cert-v01@openssh.com","ssh-rsa-cert-v01@openssh.com","ssh-dss-cert-v01@openssh.com","ssh-rsa-cert-v00@openssh.com","ssh-dss-cert-v00@openssh.com","ecdsa-sha2-nistp256","ecdsa-sha2-nistp384","ecdsa-sha2-nistp521"]},{"description":"The key portion of an ssh key (excluding ssh type and comment)","invalid_options":[],"name":"content","type":"string","valid_options":[]}]}},"login":"bdecoste90c@gmail.com","max_gears":3,"plan_id":"freeshift","usage_account_id":null},"messages":[],"status":"ok","supported_api_versions":[1.0,1.1,1.2,1.3],"type":"user","version":"1.3"}
+
+!!!!! name string
+!!!!! name string
+!!!!! name string
+************************** Rest Response 
+com.openshift.internal.client.response.UserResourceDTO@1acfa31
+************************** 
+2012-11-20 11:23:52|TRACE|[main]| com.openshift.internal.client.RestService.   request     | Requesting GET on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains
+2012-11-20 11:23:52|INFO |[main]| com.openshift.internal.client.RestService.   request     | Requesting GET on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains
+!!!!!!!!!!!!!!!!!!!!!!! get https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains
+2012-11-20 11:23:52|TRACE|[main]| com.openshift.internal.client.httpclient.UrlConnectionHttpClient.createConnection     | creating connection to https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains using username "bdecoste90c@gmail.com" and password "123456"
+!!!!! acceptedMediaType application/json
+2012-11-20 11:23:53|TRACE|[main]| com.openshift.internal.client.response.ResourceDTOFactory.       get     | Unmarshalling response
+{"data":[{"id":"bdecoste90c","links":{"GET":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c","method":"GET","optional_params":[],"rel":"Get domain","required_params":[]},"LIST_APPLICATIONS":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications","method":"GET","optional_params":[],"rel":"List applications","required_params":[]},"ADD_APPLICATION":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications","method":"POST","optional_params":[{"default_value":null,"description":"Array of one or more cartridge names. i.e. [\"php-5.3\", \"mongodb-2.2\"]","name":"cartridges","type":"array","valid_options":["nodejs-0.6","zend-5.6","ruby-1.9","jbossas-7","python-2.6","jenkins-1.4","ruby-1.8","jbosseap-6.0","diy-0.1","jbossews-1.0","php-5.3","perl-5.10"]},{"default_value":null,"description":"UUID of the application template","name":"template","type":"string","valid_options":[null]},{"default_value":false,"description":"Mark application as scalable","name":"scale","type":"boolean","valid_options":[true,false]},{"default_value":"small","description":"The size of the gear","name":"gear_profile","type":"string","valid_options":["small"]},{"default_value":null,"description":"Initial git URL","name":"init_git_url","type":"string","valid_options":[null]}],"rel":"Create new application","required_params":[{"description":"Name of the application","invalid_options":["amentra","aop","apiviz","arquillian","blacktie","boxgrinder","byteman","cirras","cloud","cloudforms","cygwin","davcache","dogtag","drools","drools","ejb3","errai","esb","fedora","freeipa","gatein","git","gfs","gravel","guvnor","hibernate","hornetq","iiop","infinispan","ironjacamar","javassist","jbcaa","jbcd","jboss","jbpm","jdcom","jgroups","jmx","jopr","jrunit","jsfunit","kosmos","liberation","makara","mass","maven","metajizer","metamatrix","mobicents","mod_cluster","modeshape","mugshot","mysql","netty","openshift","osgi","overlord","ovirt","penrose","picketbox","picketlink","portletbridge","portletswap","posse","pressgang","qumranet","railo","redhat","resteasy","rhca","rhcds","rhce","rhcsa","rhcss","rhct","rhcva","rhel","rhev","rhq","rhx","richfaces","riftsaw","savara","scribble","seam","shadowman","shotoku","shrinkwrap","snowdrop","solidice","spacewalk","spice","steamcannon","stormgrind","switchyard","tattletale","teiid","tohu","torquebox","weld","wise","xnio"],"name":"name","type":"string","valid_options":[]}]},"UPDATE":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c","method":"PUT","optional_params":[],"rel":"Update domain","required_params":[{"description":"Name of the domain","invalid_options":[],"name":"id","type":"string","valid_options":[]}]},"DELETE":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c","method":"DELETE","optional_params":[{"default_value":false,"description":"Force delete domain.  i.e. delete any applications under this domain","name":"force","type":"boolean","valid_options":[true,false]}],"rel":"Delete domain","required_params":[]}},"suffix":"dev.rhcloud.com"}],"messages":[],"status":"ok","supported_api_versions":[1.0,1.1,1.2,1.3],"type":"domains","version":"1.3"}
+
+!!!!! name string
+!!!!! name array
+!!!!! name string
+!!!!! name boolean
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name boolean
+************************** Rest Response 
+[com.openshift.internal.client.response.DomainResourceDTO@ff8c74]
+************************** 
+2012-11-20 11:23:53|TRACE|[main]| com.openshift.internal.client.RestService.   request     | Requesting GET on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications
+2012-11-20 11:23:53|INFO |[main]| com.openshift.internal.client.RestService.   request     | Requesting GET on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications
+!!!!!!!!!!!!!!!!!!!!!!! get https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications
+2012-11-20 11:23:53|TRACE|[main]| com.openshift.internal.client.httpclient.UrlConnectionHttpClient.createConnection     | creating connection to https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications using username "bdecoste90c@gmail.com" and password "123456"
+!!!!! acceptedMediaType application/json
+2012-11-20 11:23:54|TRACE|[main]| com.openshift.internal.client.response.ResourceDTOFactory.       get     | Unmarshalling response
+{"data":[],"messages":[],"status":"ok","supported_api_versions":[1.0,1.1,1.2,1.3],"type":"applications","version":"1.3"}
+
+************************** Rest Response 
+[]
+************************** 
+2012-11-20 11:23:54|TRACE|[main]| com.openshift.internal.client.RestService.   request     | Requesting POST on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications
+2012-11-20 11:23:54|INFO |[main]| com.openshift.internal.client.RestService.   request     | Requesting POST on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications
+2012-11-20 11:23:54|TRACE|[main]| com.openshift.internal.client.httpclient.UrlConnectionHttpClient.createConnection     | creating connection to https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications using username "bdecoste90c@gmail.com" and password "123456"
+!!!!! acceptedMediaType application/json
+2012-11-20 11:23:54|TRACE|[main]| com.openshift.internal.client.httpclient.UrlConnectionHttpClient.     write     | Sending "cartridge=jbossas-7&name=1353439433630" to https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications
+2012-11-20 11:24:26|TRACE|[main]| com.openshift.internal.client.response.ResourceDTOFactory.       get     | Unmarshalling response
+{"data":{"aliases":[],"app_url":"http://1353439433630-bdecoste90c.dev.rhcloud.com/","build_job_url":null,"building_app":null,"building_with":null,"creation_time":"2012-11-20T14:23:55-05:00","domain_id":"bdecoste90c","embedded":{},"framework":"jbossas-7","gear_count":1,"gear_profile":"small","git_url":"ssh://ba3e98230e2b4ef08f15967c2b073b31@1353439433630-bdecoste90c.dev.rhcloud.com/~/git/1353439433630.git/","health_check_path":"health","initial_git_url":null,"links":{"GET":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630","method":"GET","optional_params":[],"rel":"Get application","required_params":[]},"GET_DESCRIPTOR":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/descriptor","method":"GET","optional_params":[],"rel":"Get application descriptor","required_params":[]},"GET_GEARS":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/gears","method":"GET","optional_params":[],"rel":"Get application gears","required_params":[]},"GET_GEAR_GROUPS":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/gear_groups","method":"GET","optional_params":[],"rel":"Get application gear groups","required_params":[]},"START":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Start application","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["start"]}]},"STOP":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Stop application","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["stop"]}]},"RESTART":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Restart application","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["restart"]}]},"FORCE_STOP":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Force stop application","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["force-stop"]}]},"EXPOSE_PORT":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Expose port","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["expose-port"]}]},"CONCEAL_PORT":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Conceal port","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["conceal-port"]}]},"SHOW_PORT":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Show port","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["show-port"]}]},"ADD_ALIAS":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Add application alias","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["add-alias"]},{"description":"The server alias for the application","invalid_options":[],"name":"alias","type":"string","valid_options":[]}]},"REMOVE_ALIAS":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Remove application alias","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["remove-alias"]},{"description":"The application alias to be removed","invalid_options":[],"name":"alias","type":"string","valid_options":[]}]},"SCALE_UP":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Scale up application","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["scale-up"]}]},"SCALE_DOWN":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Scale down application","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["scale-down"]}]},"TIDY":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Tidy the application framework","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["tidy"]}]},"RELOAD":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Reload the application","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["reload"]}]},"THREAD_DUMP":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/events","method":"POST","optional_params":[],"rel":"Trigger thread dump","required_params":[{"description":"event","invalid_options":[],"name":"event","type":"string","valid_options":["thread-dump"]}]},"DELETE":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630","method":"DELETE","optional_params":[],"rel":"Delete application","required_params":[]},"ADD_CARTRIDGE":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/cartridges","method":"POST","optional_params":[],"rel":"Add embedded cartridge","required_params":[{"description":"framework-type, e.g.: mongodb-2.2","invalid_options":[],"name":"cartridge","type":"string","valid_options":["mongodb-2.2","switchyard-0.6","cron-1.4","mysql-5.1","postgresql-8.4","haproxy-1.4","10gen-mms-agent-0.1","phpmyadmin-3.4","metrics-0.1","phpmoadmin-1.0","rockmongo-1.1","jenkins-client-1.4"]}]},"LIST_CARTRIDGES":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/cartridges","method":"GET","optional_params":[],"rel":"List embedded cartridges","required_params":[]},"DNS_RESOLVABLE":{"href":"https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/dns_resolvable","method":"GET","optional_params":[],"rel":"Resolve DNS","required_params":[]}},"name":"1353439433630","scalable":false,"ssh_url":"ssh://ba3e98230e2b4ef08f15967c2b073b31@1353439433630-bdecoste90c.dev.rhcloud.com","uuid":"ba3e98230e2b4ef08f15967c2b073b31"},"messages":[{"exit_code":null,"field":null,"severity":"info","text":"Application 1353439433630 was created."},{"exit_code":0,"field":"current_ip","severity":"info","text":"23.23.45.64"},{"exit_code":0,"field":"result","severity":"info","text":""}],"status":"created","supported_api_versions":[1.0,1.1,1.2,1.3],"type":"application","version":"1.3"}
+
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+!!!!! name string
+************************** Rest Response 
+ApplicationResourceDTO [name=1353439433630, framework=jbossas-7]
+************************** 
+!!!!!!!!! application created
+-------------------------------------------------------------------------------------------------------
+!!!!!!! link jbossas-7 https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/cartridges/jbossas-7
+2012-11-20 11:24:31|TRACE|[main]| com.openshift.internal.client.RestService.   request     | Requesting GET on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/cartridges/jbossas-7
+2012-11-20 11:24:31|INFO |[main]| com.openshift.internal.client.RestService.   request     | Requesting GET on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/cartridges/jbossas-7
+!!!!!!!!!!!!!!!!!!!!!!! get https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/cartridges/jbossas-7
+2012-11-20 11:24:31|TRACE|[main]| com.openshift.internal.client.httpclient.UrlConnectionHttpClient.createConnection     | creating connection to https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/cartridges/jbossas-7 using username "bdecoste90c@gmail.com" and password "123456"
+!!!!! acceptedMediaType application/xml
+2012-11-20 11:24:33|TRACE|[main]| com.openshift.internal.client.response.ResourceDTOFactory.       get     | Unmarshalling response
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+  <status>ok</status>
+  <type>cartridge</type>
+  <data>
+    <cartridge>
+      <name>jbossas-7</name>
+      <type>standalone</type>
+      <scales-from>1</scales-from>
+      <scales-to>1</scales-to>
+      <supported-scales-from>1</supported-scales-from>
+      <supported-scales-to>1</supported-scales-to>
+      <scales-with nil="true"></scales-with>
+      <gear-profile>small</gear-profile>
+      <current-scale>1</current-scale>
+      <collocated-with/>
+      <status-messages nil="true"></status-messages>
+      <version>7.1.0</version>
+      <display-name>JBoss Application Server 7.1</display-name>
+      <description>The leading open source Java EE6 application server for enterprise Java applications. Popular development frameworks include Seam, CDI, Weld, and Spring.</description>
+      <license>ASL 2.0</license>
+      <license-url></license-url>
+      <tags>
+        <tag>cartridge</tag>
+        <tag>java</tag>
+        <tag>jboss</tag>
+        <tag>web_framework</tag>
+      </tags>
+      <website>http://www.jboss.org</website>
+      <help-topics>
+        <Developer-Center>https://openshift.redhat.com/community/developers</Developer-Center>
+      </help-topics>
+      <properties>
+        <property>
+          <name>OPENSHIFT_JBOSSAS_LOG_DIR</name>
+          <type>environment</type>
+          <description>Directory to store application log files.</description>
+        </property>
+        <property>
+          <name>OPENSHIFT_TMP_DIR</name>
+          <type>environment</type>
+          <description>Directory to store application temporary files.</description>
+        </property>
+        <property>
+          <name>OPENSHIFT_REPO_DIR</name>
+          <type>environment</type>
+          <description>Application root directory where application files reside. This directory is reset everytime you do a git-push</description>
+        </property>
+        <property>
+          <name>OPENSHIFT_INTERNAL_PORT</name>
+          <type>environment</type>
+          <description>Internal port to which the web-framework binds to.</description>
+        </property>
+        <property>
+          <name>OPENSHIFT_INTERNAL_IP</name>
+          <type>environment</type>
+          <description>Internal IP to which the web-framework binds to.</description>
+        </property>
+        <property>
+          <name>OPENSHIFT_APP_DNS</name>
+          <type>environment</type>
+          <description>Fully qualified domain name for the application.</description>
+        </property>
+        <property>
+          <name>OPENSHIFT_APP_NAME</name>
+          <type>environment</type>
+          <description>Application name</description>
+        </property>
+        <property>
+          <name>OPENSHIFT_DATA_DIR</name>
+          <type>environment</type>
+          <description>Directory to store application data files. Preserved across git-pushes. Not shared across gears.</description>
+        </property>
+        <property>
+          <name>OPENSHIFT_APP_UUID</name>
+          <type>environment</type>
+          <description>Unique ID which identified the application. Does not change between gears.</description>
+        </property>
+        <property>
+          <name>OPENSHIFT_GEAR_UUID</name>
+          <type>environment</type>
+          <description>Unique ID which identified the gear. This value changes between gears.</description>
+        </property>
+      </properties>
+      <base-gear-storage>1</base-gear-storage>
+      <additional-gear-storage>0</additional-gear-storage>
+      <links>
+        <link>
+          <rel>Get cartridge</rel>
+          <method>GET</method>
+          <href>https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/cartridges/jbossas-7</href>
+          <required-params/>
+          <optional-params/>
+        </link>
+        <link>
+          <rel>Update cartridge configuration</rel>
+          <method>PUT</method>
+          <href>https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630/cartridges/jbossas-7</href>
+          <required-params/>
+          <optional-params>
+            <optional-param>
+              <name>additional_storage</name>
+              <type>integer</type>
+              <description>Additional filesystem storage in gigabytes on each gear having cartridge jbossas-7</description>
+              <valid-options>
+                <valid-option nil="true"></valid-option>
+              </valid-options>
+              <default-value nil="true"></default-value>
+            </optional-param>
+            <optional-param>
+              <name>scales_from</name>
+              <type>integer</type>
+              <description>Minimum number of gears having cartridge jbossas-7</description>
+              <valid-options>
+                <valid-option nil="true"></valid-option>
+              </valid-options>
+              <default-value nil="true"></default-value>
+            </optional-param>
+            <optional-param>
+              <name>scales_to</name>
+              <type>integer</type>
+              <description>Maximum number of gears having cartridge jbossas-7</description>
+              <valid-options>
+                <valid-option nil="true"></valid-option>
+              </valid-options>
+              <default-value nil="true"></default-value>
+            </optional-param>
+          </optional-params>
+        </link>
+      </links>
+    </cartridge>
+  </data>
+  <messages/>
+  <version>1.3</version>
+  <supported-api-versions>
+    <supported-api-version>1.0</supported-api-version>
+    <supported-api-version>1.1</supported-api-version>
+    <supported-api-version>1.2</supported-api-version>
+    <supported-api-version>1.3</supported-api-version>
+  </supported-api-versions>
+</response>
+
+java.lang.IllegalArgumentException: Invalid character: <
+	at org.jboss.dmr.JSONParserImpl.invalid(JSONParserImpl.java:133)
+	at org.jboss.dmr.JSONParser.yyLex(JSONParser.java:584)
+	at org.jboss.dmr.JSONParser.yyParse(JSONParser.java:650)
+	at org.jboss.dmr.ModelNode.fromJSONString(ModelNode.java:1184)
+	at com.openshift.internal.client.response.ResourceDTOFactory.getModelNode(ResourceDTOFactory.java:184)
+	at com.openshift.internal.client.response.ResourceDTOFactory.get(ResourceDTOFactory.java:91)
+	at com.openshift.internal.client.RestService.request(RestService.java:92)
+	at com.openshift.internal.client.RestService.request(RestService.java:76)
+	at com.openshift.internal.client.RestService.request(RestService.java:156)
+	at com.openshift.internal.client.AbstractOpenShiftResource$ServiceRequest.execute(AbstractOpenShiftResource.java:152)
+	at com.openshift.internal.client.ApplicationResource$GetCartridgeRequest.execute(ApplicationResource.java:953)
+	at com.openshift.internal.client.ApplicationResource.getCartridge(ApplicationResource.java:506)
+	at com.openshift.internal.client.ApplicationResourceIntegrationTest.testLog(ApplicationResourceIntegrationTest.java:81)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:616)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:44)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:41)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:20)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:28)
+	at org.junit.runners.BlockJUnit4ClassRunner.runNotIgnored(BlockJUnit4ClassRunner.java:79)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:71)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:49)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:193)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:52)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:191)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:42)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:184)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:31)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:236)
+	at org.junit.runners.Suite.runChild(Suite.java:128)
+	at org.junit.runners.Suite.runChild(Suite.java:24)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:193)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:52)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:191)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:42)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:184)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:236)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:236)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:134)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:113)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:616)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:103)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:74)
+2012-11-20 11:24:33|TRACE|[main]| com.openshift.internal.client.RestService.   request     | Requesting DELETE on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630
+2012-11-20 11:24:33|INFO |[main]| com.openshift.internal.client.RestService.   request     | Requesting DELETE on https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630
+2012-11-20 11:24:33|TRACE|[main]| com.openshift.internal.client.httpclient.UrlConnectionHttpClient.createConnection     | creating connection to https://ec2-23-23-45-64.compute-1.amazonaws.com/broker/rest/domains/bdecoste90c/applications/1353439433630 using username "bdecoste90c@gmail.com" and password "123456"
+!!!!! acceptedMediaType application/xml
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 49.509 sec <<< FAILURE!
+
+Results :
+
+Tests in error: 
+  testLog(com.openshift.internal.client.ApplicationResourceIntegrationTest): Invalid character: <
+
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 54.790s
+[INFO] Finished at: Tue Nov 20 11:24:40 PST 2012
+[INFO] Final Memory: 14M/154M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12:test (default-test) on project openshift-java-client: There are test failures.
+[ERROR] 
+[ERROR] Please refer to /home/bdecoste/workspaces/OpenShift/openshift-java-client/target/surefire-reports for the individual test results.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

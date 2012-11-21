@@ -85,14 +85,24 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		this.authKey = authKey;
 		this.authIV = authIV;
 	}
+	
+	public void setAcceptedMediaType(String acceptedMediaType) {
+		this.acceptedMediaType = acceptedMediaType;
+	}
+	
+	public String getAcceptedMediaType() {
+		return this.acceptedMediaType;
+	}
 
 
 	public String get(URL url) throws HttpClientException, SocketTimeoutException {
 		HttpURLConnection connection = null;
-		try {
+		try {			
 			connection = createConnection(username, password, authKey, authIV, userAgent, url);
+			
 			return StreamUtils.readToString(connection.getInputStream());
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 			throw new NotFoundException(
 					MessageFormat.format("Could not find resource \"{0}\"", url.toString()), e);
 		} catch (IOException e) {
@@ -245,6 +255,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		setUserAgent(connection);
 		
 		connection.setRequestProperty(PROPERTY_CONTENT_TYPE, requestMediaType.getType());
+		
 		return connection;
 	}
 

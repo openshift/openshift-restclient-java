@@ -417,5 +417,9 @@ public interface IApplication extends IOpenShiftResource {
 	 * @throws OpenShiftSSHOperationException
 	 */
 	public List<String> getEnvironmentProperties() throws OpenShiftSSHOperationException;
+	
+	public String getCartridge(String cartridgeName) throws OpenShiftException;
+	
+	public String getLogDirEnvName(String cartridgeName) throws OpenShiftException;
 
 }

@@ -63,4 +63,8 @@ public interface IHttpClient {
 	public String delete(Map<String, Object> parameters, URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 
 	public String delete(URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+	
+	public String getAcceptedMediaType();
+	
+	public void setAcceptedMediaType(String acceptedMediaType);
 }

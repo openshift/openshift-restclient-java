@@ -15,6 +15,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_CONSUMED_GEARS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_CREATION_TIME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DATA;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DESCRIPTION;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DOMAIN;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DOMAIN_ID;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_EMBEDDED;
@@ -33,6 +34,8 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_METHOD;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_NAME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_OPTIONAL_PARAMS;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROPERTIES;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROPERTY;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROXY_HOST;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROXY_PORT;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REL;
@@ -503,6 +506,7 @@ public class ResourceDTOFactory {
 			// recurse into 'data' node
 			return createCartridge(cartridgeNode.get(PROPERTY_DATA), creationLog);
 		}
+		
 		final String name = getAsString(cartridgeNode, PROPERTY_NAME);
 		final String type = getAsString(cartridgeNode, PROPERTY_TYPE);
 		final Map<String, Link> links = createLinks(cartridgeNode.get(PROPERTY_LINKS));

@@ -11,15 +11,19 @@
 package com.openshift.internal.client;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -60,6 +64,14 @@ import com.openshift.internal.client.ssh.ApplicationPortForwarding;
 import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * The Class Application.
@@ -499,6 +511,35 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			}
 		});
 	}
+	
+	public String getCartridge(String cartridgeName) throws OpenShiftException {
+		Assert.notNull(cartridgeName);
+
+		return new GetCartridgeRequest().execute(cartridgeName);
+
+	}
+	
+	public String getLogDirEnvName(String cartridgeName) throws OpenShiftException {
+		Assert.notNull(cartridgeName);
+
+		String xml = getCartridge(cartridgeName);
+		
+		CartridgeSAXParser parser = new CartridgeSAXParser();
+		parser.parseDocument(xml);
+		
+		Properties props = parser.getProperties();
+				
+		Enumeration i = props.propertyNames();
+		while (i.hasMoreElements()){
+			String key = (String)i.nextElement();
+			String value = props.getProperty(key);
+			if (value.toLowerCase().contains("log files"))
+				return key;
+		}
+		
+		return null;
+	}
+
 
 	private boolean waitForPositiveHealthResponse(long timeout, long startTime) throws OpenShiftException,
 			InterruptedException, OpenShiftEndpointException {
@@ -934,11 +975,101 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			super(LINK_LIST_CARTRIDGES);
 		}
 	}
+	
+	private class GetCartridgeRequest extends ServiceRequest {
+
+		protected GetCartridgeRequest() {
+			super(LINK_LIST_CARTRIDGES);
+		}
+		
+		public String execute(String cartridgeName) throws OpenShiftException {
+			return super
+					.execute(cartridgeName);
+		}
+	}
 
 	private class ListGearsRequest extends ServiceRequest {
 
 		protected ListGearsRequest() {
 			super(LINK_LIST_GEARS);
 		}
+	}
+	
+	private class CartridgeSAXParser extends DefaultHandler {
+
+		Properties props = new Properties();
+		boolean inProperty = false;
+		boolean inName = false;
+		boolean inDescription = false;
+		String tmpName = null;
+		String tmpDescription = null;
+		
+		public CartridgeSAXParser(){
+			props = new Properties();
+		}
+		
+		public Properties getProperties() {
+			return props;
+		}
+
+		public void parseDocument(String xml) {
+			
+			//get a factory
+			SAXParserFactory spf = SAXParserFactory.newInstance();
+			InputStream is = null;
+			try {
+			
+				//get a new instance of parser
+				SAXParser sp = spf.newSAXParser();
+				
+				is = new ByteArrayInputStream(xml.getBytes());
+				sp.parse(is, this);
+				
+			} catch(SAXException se) {
+				se.printStackTrace();
+			} catch(ParserConfigurationException pce) {
+				pce.printStackTrace();
+			} catch (IOException ie) {
+				ie.printStackTrace();
+			} finally {
+				if (is != null)
+					try { is.close(); } catch (IOException e){}
+			}
+		}
+
+		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+			if (qName.equalsIgnoreCase("property")) {
+				inProperty = true;
+			} else if (inProperty) {
+				if (qName.equalsIgnoreCase("name")) {
+					inName = true;
+				} else if (qName.equalsIgnoreCase("description")) {
+					inDescription = true;
+				}
+			}
+		}
+		
+
+		public void characters(char[] ch, int start, int length) throws SAXException {
+			if (inName)
+				tmpName = new String(ch,start,length);
+			else if (inDescription)
+				tmpDescription = new String(ch,start,length);
+		}
+		
+		public void endElement(String uri, String localName, String qName) throws SAXException {
+
+			if (inProperty){
+				if (qName.equalsIgnoreCase("property")) {
+					inProperty = false;
+				} else if (qName.equalsIgnoreCase("name")) {
+					inName = false;
+				} else if (qName.equalsIgnoreCase("description")) {
+					inDescription = false;
+					props.put(tmpName, tmpDescription);
+				}
+			}
+		}
+		
 	}
 }

@@ -13,6 +13,7 @@ package com.openshift.internal.client;
 import java.util.List;
 import java.util.Map;
 
+import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftResource;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
@@ -141,6 +142,19 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 				return null;
 			}
 			return response.getData();
+		}
+		
+		protected String execute(String addOn, ServiceParameter... parameters) throws OpenShiftException {
+			try {
+				Link link = getLink(linkName);
+				link = new Link(link.getRel(), link.getHref() + "/" + addOn, link.getHttpMethod(), link.getRequiredParams(), link.getOptionalParams());
+				
+				String response = getService().request(link, IHttpClient.MEDIATYPE_APPLICATION_XML, parameters);
+				
+				return response;
+			} catch (Exception e) {
+				throw new OpenShiftException(e, "Unable to execute request");
+			}
 		}
 
 	}

@@ -17,7 +17,7 @@ import com.openshift.client.OpenShiftRequestException;
  * @author Andre Dietisheim
  */
 public enum LinkParameterType {
-	STRING, BOOLEAN, INTEGER;
+	STRING, BOOLEAN, INTEGER, ARRAY;
 	
 	public static LinkParameterType valueOfIgnoreCase(String name) throws OpenShiftRequestException {
 		if (name == null) {

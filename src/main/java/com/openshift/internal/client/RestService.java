@@ -56,7 +56,7 @@ public class RestService implements IRestService {
 	private static final String SYSPROPERTY_PROXY_HOST = "proxyHost";
 	private static final String SYSPROPERTY_PROXY_SET = "proxySet";
 
-	private static final String SERVICE_VERSION = "1.0";
+	private static final String SERVICE_VERSION = "1.1";
 
 	private String baseUrl;
 	private IHttpClient client;
@@ -133,6 +133,7 @@ public class RestService implements IRestService {
 	private String request(URL url, HttpMethod httpMethod, Map<String, Object> parameters)
 			throws HttpClientException, SocketTimeoutException, OpenShiftException, UnsupportedEncodingException {
 		LOGGER.trace("Requesting {} on {}", httpMethod.name(), url);
+		LOGGER.info("Requesting {} on {}", httpMethod.name(), url);
 		
 		switch (httpMethod) {
 		case GET:
@@ -146,6 +147,25 @@ public class RestService implements IRestService {
 		default:
 			throw new OpenShiftException("Unexpected HTTP method {0}", httpMethod.toString());
 		}
+	}
+	
+	public String request(Link link, String acceptedMediaType,  ServiceParameter... serviceParameters)
+			throws MalformedURLException, HttpClientException, SocketTimeoutException, OpenShiftException, UnsupportedEncodingException {
+		String save = client.getAcceptedMediaType();
+		client.setAcceptedMediaType(acceptedMediaType);
+		
+		HttpMethod httpMethod = link.getHttpMethod();
+		URL url = getUrl(link.getHref());
+		Map<String, Object> parameters = toMap(serviceParameters);
+		
+		LOGGER.trace("Requesting {} on {}", httpMethod.name(), url);
+		LOGGER.info("Requesting {} on {}", httpMethod.name(), url);
+		
+		String response = client.get(url);
+
+		client.setAcceptedMediaType(save);
+		
+		return response;
 	}
 
 	private URL getUrl(String href) throws MalformedURLException, OpenShiftException {

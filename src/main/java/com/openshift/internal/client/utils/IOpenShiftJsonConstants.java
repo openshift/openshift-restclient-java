@@ -55,6 +55,8 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_METHOD = "method";
 	public static final String PROPERTY_MAX_GEARS = "max_gears";
 	public static final String PROPERTY_NAME = "name";
+	public static final String PROPERTY_PROPERTIES = "properties";
+	public static final String PROPERTY_PROPERTY = "property";
 	public static final String PROPERTY_PROXY_PORT = "proxy_port";
 	public static final String PROPERTY_PROXY_HOST = "proxy_host";
 	public static final String PROPERTY_SUFFIX = "suffix";
