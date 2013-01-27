@@ -305,27 +305,6 @@ public interface IApplication extends IOpenShiftResource {
 	public IDomain getDomain();
 
 	/**
-	 * Expose application port
-	 * 
-	 * @throws OpenShiftException
-	 */
-	public void exposePort() throws OpenShiftException;
-
-	/**
-	 * Conceal application port
-	 * 
-	 * @throws OpenShiftException
-	 */
-	public void concealPort() throws OpenShiftException;
-
-	/**
-	 * Show application port
-	 * 
-	 * @throws OpenShiftException
-	 */
-	public void showPort() throws OpenShiftException;
-
-	/**
 	 * Scale down application
 	 * 
 	 * @throws OpenShiftException

@@ -62,22 +62,6 @@
                 "href":"/domains/foobar/applications/sample/events",
                 "rel":"Restart application"
             },
-            "CONCEAL_PORT":{
-                "optional_params":[
-                    
-                ],
-                "method":"POST",
-                "required_params":[
-                    {
-                        "name":"event",
-                        "type":"string",
-                        "description":"event",
-                        "valid_options":"conceal-port"
-                    }
-                ],
-                "href":"/domains/foobar/applications/sample/events",
-                "rel":"Conceal port"
-            },
             "ADD_ALIAS":{
                 "optional_params":[
                     
@@ -139,38 +123,6 @@
                 ],
                 "href":"/domains/foobar/applications/sample/events",
                 "rel":"Force stop application"
-            },
-            "EXPOSE_PORT":{
-                "optional_params":[
-                    
-                ],
-                "method":"POST",
-                "required_params":[
-                    {
-                        "name":"event",
-                        "type":"string",
-                        "description":"event",
-                        "valid_options":"expose-port"
-                    }
-                ],
-                "href":"/domains/foobar/applications/sample/events",
-                "rel":"Expose port"
-            },
-            "SHOW_PORT":{
-                "optional_params":[
-                    
-                ],
-                "method":"POST",
-                "required_params":[
-                    {
-                        "name":"event",
-                        "type":"string",
-                        "description":"event",
-                        "valid_options":"show-port"
-                    }
-                ],
-                "href":"/domains/foobar/applications/sample/events",
-                "rel":"Show port"
             },
             "REMOVE_ALIAS":{
                 "optional_params":[

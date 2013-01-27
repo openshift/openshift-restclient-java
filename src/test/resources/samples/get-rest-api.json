@@ -76,17 +76,6 @@
             "rel":"List available estimates",
             "method":"GET",
             "href":"/estimates"
-        },
-        "LIST_TEMPLATES":{
-            "optional_params":[
-                
-            ],
-            "required_params":[
-                
-            ],
-            "rel":"List application templates",
-            "method":"GET",
-            "href":"/application_template"
         }
     },
     "status":"ok",

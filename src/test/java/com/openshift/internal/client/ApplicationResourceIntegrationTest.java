@@ -401,32 +401,6 @@ public class ApplicationResourceIntegrationTest {
 		// there's currently no API to verify the application state
 	}
 
-	@Test
-	public void shouldConcealPortApplication() throws Exception {
-		// pre-condition
-		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-		application.start();
-
-		// operation
-		application.concealPort();
-
-		// verification
-		// there's currently no API to verify the application state
-	}
-
-	@Test
-	public void shouldExposePortApplication() throws Exception {
-		// pre-condition
-		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-		application.start();
-
-		// operation
-		application.exposePort();
-
-		// verification
-		// there's currently no API to verify the application state
-	}
-
 	@Ignore("Unused feature")
 	@Test
 	public void shouldGetApplicationDescriptor() throws Throwable {

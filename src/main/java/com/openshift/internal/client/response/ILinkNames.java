@@ -35,9 +35,6 @@ public interface ILinkNames {
 
 	/** The Constant ADD_APPLICATION_FROM_TEMPLATE. */
 	public static final String ADD_APPLICATION_FROM_TEMPLATE = "ADD_APPLICATION_FROM_TEMPLATE";
-
-	/** The Constant SHOW_PORT. */
-	public static final String SHOW_PORT = "SHOW_PORT";
 	
 	/** The Constant ADD_ALIAS. */
 	public static final String ADD_ALIAS = "ADD_ALIAS";
@@ -56,12 +53,6 @@ public interface ILinkNames {
 	
 	/** The Constant RESTART. */
 	public static final String RESTART = "RESTART";
-	
-	/** The Constant CONCEAL_PORT. */
-	public static final String CONCEAL_PORT = "CONCEAL_PORT";
-	
-	/** The Constant EXPOSE_PORT. */
-	public static final String EXPOSE_PORT = "EXPOSE_PORT";
 	
 	/** The Constant LIST_CARTRIDGES. */
 	public static final String LIST_CARTRIDGES = "LIST_CARTRIDGES";

@@ -94,9 +94,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private static final String LINK_RESTART_APPLICATION = "RESTART";
 	private static final String LINK_SCALE_UP = "SCALE_UP";
 	private static final String LINK_SCALE_DOWN = "SCALE_DOWN";
-	private static final String LINK_SHOW_PORT = "SHOW_PORT";
-	private static final String LINK_EXPOSE_PORT = "EXPOSE_PORT";
-	private static final String LINK_CONCEAL_PORT = "CONCEAL_PORT";
 	private static final String LINK_ADD_ALIAS = "ADD_ALIAS";
 	private static final String LINK_REMOVE_ALIAS = "REMOVE_ALIAS";
 	private static final String LINK_ADD_CARTRIDGE = "ADD_CARTRIDGE";
@@ -276,18 +273,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			new StopApplicationRequest().execute();
 
 		}
-	}
-
-	public void exposePort() throws OpenShiftException {
-		new ExposePortRequest().execute();
-	}
-
-	public void concealPort() throws OpenShiftException {
-		new ConcealPortRequest().execute();
-	}
-
-	public void showPort() throws OpenShiftException {
-		new ShowPortRequest().execute();
 	}
 
 	public void getDescriptor() {
@@ -893,42 +878,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		public <DTO> DTO execute() throws OpenShiftException {
 			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
 					IOpenShiftJsonConstants.VALUE_RESTART));
-		}
-	}
-
-	private class ExposePortRequest extends ServiceRequest {
-
-		protected ExposePortRequest() {
-			super(LINK_EXPOSE_PORT);
-		}
-
-		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
-					IOpenShiftJsonConstants.VALUE_EXPOSE_PORT));
-		}
-	}
-
-	private class ConcealPortRequest extends ServiceRequest {
-
-		protected ConcealPortRequest() {
-			super(LINK_CONCEAL_PORT);
-		}
-
-		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
-					IOpenShiftJsonConstants.VALUE_CONCEAL_PORT));
-		}
-	}
-
-	private class ShowPortRequest extends ServiceRequest {
-
-		protected ShowPortRequest() {
-			super(LINK_SHOW_PORT);
-		}
-
-		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
-					IOpenShiftJsonConstants.VALUE_SHOW_PORT));
 		}
 	}
 

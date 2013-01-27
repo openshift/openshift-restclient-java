@@ -87,13 +87,10 @@ public class IOpenShiftJsonConstants {
 	public static final String VALUE_STATUS_OK = "ok";
 	public static final String VALUE_STATUS_CREATED = "created";
 	public static final Object VALUE_ADD_ALIAS = "add-alias";
-	public static final Object VALUE_CONCEAL_PORT = "conceal-port";
-	public static final Object VALUE_EXPOSE_PORT = "expose-port";
 	public static final Object VALUE_FORCESTOP = "force-stop";
 	public static final Object VALUE_RESTART = "restart";
 	public static final Object VALUE_SCALE_DOWN = "scale-down";
 	public static final Object VALUE_SCALE_UP = "scale-up";
-	public static final Object VALUE_SHOW_PORT = "show-port";
 	public static final Object VALUE_START = "start";
 	public static final Object VALUE_STOP = "stop";
 	public static final Object VALUE_STATUS = "status";

@@ -153,22 +153,6 @@
                 ],
                 "method":"POST"
             },
-            "EXPOSE_PORT":{
-                "href":"/domains/foobar/applications/sample/events",
-                "rel":"Expose port",
-                "optional_params":[
-                    
-                ],
-                "required_params":[
-                    {
-                        "description":"event",
-                        "valid_options":"expose-port",
-                        "name":"event",
-                        "type":"string"
-                    }
-                ],
-                "method":"POST"
-            },
             "ADD_ALIAS":{
                 "href":"/domains/foobar/applications/sample/events",
                 "rel":"Add application alias",
@@ -236,22 +220,6 @@
                 ],
                 "method":"POST"
             },
-            "SHOW_PORT":{
-                "href":"/domains/foobar/applications/sample/events",
-                "rel":"Show port",
-                "optional_params":[
-                    
-                ],
-                "required_params":[
-                    {
-                        "description":"event",
-                        "valid_options":"show-port",
-                        "name":"event",
-                        "type":"string"
-                    }
-                ],
-                "method":"POST"
-            },
             "SCALE_UP":{
                 "href":"/domains/foobar/applications/sample/events",
                 "rel":"Scale up application",
@@ -278,22 +246,6 @@
                     
                 ],
                 "method":"GET"
-            },
-            "CONCEAL_PORT":{
-                "href":"/domains/foobar/applications/sample/events",
-                "rel":"Conceal port",
-                "optional_params":[
-                    
-                ],
-                "required_params":[
-                    {
-                        "description":"event",
-                        "valid_options":"conceal-port",
-                        "name":"event",
-                        "type":"string"
-                    }
-                ],
-                "method":"POST"
             },
             "GET_DESCRIPTOR":{
                 "href":"/domains/foobar/applications/sample/descriptor",

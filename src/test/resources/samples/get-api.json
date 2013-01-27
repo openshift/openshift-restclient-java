@@ -13,17 +13,6 @@
             "method":"GET",
             "rel":"List domains"
         },
-        "LIST_TEMPLATES":{
-            "required_params":[
-                
-            ],
-            "optional_params":[
-                
-            ],
-            "href":"https://stg.openshift.redhat.com/broker/rest/application_template",
-            "method":"GET",
-            "rel":"List application templates"
-        },
         "API":{
             "required_params":[
                 

@@ -140,22 +140,6 @@
                     }
                 ]
             },
-            "EXPOSE_PORT":{
-                "href":"https://openshift.redhat.com/broker/rest/domains/xcoulon/applications/test5/events",
-                "optional_params":[
-                    
-                ],
-                "rel":"Expose port",
-                "method":"POST",
-                "required_params":[
-                    {
-                        "valid_options":"expose-port",
-                        "name":"event",
-                        "description":"event",
-                        "type":"string"
-                    }
-                ]
-            },
             "ADD_ALIAS":{
                 "href":"https://openshift.redhat.com/broker/rest/domains/xcoulon/applications/test5/events",
                 "optional_params":[
@@ -176,22 +160,6 @@
                         ],
                         "name":"alias",
                         "description":"The server alias for the application",
-                        "type":"string"
-                    }
-                ]
-            },
-            "SHOW_PORT":{
-                "href":"https://openshift.redhat.com/broker/rest/domains/xcoulon/applications/test5/events",
-                "optional_params":[
-                    
-                ],
-                "rel":"Show port",
-                "method":"POST",
-                "required_params":[
-                    {
-                        "valid_options":"show-port",
-                        "name":"event",
-                        "description":"event",
                         "type":"string"
                     }
                 ]
@@ -230,22 +198,6 @@
                 "required_params":[
                     {
                         "valid_options":"force-stop",
-                        "name":"event",
-                        "description":"event",
-                        "type":"string"
-                    }
-                ]
-            },
-            "CONCEAL_PORT":{
-                "href":"https://openshift.redhat.com/broker/rest/domains/xcoulon/applications/test5/events",
-                "optional_params":[
-                    
-                ],
-                "rel":"Conceal port",
-                "method":"POST",
-                "required_params":[
-                    {
-                        "valid_options":"conceal-port",
                         "name":"event",
                         "description":"event",
                         "type":"string"

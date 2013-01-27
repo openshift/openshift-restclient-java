@@ -291,21 +291,6 @@ public class ApplicationResourceTest {
 	}
 
 	@Test
-	@Ignore("Failure on stg")
-	public void shouldExposePortApplication() throws Throwable {
-	}
-
-	@Test
-	@Ignore("Failure on stg")
-	public void shouldConcealPortApplication() throws Throwable {
-	}
-
-	@Test
-	@Ignore("Failure on stg")
-	public void shouldShowPortApplication() throws Throwable {
-	}
-
-	@Test
 	@Ignore("Unused feature")
 	public void shouldGetApplicationGears() throws Throwable {
 
