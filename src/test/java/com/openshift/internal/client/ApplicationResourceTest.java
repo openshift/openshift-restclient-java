@@ -176,7 +176,7 @@ public class ApplicationResourceTest {
 		assertThat(app.getCartridge()).isEqualTo(cartridge);
 		assertThat(app.getUUID()).isNotNull();
 		assertThat(app.getDomain()).isEqualTo(domain);
-		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(17);
+		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(14);
 		assertThat(domain.getApplications()).hasSize(1).contains(app);
 	}
 

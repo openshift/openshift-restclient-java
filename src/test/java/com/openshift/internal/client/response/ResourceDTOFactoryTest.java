@@ -112,7 +112,7 @@ public class ResourceDTOFactoryTest {
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.links);
 		final Map<String, Link> links = response.getData();
-		assertThat(links).hasSize(7);
+		assertThat(links).hasSize(6);
 		assertThat(links).satisfies(new ValidLinkCondition());
 
 	}
@@ -213,7 +213,7 @@ public class ResourceDTOFactoryTest {
 		assertThat(application.getDomainId()).isEqualTo("foobar");
 		assertThat(application.getFramework()).isEqualTo("jbossas-7");
 		assertThat(application.getName()).isEqualTo("sample");
-		assertThat(application.getLinks()).hasSize(17);
+		assertThat(application.getLinks()).hasSize(14);
 		assertThat(application.getAliases()).contains("an_alias", "another_alias");
 	}
 
