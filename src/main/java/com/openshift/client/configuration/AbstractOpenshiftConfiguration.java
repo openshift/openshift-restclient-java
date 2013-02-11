@@ -35,9 +35,9 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	protected static final String KEY_PASSWORD = "rhpassword";
 	protected static final String KEY_CLIENT_ID = "client_id";
 	
-	private static final Pattern SINGLEQUOTED_REGEX = Pattern.compile("'*([^']+)'*");
+	private static final Pattern QUOTED_REGEX = Pattern.compile("['\"]*([^'\"]+)['\"]*");
 	private static final char SINGLEQUOTE = '\'';
-	
+		
 	private static final String SYSPROPERTY_PROXY_PORT = "proxyPort";
 	private static final String SYSPROPERTY_PROXY_HOST = "proxyHost";
 	private static final String SYSPROPERTY_PROXY_SET = "proxySet";
@@ -120,7 +120,7 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	}
 
 	public String getRhlogin() {
-		return removeSingleQuotes(properties.getProperty(KEY_RHLOGIN));
+		return removeQuotes(properties.getProperty(KEY_RHLOGIN));
 	}
 
 	public void setLibraServer(String libraServer) {
@@ -128,7 +128,7 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	}
 
 	public String getLibraServer() {
-		return UrlUtils.ensureStartsWithHttps(removeSingleQuotes(properties.getProperty(KEY_LIBRA_SERVER)));
+		return UrlUtils.ensureStartsWithHttps(removeQuotes(properties.getProperty(KEY_LIBRA_SERVER)));
 	}
 
 	public void setLibraDomain(String libraDomain) {
@@ -136,18 +136,18 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	}
 
 	public String getLibraDomain() {
-		return removeSingleQuotes(properties.getProperty(KEY_LIBRA_DOMAIN));
+		return removeQuotes(properties.getProperty(KEY_LIBRA_DOMAIN));
 	}
 
 	protected String ensureIsSingleQuoted(String value) {
-		return SINGLEQUOTE + removeSingleQuotes(value) + SINGLEQUOTE;
+		return SINGLEQUOTE + removeQuotes(value) + SINGLEQUOTE;
 	}
 
-	protected String removeSingleQuotes(String value) {
+	protected String removeQuotes(String value) {
 		if (value == null) {
 			return null;
 		}
-		Matcher matcher = SINGLEQUOTED_REGEX.matcher(value);
+		Matcher matcher = QUOTED_REGEX.matcher(value);
 		if (matcher.find()
 				&& matcher.groupCount() == 1) {
 			return matcher.group(1);
@@ -172,17 +172,17 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 		String set = properties.getProperty(SYSPROPERTY_PROXY_SET);
 		
 		if (set != null)
-			return Boolean.parseBoolean(removeSingleQuotes(set));
+			return Boolean.parseBoolean(removeQuotes(set));
 		else 
 			return false;
 	}
 	
 	public String getProxyHost() {
-		return removeSingleQuotes(properties.getProperty(SYSPROPERTY_PROXY_HOST));
+		return removeQuotes(properties.getProperty(SYSPROPERTY_PROXY_HOST));
 	}
 	
 	public String getProxyPort() {
-		return removeSingleQuotes(properties.getProperty(SYSPROPERTY_PROXY_PORT));
+		return removeQuotes(properties.getProperty(SYSPROPERTY_PROXY_PORT));
 	}
 
 }

@@ -47,6 +47,8 @@ public class ConfigurationTest {
 	private static final String USERNAME3 = "Dietisheim";
 	private static final String ANOTHER_USERNAME = "anotherUser";
 	protected static final String LIBRA_SERVER = "openshift.redhat.com";
+	protected static final String SIGLEQUOTED_LIBRA_SERVER = "'openshift.redhat.com'";
+	protected static final String DOUBLEQUOTED_LIBRA_SERVER = "\"openshift.redhat.com\"";
 
 	@Test
 	public void versionTest() throws OpenShiftException, IOException {
@@ -163,7 +165,20 @@ public class ConfigurationTest {
 		SystemConfiguration systemConfiguration = new SystemConfigurationFake(new DefaultConfiguration()) {
 
 			protected void init(Properties properties) {
-				properties.put(KEY_RHLOGIN, USERNAME);
+				properties.put(KEY_LIBRA_SERVER, SIGLEQUOTED_LIBRA_SERVER);
+			}
+
+		};
+		UserConfigurationFake userConfiguration = new UserConfigurationFake(systemConfiguration);
+		assertEquals(UrlUtils.SCHEME_HTTPS + LIBRA_SERVER, userConfiguration.getLibraServer());
+	}
+
+	@Test
+	public void doubleQuotedLibraServerIsReturnedWithoutQuotes() throws OpenShiftException, IOException {
+		SystemConfiguration systemConfiguration = new SystemConfigurationFake(new DefaultConfiguration()) {
+
+			protected void init(Properties properties) {
+				properties.put(KEY_LIBRA_SERVER, DOUBLEQUOTED_LIBRA_SERVER);
 			}
 
 		};
@@ -176,7 +191,7 @@ public class ConfigurationTest {
 		SystemConfiguration systemConfiguration = new SystemConfigurationFake(new DefaultConfiguration()) {
 
 			protected void init(Properties properties) {
-				properties.put(KEY_RHLOGIN, USERNAME);
+				properties.put(KEY_LIBRA_SERVER, LIBRA_SERVER);
 			}
 
 		};
