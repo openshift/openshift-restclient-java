@@ -112,6 +112,7 @@ public class HttpServerFake {
 				socket = serverSocket.accept();
 				String response = getResponse(socket);
 				outputStream = socket.getOutputStream();
+				writeResponseHeader(outputStream);
 				outputStream.write(response.getBytes());
 				outputStream.flush();
 			} catch (IOException e) {
@@ -123,6 +124,10 @@ public class HttpServerFake {
 			}
 		}
 
+		protected void writeResponseHeader(OutputStream outputStream) throws IOException {
+			outputStream.write("HTTP/1.1 200 OK\n\n".getBytes());
+		}
+		
 		/**
 		 * Returns the response instance variable if present. If not, the
 		 * content of the inputStream is returned.
