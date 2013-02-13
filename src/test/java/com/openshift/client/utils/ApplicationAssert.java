@@ -23,9 +23,9 @@ import org.fest.assertions.AssertExtension;
 
 import com.openshift.client.IApplication;
 import com.openshift.client.ICartridge;
+import com.openshift.client.ICartridgeConstraint;
 import com.openshift.client.IDomain;
 import com.openshift.client.IEmbeddableCartridge;
-import com.openshift.client.IEmbeddableCartridgeConstraint;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftException;
@@ -128,6 +128,15 @@ public class ApplicationAssert implements AssertExtension {
 		return this;
 	}
 	
+	public ApplicationAssert hasEmbeddableCartridges(ICartridgeConstraint constraint) throws OpenShiftException {
+		List<IEmbeddableCartridge> embeddableCartridges = getConnection(application).getEmbeddableCartridges();
+		for (IEmbeddableCartridge cartridge : constraint.getMatching(embeddableCartridges)) {
+			assertTrue(application.hasEmbeddedCartridge(cartridge));
+		}
+
+		return this;
+	}
+
 	public ApplicationAssert hasEmbeddableCartridges(String... embeddableCartridgeNames) throws OpenShiftException {
 		if (embeddableCartridgeNames.length == 0) {
 			assertEquals(0, application.getEmbeddedCartridges().size());
@@ -139,23 +148,18 @@ public class ApplicationAssert implements AssertExtension {
 
 		return this;
 	}
-	
-	public ApplicationAssert hasEmbeddableCartridges(IEmbeddableCartridgeConstraint... constraints) throws OpenShiftException {
-		for (IEmbeddableCartridgeConstraint constraint : constraints) {
-			assertTrue(application.hasEmbeddedCartridge(matchingCartridges.get(0)));
+		
+	public ApplicationAssert hasNotEmbeddableCartridges(String... embeddableCartridgeNames) throws OpenShiftException {		
+		for (String cartridgeName : embeddableCartridgeNames) {
+			assertFalse(application.hasEmbeddedCartridge(cartridgeName));
 		}
 
 		return this;
 	}
 
-	private IEmbeddableCartridge getMatchingCartridge(IEmbeddableCartridgeConstraint constraint) {
-		assertTrue(application.hasEmbeddedCartridge(getMatchingCartridge(constraint)));
-
-	}
-	
-	public ApplicationAssert hasNotEmbeddableCartridges(String... embeddableCartridgeNames) throws OpenShiftException {		
-		for (String cartridgeName : embeddableCartridgeNames) {
-			assertFalse(application.hasEmbeddedCartridge(cartridgeName));
+	public ApplicationAssert hasNotEmbeddableCartridges(ICartridgeConstraint... constraints) throws OpenShiftException {		
+		for (ICartridgeConstraint constraint : constraints) {
+			assertTrue(application.getEmbeddedCartridges(constraint).isEmpty());
 		}
 
 		return this;

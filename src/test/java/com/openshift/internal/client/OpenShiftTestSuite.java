@@ -15,7 +15,6 @@ import org.junit.runners.Suite;
 
 import com.openshift.internal.client.response.ResourceDTOFactoryTest;
 
-
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	ConfigurationTest.class,
@@ -26,10 +25,11 @@ import com.openshift.internal.client.response.ResourceDTOFactoryTest;
 	ApplicationResourceTest.class,
 	CartridgesTest.class,
 	EmbeddableCartridgeTest.class,
-	EmbeddableCartridgeNameConstraintTest.class,
+	LatestVersionOfTest.class,
 	UserTest.class,
 	SSHKeyTest.class
-)}
+})
+
 /**
  * @author André Dietisheim
  */

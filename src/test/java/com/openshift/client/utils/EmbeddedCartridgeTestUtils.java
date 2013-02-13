@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.openshift.client.utils;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -83,7 +81,7 @@ public class EmbeddedCartridgeTestUtils {
 		}
 	}
 
-	public static void ensureHasEmbeddedCartridge(IEmbeddedCartridge cartridge, IApplication application)
+	public static void ensureHasEmbeddedCartridge(IEmbeddableCartridge cartridge, IApplication application)
 			throws OpenShiftException {
 		if (cartridge == null
 				|| application == null) {

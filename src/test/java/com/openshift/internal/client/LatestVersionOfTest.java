@@ -28,7 +28,7 @@ import com.openshift.client.IEmbeddedCartridge;
 /**
  * @author Andre Dietisheim
  */
-public class EmbeddableCartridgeNameConstraintTest {
+public class LatestVersionOfTest {
 
 	@Test
 	public void shouldEqualsOtherCartridgeConstraint() {
