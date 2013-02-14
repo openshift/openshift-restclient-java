@@ -56,7 +56,7 @@ public class RestService implements IRestService {
 	private static final String SYSPROPERTY_PROXY_HOST = "proxyHost";
 	private static final String SYSPROPERTY_PROXY_SET = "proxySet";
 
-	private static final String SERVICE_VERSION = "1.1";
+	private static final String SERVICE_VERSION = "1.0";
 
 	private String baseUrl;
 	private IHttpClient client;

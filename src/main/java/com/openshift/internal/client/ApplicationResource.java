@@ -19,7 +19,6 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -29,9 +28,15 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -65,14 +70,6 @@ import com.openshift.internal.client.ssh.ApplicationPortForwarding;
 import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * The Class Application.
@@ -524,28 +521,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return new GetCartridgeRequest().execute(cartridgeName);
 
 	}
-	
-	public String getLogDirEnvName(String cartridgeName) throws OpenShiftException {
-		Assert.notNull(cartridgeName);
-
-		String xml = getCartridge(cartridgeName);
-		
-		CartridgeSAXParser parser = new CartridgeSAXParser();
-		parser.parseDocument(xml);
-		
-		Properties props = parser.getProperties();
-				
-		Enumeration i = props.propertyNames();
-		while (i.hasMoreElements()){
-			String key = (String)i.nextElement();
-			String value = props.getProperty(key);
-			if (value.toLowerCase().contains("log files"))
-				return key;
-		}
-		
-		return null;
-	}
-
 
 	protected IOpenShiftConnection getConnection() {
 		return getDomain().getUser().getConnection();
