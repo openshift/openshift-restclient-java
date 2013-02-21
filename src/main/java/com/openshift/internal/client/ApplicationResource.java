@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -49,9 +50,9 @@ import com.openshift.client.IApplicationGear;
 import com.openshift.client.IApplicationGearComponent;
 import com.openshift.client.IApplicationPortForwarding;
 import com.openshift.client.ICartridge;
+import com.openshift.client.ICartridgeConstraint;
 import com.openshift.client.IDomain;
 import com.openshift.client.IEmbeddableCartridge;
-import com.openshift.client.IEmbeddableCartridgeConstraint;
 import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
@@ -332,8 +333,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return "1";
 	}
 
-	public List<IEmbeddedCartridge> addEmbeddableCartridge(IEmbeddableCartridgeConstraint cartridgeConstraint) throws OpenShiftException {
-		List<IEmbeddableCartridge> cartridges = cartridgeConstraint.getEmbeddableCartridges(getConnection());
+	public List<IEmbeddedCartridge> addEmbeddableCartridge(ICartridgeConstraint cartridgeConstraint) throws OpenShiftException {
+		Collection<IEmbeddableCartridge> cartridges = (Collection<IEmbeddableCartridge>) cartridgeConstraint.getMatching(getConnection().getEmbeddableCartridges());
 		return addEmbeddableCartridges(cartridges);
 	}
 
@@ -360,7 +361,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return embeddedCartridge;
 	}
 
-	public List<IEmbeddedCartridge> addEmbeddableCartridges(List<IEmbeddableCartridge> cartridges)
+	public List<IEmbeddedCartridge> addEmbeddableCartridges(Collection<IEmbeddableCartridge> cartridges)
 			throws OpenShiftException {
 		Assert.notNull(cartridges);
 
@@ -422,6 +423,12 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return getEmbeddedCartridge(cartridge.getName());
 	}
 
+	public Collection<IEmbeddedCartridge> getEmbeddedCartridges(ICartridgeConstraint constraint) throws OpenShiftException {
+		Assert.notNull(constraint);
+
+		return constraint.getMatching(getEmbeddedCartridges());
+	}
+	
 	public IEmbeddedCartridge getEmbeddedCartridge(String cartridgeName) throws OpenShiftException {
 		Assert.notNull(cartridgeName);
 
@@ -432,9 +439,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 		return null;
 	}
-
-	public void removeEmbeddedCartridges(IEmbeddableCartridgeConstraint cartridgeConstraint) throws OpenShiftException {
-		List<IEmbeddableCartridge> embeddableCartridges = cartridgeConstraint.getEmbeddableCartridges(getConnection());
+	
+	public void removeEmbeddedCartridges(ICartridgeConstraint cartridgeConstraint) throws OpenShiftException {
+		Collection<IEmbeddableCartridge> embeddableCartridges = cartridgeConstraint.getMatching(getConnection().getEmbeddableCartridges());
 		removeEmbeddedCartridges(embeddableCartridges);
 	}
 	
@@ -447,7 +454,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
-	public void removeEmbeddedCartridges(List<IEmbeddableCartridge> cartridges) throws OpenShiftException {
+	public void removeEmbeddedCartridges(Collection<IEmbeddableCartridge> cartridges) throws OpenShiftException {
 		Assert.notNull(cartridges);
 
 		for(IEmbeddableCartridge cartridge : cartridges) {

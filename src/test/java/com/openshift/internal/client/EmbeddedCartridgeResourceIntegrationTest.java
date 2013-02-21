@@ -16,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,7 +25,9 @@ import com.openshift.client.IDomain;
 import com.openshift.client.IEmbeddableCartridge;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
+import com.openshift.client.LatestVersionOf;
 import com.openshift.client.OpenShiftConnectionFactory;
+import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
@@ -43,7 +44,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 
 	private IUser user;
 	private IApplication application;
-	private static IDomain domain;
+	private IDomain domain;
 
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
@@ -55,13 +56,8 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 						configuration.getPassword(),
 						configuration.getLibraServer());
 		this.user = connection.getUser();
-		domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		this.domain = DomainTestUtils.getFirstDomainOrCreate(user);
 		this.application = ApplicationTestUtils.getOrCreateApplication(domain);
-	}
-
-	@AfterClass
-	public static void cleanup() {
-		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 	}
 
 	@Test
@@ -72,30 +68,34 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	@Test
 	public void shouldAddMySQLEmbeddedCartridge() throws SocketTimeoutException, OpenShiftException {
 		// pre-conditions
-		EmbeddedCartridgeTestUtils.silentlyDestroy(IEmbeddableCartridge.MYSQL_51, application);
+		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.mySQL(), application);
 		int numOfEmbeddedCartridges = application.getEmbeddedCartridges().size();
 
 		// operation
-		application.addEmbeddableCartridge(IEmbeddableCartridge.MYSQL_51);
+		application.addEmbeddableCartridge(LatestVersionOf.mySQL());
 
 		// verification
 		assertNotNull(application.getEmbeddedCartridges());
 		assertTrue(application.getEmbeddedCartridges().size() == numOfEmbeddedCartridges + 1);
+
 		EmbeddableCartridgeAsserts.assertThatContainsCartridge(
-				IEmbeddableCartridge.MYSQL_51.getName(), application.getEmbeddedCartridges());
+				EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection()),
+				application.getEmbeddedCartridges());
 	}
 
 	@Test
-	public void shouldReturnThatContainsEmbeddedCartridge() throws SocketTimeoutException, OpenShiftException {
+	public void shouldReturnThatHasEmbeddedCartridge() throws SocketTimeoutException, OpenShiftException {
 		// pre-conditions
-		EmbeddedCartridgeTestUtils.silentlyDestroy(IEmbeddableCartridge.MYSQL_51, application);
+		IEmbeddableCartridge mySQL = 
+				EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection());
+		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.mySQL(), application);
 
 		// operation
-		application.addEmbeddableCartridge(IEmbeddableCartridge.MYSQL_51);
+		application.addEmbeddableCartridge(LatestVersionOf.mySQL());
 
 		// verification
 		assertNotNull(application.getEmbeddedCartridges());
-		assertTrue(application.hasEmbeddedCartridge(IEmbeddableCartridge.MYSQL_51));
+		assertTrue(application.hasEmbeddedCartridge(mySQL));
 	}
 
 	@Ignore
@@ -189,6 +189,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// application.getEmbeddedCartridges());
 	}
 
+	@Ignore
 	@Test
 	public void canEmbedMetrics() throws Exception {
 		// MetricsEmbeddableCartridge metrics = new
@@ -257,6 +258,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// }
 	}
 
+	@Ignore
 	@Test
 	public void loadWithOtherUserReportsIdenticalResults() throws Exception {
 		// MySqlEmbeddableCartridge mysql = new
@@ -283,36 +285,47 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// assertThatContainsCartridge(myadmin.getName(), embeddedCartridges);
 	}
 
+	@Test(expected=OpenShiftEndpointException.class)
+	public void shouldNotAddEmbeddedCartridgeTwice() throws Exception {
+		// pre-conditions
+		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(LatestVersionOf.mySQL(), application);
+
+		// operation
+		application.addEmbeddableCartridge(LatestVersionOf.mySQL());
+	}
+
 	@Test
 	public void shouldRemoveEmbeddedCartridge() throws Exception {
 		// pre-conditions
-		EmbeddedCartridgeTestUtils.silentlyDestroy(IEmbeddableCartridge.MYSQL_51, application);
+		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(LatestVersionOf.mySQL(), application);
 		int numOfEmbeddedCartridges = application.getEmbeddedCartridges().size();
 
 		// operation
-		application.addEmbeddableCartridge(IEmbeddableCartridge.MYSQL_51);
+		application.removeEmbeddedCartridges(LatestVersionOf.mySQL());
 
 		// verification
 		assertNotNull(application.getEmbeddedCartridges());
-		assertTrue(application.getEmbeddedCartridges().size() == numOfEmbeddedCartridges + 1);
-		EmbeddableCartridgeAsserts.assertThatContainsCartridge(
-				IEmbeddableCartridge.MYSQL_51.getName(), application.getEmbeddedCartridges());
+		assertTrue(application.getEmbeddedCartridges().size() == numOfEmbeddedCartridges - 1);
+		EmbeddableCartridgeAsserts.assertThatDoesntContainCartridge(
+				EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection()),
+				application.getEmbeddedCartridges());
 	}
-	
-	 @Test
-	 public void cannotRemoveEmbeddedCartridgeThatWasNotAdded() throws SocketTimeoutException, OpenShiftException {
+
+	@Test
+	public void cannotRemoveEmbeddedCartridgeThatWasNotAdded() throws SocketTimeoutException, OpenShiftException {
 		// pre-conditions
-		EmbeddedCartridgeTestUtils.silentlyDestroy(IEmbeddableCartridge.MYSQL_51, application);
+		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.mySQL(), application);
 		int numOfEmbeddedCartridges = application.getEmbeddedCartridges().size();
-		
+
 		// operation
-		application.removeEmbeddedCartridge(IEmbeddableCartridge.MYSQL_51);
+		application.removeEmbeddedCartridges(LatestVersionOf.mySQL());
 
 		// verification
 		assertNotNull(application.getEmbeddedCartridges());
 		assertTrue(application.getEmbeddedCartridges().size() == numOfEmbeddedCartridges);
-		EmbeddableCartridgeAsserts.assertThatDoesntContainsCartridge(
-				IEmbeddableCartridge.MYSQL_51.getName(), application.getEmbeddedCartridges());
-	 }
+		IEmbeddableCartridge mySql = EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection());
+		EmbeddableCartridgeAsserts.assertThatDoesntContainCartridge(
+				mySql.getName(), application.getEmbeddedCartridges());
+	}
 
 }

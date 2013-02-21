@@ -11,13 +11,11 @@
 package com.openshift.internal.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import com.openshift.client.ICartridgeConstraint;
 import com.openshift.client.IEmbeddableCartridge;
-import com.openshift.client.IEmbeddableCartridgeConstraint;
-import com.openshift.client.IOpenShiftConnection;
-import com.openshift.client.OpenShiftException;
-import com.openshift.internal.client.utils.Assert;
 
 /**
  * A base class for a constraint that shall match available embeddable
@@ -29,26 +27,24 @@ import com.openshift.internal.client.utils.Assert;
  * @see IEmbeddableCartridge for cartridges that have already been added and
  *      configured to an application.
  */
-public abstract class AbstractEmbeddableCartridgeConstraint implements IEmbeddableCartridgeConstraint {
+public abstract class AbstractCartridgeConstraint implements ICartridgeConstraint {
+	
+	public <C extends IEmbeddableCartridge> Collection<C> getMatching(Collection<C> cartridges) {
+		List<C> matchingCartridges = new ArrayList<C>();
 
-	public List<IEmbeddableCartridge> getEmbeddableCartridges(IOpenShiftConnection connection) {
-		Assert.isTrue(connection != null);
-
-		List<IEmbeddableCartridge> matchingCartridges = new ArrayList<IEmbeddableCartridge>();
-		for (IEmbeddableCartridge cartridge : connection.getEmbeddableCartridges()) {
+		if (cartridges == null) {
+			return matchingCartridges;
+		}
+		
+		for (C cartridge : cartridges) {
 			if (matches(cartridge)) {
 				matchingCartridges.add(cartridge);
 			}
 		}
 
-		if (matchingCartridges.isEmpty()) {
-			throw new OpenShiftException(createNoMatchErrorMessage(connection));
-		}
-
 		return matchingCartridges;
 	}
+	
+	protected abstract <C extends IEmbeddableCartridge> boolean matches(C cartridge);
 
-	protected abstract String createNoMatchErrorMessage(IOpenShiftConnection connection);
-
-	protected abstract boolean matches(IEmbeddableCartridge cartridge);
 }

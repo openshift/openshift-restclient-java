@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.client;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -91,7 +92,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @param cartridgeConstraint the constraint that determines what cartridges shall be added
 	 * @throws OpenShiftException if no cartridge matches the constraint
 	 */
-	public List<IEmbeddedCartridge> addEmbeddableCartridge(IEmbeddableCartridgeConstraint cartridgeConstraint)
+	public List<IEmbeddedCartridge> addEmbeddableCartridge(ICartridgeConstraint cartridgeConstraint)
 			throws OpenShiftException;
 
 	/**
@@ -111,7 +112,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @see #addEmbeddableCartridge(IEmbeddedCartridge)
 	 * @see #removeEmbeddedCartridge(IEmbeddedCartridge)
 	 */
-	public List<IEmbeddedCartridge> addEmbeddableCartridges(List<IEmbeddableCartridge> cartridge)
+	public List<IEmbeddedCartridge> addEmbeddableCartridges(Collection<IEmbeddableCartridge> cartridge)
 			throws OpenShiftException;
 
 	/**
@@ -180,6 +181,14 @@ public interface IApplication extends IOpenShiftResource {
 			throws OpenShiftException;
 
 	/**
+	 * Returns the embedded cartridges in this application that match the given cartridge constraint.
+	 * 
+	 * @param constraint the constraint that the embedded cartridges shall match
+	 * @return the matching embedded cartridges
+	 * @throws OpenShiftException
+	 */
+	public Collection<IEmbeddedCartridge> getEmbeddedCartridges(ICartridgeConstraint constraint) throws OpenShiftException;
+	/**
 	 * Removes the embeddable cartridges that match the given constraint.
 	 * 
 	 * @param cartridgeConstraint
@@ -187,7 +196,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @throws OpenShiftException
 	 *             if no cartridge matches the constraint
 	 */
-	public void removeEmbeddedCartridges(IEmbeddableCartridgeConstraint cartridgeConstraint)
+	public void removeEmbeddedCartridges(ICartridgeConstraint cartridgeConstraint)
 			throws OpenShiftException;
 
 	/**
@@ -209,7 +218,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @param cartridges the cartridges that shall get removed
 	 * @throws OpenShiftException
 	 */
-	public void removeEmbeddedCartridges(List<IEmbeddableCartridge> cartridges) throws OpenShiftException;
+	public void removeEmbeddedCartridges(Collection<IEmbeddableCartridge> cartridges) throws OpenShiftException;
 
 	/**
 	 * Returns all gears.

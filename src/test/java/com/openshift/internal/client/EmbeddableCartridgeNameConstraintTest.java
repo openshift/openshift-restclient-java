@@ -17,15 +17,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
 
-import com.openshift.client.IEmbeddableCartridge;
-import com.openshift.client.IEmbeddableCartridgeConstraint;
+import com.openshift.client.ICartridgeConstraint;
 import com.openshift.client.IEmbeddedCartridge;
-import com.openshift.client.IOpenShiftConnection;
-import com.openshift.client.OpenShiftException;
 
 /**
  * @author Andre Dietisheim
@@ -37,102 +35,83 @@ public class EmbeddableCartridgeNameConstraintTest {
 		// pre-coniditions
 		// operation
 		// verification
-		assertEquals(new EmbeddableCartridgeNameConstraint("redhat"),
-				new EmbeddableCartridgeNameConstraint("redhat"));
-		assertFalse(new EmbeddableCartridgeNameConstraint("redhat").equals(
-				new EmbeddableCartridgeNameConstraint("jboss")));
-	}
-
-	@Test(expected=OpenShiftException.class)
-	public void shouldThrowExceptionWhenNoMatch() {
-		// pre-coniditions
-		IOpenShiftConnection connection = createConnectionMock(new IEmbeddableCartridge[] { 
-				createEmbeddedCartridgeMock("mongo"),
-				createEmbeddedCartridgeMock("mysql")
-		});
-		IEmbeddableCartridgeConstraint cartridgeConstraint = new EmbeddableCartridgeNameConstraint("nonexistant");
-
-		// operation
-		cartridgeConstraint.getEmbeddableCartridges(connection);
-
-		// verification
+		assertEquals(
+				new LatestVersionOfName("redhat"),
+				new LatestVersionOfName("redhat"));
+		assertFalse(
+				new LatestVersionOfName("redhat").equals(
+				new LatestVersionOfName("jboss")));
 	}
 
 	@Test
 	public void shouldMatchMysql() {
 		// pre-coniditions
 		String mysqlCartridgeName = "mysql-5.1";
-		IOpenShiftConnection connection = createConnectionMock(new IEmbeddableCartridge[] { 
-				createEmbeddedCartridgeMock(mysqlCartridgeName)
-		});
-		IEmbeddableCartridgeConstraint cartridgeConstraint = new EmbeddableCartridgeNameConstraint("mysql");
+		List<IEmbeddedCartridge> embeddedCartridges = Arrays.asList(createEmbeddedCartridgeMock(mysqlCartridgeName));
+		
+		LatestVersionOfName cartridgeConstraint = new LatestVersionOfName("mysql");
 
 		// operation
-		List<IEmbeddableCartridge> embeddableCartridges = cartridgeConstraint.getEmbeddableCartridges(connection);
+		Collection<IEmbeddedCartridge> matchingCartridges = cartridgeConstraint.getMatching(embeddedCartridges);
 
 		// verification
-		assertThat(embeddableCartridges.size()).isEqualTo(1);
-		assertThat(embeddableCartridges.get(0).getName()).isEqualTo(mysqlCartridgeName);
+		assertThat(matchingCartridges.size()).isEqualTo(1);
+		assertThat(matchingCartridges.iterator().next().getName()).isEqualTo(mysqlCartridgeName);
 	}
 
 	@Test
 	public void shouldMatchLatestMysql() {
 		// pre-coniditions
 		String mysql51Name = "mysql-5.1";
-		IOpenShiftConnection connection = createConnectionMock(new IEmbeddableCartridge[] { 
+		List<IEmbeddedCartridge> embeddedCartridges = Arrays.asList(
 				createEmbeddedCartridgeMock(mysql51Name),
 				createEmbeddedCartridgeMock("mysql-5.0")
-		});
-		IEmbeddableCartridgeConstraint cartridgeConstraint = new EmbeddableCartridgeNameConstraint("mysql");
+		);
+
+		LatestVersionOfName cartridgeFilter = new LatestVersionOfName("mysql");
 
 		// operation
-		List<IEmbeddableCartridge> embeddableCartridges = cartridgeConstraint.getEmbeddableCartridges(connection);
+		Collection<IEmbeddedCartridge> matchingCartridges = cartridgeFilter.getMatching(embeddedCartridges);
 
 		// verification
-		assertThat(embeddableCartridges.size()).isEqualTo(1);
-		assertThat(embeddableCartridges.get(0).getName()).isEqualTo(mysql51Name);
+		assertThat(matchingCartridges.size()).isEqualTo(1);
+		assertThat(matchingCartridges.iterator().next().getName()).isEqualTo(mysql51Name);
 	}
 
 	@Test
 	public void shouldMatchMajorVersionedCartridge() {
 		// pre-coniditions
 		String cartridgeName = "jbossas-7";
-		IOpenShiftConnection connection = createConnectionMock(new IEmbeddableCartridge[] { 
+		List<IEmbeddedCartridge> embeddedCartridges = Arrays.asList(
 				createEmbeddedCartridgeMock(cartridgeName),
 				createEmbeddedCartridgeMock("mysql")
-		});
-		IEmbeddableCartridgeConstraint cartridgeConstraint = new EmbeddableCartridgeNameConstraint("jboss");
+		);
+		ICartridgeConstraint cartridgeConstraint = new LatestVersionOfName("jboss");
 
 		// operation
-		List<IEmbeddableCartridge> embeddableCartridges = cartridgeConstraint.getEmbeddableCartridges(connection);
+		Collection<IEmbeddedCartridge> matchingCartridges = cartridgeConstraint.getMatching(embeddedCartridges);
 
 		// verification
-		assertThat(embeddableCartridges.size()).isEqualTo(1);
-		assertThat(embeddableCartridges.get(0).getName()).isEqualTo(cartridgeName);
+		assertThat(matchingCartridges.size()).isEqualTo(1);
+		assertThat(matchingCartridges.iterator().next().getName()).isEqualTo(cartridgeName);
 	}
 
 	@Test
 	public void shouldMatchAlphanumericVersionedCartridge() {
 		// pre-coniditions
 		String cartridgeName = "somecartridge-7b";
-		IOpenShiftConnection connection = createConnectionMock(new IEmbeddableCartridge[] { 
+		List<IEmbeddedCartridge> embeddedCartridges = Arrays.asList(
 				createEmbeddedCartridgeMock(cartridgeName),
 				createEmbeddedCartridgeMock("mysql-5.0")
-		});
-		IEmbeddableCartridgeConstraint cartridgeConstraint = new EmbeddableCartridgeNameConstraint("some");
+		);
+		ICartridgeConstraint cartridgeConstraint = new LatestVersionOfName("some");
 
 		// operation
-		List<IEmbeddableCartridge> embeddableCartridges = cartridgeConstraint.getEmbeddableCartridges(connection);
+		Collection<IEmbeddedCartridge> matchingCartridges = cartridgeConstraint.getMatching(embeddedCartridges);
 
 		// verification
-		assertThat(embeddableCartridges.size()).isEqualTo(1);
-		assertThat(embeddableCartridges.get(0).getName()).isEqualTo(cartridgeName);
-	}
-
-	private IOpenShiftConnection createConnectionMock(IEmbeddableCartridge[] embeddableCartridges) {
-		IOpenShiftConnection connectionMock = mock(IOpenShiftConnection.class);
-		when(connectionMock.getEmbeddableCartridges()).thenReturn(Arrays.asList(embeddableCartridges));
-		return connectionMock;
+		assertThat(matchingCartridges.size()).isEqualTo(1);
+		assertThat(matchingCartridges.iterator().next().getName()).isEqualTo(cartridgeName);
 	}
 
 	private IEmbeddedCartridge createEmbeddedCartridgeMock(String name) {

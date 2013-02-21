@@ -11,7 +11,8 @@
 package com.openshift.internal.client;
 
 import java.text.Collator;
-import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.openshift.client.IEmbeddableCartridge;
-import com.openshift.client.IOpenShiftConnection;
 import com.openshift.internal.client.utils.Assert;
 
 /**
@@ -31,41 +31,35 @@ import com.openshift.internal.client.utils.Assert;
  * @see IEmbeddableCartridge for cartridges that have already been added and
  *      configured to an application.
  */
-public class EmbeddableCartridgeNameConstraint extends AbstractEmbeddableCartridgeConstraint {
+public class LatestVersionOfName extends AbstractCartridgeConstraint {
 
 	private final String nameConstraint;
 
-	public EmbeddableCartridgeNameConstraint(final String nameConstraint) {
-		Assert.isTrue(nameConstraint != null);
-		this.nameConstraint = nameConstraint;
+	public LatestVersionOfName(final String name) {
+		Assert.isTrue(name != null);
+		this.nameConstraint = name;
+	}
+	
+	@Override
+	public <C extends IEmbeddableCartridge> Collection<C> getMatching(Collection<C> cartridges) {
+		List<C> matchingCartridges = new ArrayList<C>(super.getMatching(cartridges));
+		return Collections.singletonList(getLatest(matchingCartridges));
 	}
 
-	protected boolean matches(IEmbeddableCartridge cartridge) {
+	@Override
+	protected <C extends IEmbeddableCartridge> boolean matches(C cartridge) {
 		return cartridge.getName().startsWith(nameConstraint);
 	}
 
-	@Override
-	protected String createNoMatchErrorMessage(IOpenShiftConnection connection) {
-		return MessageFormat.format(
-				"No embeddable cartridge that matches the name constraint {0} is available at {1}",
-				nameConstraint, connection.getServer());
-	}
-
-	@Override
-	public List<IEmbeddableCartridge> getEmbeddableCartridges(IOpenShiftConnection connection) {
-		List<IEmbeddableCartridge> matchingCartridges = super.getEmbeddableCartridges(connection);
-		return Collections.<IEmbeddableCartridge> singletonList(getLatest(matchingCartridges));
-	}
-
-	protected IEmbeddableCartridge getLatest(List<IEmbeddableCartridge> matchingCartridges) {
+	protected <C extends IEmbeddableCartridge> C getLatest(List<C> matchingCartridges) {
 		if (matchingCartridges.size() == 1) {
 			return matchingCartridges.get(0);
 		}
 
-		Collections.sort(matchingCartridges, new Comparator<IEmbeddableCartridge>() {
+		Collections.sort(matchingCartridges, new Comparator<C>() {
 
 			@Override
-			public int compare(IEmbeddableCartridge thisCartridge, IEmbeddableCartridge thatCartridge) {
+			public int compare(C thisCartridge, C thatCartridge) {
 				VersionedName thisName = new VersionedName(thisCartridge.getName());
 				VersionedName thatName = new VersionedName(thatCartridge.getName());
 				return thisName.compareTo(thatName);
@@ -146,10 +140,10 @@ public class EmbeddableCartridgeNameConstraint extends AbstractEmbeddableCartrid
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof EmbeddableCartridgeNameConstraint)) {
+		if (!(obj instanceof LatestVersionOfName)) {
 			return false;
 		}
-		EmbeddableCartridgeNameConstraint other = (EmbeddableCartridgeNameConstraint) obj;
+		LatestVersionOfName other = (LatestVersionOfName) obj;
 		if (nameConstraint == null) {
 			if (other.nameConstraint != null) {
 				return false;

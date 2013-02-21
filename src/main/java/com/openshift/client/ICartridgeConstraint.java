@@ -10,12 +10,20 @@
  ******************************************************************************/
 package com.openshift.client;
 
+import java.util.Collection;
 
 /**
- * @author Xavier Coulon
+ * @author Andre Dietisheim
+ * 
  */
-public interface IEmbeddableCartridge {
-	
-	public String getName();
-	
+public interface ICartridgeConstraint {
+
+	/**
+	 * Returns the cartridge that matches this constraint.
+	 * 
+	 * @param availableCartridges
+	 *            the cartridges that are available that shall get matched against this constraint
+	 * @return the embeddable cartridges that match this constraint
+	 */
+	public <C extends IEmbeddableCartridge> Collection<C> getMatching(Collection<C> availableCartridges);
 }

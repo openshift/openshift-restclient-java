@@ -76,7 +76,7 @@ public class CartridgesTest {
 	@Test
 	public void embeddableCartridgeShouldEqualEmbeddedCartridge() throws Throwable {
 		// pre-conditions
-		IEmbeddableCartridge jenkinsEmbeddableCartridge = IEmbeddableCartridge.JENKINS_14;
+		IEmbeddableCartridge jenkinsEmbeddableCartridge = new EmbeddableCartridge("jenkins");
 		ApplicationResource applicationMock = mock(ApplicationResource.class);
 
 		// operation
@@ -92,7 +92,7 @@ public class CartridgesTest {
 	@Test
 	public void embeddedCartridgeShouldEqualEmbeddableCartridge() throws Throwable {
 		// pre-conditions
-		IEmbeddableCartridge jenkinsEmbeddableCartridge = IEmbeddableCartridge.JENKINS_14;
+		IEmbeddableCartridge jenkinsEmbeddableCartridge = new EmbeddableCartridge("jenkins");
 		ApplicationResource applicationMock = mock(ApplicationResource.class);
 	
 		// operation
