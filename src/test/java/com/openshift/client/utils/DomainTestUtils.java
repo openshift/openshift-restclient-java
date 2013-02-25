@@ -30,7 +30,7 @@ public class DomainTestUtils {
 				silentlyDestroy(domain);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 
@@ -41,8 +41,12 @@ public class DomainTestUtils {
 		try {
 			domain.destroy(true);
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
+	}
+
+	public static IDomain ensureHasDomain(IUser user) throws OpenShiftException {
+		return getFirstDomainOrCreate(user);
 	}
 
 	public static IDomain getFirstDomainOrCreate(IUser user) throws OpenShiftException {
@@ -50,7 +54,7 @@ public class DomainTestUtils {
 		domain = getFirstDomain(user);
 
 		if (domain == null) {
-			domain = user.createDomain(StringUtils.createRandomString());
+			domain = user.createDomain(createRandomName());
 		}
 
 		return domain;

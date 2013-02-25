@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2013 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -17,9 +17,9 @@ import static org.junit.Assert.fail;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.openshift.client.ICartridge;
@@ -53,46 +53,12 @@ public class DomainResourceIntegrationTest {
 	}
 	
 	@Test
-	public void shouldReturnDomains() throws OpenShiftException {
-		// operation
-		List<IDomain> domains = user.getDomains();
-		assertThat(domains).isNotNull();
-	}
-
-	@Test
-	public void shouldCreateDomain() throws OpenShiftException {
-		// pre-condition
-		DomainTestUtils.silentlyDestroyAllDomains(user);
-
-		// operation
-		String id = StringUtils.createRandomString();
-		IDomain domain = user.createDomain(id);
-
-		// verification
-		assertThat(domain.getId()).isEqualTo(id);
-	}
-
-	@Test
-	public void shouldReturnDomainByName() throws OpenShiftException {
-		// pre-condition
-		DomainTestUtils.silentlyDestroyAllDomains(user);
-
-		// operation
-		String id = StringUtils.createRandomString();
-		user.createDomain(id);
-
-		// verification
-		IDomain domainByNamespace = user.getDomain(id);
-		assertThat(domainByNamespace.getId()).isEqualTo(id);
-	}
-
-	@Test
 	public void shouldSetNamespace() throws Exception {
 		// pre-condition
 		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		String namespace = DomainTestUtils.createRandomName();
 
 		// operation
-		String namespace = StringUtils.createRandomString();
 		domain.rename(namespace);
 
 		// verification
@@ -101,22 +67,19 @@ public class DomainResourceIntegrationTest {
 	}
 
 	@Test
+	@Ignore
 	public void canWaitForDomainToBecomeAccessible() throws OpenShiftException {
-		// IDomain domain = user.getDomain();
-		// assertNotNull(domain);
-		// String newDomainName = createRandomString();
-		// domain.setNamespace(newDomainName);
-		// assertEquals(newDomainName, domain.getNamespace());
-		// assertTrue(domain.waitForAccessible(10 * 1024));
+		throw new UnsupportedOperationException();
 	}
 
 	@Test
 	public void shouldDeleteDomainWithoutApplications() throws Exception {
 		// pre-condition
-		DomainTestUtils.silentlyDestroyAllDomains(user);
-		String id = StringUtils.createRandomString();
-		IDomain domain = user.createDomain(id);
-
+		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		String id = domain.getId();
+		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
+		assertThat(domain.getApplications()).isEmpty();
+		
 		// operation
 		domain.destroy();
 
@@ -132,7 +95,8 @@ public class DomainResourceIntegrationTest {
 			// pre-condition
 			domain = DomainTestUtils.getFirstDomainOrCreate(user);
 			ApplicationTestUtils.getOrCreateApplication(domain);
-
+			assertThat(domain.getApplications()).isNotEmpty();
+			
 			// operation
 			domain.destroy();
 			fail("OpenShiftEndpointException did not occurr");
@@ -147,7 +111,8 @@ public class DomainResourceIntegrationTest {
 		// pre-condition
 		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
 		ApplicationTestUtils.getOrCreateApplication(domain);
-
+		assertThat(domain.getApplications()).isNotEmpty();
+		
 		// operation
 		domain.destroy(true);
 

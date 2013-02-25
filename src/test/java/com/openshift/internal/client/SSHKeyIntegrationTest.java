@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2013 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -19,6 +19,7 @@ import java.net.SocketTimeoutException;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.jcraft.jsch.JSchException;
@@ -59,12 +60,12 @@ public class SSHKeyIntegrationTest {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
-			String keyName = String.valueOf(System.currentTimeMillis());
 			String publicKeyPath = SSHKeyTestUtils.createDsaKeyPair();
 			ISSHPublicKey publicKey = new SSHPublicKey(publicKeyPath);
 			int numOfKeys = user.getSSHKeys().size();
 
 			// operation
+			String keyName = SSHKeyTestUtils.createRandomKeyName();
 			key = user.putSSHKey(keyName, publicKey);
 
 			// verifications
@@ -87,7 +88,6 @@ public class SSHKeyIntegrationTest {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
-			String keyName = String.valueOf(System.currentTimeMillis());
 			String publicKeyPath = createRandomTempFile().getAbsolutePath();
 			String privateKeyPath = createRandomTempFile().getAbsolutePath();
 			SSHKeyPair keyPair = SSHKeyPair.create(
@@ -95,6 +95,7 @@ public class SSHKeyIntegrationTest {
 					SSHKeyTestUtils.DEFAULT_PASSPHRASE,
 					privateKeyPath,
 					publicKeyPath);
+			String keyName = SSHKeyTestUtils.createRandomKeyName();
 			key = user.putSSHKey(keyName, keyPair);
 
 			// operation
@@ -124,11 +125,11 @@ public class SSHKeyIntegrationTest {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
-			String keyName = String.valueOf(System.currentTimeMillis());
 			String publicKeyPath = SSHKeyTestUtils.createDsaKeyPair();
 			ISSHPublicKey publicKey = new SSHPublicKey(publicKeyPath);
 
 			// operation
+			String keyName = SSHKeyTestUtils.createRandomKeyName();
 			key = user.putSSHKey(keyName, publicKey);
 			IOpenShiftSSHKey keyByName = user.getSSHKeyByName(keyName);
 
@@ -144,11 +145,11 @@ public class SSHKeyIntegrationTest {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
-			String keyName = String.valueOf(System.currentTimeMillis());
 			String publicKeyPath = SSHKeyTestUtils.createDsaKeyPair();
 			ISSHPublicKey publicKey = new SSHPublicKey(publicKeyPath);
 
 			// operation
+			String keyName = SSHKeyTestUtils.createRandomKeyName();
 			key = user.putSSHKey(keyName, publicKey);
 			IOpenShiftSSHKey keyByPublicKey = user.getSSHKeyByPublicKey(publicKey.getPublicKey());
 
@@ -165,12 +166,12 @@ public class SSHKeyIntegrationTest {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
-			String keyName = String.valueOf(System.currentTimeMillis());
 			String publicKeyPath = createRandomTempFile().getAbsolutePath();
 			String privateKeyPath = createRandomTempFile().getAbsolutePath();
 			SSHKeyTestUtils.createDsaKeyPair(publicKeyPath, privateKeyPath);
 			ISSHPublicKey publicKey = new SSHPublicKey(publicKeyPath);
 			assertThat(publicKey.getKeyType()).isEqualTo(SSHKeyType.SSH_DSA);
+			String keyName = SSHKeyTestUtils.createRandomKeyName();
 			key = user.putSSHKey(keyName, publicKey);
 			SSHKeyPair keyPair = SSHKeyPair.create(
 					SSHKeyType.SSH_RSA, SSHKeyTestUtils.DEFAULT_PASSPHRASE, privateKeyPath, publicKeyPath);
@@ -191,10 +192,10 @@ public class SSHKeyIntegrationTest {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
-			String keyName = String.valueOf(System.currentTimeMillis());
 			String publicKeyPath = createRandomTempFile().getAbsolutePath();
 			String privateKeyPath = createRandomTempFile().getAbsolutePath();
 			SSHKeyTestUtils.createDsaKeyPair(publicKeyPath, privateKeyPath);
+			String keyName = SSHKeyTestUtils.createRandomKeyName();
 			key = user.putSSHKey(keyName, new SSHPublicKey(publicKeyPath));
 			
 			// operation
@@ -213,10 +214,10 @@ public class SSHKeyIntegrationTest {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
-			String keyName = String.valueOf(System.currentTimeMillis());
 			String publicKeyPath = createRandomTempFile().getAbsolutePath();
 			String privateKeyPath = createRandomTempFile().getAbsolutePath();
 			SSHKeyTestUtils.createDsaKeyPair(publicKeyPath, privateKeyPath);
+			String keyName = SSHKeyTestUtils.createRandomKeyName();
 			key = user.putSSHKey(keyName, new SSHPublicKey(publicKeyPath));
 			int numOfKeys = user.getSSHKeys().size();
 			

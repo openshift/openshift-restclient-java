@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2013 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -19,10 +19,10 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	SSHKeyIntegrationTest.class,
 	UserResourceIntegrationTest.class,
-	DomainResourceIntegrationTest.class,
-	ApplicationResourceIntegrationTest.class,
-	CartridgesIntegrationTest.class,
-	EmbeddedCartridgeResourceIntegrationTest.class
+//	DomainResourceIntegrationTest.class,
+//	ApplicationResourceIntegrationTest.class,
+//	CartridgesIntegrationTest.class,
+//	EmbeddedCartridgeResourceIntegrationTest.class
 })
 /**
  * @author André Dietisheim

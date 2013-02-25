@@ -116,7 +116,11 @@ public class SSHKeyTestUtils {
 		try {
 			key.destroy();
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
+	}
+
+	public static String createRandomKeyName() {
+		return String.valueOf(System.currentTimeMillis());
 	}
 }

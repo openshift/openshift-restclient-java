@@ -33,7 +33,7 @@ public class ApplicationTestUtils {
 			}
 			application.destroy();
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 
@@ -42,27 +42,29 @@ public class ApplicationTestUtils {
 			return;
 		}
 		
-		try {
-			for (IApplication application : domain.getApplications()) {
-				application.destroy();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (IApplication application : domain.getApplications()) {
+			silentlyDestroy(application);
 		}
 	}
 
-	public static void silentlyDestroy1Application(IDomain domain) {
+	public static void silentlyDestroyApplications(int appsToDestroy, IDomain domain) {
 		if (domain == null) {
 			return;
 		}
 		
-		try {
-			Iterator<IApplication> it = domain.getApplications().iterator();
-			if (it.hasNext()) {
-				it.next().destroy();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (Iterator<IApplication> it = domain.getApplications().iterator(); it.hasNext() && appsToDestroy >= 0; appsToDestroy--) {
+			silentlyDestroy(it.next());
+		}
+	}
+
+	public static void silentlyDestroyAllApplicationsByCartridge(ICartridge cartridge, IDomain domain) {
+		if (domain == null) {
+			return;
+		}
+
+		for (Iterator<IApplication> it = domain.getApplicationsByCartridge(cartridge).iterator(); it
+				.hasNext();) {
+			silentlyDestroy(it.next());
 		}
 	}
 
@@ -80,6 +82,28 @@ public class ApplicationTestUtils {
 		}
 
 		return domain.createApplication(StringUtils.createRandomString(), cartridge, null, null);
+	}
+
+	/**
+	 * Deletes applications that are above the given maximum number of applications.
+	 * 
+	 * @param maxApplications 
+	 * @param domain
+	 */
+	public static void silentlyEnsureHasMaxApplication(int maxApplications, IDomain domain) {
+		if (domain == null) {
+			return;
+		}
+		
+		int toDestroy = domain.getApplications().size() - maxApplications; 
+		
+		if (toDestroy <= 0) {
+			return;
+		}
+
+		for (Iterator<IApplication> it = domain.getApplications().iterator(); it.hasNext() && toDestroy > 0; toDestroy--) {			
+			silentlyDestroy(it.next());
+		}
 	}
 
 }

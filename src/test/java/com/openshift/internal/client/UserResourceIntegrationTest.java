@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2013 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -31,7 +31,6 @@ import com.openshift.client.InvalidCredentialsOpenShiftException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
-import com.openshift.client.utils.StringUtils;
 import com.openshift.client.utils.TestConnectionFactory;
 
 /**
@@ -53,9 +52,55 @@ public class UserResourceIntegrationTest {
 	}
 
 	@Test
+	public void shouldReturnDomains() throws OpenShiftException {
+		// precondition
+		DomainTestUtils.ensureHasDomain(user);
+		// operation
+		List<IDomain> domains = user.getDomains();
+		// verification
+		assertThat(domains).isNotEmpty();
+	}
+
+	@Test
+	public void shouldReturnNoDomains() throws OpenShiftException {
+		// precondition
+		DomainTestUtils.silentlyDestroyAllDomains(user);
+		// operation
+		List<IDomain> domains = user.getDomains();
+		// verification
+		assertThat(domains).isEmpty();
+	}
+
+	@Test
+	public void shouldCreateDomain() throws OpenShiftException {
+		// pre-condition
+		// cannot create domain if there's already one
+		DomainTestUtils.silentlyDestroyAllDomains(user);
+		
+		// operation
+		String id = DomainTestUtils.createRandomName();
+		IDomain domain = user.createDomain(id);
+
+		// verification
+		assertThat(domain.getId()).isEqualTo(id);
+	}
+
+	@Test
+	public void shouldReturnDomainByName() throws OpenShiftException {
+		// pre-condition
+		IDomain domain = DomainTestUtils.ensureHasDomain(user);
+
+		// operation
+		IDomain domainByNamespace = user.getDomain(domain.getId());
+
+		// verification
+		assertThat(domainByNamespace.getId()).isEqualTo(domain.getId());
+	}
+
+	@Test
 	public void shouldGetDefaultDomain() throws OpenShiftException {
 		// precondition
-		DomainTestUtils.getFirstDomainOrCreate(user);
+		DomainTestUtils.ensureHasDomain(user);
 		// operation
 		IDomain domain = user.getDefaultDomain();
 		// verification
@@ -69,7 +114,7 @@ public class UserResourceIntegrationTest {
 	@Test
 	public void shouldReturnThatHasDomain() throws OpenShiftException {
 		// precondition
-		DomainTestUtils.getFirstDomainOrCreate(user);
+		DomainTestUtils.ensureHasDomain(user);
 		// operation
 		Boolean hasDomain = user.hasDomain();
 		// verification
@@ -100,7 +145,7 @@ public class UserResourceIntegrationTest {
 	public void shouldReturnThatHasntNamedDomain() throws OpenShiftException {
 		// precondition
 		// operation
-		Boolean hasDomain = user.hasDomain(StringUtils.createRandomString());
+		Boolean hasDomain = user.hasDomain(DomainTestUtils.createRandomName());
 		// verification
 		assertFalse(hasDomain);
 	}
@@ -114,16 +159,6 @@ public class UserResourceIntegrationTest {
 		List<IDomain> domains = user.getDomains();
 		// verification
 		assertThat(domains).isEmpty();
-	}
-
-	@Test
-	public void shouldReturnDomains() throws OpenShiftException {
-		// precondition
-		DomainTestUtils.getFirstDomainOrCreate(user);
-		// operation
-		List<IDomain> domains = user.getDomains();
-		// verification
-		assertThat(domains).isNotEmpty();
 	}
 
 	@Test

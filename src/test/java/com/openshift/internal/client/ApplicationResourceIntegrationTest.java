@@ -63,7 +63,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldCreateNonScalableApplication() throws Exception {
 	
-		ApplicationTestUtils.silentlyDestroy1Application(domain);
+		ApplicationTestUtils.silentlyDestroyApplications(1, domain);
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
 		IApplication application = 
@@ -82,7 +82,7 @@ public class ApplicationResourceIntegrationTest {
 
 	@Test
 	public void shouldCreateNonScalableApplicationWithSmallGear() throws Exception {
-		ApplicationTestUtils.silentlyDestroy1Application(domain);
+		ApplicationTestUtils.silentlyDestroyApplications(1, domain);
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
 		IApplication application = domain.createApplication(

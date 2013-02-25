@@ -11,9 +11,11 @@
 package com.openshift.client.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +24,10 @@ import org.fest.assertions.AssertExtension;
 import com.openshift.client.IApplication;
 import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
+import com.openshift.client.IEmbeddableCartridge;
+import com.openshift.client.IEmbeddableCartridgeConstraint;
+import com.openshift.client.IOpenShiftConnection;
+import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftException;
 
 /**
@@ -128,11 +134,33 @@ public class ApplicationAssert implements AssertExtension {
 		}
 
 		for (String cartridgeName : embeddableCartridgeNames) {
-			application.hasEmbeddedCartridge(cartridgeName);
+			assertTrue(application.hasEmbeddedCartridge(cartridgeName));
 		}
 
 		return this;
 	}
+	
+	public ApplicationAssert hasEmbeddableCartridges(IEmbeddableCartridgeConstraint... constraints) throws OpenShiftException {
+		for (IEmbeddableCartridgeConstraint constraint : constraints) {
+			assertTrue(application.hasEmbeddedCartridge(matchingCartridges.get(0)));
+		}
+
+		return this;
+	}
+
+	private IEmbeddableCartridge getMatchingCartridge(IEmbeddableCartridgeConstraint constraint) {
+		assertTrue(application.hasEmbeddedCartridge(getMatchingCartridge(constraint)));
+
+	}
+	
+	public ApplicationAssert hasNotEmbeddableCartridges(String... embeddableCartridgeNames) throws OpenShiftException {		
+		for (String cartridgeName : embeddableCartridgeNames) {
+			assertFalse(application.hasEmbeddedCartridge(cartridgeName));
+		}
+
+		return this;
+	}
+
 
 	public ApplicationAssert hasAlias(String... aliasNames) {
 		if (aliasNames.length == 0) {
@@ -144,5 +172,15 @@ public class ApplicationAssert implements AssertExtension {
 		}
 
 		return this;
+	}
+	
+	private IOpenShiftConnection getConnection(IApplication application) {
+		IDomain domain = application.getDomain();
+		assertNotNull(domain);
+		IUser user = domain.getUser();
+		assertNotNull(user);
+		IOpenShiftConnection connection = user.getConnection();
+		assertNotNull(connection);
+		return connection;
 	}
 }

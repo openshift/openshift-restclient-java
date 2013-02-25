@@ -11,9 +11,6 @@
 package com.openshift.internal.client;
 
 import com.openshift.client.ICartridge;
-import com.openshift.client.JBossCartridge;
-import com.openshift.client.OpenShiftException;
-import com.openshift.internal.client.utils.Assert;
 
 
 /**
@@ -24,16 +21,6 @@ import com.openshift.internal.client.utils.Assert;
  */
 public class Cartridge implements ICartridge {
 	
-	protected static final String JBOSS = "jboss";
-	protected static final String RUBY = "ruby";
-	protected static final String PYTHON = "python";
-	protected static final String PHP = "php";
-	protected static final String PERL = "perl";
-	protected static final String NODEJS = "nodejs";
-	protected static final String JENKINS = "jenkins";
-	protected static final String HAPROXY = "haproxy";
-	protected static final String RAW = "diy";
-
 	private final String name;
 
 	public Cartridge(String name) {
@@ -46,14 +33,6 @@ public class Cartridge implements ICartridge {
 	
 	public String getLogLocation() {
 		return "/";
-	}
-
-	public static ICartridge valueOf(String name) {
-		Assert.notNull(name);
-
-		if (name.contains(JBOSS))
-			return new JBossCartridge(name);
-		else return new Cartridge(name);
 	}
 
 	public int hashCode() {
@@ -82,19 +61,4 @@ public class Cartridge implements ICartridge {
 	public String toString() {
 		return "Cartridge [name=" + name + "]";
 	}
-	
-	protected String getCartridgeName(String cartridgeType) throws OpenShiftException {
-		throw new UnsupportedOperationException();
-//		List<ICartridge> cartridges = service.getCartridges(user);
-//		
-//		Iterator<ICartridge> i = cartridges.iterator();
-//		while (i.hasNext()){
-//			ICartridge cartridge = i.next();
-//			if (cartridge.getName().contains(cartridgeType))
-//				return cartridge.getName();
-//		}
-//		
-//		throw new OpenShiftException("No cartridge found for type " + cartridgeType);
-	}
-
 }
