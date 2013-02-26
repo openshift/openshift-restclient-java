@@ -107,20 +107,6 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 		return link;
 	}
 
-	/**
-	 * Execute.
-	 * 
-	 * @param <T>
-	 *            the generic type
-	 * @param link
-	 *            the link
-	 * @param parameters
-	 *            the parameters
-	 * @return the t
-	 * @throws OpenShiftException
-	 *             the open shift exception
-	 */
-
 	protected boolean areLinksLoaded() {
 		return links != null;
 	}
