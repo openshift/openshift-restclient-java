@@ -44,7 +44,6 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.openshift.client.ApplicationScale;
-import com.openshift.client.HttpMethod;
 import com.openshift.client.IApplication;
 import com.openshift.client.IApplicationGear;
 import com.openshift.client.IApplicationGearComponent;
@@ -56,7 +55,6 @@ import com.openshift.client.IEmbeddableCartridge;
 import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
-import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftSSHOperationException;
 import com.openshift.client.utils.HostUtils;
@@ -500,13 +498,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	public boolean waitForAccessible(long timeout) throws OpenShiftException {
 		try {
-			long startTime = System.currentTimeMillis();
-
-			if (!waitForResolved(timeout, startTime)) {
-				return false;
-			}
-
-			return waitForPositiveHealthResponse(timeout, startTime);
+			return waitForResolved(timeout, System.currentTimeMillis());
 		} catch (InterruptedException e) {
 			return false;
 		}
@@ -531,27 +523,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	protected IOpenShiftConnection getConnection() {
 		return getDomain().getUser().getConnection();
-	}
-
-	private boolean waitForPositiveHealthResponse(long timeout, long startTime) throws OpenShiftException,
-			InterruptedException, OpenShiftEndpointException {
-		String response = null;
-		while (!isPositiveHealthResponse(response)
-				&& !isTimeouted(timeout, startTime)) {
-			try {
-				Thread.sleep(APPLICATION_WAIT_RETRY_DELAY);
-				response = getService().request(healthCheckUrl, HttpMethod.GET, null);
-			} catch (OpenShiftEndpointException e) {
-				throw e;
-			} catch (OpenShiftException e) {
-			}
-		}
-		return isPositiveHealthResponse(response);
-	}
-
-	private boolean isPositiveHealthResponse(String response) throws OpenShiftException {
-		return response != null
-				&& response.startsWith(getHealthCheckSuccessResponse());
 	}
 
 	private boolean waitForResolved(long timeout, long startTime) throws OpenShiftException, InterruptedException {
