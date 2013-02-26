@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -41,6 +42,20 @@ public class LatestVersionOfTest {
 		assertFalse(
 				new LatestVersionOfName("redhat").equals(
 				new LatestVersionOfName("jboss")));
+	}
+
+	@Test
+	public void shouldReturnEmptyList() {
+		// pre-coniditions
+		List<IEmbeddedCartridge> embeddedCartridges = Collections.emptyList();
+		
+		LatestVersionOfName cartridgeConstraint = new LatestVersionOfName("mysql");
+
+		// operation
+		Collection<IEmbeddedCartridge> matchingCartridges = cartridgeConstraint.getMatching(embeddedCartridges);
+
+		// verification
+		assertThat(matchingCartridges).isNotNull().isEmpty();
 	}
 
 	@Test

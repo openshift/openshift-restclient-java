@@ -97,10 +97,6 @@ public class ApplicationTestUtils {
 		
 		int toDestroy = domain.getApplications().size() - maxApplications; 
 		
-		if (toDestroy <= 0) {
-			return;
-		}
-
 		for (Iterator<IApplication> it = domain.getApplications().iterator(); it.hasNext() && toDestroy > 0; toDestroy--) {			
 			silentlyDestroy(it.next());
 		}
