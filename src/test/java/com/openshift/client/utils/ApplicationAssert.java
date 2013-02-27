@@ -112,21 +112,6 @@ public class ApplicationAssert implements AssertExtension {
 		assertEquals(domain.getId(), matcher.group(2));
 		assertEquals(domain.getSuffix(), matcher.group(3));
 	}
-
-	public ApplicationAssert hasHealthCheckPath(String healthCheckPath) {
-		assertEquals(application.getHealthCheckUrl(), application.getApplicationUrl() + healthCheckPath);
-		return this;
-	}
-
-	public ApplicationAssert hasValidHealthCheckUrl() {
-		assertApplicationUrl();
-	
-		Matcher matcher = APPLICATION_URL_PATTERN.matcher(application.getHealthCheckUrl());
-		assertTrue(matcher.matches());
-		assertEquals(4, matcher.groupCount());
-
-		return this;
-	}
 	
 	public ApplicationAssert hasEmbeddableCartridges(ICartridgeConstraint constraint) throws OpenShiftException {
 		List<IEmbeddableCartridge> embeddableCartridges = getConnection(application).getEmbeddableCartridges();

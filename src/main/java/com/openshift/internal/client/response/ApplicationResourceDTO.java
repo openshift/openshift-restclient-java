@@ -53,9 +53,6 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	/** the application's git repository URL. */
 	private final String gitUrl;
 	
-	/** the path at which this application may be queried for its health **/
-	private final String healthCheckPath;
-
 	private Map<String, String> embeddedCartridgeInfos;
 
 	/**
@@ -70,7 +67,7 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	 */
 	public ApplicationResourceDTO(final String framework, final String domainId, final String creationTime,
 			final String name, final IGearProfile gearProfile, final ApplicationScale scale, final String uuid,
-			final String applicationUrl, final String gitUrl, final String healthCheckPath, final List<String> aliases,
+			final String applicationUrl, final String gitUrl, final List<String> aliases,
 			final Map<String, String> embeddedCartridgeInfos, final Map<String, Link> links, List<Message> creationLog) {
 	super(links, creationLog);
 		this.framework = framework;
@@ -82,7 +79,6 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 		this.scale = scale;
 		this.applicationUrl = applicationUrl;
 		this.gitUrl = gitUrl;
-		this.healthCheckPath = healthCheckPath;
 		this.aliases = aliases;
 		this.embeddedCartridgeInfos = embeddedCartridgeInfos;
 	}
@@ -151,13 +147,6 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	 */
 	public final String getApplicationUrl() {
 		return applicationUrl;
-	}
-
-	/**
-	 * @return the path at which this application may be queried for its health
-	 */
-	public final String getHealthCheckPath() {
-		return healthCheckPath;
 	}
 
 	/**

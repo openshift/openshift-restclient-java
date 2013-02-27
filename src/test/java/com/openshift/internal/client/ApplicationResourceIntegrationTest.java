@@ -74,7 +74,6 @@ public class ApplicationResourceIntegrationTest {
 				.hasCartridge(ICartridge.JBOSSAS_7)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
-				.hasValidHealthCheckUrl()
 				.hasEmbeddableCartridges()
 				.hasAlias();
 	}
@@ -98,7 +97,6 @@ public class ApplicationResourceIntegrationTest {
 				.hasCartridge(ICartridge.JBOSSAS_7)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
-				.hasValidHealthCheckUrl()
 				.hasEmbeddableCartridges()
 				.hasAlias();
 	}
@@ -122,7 +120,6 @@ public class ApplicationResourceIntegrationTest {
 				.hasCartridge(ICartridge.JBOSSAS_7)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
-				.hasValidHealthCheckUrl()
 				.hasEmbeddableCartridges()
 				.hasAlias();
 	}
@@ -146,7 +143,6 @@ public class ApplicationResourceIntegrationTest {
 				.hasCartridge(ICartridge.JENKINS_14)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
-				.hasValidHealthCheckUrl()
 				.hasEmbeddableCartridges()
 				.hasAlias();
 	}

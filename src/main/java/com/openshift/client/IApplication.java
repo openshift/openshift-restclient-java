@@ -71,14 +71,6 @@ public interface IApplication extends IOpenShiftResource {
 	public IGearProfile getGearProfile();
 
 	/**
-	 * Returns the url at which this application may be checked for its health
-	 * state.
-	 * 
-	 * @return the url at which the health state may be queried.
-	 */
-	public String getHealthCheckUrl();
-
-	/**
 	 * Returns the cartridge (application type) that this app is running on.
 	 * 
 	 * @return the cartridge of this application

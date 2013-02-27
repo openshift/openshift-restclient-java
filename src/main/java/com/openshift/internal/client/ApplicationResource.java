@@ -111,9 +111,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	/** The url of this application. */
 	private final String applicationUrl;
 
-	/** The pathat which the health of this application may be queried. */
-	private final String healthCheckUrl;
-
 	/** The url at which the git repo of this application may be reached. */
 	private final String gitUrl;
 
@@ -155,7 +152,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 */
 	protected ApplicationResource(ApplicationResourceDTO dto, ICartridge cartridge, DomainResource domain) {
 		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getCreationLog(), dto.getApplicationUrl(), dto
-				.getGitUrl(), dto.getHealthCheckPath(), dto.getGearProfile(), dto.getApplicationScale(), cartridge, dto
+				.getGitUrl(), dto.getGearProfile(), dto.getApplicationScale(), cartridge, dto
 				.getAliases(), dto.getEmbeddedCartridgeInfos(), dto.getLinks(), domain);
 	}
 
@@ -186,7 +183,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 */
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
 			final List<Message> creationLog, final String applicationUrl, final String gitUrl,
-			final String healthCheckPath, final IGearProfile gearProfile, final ApplicationScale scale,
+			final IGearProfile gearProfile, final ApplicationScale scale, 
 			final ICartridge cartridge, final List<String> aliases, final Map<String, String> embeddedCartridgesInfos,
 			final Map<String, Link> links, final DomainResource domain) {
 		super(domain.getService(), links, creationLog);
@@ -198,7 +195,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.cartridge = cartridge;
 		this.applicationUrl = applicationUrl;
 		this.gitUrl = gitUrl;
-		this.healthCheckUrl = applicationUrl + healthCheckPath;
 		this.domain = domain;
 		this.aliases = aliases;
 		// TODO: fix this workaround once
@@ -312,14 +308,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	public String getApplicationUrl() {
 		return applicationUrl;
-	}
-
-	public String getHealthCheckUrl() {
-		return healthCheckUrl;
-	}
-
-	protected String getHealthCheckSuccessResponse() throws OpenShiftException {
-		return "1";
 	}
 
 	public List<IEmbeddedCartridge> addEmbeddableCartridge(ICartridgeConstraint cartridgeConstraint) throws OpenShiftException {
@@ -518,15 +506,15 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	private boolean waitForResolved(long timeout, long startTime) throws OpenShiftException, InterruptedException {
 		try {
-			while (!HostUtils.canResolv(healthCheckUrl)
+			while (!HostUtils.canResolv(applicationUrl)
 					&& !isTimeouted(timeout, startTime)) {
 				Thread.sleep(APPLICATION_WAIT_RETRY_DELAY);
 			}
-			return HostUtils.canResolv(healthCheckUrl);
+			return HostUtils.canResolv(applicationUrl);
 		} catch (MalformedURLException e) {
 			throw new OpenShiftException(e,
 					"Could not wait for application {0} to become accessible, it has an invalid URL \"{1}\": {2}",
-					name, healthCheckUrl, e.getMessage());
+					name, applicationUrl, e.getMessage());
 		}
 	}
 

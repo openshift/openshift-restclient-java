@@ -687,9 +687,7 @@ public class ApplicationResourceTest {
 		// pre-conditions
 		when(mockClient.get(urlEndsWith("/domains/foobar/applications")))
 				.thenReturn(GET_APPLICATIONS_WITH2APPS_1LOCALHOST_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/health")))
-				.thenReturn("0"); // return health not ok
-		final IApplication app = domain.getApplicationByName("sample");
+		final IApplication app = domain.getApplicationByName("scalable");
 		long timeout = 4 * 1024;
 		long startTime = System.currentTimeMillis();
 

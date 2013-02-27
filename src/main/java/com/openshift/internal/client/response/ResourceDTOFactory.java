@@ -15,7 +15,6 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_CONSUMED_GEARS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_CREATION_TIME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DATA;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DESCRIPTION;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DOMAIN;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DOMAIN_ID;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_EMBEDDED;
@@ -23,7 +22,6 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GEARS_COMPONENTS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GIT_URL;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_HEALTH_CHECK_PATH;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_HREF;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_ID;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_INFO;
@@ -34,8 +32,6 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_METHOD;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_NAME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_OPTIONAL_PARAMS;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROPERTIES;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROPERTY;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROXY_HOST;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROXY_PORT;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REL;
@@ -382,7 +378,6 @@ public class ResourceDTOFactory {
 		final String applicationUrl = getAsString(appNode, PROPERTY_APP_URL);
 		final String gitUrl = getAsString(appNode, PROPERTY_GIT_URL);
 		final String domainId = getAsString(appNode, PROPERTY_DOMAIN_ID);
-		final String healthCheckPath = getAsString(appNode, PROPERTY_HEALTH_CHECK_PATH);
 		final Map<String, Link> links = createLinks(appNode.get(PROPERTY_LINKS));
 		final List<String> aliases = createAliases(appNode.get(PROPERTY_ALIASES));
 		final Map<String, String> embeddedCartridgesInfos = createEmbeddedCartridgesInfos(appNode.get(PROPERTY_EMBEDDED));
@@ -396,7 +391,6 @@ public class ResourceDTOFactory {
 				uuid, 
 				applicationUrl, 
 				gitUrl, 
-				healthCheckPath, 
 				aliases, 
 				embeddedCartridgesInfos, 
 				links, 
