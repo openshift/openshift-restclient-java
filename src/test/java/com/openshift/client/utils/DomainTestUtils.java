@@ -21,16 +21,12 @@ import com.openshift.client.OpenShiftException;
  */
 public class DomainTestUtils {
 
-	public static void silentlyDestroyAllDomains(IUser user) {
+	public static void destroyAllDomains(IUser user) {
 		if (user == null) {
 			return;
 		}
-		try {
-			for (IDomain domain : user.getDomains()) {
-				silentlyDestroy(domain);
-			}
-		} catch (Exception e) {
-//			e.printStackTrace();
+		for (IDomain domain : user.getDomains()) {
+			domain.destroy(true);
 		}
 	}
 

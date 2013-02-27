@@ -64,7 +64,7 @@ public class UserResourceIntegrationTest {
 	@Test
 	public void shouldReturnNoDomains() throws OpenShiftException {
 		// precondition
-		DomainTestUtils.silentlyDestroyAllDomains(user);
+		DomainTestUtils.destroyAllDomains(user);
 		// operation
 		List<IDomain> domains = user.getDomains();
 		// verification
@@ -75,7 +75,7 @@ public class UserResourceIntegrationTest {
 	public void shouldCreateDomain() throws OpenShiftException {
 		// pre-condition
 		// cannot create domain if there's already one
-		DomainTestUtils.silentlyDestroyAllDomains(user);
+		DomainTestUtils.destroyAllDomains(user);
 		
 		// operation
 		String id = DomainTestUtils.createRandomName();
@@ -124,7 +124,7 @@ public class UserResourceIntegrationTest {
 	@Test
 	public void shouldReturnThatHasNoDomain() throws OpenShiftException {
 		// precondition
-		DomainTestUtils.silentlyDestroyAllDomains(user);
+		DomainTestUtils.destroyAllDomains(user);
 		// operation
 		Boolean hasDomain = user.hasDomain();
 		// verification
@@ -154,7 +154,7 @@ public class UserResourceIntegrationTest {
 	@Test
 	public void shouldReturnEmptyDomains() throws OpenShiftException {
 		// precondition
-		DomainTestUtils.silentlyDestroyAllDomains(user);
+		DomainTestUtils.destroyAllDomains(user);
 		// operation
 		List<IDomain> domains = user.getDomains();
 		// verification
@@ -169,7 +169,7 @@ public class UserResourceIntegrationTest {
 		assertNotNull(domain);
 
 		IUser otherUser = new TestConnectionFactory().getConnection().getUser();
-		DomainTestUtils.silentlyDestroyAllDomains(otherUser);
+		DomainTestUtils.destroyAllDomains(otherUser);
 		assertNull(otherUser.getDefaultDomain());
 		
 		// operation
