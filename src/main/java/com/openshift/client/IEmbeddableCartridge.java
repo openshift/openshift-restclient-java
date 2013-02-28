@@ -11,10 +11,22 @@
 package com.openshift.client;
 
 
+
 /**
  * @author Xavier Coulon
  */
 public interface IEmbeddableCartridge {
+	
+	public static final char NAME_VERSION_DELIMITER = '-';
+
+	public static final String NAME_MYSQL = "mysql";
+	public static final String NAME_PHPMYADMIN = "phpmyadmin";
+	public static final String NAME_POSTGRESQL = "postgresql";
+	public static final String NAME_MONGODB = "mongodb";
+	public static final String NAME_ROCKMONGO = "rockmongo";
+	public static final String NAME_10GEN_MMS_AGENT = "10gen-mms-agent";
+	public static final String NAME_JENKINS_CLIENT = "jenkins-client";
+	public static final String NAME_METRICS = "metrics-0.1";
 	
 	public String getName();
 	

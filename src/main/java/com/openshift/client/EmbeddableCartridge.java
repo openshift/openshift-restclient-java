@@ -8,9 +8,10 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client;
+package com.openshift.client;
 
 import com.openshift.client.IEmbeddableCartridge;
+
 
 /**
  * An interface that designate a cartridge that can be embedded into an
@@ -27,6 +28,10 @@ public class EmbeddableCartridge implements IEmbeddableCartridge {
 
 	public EmbeddableCartridge(final String name) {
 		this.name = name;
+	}
+
+	public EmbeddableCartridge(final String name, String version) {
+		this(name + NAME_VERSION_DELIMITER + version);
 	}
 
 	public String getName() {

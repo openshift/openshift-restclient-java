@@ -26,4 +26,13 @@ public interface ICartridgeConstraint {
 	 * @return the embeddable cartridges that match this constraint
 	 */
 	public <C extends IEmbeddableCartridge> Collection<C> getMatching(Collection<C> availableCartridges);
+
+	/**
+	 * Returns <code>true</code> if the given cartridge matches this constraint.
+	 * 
+	 * @param cartridge the cartridge that shall match this constraint
+	 * @return true if matches 
+	 */
+
+	public <C extends IEmbeddableCartridge> boolean matches(C cartridge);
 }

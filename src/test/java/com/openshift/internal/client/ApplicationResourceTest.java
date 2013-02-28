@@ -52,6 +52,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.openshift.client.ApplicationScale;
+import com.openshift.client.EmbeddableCartridge;
 import com.openshift.client.IApplication;
 import com.openshift.client.IApplicationGear;
 import com.openshift.client.ICartridge;

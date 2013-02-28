@@ -28,6 +28,7 @@ import java.util.HashSet;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.openshift.client.EmbeddableCartridge;
 import com.openshift.client.IApplication;
 import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.IHttpClient;

@@ -19,34 +19,34 @@ import com.openshift.internal.client.LatestVersionOfName;
 public class LatestVersionOf {
 
 	public static ICartridgeConstraint mySQL() {
-		return new LatestVersionOfName("mysql");
+		return new LatestVersionOfName(IEmbeddableCartridge.NAME_MYSQL);
 	}
 
 	public static ICartridgeConstraint phpMyAdmin() {
-		return new LatestVersionOfName("phpmyadmin");
+		return new LatestVersionOfName(IEmbeddableCartridge.NAME_PHPMYADMIN);
 	}
 
 	public static  ICartridgeConstraint postgreSQL() {
-		return new LatestVersionOfName("postgresql");
+		return new LatestVersionOfName(IEmbeddableCartridge.NAME_POSTGRESQL);
 	}
 	
 	public static  ICartridgeConstraint mongoDB() {
-		return new LatestVersionOfName("mongodb");
+		return new LatestVersionOfName(IEmbeddableCartridge.NAME_MONGODB);
 	}
 
 	public static  ICartridgeConstraint rockMongo() {
-		return new LatestVersionOfName("rockmongo");
+		return new LatestVersionOfName(IEmbeddableCartridge.NAME_ROCKMONGO);
 	}
 
 	public static  ICartridgeConstraint mmsAgent() {
-		return new LatestVersionOfName("10gen-mms-agent");
+		return new LatestVersionOfName(IEmbeddableCartridge.NAME_10GEN_MMS_AGENT);
 	}
 
 	public static  ICartridgeConstraint jenkinsClient() {
-		return new LatestVersionOfName("jenkins-client");
+		return new LatestVersionOfName(IEmbeddableCartridge.NAME_JENKINS_CLIENT);
 	}
 
 	public static  ICartridgeConstraint metrics() {
-		return new LatestVersionOfName("metrics");
+		return new LatestVersionOfName(IEmbeddableCartridge.NAME_METRICS);
 	}
 }

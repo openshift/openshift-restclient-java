@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.client.EmbeddableCartridge;
 import com.openshift.client.ICartridge;
 import com.openshift.client.IEmbeddableCartridge;
 import com.openshift.client.IHttpClient;

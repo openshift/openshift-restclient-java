@@ -45,6 +45,6 @@ public abstract class AbstractCartridgeConstraint implements ICartridgeConstrain
 		return matchingCartridges;
 	}
 	
-	protected abstract <C extends IEmbeddableCartridge> boolean matches(C cartridge);
+	public abstract <C extends IEmbeddableCartridge> boolean matches(C cartridge);
 
 }

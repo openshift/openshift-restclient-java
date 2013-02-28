@@ -40,6 +40,10 @@ public class LatestVersionOfName extends AbstractCartridgeConstraint {
 		this.nameConstraint = name;
 	}
 	
+	public String getNameConstraint() {
+		return nameConstraint;
+	}
+	
 	@Override
 	public <C extends IEmbeddableCartridge> Collection<C> getMatching(Collection<C> cartridges) {
 		C latest = getLatest(new ArrayList<C>(super.getMatching(cartridges)));
@@ -50,7 +54,7 @@ public class LatestVersionOfName extends AbstractCartridgeConstraint {
 	}
 
 	@Override
-	protected <C extends IEmbeddableCartridge> boolean matches(C cartridge) {
+	public <C extends IEmbeddableCartridge> boolean matches(C cartridge) {
 		return cartridge.getName().startsWith(nameConstraint);
 	}
 
@@ -75,7 +79,10 @@ public class LatestVersionOfName extends AbstractCartridgeConstraint {
 
 	protected class VersionedName implements Comparable<VersionedName> {
 
-		private Pattern versionPattern = Pattern.compile("([^-]+)-([0-9a-zA-Z]+)\\.{0,1}([0-9a-zA-Z]*)");
+		private Pattern versionPattern =
+				Pattern.compile("([^" + IEmbeddableCartridge.NAME_VERSION_DELIMITER + "]+)" 
+						+ IEmbeddableCartridge.NAME_VERSION_DELIMITER
+						+ "([0-9a-zA-Z]+)\\.{0,1}([0-9a-zA-Z]*)");
 		private Collator collator = Collator.getInstance();
 
 		private String name;
