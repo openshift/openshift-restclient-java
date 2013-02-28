@@ -95,17 +95,15 @@ public class EmbeddedCartridgeTestUtils {
 		application.addEmbeddableCartridge(cartridge);
 	}
 
-	public static Collection<IEmbeddableCartridge> getEmbeddableCartridges(ICartridgeConstraint constraint, IOpenShiftConnection connection) {
+	public static IEmbeddableCartridge getFirstEmbeddableCartridge(ICartridgeConstraint constraint, IOpenShiftConnection connection) {
 		List<IEmbeddableCartridge> allCartridges = connection.getEmbeddableCartridges();
-		return constraint.getMatching(allCartridges);
+		if (allCartridges.size() < 1) {
+			throw new IllegalStateException("No embeddable cartridges found!");
+		}
+		return constraint.getMatching(allCartridges).iterator().next();
 	}
 
-
 	public static IEmbeddableCartridge getLatestMySqlCartridge(IOpenShiftConnection connection) {
-		Collection<IEmbeddableCartridge> embeddableCartridges = getEmbeddableCartridges(LatestVersionOf.mySQL(), connection);
-		if (embeddableCartridges.size() < 1) {
-			throw new IllegalStateException("No mysql embeddable cartridge found!");
-		}
-		return embeddableCartridges.iterator().next();
+		return getFirstEmbeddableCartridge(LatestVersionOf.mySQL(), connection);
 	}
 }

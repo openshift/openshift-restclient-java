@@ -12,13 +12,11 @@ package com.openshift.internal.client;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
+import java.net.URISyntaxException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +25,6 @@ import com.openshift.client.IApplication;
 import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
 import com.openshift.client.IEmbeddableCartridge;
-import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.IUser;
 import com.openshift.client.LatestVersionOf;
 import com.openshift.client.OpenShiftEndpointException;
@@ -35,7 +32,7 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
-import com.openshift.client.utils.EmbeddableCartridgeAsserts;
+import com.openshift.client.utils.EmbeddedCartridgeAssert;
 import com.openshift.client.utils.EmbeddedCartridgeTestUtils;
 import com.openshift.client.utils.TestConnectionFactory;
 
@@ -63,7 +60,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	}
 	
 	@Test
-	public void shouldEmbedMySQL() throws SocketTimeoutException, OpenShiftException {
+	public void shouldEmbedMySQL() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
 		// pre-conditions
 		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.mySQL(), application);
 		assertThat(application.getEmbeddedCartridges(LatestVersionOf.mySQL())).isEmpty();
@@ -73,26 +70,76 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		application.addEmbeddableCartridge(LatestVersionOf.mySQL());
 
 		// verification
-		assertNotNull(application.getEmbeddedCartridges());
-		assertTrue(application.getEmbeddedCartridges().size() == numOfEmbeddedCartridges + 1);
+		assertThat(new ApplicationAssert(application))
+				.hasEmbeddableCartridges(numOfEmbeddedCartridges + 1)
+				.hasEmbeddedCartridges(LatestVersionOf.mySQL());
 
-		EmbeddableCartridgeAsserts.assertThatContainsCartridge(
-				EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection()),
-				application.getEmbeddedCartridges());
+		IEmbeddableCartridge mysql = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.mySQL(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(mysql))
+				.hasUrl();
+	}
+
+	@Test
+	public void shouldHaveUrlInEmbeddedMySQL() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
+		// pre-conditions
+		assertThat(new ApplicationAssert(application)).hasEmbeddedCartridges(LatestVersionOf.mySQL());
+		
+		// operation
+
+		// verification
+		IEmbeddableCartridge mysql = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.mySQL(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(mysql))
+				.hasUrl();
 	}
 
 	@Test
 	public void shouldReturnThatHasMySQL() throws SocketTimeoutException, OpenShiftException {
 		// pre-conditions
-		IEmbeddableCartridge mySQL = 
-				EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection());
-		EmbeddedCartridgeTestUtils.silentlyDestroy(mySQL, application);
+		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(LatestVersionOf.mySQL(), application);
 
 		// operation
-		application.addEmbeddableCartridge(mySQL);
+		
+		// verification
+		IEmbeddableCartridge mySql =
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.mySQL(), user.getConnection());
+		assertTrue(application.hasEmbeddedCartridge(mySql));
+	}
+
+	@Test
+	public void shouldEmbedPostgreSQL() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
+		// pre-conditions
+		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.postgreSQL(), application);
+		assertThat(application.getEmbeddedCartridges(LatestVersionOf.postgreSQL()).isEmpty());
+		int numOfEmbeddedCartridges = application.getEmbeddedCartridges().size();
+
+		// operation
+		application.addEmbeddableCartridge(LatestVersionOf.postgreSQL());
 
 		// verification
-		assertTrue(application.hasEmbeddedCartridge(mySQL));
+		assertThat(new ApplicationAssert(application))
+				.hasEmbeddableCartridges(numOfEmbeddedCartridges + 1)
+				.hasEmbeddedCartridges(LatestVersionOf.postgreSQL());
+
+		IEmbeddableCartridge postgres = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.postgreSQL(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(postgres))
+				.hasUrl();
+	}
+
+	@Test
+	public void shouldHaveUrlInEmbeddedPostgres() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
+		// pre-conditions
+		assertThat(new ApplicationAssert(application)).hasEmbeddedCartridges(LatestVersionOf.postgreSQL());
+		
+		// operation
+
+		// verification
+		IEmbeddableCartridge postgres = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.postgreSQL(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(postgres))
+				.hasUrl();
 	}
 
 	@Test
@@ -107,7 +154,25 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 
 		// verification
 		assertThat(new ApplicationAssert(application)
-				.hasEmbeddableCartridges(LatestVersionOf.mongoDB()));
+				.hasEmbeddedCartridges(LatestVersionOf.mongoDB()));
+		IEmbeddableCartridge mongo = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.mongoDB(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(mongo))
+				.hasUrl();
+	}
+
+	@Test
+	public void shouldHaveUrlInEmbeddedMongo() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
+		// pre-conditions
+		assertThat(new ApplicationAssert(application)).hasEmbeddedCartridges(LatestVersionOf.mongoDB());
+		
+		// operation
+
+		// verification
+		IEmbeddableCartridge mongo = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.mongoDB(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(mongo))
+				.hasUrl();
 	}
 
 	@Test
@@ -125,10 +190,24 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 
 		// verification
 		assertThat(new ApplicationAssert(application)
-				.hasEmbeddableCartridges(LatestVersionOf.mongoDB())
-				.hasEmbeddableCartridges(LatestVersionOf.rockMongo()));
+				.hasEmbeddedCartridges(LatestVersionOf.mongoDB())
+				.hasEmbeddedCartridges(LatestVersionOf.rockMongo()));
 	}
 
+	@Test
+	public void shouldHaveUrlInEmbeddedRockMongo() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
+		// pre-conditions
+		assertThat(new ApplicationAssert(application)).hasEmbeddedCartridges(LatestVersionOf.rockMongo());
+		
+		// operation
+
+		// verification
+		IEmbeddableCartridge rockMongo = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.rockMongo(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(rockMongo))
+				.hasUrl();
+	}
+	
 	@Test
 	public void shouldEmbedPhpMyAdmin() throws Exception {
 		// pre-conditions
@@ -144,8 +223,22 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 
 		// verification
 		assertThat(new ApplicationAssert(application)
-				.hasEmbeddableCartridges(LatestVersionOf.mySQL()))
-				.hasEmbeddableCartridges(LatestVersionOf.phpMyAdmin());
+				.hasEmbeddedCartridges(LatestVersionOf.mySQL()))
+				.hasEmbeddedCartridges(LatestVersionOf.phpMyAdmin());
+	}
+
+	@Test
+	public void shouldHaveUrlInEmbeddedPhpMyadmin() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
+		// pre-conditions
+		assertThat(new ApplicationAssert(application)).hasEmbeddedCartridges(LatestVersionOf.phpMyAdmin());
+		
+		// operation
+
+		// verification
+		IEmbeddableCartridge phpMyAdmin = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.phpMyAdmin(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(phpMyAdmin))
+				.hasUrl();
 	}
 
 	@Test
@@ -156,32 +249,32 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		ApplicationTestUtils.silentlyEnsureHasMaxApplication(1, domain);
 		IApplication application = domain.getApplications().get(0);
 		IApplication jenkins = domain.createApplication("j", ICartridge.JENKINS_14);
-		assertTrue(jenkins.waitForAccessible(WAIT_FOR_APPLICATION * 10));
+		assertTrue(jenkins.waitForAccessible(WAIT_FOR_APPLICATION));
 
 		// operation
 		application.addEmbeddableCartridge(LatestVersionOf.jenkinsClient());
 
 		// verification
 		assertThat(new ApplicationAssert(application)
-				.hasEmbeddableCartridges(LatestVersionOf.jenkinsClient()));
+				.hasEmbeddedCartridges(LatestVersionOf.jenkinsClient()));
+		IEmbeddableCartridge jenkinsClient = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.jenkinsClient(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(jenkinsClient))
+				.hasUrl();
 	}
 
-	/**
-	 * https://issues.jboss.org/browse/JBIDE-13631
-	 */
 	@Test
-	public void embeddedCartridgeShouldHaveUrl() throws OpenShiftException, MalformedURLException {
+	public void shouldHaveUrlInEmbeddedJenkinsClient() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
 		// pre-conditions
-		IEmbeddableCartridge mySqlEmbeddableCartridge = EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection());
-		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridge(mySqlEmbeddableCartridge, application);
-
+		assertThat(new ApplicationAssert(application)).hasEmbeddedCartridges(LatestVersionOf.jenkinsClient());
+		
 		// operation
-		IEmbeddedCartridge mySqlEmbeddedCartridge = application.getEmbeddedCartridge(mySqlEmbeddableCartridge);
 
 		// verification
-		assertThat(mySqlEmbeddedCartridge).isNotNull();
-		assertThat(mySqlEmbeddedCartridge.getUrl()).isNotEmpty();
-		new URL(mySqlEmbeddedCartridge.getUrl());
+		IEmbeddableCartridge jenkinsClient = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.jenkinsClient(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(jenkinsClient))
+				.hasUrl();
 	}
 
 	@Test(expected=OpenShiftEndpointException.class)
@@ -204,9 +297,8 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 
 		// verification
 		assertTrue(application.getEmbeddedCartridges().size() == numOfEmbeddedCartridges - 1);
-		EmbeddableCartridgeAsserts.assertThatDoesntContainCartridge(
-				EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection()),
-				application.getEmbeddedCartridges());
+		assertThat(new ApplicationAssert(application))
+				.hasNotEmbeddableCartridge(EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection()));
 	}
 
 	@Test
@@ -219,10 +311,10 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		application.removeEmbeddedCartridges(LatestVersionOf.mySQL());
 
 		// verification
-		assertTrue(application.getEmbeddedCartridges().size() == numOfEmbeddedCartridges);
 		IEmbeddableCartridge mySql = EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection());
-		EmbeddableCartridgeAsserts.assertThatDoesntContainCartridge(
-				mySql.getName(), application.getEmbeddedCartridges());
+		assertThat(new ApplicationAssert(application))
+				.hasEmbeddableCartridges(numOfEmbeddedCartridges)
+				.hasNotEmbeddableCartridge(mySql.getName());
 	}
 
 	@Test
@@ -231,7 +323,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		IEmbeddableCartridge mySqlEmbeddableCartridge = EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection());
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridge(mySqlEmbeddableCartridge, application);
 		assertThat(new ApplicationAssert(application)
-				.hasEmbeddableCartridges(LatestVersionOf.mySQL()));
+				.hasEmbeddedCartridges(LatestVersionOf.mySQL()));
 		
 		// operation
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();

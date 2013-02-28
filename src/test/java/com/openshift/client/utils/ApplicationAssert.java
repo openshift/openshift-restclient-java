@@ -13,8 +13,10 @@ package com.openshift.client.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +28,7 @@ import com.openshift.client.ICartridge;
 import com.openshift.client.ICartridgeConstraint;
 import com.openshift.client.IDomain;
 import com.openshift.client.IEmbeddableCartridge;
+import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftException;
@@ -113,7 +116,7 @@ public class ApplicationAssert implements AssertExtension {
 		assertEquals(domain.getSuffix(), matcher.group(3));
 	}
 	
-	public ApplicationAssert hasEmbeddableCartridges(ICartridgeConstraint constraint) throws OpenShiftException {
+	public ApplicationAssert hasEmbeddedCartridges(ICartridgeConstraint constraint) throws OpenShiftException {
 		List<IEmbeddableCartridge> embeddableCartridges = getConnection(application).getEmbeddableCartridges();
 		for (IEmbeddableCartridge cartridge : constraint.getMatching(embeddableCartridges)) {
 			assertTrue(application.hasEmbeddedCartridge(cartridge));
@@ -133,7 +136,13 @@ public class ApplicationAssert implements AssertExtension {
 
 		return this;
 	}
-		
+
+	public ApplicationAssert hasEmbeddableCartridges(int numberOf) {
+		assertNotNull(application.getEmbeddedCartridges());
+		assertEquals(numberOf, application.getEmbeddedCartridges().size());
+		return this;
+	}
+	
 	public ApplicationAssert hasNotEmbeddableCartridges(String... embeddableCartridgeNames) throws OpenShiftException {		
 		for (String cartridgeName : embeddableCartridgeNames) {
 			assertFalse(application.hasEmbeddedCartridge(cartridgeName));
@@ -162,7 +171,39 @@ public class ApplicationAssert implements AssertExtension {
 
 		return this;
 	}
-	
+
+	public void hasNotEmbeddableCartridge(IEmbeddableCartridge cartridge) {
+		hasNotEmbeddableCartridge(cartridge.getName());
+	}
+
+	public void hasNotEmbeddableCartridge(String name) {
+		assertNull(getEmbeddableCartridge(name));
+	}
+
+	public void assertThatDoesntContainCartridges(Collection<IEmbeddableCartridge> shouldNotBeContained, List<IEmbeddedCartridge> cartridges) {
+		for(IEmbeddableCartridge shouldNot : shouldNotBeContained) {
+			assertFalse(cartridges.contains(shouldNot));
+		}
+	}
+
+	private IEmbeddedCartridge getEmbeddableCartridge(String name) {
+		IEmbeddedCartridge matchingCartridge = null;
+		for (IEmbeddedCartridge cartridge : application.getEmbeddedCartridges()) {
+			if (name.equals(cartridge.getName())) {
+				matchingCartridge = cartridge;
+				break;
+			}
+		}
+		return matchingCartridge;
+	}
+
+	public void assertThatContainsCartridges(Collection<IEmbeddableCartridge> shouldBeContained, List<IEmbeddedCartridge> cartridgesToCheck) {
+		for (IEmbeddableCartridge cartridge : shouldBeContained) {
+			assertTrue(cartridgesToCheck.contains(cartridge));
+		}
+	}
+
+
 	private IOpenShiftConnection getConnection(IApplication application) {
 		IDomain domain = application.getDomain();
 		assertNotNull(domain);
@@ -172,4 +213,5 @@ public class ApplicationAssert implements AssertExtension {
 		assertNotNull(connection);
 		return connection;
 	}
+
 }
