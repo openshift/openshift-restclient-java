@@ -13,6 +13,7 @@ package com.openshift.internal.client;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +24,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.openshift.client.EmbeddableCartridge;
 import com.openshift.client.ICartridgeConstraint;
+import com.openshift.client.IEmbeddableCartridge;
 import com.openshift.client.IEmbeddedCartridge;
 
 /**
@@ -42,6 +45,24 @@ public class LatestVersionOfTest {
 		assertFalse(
 				new LatestVersionOfName("redhat").equals(
 				new LatestVersionOfName("jboss")));
+	}
+
+	@Test
+	public void shouldMatchEmbeddableCartridge() {
+		// pre-coniditions
+		LatestVersionOfName redhatNameConstraint = new LatestVersionOfName("redhat");
+		LatestVersionOfName jbossNameConstraint = new LatestVersionOfName("jboss");
+		IEmbeddableCartridge redhat10 = new EmbeddableCartridge("redhat", "1.0");
+		IEmbeddableCartridge redhat30 = new EmbeddableCartridge("redhat", "3.0");
+		IEmbeddableCartridge jboss10 = new EmbeddableCartridge("jboss", "1.0");
+		LatestVersionOfName closedSourceConstraint = new LatestVersionOfName("closedsource");
+		// operation
+		// verification
+		assertTrue(redhatNameConstraint.matches(redhat10));
+		assertTrue(redhatNameConstraint.matches(redhat30));
+		assertFalse(redhatNameConstraint.matches(jboss10));
+		assertTrue(jbossNameConstraint.matches(jboss10));
+		assertFalse(closedSourceConstraint.matches(jboss10));
 	}
 
 	@Test
