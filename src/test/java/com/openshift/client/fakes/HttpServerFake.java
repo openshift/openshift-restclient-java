@@ -24,8 +24,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,22 +40,28 @@ import com.openshift.internal.client.utils.StreamUtils;
 public class HttpServerFake {
 
 	public static final int DEFAULT_PORT = 1234;
-
+	private static final String DEFAULT_STATUSLINE = "HTTP/1.1 200 OK\n\n";
+	
 	private ExecutorService executor;
 	private int port;
 	private String response;
 	private ServerSocket serverSocket;
+	private String statusLine;
 
 	public HttpServerFake(int port) {
-		this(port, null);
+		this(port, null, DEFAULT_STATUSLINE);
 	}
 
 	public HttpServerFake() {
-		this(DEFAULT_PORT, null);
+		this(null);
 	}
 
 	public HttpServerFake(String response) {
-		this(DEFAULT_PORT, response);
+		this(DEFAULT_PORT, response, DEFAULT_STATUSLINE);
+	}
+
+	public HttpServerFake(String response, String statusLine) {
+		this(DEFAULT_PORT, response, statusLine);
 	}
 
 	/**
@@ -63,21 +71,28 @@ public class HttpServerFake {
 	 * @param response
 	 *            the reponse to return to the requesting socket. If
 	 *            <code>null</code> the request string is returned.
+	 * @param statusLine the staus line that shall be returned
+	 * 	           
 	 * @see ServerFakeSocket#getResponse(Socket)
 	 */
-	public HttpServerFake(int port, String response) {
+	public HttpServerFake(int port, String response, String statusLine) {
 		this.port = port;
 		this.response = response;
+		if (statusLine != null) {
+			this.statusLine = statusLine;
+		} else {
+			this.statusLine = DEFAULT_STATUSLINE;
+		}
 	}
 
 	public void start() throws IOException {
 		executor = Executors.newFixedThreadPool(1);
 		this.serverSocket = new ServerSocket(port);
-		executor.submit(new ServerFakeSocket(response, serverSocket));
+		executor.submit(new ServerFakeSocket());
 	}
 
-	public String getUrl() {
-		return MessageFormat.format("http://localhost:{0}/", String.valueOf(port));
+	public URL getUrl() throws MalformedURLException {
+		return new URL(MessageFormat.format("http://localhost:{0}/", String.valueOf(port)));
 	}
 
 	public void stop() {
@@ -90,20 +105,13 @@ public class HttpServerFake {
 			try {
 				serverSocket.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}
 
 	
 	private class ServerFakeSocket implements Runnable {
-		private String response;
-		private ServerSocket serverSocket;
-
-		private ServerFakeSocket(String response, ServerSocket serverSocket) {
-			this.response = response;
-			this.serverSocket = serverSocket;
-		}
 
 		public void run() {
 			Socket socket = null;
@@ -125,12 +133,12 @@ public class HttpServerFake {
 		}
 
 		protected void writeResponseHeader(OutputStream outputStream) throws IOException {
-			outputStream.write("HTTP/1.1 200 OK\n\n".getBytes());
+			outputStream.write(statusLine.getBytes());
 		}
 		
 		/**
-		 * Returns the response instance variable if present. If not, the
-		 * content of the inputStream is returned.
+		 * Returns the response given to this server at creation time or the
+		 * content that may be read from the socket is returned.
 		 * 
 		 * @param inputStream
 		 * @return
@@ -157,6 +165,5 @@ public class HttpServerFake {
 			}
 			return writer.toString();
 		}
-
 	}
 }

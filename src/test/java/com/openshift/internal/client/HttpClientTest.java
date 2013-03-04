@@ -38,6 +38,7 @@ import com.openshift.client.fakes.HttpClientFake;
 import com.openshift.client.fakes.HttpServerFake;
 import com.openshift.client.utils.Base64Coder;
 import com.openshift.internal.client.httpclient.HttpClientException;
+import com.openshift.internal.client.httpclient.NotFoundException;
 import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
 
 /**
@@ -54,9 +55,7 @@ public class HttpClientTest {
 
 	@Before
 	public void setUp() throws IOException {
-		int port = new Random().nextInt(9 * 1024) + 1024;
-		this.serverFake = new HttpServerFake(port);
-		serverFake.start();
+		this.serverFake = startHttServerFake(null);
 		this.httpClient = new UrlConnectionHttpClientBuilder()
 				.setUserAgent("com.openshift.client.test")
 				.client();
@@ -69,7 +68,7 @@ public class HttpClientTest {
 
 	@Test
 	public void canGet() throws SocketTimeoutException, HttpClientException, MalformedURLException {
-		String response = httpClient.get(new URL(serverFake.getUrl()));
+		String response = httpClient.get(serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.startsWith("GET"));
 	}
@@ -77,7 +76,7 @@ public class HttpClientTest {
 	@Test
 	public void canPost() throws SocketTimeoutException, HttpClientException, MalformedURLException,
 			UnsupportedEncodingException {
-		String response = httpClient.post(new HashMap<String, Object>(), new URL(serverFake.getUrl()));
+		String response = httpClient.post(new HashMap<String, Object>(), serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.startsWith("POST"));
 	}
@@ -85,7 +84,7 @@ public class HttpClientTest {
 	@Test
 	public void canPut() throws SocketTimeoutException, HttpClientException, MalformedURLException,
 			UnsupportedEncodingException {
-		String response = httpClient.put(new HashMap<String, Object>(), new URL(serverFake.getUrl()));
+		String response = httpClient.put(new HashMap<String, Object>(), serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.startsWith("PUT"));
 	}
@@ -93,7 +92,7 @@ public class HttpClientTest {
 	@Test
 	public void canDelete() throws SocketTimeoutException, HttpClientException, MalformedURLException,
 			UnsupportedEncodingException {
-		String response = httpClient.delete(new HashMap<String, Object>(), new URL(serverFake.getUrl()));
+		String response = httpClient.delete(new HashMap<String, Object>(), serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.startsWith("DELETE"));
 	}
@@ -107,7 +106,7 @@ public class HttpClientTest {
 				.setCredentials(username, password)
 				.client();
 
-		String response = httpClient.get(new URL(serverFake.getUrl()));
+		String response = httpClient.get(serverFake.getUrl());
 		assertNotNull(response);
 		Matcher matcher = AUTHORIZATION_PATTERN.matcher(response);
 		assertTrue(matcher.find());
@@ -118,31 +117,27 @@ public class HttpClientTest {
 	}
 
 	@Test
-	public void canAcceptJson() throws SocketTimeoutException, HttpClientException, MalformedURLException {
-		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
-				.setUserAgent("com.openshift.client.test")
-				.client();
-
-		String response = httpClient.get(new URL(serverFake.getUrl()));
+	public void shouldAcceptJsonByDefault() throws SocketTimeoutException, HttpClientException, MalformedURLException {
+		String response = httpClient.get(serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.indexOf(ACCEPT_APPLICATION_JSON) > 0);
 	}
-	
+
 	@Test
 	public void hasProperAgentWhenUsingKeys() {
 		httpClient = new UrlConnectionHttpClientBuilder()
-		.setUserAgent("com.needskey").setCredentials("blah", "bluh", "authkey", "authiv")
-		.client();
-		
+				.setUserAgent("com.needskey").setCredentials("blah", "bluh", "authkey", "authiv")
+				.client();
+
 		assertEquals("OpenShift-com.needskey", httpClient.getUserAgent());
 	}
 
 	@Test
 	public void hasProperAgentWhenUsingKeysAndNoAgent() {
 		httpClient = new UrlConnectionHttpClientBuilder()
-		 .setCredentials("blah", "bluh", "authkey", "authiv")
-		.client();
-		
+				.setCredentials("blah", "bluh", "authkey", "authiv")
+				.client();
+
 		assertEquals("OpenShift", httpClient.getUserAgent());
 	}
 
@@ -160,7 +155,7 @@ public class HttpClientTest {
 
 		IHttpClient httpClient = new HttpClientFake("1.0");
 		// operation
-		String response = httpClient.post(parameters, new URL(serverFake.getUrl()));
+		String response = httpClient.post(parameters, serverFake.getUrl());
 
 		// verification
 		String[] entries = response.split(String.valueOf(IHttpClient.AMPERSAND));
@@ -175,7 +170,6 @@ public class HttpClientTest {
 		assertEquals(value2, keyValuePair[1]);
 	}
 
-//	@Ignore("Not supported on PROD/STG yet")
 	@Test
 	public void shouldAddServiceVersionToAcceptHeader() throws FileNotFoundException, IOException, OpenShiftException,
 			HttpClientException {
@@ -200,8 +194,58 @@ public class HttpClientTest {
 		};
 
 		// operation
-		httpClient.get(new URL(serverFake.getUrl()));
-
+		httpClient.get(serverFake.getUrl());
 	}
 
+	@Test(expected = NotFoundException.class)
+	public void shouldThrowNotFoundException() throws IOException {
+		HttpServerFake server = null;
+		try {
+			// precondition
+			this.serverFake.stop();
+			server = startHttServerFake("HTTP/1.0 404 Not Found");
+
+			// operation
+			httpClient.get(server.getUrl());
+		} finally {
+			server.stop();
+		}
+	}
+
+	/**
+	 * 
+	 * RFC 1945 6.1.1 / Reason Phrase is optional
+	 * <p>
+	 * 'HTTP/1.1 404 ' is equivalent to HTTP/1.1 404 Not Found'
+	 * https://bugzilla.redhat.com/show_bug.cgi?id=913796
+	 * 
+	 * @throws IOException
+	 */
+	@Test(expected = NotFoundException.class)
+	public void shouldReasonPhraseIsOptional() throws IOException {
+		HttpServerFake server = null;
+		try {
+			// precondition
+			this.serverFake.stop();
+			// RFC 1945 6.1.1 / Reason Phrase is optional
+			server = startHttServerFake("HTTP/1.0 404 ");
+
+			// operation
+			httpClient.get(server.getUrl());
+		} finally {
+			server.stop();
+		}
+	}
+
+	protected HttpServerFake startHttServerFake(String statusLine) throws IOException {
+		int port = new Random().nextInt(9 * 1024) + 1024;
+		HttpServerFake serverFake = null;
+		if (statusLine == null) {
+			serverFake = new HttpServerFake(port);
+		} else {
+			serverFake = new HttpServerFake(port, null, statusLine);
+		}
+		serverFake.start();
+		return serverFake;
+	}
 }
