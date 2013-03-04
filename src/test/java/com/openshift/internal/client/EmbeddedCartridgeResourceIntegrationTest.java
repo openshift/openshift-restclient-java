@@ -52,6 +52,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		this.user = new TestConnectionFactory().getConnection().getUser();
 		this.domain = DomainTestUtils.getFirstDomainOrCreate(user);
 		this.application = ApplicationTestUtils.getOrCreateApplication(domain);
+		ApplicationTestUtils.silentlyEnsureHasMaxApplication(1, domain);
 	}
 
 	@Test
@@ -62,10 +63,10 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	@Test
 	public void shouldEmbedMySQL() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
 		// pre-conditions
-		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.mySQL(), application);
-		assertThat(application.getEmbeddedCartridges(LatestVersionOf.mySQL())).isEmpty();
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
 		int numOfEmbeddedCartridges = application.getEmbeddedCartridges().size();
-
+		assertThat(numOfEmbeddedCartridges).isEqualTo(0);
+		
 		// operation
 		application.addEmbeddableCartridge(LatestVersionOf.mySQL());
 
@@ -110,11 +111,11 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	@Test
 	public void shouldEmbedPostgreSQL() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
 		// pre-conditions
-		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.postgreSQL(), application);
-		assertThat(application.getEmbeddedCartridges(LatestVersionOf.postgreSQL()).isEmpty());
+		// pre-conditions
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
 		int numOfEmbeddedCartridges = application.getEmbeddedCartridges().size();
+		assertThat(numOfEmbeddedCartridges).isEqualTo(0);
 
-		// operation
 		application.addEmbeddableCartridge(LatestVersionOf.postgreSQL());
 
 		// verification
@@ -145,9 +146,9 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	@Test
 	public void shouldEmbedMongo() throws Exception {
 		// pre-conditions
-		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.mongoDB(), application);
-		assertThat(new ApplicationAssert(application)
-				.hasNotEmbeddableCartridges(LatestVersionOf.mongoDB()));
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
+		int numOfEmbeddedCartridges = application.getEmbeddedCartridges().size();
+		assertThat(numOfEmbeddedCartridges).isEqualTo(0);
 
 		// operation
 		application.addEmbeddableCartridge(LatestVersionOf.mongoDB());
@@ -178,8 +179,8 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	@Test
 	public void shouldEmbedRockMongo() throws Exception {
 		// pre-conditions
-		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.mongoDB(), application);
-		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.rockMongo(), application);
+		// pre-conditions
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
 		assertThat(new ApplicationAssert(application)
 			.hasNotEmbeddableCartridges(LatestVersionOf.mongoDB())
 			.hasNotEmbeddableCartridges(LatestVersionOf.rockMongo()));
@@ -211,8 +212,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	@Test
 	public void shouldEmbedPhpMyAdmin() throws Exception {
 		// pre-conditions
-		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.mySQL(), application);
-		EmbeddedCartridgeTestUtils.silentlyDestroy(LatestVersionOf.phpMyAdmin(), application);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
 		assertThat(new ApplicationAssert(application)
 				.hasNotEmbeddableCartridges(LatestVersionOf.mySQL())
 				.hasNotEmbeddableCartridges(LatestVersionOf.phpMyAdmin()));
@@ -320,7 +320,8 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	@Test
 	public void shouldSeeCartridgeRemovedWithOtherUser() throws Exception {
 		// pre-condition
-		IEmbeddableCartridge mySqlEmbeddableCartridge = EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection());
+		IEmbeddableCartridge mySqlEmbeddableCartridge = 
+				EmbeddedCartridgeTestUtils.getLatestMySqlCartridge(user.getConnection());
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridge(mySqlEmbeddableCartridge, application);
 		assertThat(new ApplicationAssert(application)
 				.hasEmbeddedCartridges(LatestVersionOf.mySQL()));
