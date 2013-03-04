@@ -81,7 +81,7 @@ public class ApplicationTestUtils {
 			}
 		}
 
-		return domain.createApplication(StringUtils.createRandomString(), cartridge, null, null);
+		return domain.createApplication(StringUtils.createRandomString(), cartridge);
 	}
 
 	/**
