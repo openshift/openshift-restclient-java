@@ -127,6 +127,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldCreateJenkinsApplication() throws Exception {
 		// pre-conditions
+		ApplicationTestUtils.silentlyDestroyAllApplicationsByCartridge(ICartridge.JENKINS_14, domain);
 		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
 
 		// operation
