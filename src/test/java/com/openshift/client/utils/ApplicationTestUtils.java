@@ -15,6 +15,7 @@ import java.util.Iterator;
 import com.openshift.client.IApplication;
 import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
+import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftException;
 
 /**
@@ -100,6 +101,13 @@ public class ApplicationTestUtils {
 		for (Iterator<IApplication> it = domain.getApplications().iterator(); it.hasNext() && toDestroy > 0; toDestroy--) {			
 			silentlyDestroy(it.next());
 		}
+	}
+	
+	public static IOpenShiftConnection getConnectin(IApplication application) {
+		if (application == null) {
+			return null;
+		}
+		return application.getDomain().getUser().getConnection();
 	}
 
 }

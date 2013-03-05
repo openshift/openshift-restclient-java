@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.openshift.client.utils;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.openshift.client.IApplication;
@@ -69,14 +68,27 @@ public class EmbeddedCartridgeTestUtils {
 		}
 	}
 
-	public static void ensureHasEmbeddedCartridges(ICartridgeConstraint constraint,	IApplication application) 
+	/**
+	 * Ensures the given application has the embedded cartridges that match the
+	 * given constraint. The given application is checked for their presence and
+	 * if they aren't they are added.
+	 * 
+	 * @param constraint
+	 *            the constraint that selects the available catridges that
+	 *            should be present
+	 * @param application
+	 *            the application that should have the constrained cartridges
+	 * @throws OpenShiftException
+	 */
+	public static void ensureHasEmbeddedCartridges(ICartridgeConstraint constraint, IApplication application)
 			throws OpenShiftException {
 		if (constraint == null
 				|| application == null) {
 			return;
 		}
-		Collection<IEmbeddedCartridge> embeddedCartridges = application.getEmbeddedCartridges(constraint);
-		for (IEmbeddedCartridge embeddedCartridge : embeddedCartridges) {
+		
+		IOpenShiftConnection connection = ApplicationTestUtils.getConnectin(application);
+		for (IEmbeddableCartridge embeddedCartridge : constraint.getMatching(connection.getEmbeddableCartridges())) {
 			ensureHasEmbeddedCartridge(embeddedCartridge, application);
 		}
 	}
