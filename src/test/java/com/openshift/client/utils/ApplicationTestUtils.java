@@ -27,6 +27,10 @@ public class ApplicationTestUtils {
 		return String.valueOf(System.currentTimeMillis());
 	}
 
+	public static IApplication createApplication(ICartridge cartridge, IDomain domain) {
+		return domain.createApplication(createRandomApplicationName(), cartridge);
+	}
+	
 	public static void silentlyDestroy(IApplication application) {
 		try {
 			if (application == null) {

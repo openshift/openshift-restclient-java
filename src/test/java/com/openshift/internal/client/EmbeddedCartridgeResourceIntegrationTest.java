@@ -82,6 +82,13 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 				.hasUrl();
 	}
 
+	/**
+	 * Verify in application created with different user instance.
+	 * 
+	 * @throws SocketTimeoutException
+	 * @throws OpenShiftException
+	 * @throws URISyntaxException
+	 */
 	@Test
 	public void shouldHaveUrlInEmbeddedMySQL() throws OpenShiftException, URISyntaxException, FileNotFoundException, IOException {
 		// pre-conditions
@@ -133,6 +140,13 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 				.hasUrl();
 	}
 
+	/**
+	 * Verify in application created with different user instance.
+	 * 
+	 * @throws SocketTimeoutException
+	 * @throws OpenShiftException
+	 * @throws URISyntaxException
+	 */
 	@Test
 	public void shouldHaveUrlInEmbeddedPostgres() throws OpenShiftException, URISyntaxException, FileNotFoundException, IOException {
 		// pre-conditions
@@ -169,6 +183,13 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 				.hasUrl();
 	}
 
+	/**
+	 * Verify in application created with different user instance.
+	 * 
+	 * @throws SocketTimeoutException
+	 * @throws OpenShiftException
+	 * @throws URISyntaxException
+	 */
 	@Test
 	public void shouldHaveUrlInEmbeddedMongo() throws OpenShiftException, URISyntaxException, FileNotFoundException, IOException {
 		// pre-conditions
@@ -189,8 +210,9 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	@Test
 	public void shouldEmbedRockMongo() throws Exception {
 		// pre-conditions
-		// pre-conditions
-		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
+		// have to make sure have non-scalable app without cartridges 
+		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
+		IApplication application = ApplicationTestUtils.createApplication(ICartridge.JBOSSAS_7, domain);
 		assertThat(new ApplicationAssert(application)
 			.hasNotEmbeddableCartridges(LatestVersionOf.mongoDB())
 			.hasNotEmbeddableCartridges(LatestVersionOf.rockMongo()));
@@ -203,8 +225,19 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		assertThat(new ApplicationAssert(application)
 				.hasEmbeddedCartridges(LatestVersionOf.mongoDB())
 				.hasEmbeddedCartridges(LatestVersionOf.rockMongo()));
+		IEmbeddableCartridge rockMongo = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.rockMongo(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(rockMongo))
+				.hasUrl();
 	}
 
+	/**
+	 * Verify in application created with different user instance.
+	 * 
+	 * @throws SocketTimeoutException
+	 * @throws OpenShiftException
+	 * @throws URISyntaxException
+	 */
 	@Test
 	public void shouldHaveUrlInEmbeddedRockMongo() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
 		// pre-conditions
@@ -235,8 +268,19 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		assertThat(new ApplicationAssert(application)
 				.hasEmbeddedCartridges(LatestVersionOf.mySQL()))
 				.hasEmbeddedCartridges(LatestVersionOf.phpMyAdmin());
+		IEmbeddableCartridge phpMyAdmin = 
+				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.phpMyAdmin(), user.getConnection());
+		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(phpMyAdmin))
+				.hasUrl();
 	}
 
+	/**
+	 * Verify in application created with different user instance.
+	 * 
+	 * @throws SocketTimeoutException
+	 * @throws OpenShiftException
+	 * @throws URISyntaxException
+	 */
 	@Test
 	public void shouldHaveUrlInEmbeddedPhpMyadmin() throws SocketTimeoutException, OpenShiftException, URISyntaxException {
 		// pre-conditions
@@ -273,6 +317,13 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 				.hasUrl();
 	}
 
+	/**
+	 * Verify in application created with different user instance.
+	 * 
+	 * @throws SocketTimeoutException
+	 * @throws OpenShiftException
+	 * @throws URISyntaxException
+	 */
 	@Test
 	public void shouldHaveUrlInEmbeddedJenkinsClient() throws OpenShiftException, URISyntaxException, FileNotFoundException, IOException {
 		// pre-conditions
