@@ -25,10 +25,6 @@ import com.openshift.client.OpenShiftException;
  */
 public class EmbeddedCartridgeTestUtils {
 
-	public static String createRandomApplicationName() {
-		return String.valueOf(System.currentTimeMillis());
-	}
-
 	public static void silentlyDestroy(ICartridgeConstraint cartridgeConstraint,
 			IApplication application) {
 		try {
@@ -54,17 +50,13 @@ public class EmbeddedCartridgeTestUtils {
 		}
 	}
 
-	public static void silentlyDestroyAllEmbeddedCartridges(IApplication application) {
+	public static void destroyAllEmbeddedCartridges(IApplication application) {
 		if (application == null) {
 			return;
 		}
 
-		try {
-			for (IEmbeddedCartridge cartridge : application.getEmbeddedCartridges()) {
-				silentlyDestroy(cartridge, application);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (IEmbeddedCartridge cartridge : application.getEmbeddedCartridges()) {
+			silentlyDestroy(cartridge, application);
 		}
 	}
 
@@ -87,7 +79,7 @@ public class EmbeddedCartridgeTestUtils {
 			return;
 		}
 		
-		IOpenShiftConnection connection = ApplicationTestUtils.getConnectin(application);
+		IOpenShiftConnection connection = ApplicationTestUtils.getConnection(application);
 		for (IEmbeddableCartridge embeddedCartridge : constraint.getMatching(connection.getEmbeddableCartridges())) {
 			ensureHasEmbeddedCartridge(embeddedCartridge, application);
 		}

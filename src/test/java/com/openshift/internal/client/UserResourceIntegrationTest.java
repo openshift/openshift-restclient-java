@@ -134,7 +134,7 @@ public class UserResourceIntegrationTest {
 	@Test
 	public void shouldReturnThatHasNamedDomain() throws OpenShiftException {
 		// precondition
-		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		IDomain domain = DomainTestUtils.ensureHasDomain(user);
 		// operation
 		Boolean hasDomain = user.hasDomain(domain.getId());
 		// verification
@@ -164,8 +164,7 @@ public class UserResourceIntegrationTest {
 	@Test
 	public void shouldNoDefaultDomainAfterRefresh() throws OpenShiftException, FileNotFoundException, IOException {
 		// precondition
-		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
-		assertNotNull(user.getDefaultDomain());
+		IDomain domain = DomainTestUtils.ensureHasDomain(user);
 		assertNotNull(domain);
 
 		IUser otherUser = new TestConnectionFactory().getConnection().getUser();

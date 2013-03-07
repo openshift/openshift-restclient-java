@@ -48,7 +48,7 @@ public class ApplicationResourceIntegrationTest {
 		try {
 			IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
 			IUser user = connection.getUser();
-			domain = DomainTestUtils.getFirstDomainOrCreate(user);
+			domain = DomainTestUtils.ensureHasDomain(user);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -58,7 +58,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldCreateNonScalableApplication() throws Exception {
 		// pre-conditions
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 
 		// operation
 		String applicationName =
@@ -81,7 +81,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldCreateNonScalableApplicationWithSmallGear() throws Exception {
 		// pre-conditions
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 
 		// operation
 		String applicationName =
@@ -104,7 +104,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldCreateScalableApplication() throws Exception {
 		// pre-conditions
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 
 		// operation
 		String applicationName =
@@ -128,7 +128,7 @@ public class ApplicationResourceIntegrationTest {
 	public void shouldCreateJenkinsApplication() throws Exception {
 		// pre-conditions
 		ApplicationTestUtils.silentlyDestroyAllApplicationsByCartridge(ICartridge.JENKINS_14, domain);
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 
 		// operation
 		String applicationName =
@@ -151,7 +151,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldDestroyApplication() throws Exception {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		assertThat(application.getName()).isNotEmpty();
 
@@ -166,7 +166,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test(expected = OpenShiftException.class)
 	public void createDuplicateApplicationThrowsException() throws Exception {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 
 		// operation
@@ -176,7 +176,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldStopApplication() throws Exception {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 
 		// operation
@@ -186,7 +186,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldStartStoppedApplication() throws Exception {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		application.stop();
 
@@ -197,7 +197,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldStartStartedApplication() throws Exception {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		application.start();
 
@@ -211,7 +211,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldStopStoppedApplication() throws Exception {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		application.stop();
 
@@ -225,7 +225,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldRestartStartedApplication() throws Exception {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		application.start();
 
@@ -239,7 +239,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldRestartStoppedApplication() throws Exception {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		application.stop();
 
@@ -253,7 +253,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test(expected = OpenShiftEndpointException.class)
 	public void shouldNotScaleDownIfNotScaledUpApplication() throws Throwable {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = domain.createApplication(
 				DomainTestUtils.createRandomName(), ICartridge.JBOSSAS_7, ApplicationScale.NO_SCALE);
 
@@ -267,7 +267,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test(expected = OpenShiftEndpointException.class)
 	public void shouldNotScaleUpApplication() throws Throwable {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = domain.createApplication(
 				DomainTestUtils.createRandomName(), ICartridge.JBOSSAS_7, ApplicationScale.NO_SCALE);
 
@@ -281,7 +281,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test(expected = OpenShiftEndpointException.class)
 	public void shouldScaleUpApplication() throws Throwable {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = domain.createApplication(
 				DomainTestUtils.createRandomName(), ICartridge.JBOSSAS_7, ApplicationScale.SCALE);
 
@@ -310,7 +310,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldAddAliasToApplication() throws Throwable {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		String alias = String.valueOf(System.currentTimeMillis());
 		// operation
@@ -324,7 +324,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldRemoveAliasOfApplication() throws Throwable {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		String alias = String.valueOf(System.currentTimeMillis());
 		application.addAlias(alias);
@@ -340,7 +340,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test(expected = OpenShiftEndpointException.class)
 	public void shouldNotAddExistingAliasToApplication() throws Throwable {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		String alias = String.valueOf(System.currentTimeMillis());
 		application.addAlias(alias);
@@ -356,7 +356,7 @@ public class ApplicationResourceIntegrationTest {
 	@Test
 	public void shouldWaitForApplication() throws OpenShiftException, MalformedURLException, IOException {
 		// pre-condition
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(2, domain);
+		ApplicationTestUtils.silentlyDestroyIfMoreThan(2, domain);
 		long startTime = System.currentTimeMillis();
 		IApplication application = domain.createApplication(StringUtils.createRandomString(), ICartridge.JBOSSAS_7);
 

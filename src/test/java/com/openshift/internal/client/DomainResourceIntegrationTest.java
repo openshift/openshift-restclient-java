@@ -55,7 +55,7 @@ public class DomainResourceIntegrationTest {
 	@Test
 	public void shouldSetNamespace() throws Exception {
 		// pre-condition
-		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		IDomain domain = DomainTestUtils.ensureHasDomain(user);
 		String namespace = DomainTestUtils.createRandomName();
 
 		// operation
@@ -75,7 +75,7 @@ public class DomainResourceIntegrationTest {
 	@Test
 	public void shouldDeleteDomainWithoutApplications() throws Exception {
 		// pre-condition
-		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		IDomain domain = DomainTestUtils.ensureHasDomain(user);
 		String id = domain.getId();
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		assertThat(domain.getApplications()).isEmpty();
@@ -93,7 +93,7 @@ public class DomainResourceIntegrationTest {
 		IDomain domain = null;
 		try {
 			// pre-condition
-			domain = DomainTestUtils.getFirstDomainOrCreate(user);
+			domain = DomainTestUtils.ensureHasDomain(user);
 			ApplicationTestUtils.getOrCreateApplication(domain);
 			assertThat(domain.getApplications()).isNotEmpty();
 			
@@ -109,7 +109,7 @@ public class DomainResourceIntegrationTest {
 	@Test
 	public void shouldDeleteDomainWithApplications() throws OpenShiftException, SocketTimeoutException {
 		// pre-condition
-		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		IDomain domain = DomainTestUtils.ensureHasDomain(user);
 		ApplicationTestUtils.getOrCreateApplication(domain);
 		assertThat(domain.getApplications()).isNotEmpty();
 		
@@ -124,7 +124,7 @@ public class DomainResourceIntegrationTest {
 	@Test
 	public void shouldSeeNewApplicationAfterRefresh() throws OpenShiftException, FileNotFoundException, IOException {
 		// pre-condition
-		IDomain domain = DomainTestUtils.getFirstDomainOrCreate(user);
+		IDomain domain = DomainTestUtils.ensureHasDomain(user);
 		int numOfApplications = domain.getApplications().size();
 
 		IUser otherUser = new TestConnectionFactory().getConnection().getUser();
