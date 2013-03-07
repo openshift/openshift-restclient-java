@@ -52,8 +52,8 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	public void setUp() throws OpenShiftException, IOException {
 		this.user = new TestConnectionFactory().getConnection().getUser();
 		this.domain = DomainTestUtils.getFirstDomainOrCreate(user);
-		this.application = ApplicationTestUtils.getOrCreateApplication(domain);
 		ApplicationTestUtils.silentlyEnsureHasMaxApplication(1, domain);
+		this.application = ApplicationTestUtils.getOrCreateApplication(domain);
 	}
 
 	@Test
@@ -84,18 +84,16 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 
 	/**
 	 * Verify in application created with different user instance.
-	 * 
-	 * @throws SocketTimeoutException
-	 * @throws OpenShiftException
-	 * @throws URISyntaxException
 	 */
 	@Test
 	public void shouldHaveUrlInEmbeddedMySQL() throws OpenShiftException, URISyntaxException, FileNotFoundException, IOException {
 		// pre-conditions
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(LatestVersionOf.mySQL(), application);
+		// verify using user instance that's not the one used to create
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(application.getName());
-		assertThat(new ApplicationAssert(user2Application)).hasEmbeddedCartridges(LatestVersionOf.mySQL());
+		assertThat(new ApplicationAssert(user2Application))
+				.hasEmbeddedCartridges(LatestVersionOf.mySQL());
 
 		// operation
 
@@ -110,6 +108,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	public void shouldReturnThatHasMySQL() throws OpenShiftException, FileNotFoundException, IOException {
 		// pre-conditions
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(LatestVersionOf.mySQL(), application);
+		// verify using user instance that's not the one used to create
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(application.getName());
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(LatestVersionOf.mySQL(), user2Application);
@@ -117,7 +116,8 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// operation
 		
 		// verification
-		assertThat(new ApplicationAssert(user2Application)).hasEmbeddedCartridges(LatestVersionOf.mySQL());
+		assertThat(new ApplicationAssert(user2Application))
+				.hasEmbeddedCartridges(LatestVersionOf.mySQL());
 	}
 
 	@Test
@@ -140,17 +140,11 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 				.hasUrl();
 	}
 
-	/**
-	 * Verify in application created with different user instance.
-	 * 
-	 * @throws SocketTimeoutException
-	 * @throws OpenShiftException
-	 * @throws URISyntaxException
-	 */
 	@Test
 	public void shouldHaveUrlInEmbeddedPostgres() throws OpenShiftException, URISyntaxException, FileNotFoundException, IOException {
 		// pre-conditions
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(LatestVersionOf.postgreSQL(), application);
+		// verify using user instance that's not the one used to create
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(application.getName());
 		assertThat(new ApplicationAssert(user2Application)).hasEmbeddedCartridges(LatestVersionOf.postgreSQL());
@@ -183,17 +177,11 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 				.hasUrl();
 	}
 
-	/**
-	 * Verify in application created with different user instance.
-	 * 
-	 * @throws SocketTimeoutException
-	 * @throws OpenShiftException
-	 * @throws URISyntaxException
-	 */
 	@Test
 	public void shouldHaveUrlInEmbeddedMongo() throws OpenShiftException, URISyntaxException, FileNotFoundException, IOException {
 		// pre-conditions
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(LatestVersionOf.mongoDB(), application);
+		// verify using user instance that's not the one used to create
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(application.getName());
 		assertThat(new ApplicationAssert(user2Application)).hasEmbeddedCartridges(LatestVersionOf.mongoDB());
@@ -299,10 +287,8 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	public void shouldEmbedJenkinsClient() throws Exception {
 		// pre-conditions
 		// need 2 free gears; jenkins + builder
-		ApplicationTestUtils.silentlyDestroyAllApplicationsByCartridge(ICartridge.JENKINS_14, domain);
-		ApplicationTestUtils.silentlyEnsureHasMaxApplication(1, domain);
-		IApplication application = domain.getApplications().get(0);
-		IApplication jenkins = domain.createApplication("j", ICartridge.JENKINS_14);
+		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
+		IApplication jenkins = ApplicationTestUtils.createApplication(ICartridge.JENKINS_14, domain);
 		assertTrue(jenkins.waitForAccessible(WAIT_FOR_APPLICATION));
 
 		// operation
@@ -335,6 +321,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// operation
 
 		// verification
+		// verify using user instance that's not the one used to create
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(jenkinsApplication.getName());
 		IEmbeddableCartridge jenkinsClient = 
@@ -393,6 +380,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 				.hasEmbeddedCartridges(LatestVersionOf.mySQL()));
 		
 		// operation
+		// use user instance that's not the one used to create
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(application.getName());
 		user2Application.removeEmbeddedCartridges(LatestVersionOf.mySQL());
