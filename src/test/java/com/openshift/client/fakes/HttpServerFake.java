@@ -124,7 +124,7 @@ public class HttpServerFake {
 				outputStream.write(response.getBytes());
 				outputStream.flush();
 			} catch (IOException e) {
-				e.printStackTrace();
+				// e.printStackTrace();
 			} finally {
 				// we should not close the connection, let the client close the
 				// connection
