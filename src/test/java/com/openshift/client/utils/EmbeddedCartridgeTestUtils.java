@@ -50,12 +50,24 @@ public class EmbeddedCartridgeTestUtils {
 		}
 	}
 
+	/**
+	 * Destroys all embedded cartridges from the given application. Ha-Proxy is
+	 * not removed since it cannot get removed.
+	 * 
+	 * @param application
+	 */
 	public static void destroyAllEmbeddedCartridges(IApplication application) {
 		if (application == null) {
 			return;
 		}
 
+		IEmbeddableCartridge haProxy =
+				getFirstEmbeddableCartridge(LatestVersionOf.haProxy(), ApplicationTestUtils.getConnection(application));
 		for (IEmbeddedCartridge cartridge : application.getEmbeddedCartridges()) {
+			// ha proxy can't get removed
+			if (cartridge.equals(haProxy)) {
+				continue;
+			}
 			silentlyDestroy(cartridge, application);
 		}
 	}
@@ -78,7 +90,7 @@ public class EmbeddedCartridgeTestUtils {
 				|| application == null) {
 			return;
 		}
-		
+
 		IOpenShiftConnection connection = ApplicationTestUtils.getConnection(application);
 		for (IEmbeddableCartridge embeddedCartridge : constraint.getMatching(connection.getEmbeddableCartridges())) {
 			ensureHasEmbeddedCartridge(embeddedCartridge, application);
@@ -99,7 +111,8 @@ public class EmbeddedCartridgeTestUtils {
 		application.addEmbeddableCartridge(cartridge);
 	}
 
-	public static IEmbeddableCartridge getFirstEmbeddableCartridge(ICartridgeConstraint constraint, IOpenShiftConnection connection) {
+	public static IEmbeddableCartridge getFirstEmbeddableCartridge(ICartridgeConstraint constraint,
+			IOpenShiftConnection connection) {
 		List<IEmbeddableCartridge> allCartridges = connection.getEmbeddableCartridges();
 		if (allCartridges.size() < 1) {
 			throw new IllegalStateException("No embeddable cartridges found!");

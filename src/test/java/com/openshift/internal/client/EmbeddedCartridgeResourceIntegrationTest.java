@@ -69,8 +69,11 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(ICartridge.JBOSSAS_7, domain);
 		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(application);
+		IEmbeddableCartridge mysql = EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(
+				LatestVersionOf.mySQL(), user.getConnection());
+		assertThat(new ApplicationAssert(application))
+			.hasNotEmbeddableCartridge(mysql);
 		int numOfEmbeddedCartridges = application.getEmbeddedCartridges().size();
-		assertThat(numOfEmbeddedCartridges).isEqualTo(0);
 
 		// operation
 		application.addEmbeddableCartridge(LatestVersionOf.mySQL());
@@ -80,8 +83,6 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 				.hasEmbeddableCartridges(numOfEmbeddedCartridges + 1)
 				.hasEmbeddedCartridges(LatestVersionOf.mySQL());
 
-		IEmbeddableCartridge mysql =
-				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.mySQL(), user.getConnection());
 		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(mysql))
 				.hasUrl();
 	}
@@ -132,19 +133,18 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(ICartridge.JBOSSAS_7, domain);
 		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(application);
-		int numOfEmbeddedCartridges = application.getEmbeddedCartridges().size();
-		assertThat(numOfEmbeddedCartridges).isEqualTo(0);
+		IEmbeddableCartridge postgres = EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(
+				LatestVersionOf.postgreSQL(), user.getConnection());
+		assertThat(new ApplicationAssert(application))
+			.hasNotEmbeddableCartridge(postgres);
 
+		// operation
 		application.addEmbeddableCartridge(LatestVersionOf.postgreSQL());
 
 		// verification
 		assertThat(new ApplicationAssert(application))
-				.hasEmbeddableCartridges(numOfEmbeddedCartridges + 1)
 				.hasEmbeddedCartridges(LatestVersionOf.postgreSQL());
 
-		IEmbeddableCartridge postgres =
-				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.postgreSQL(),
-						user.getConnection());
 		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(postgres))
 				.hasUrl();
 	}
@@ -175,8 +175,10 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(ICartridge.JBOSSAS_7, domain);
 		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(application);
-		int numOfEmbeddedCartridges = application.getEmbeddedCartridges().size();
-		assertThat(numOfEmbeddedCartridges).isEqualTo(0);
+		IEmbeddableCartridge mongo = EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(
+				LatestVersionOf.mongoDB(), user.getConnection());
+		assertThat(new ApplicationAssert(application))
+			.hasNotEmbeddableCartridge(mongo);
 
 		// operation
 		application.addEmbeddableCartridge(LatestVersionOf.mongoDB());
@@ -184,8 +186,6 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// verification
 		assertThat(new ApplicationAssert(application)
 				.hasEmbeddedCartridges(LatestVersionOf.mongoDB()));
-		IEmbeddableCartridge mongo =
-				EmbeddedCartridgeTestUtils.getFirstEmbeddableCartridge(LatestVersionOf.mongoDB(), user.getConnection());
 		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(mongo))
 				.hasUrl();
 	}
