@@ -26,6 +26,7 @@ import com.openshift.client.IDomain;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
+import com.openshift.client.LatestVersionOf;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.ApplicationAssert;
@@ -120,7 +121,8 @@ public class ApplicationResourceIntegrationTest {
 				.hasCartridge(ICartridge.JBOSSAS_7)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
-				.hasEmbeddableCartridges()
+				// scalable apps always have ha-proxy embedded automatically
+				.hasEmbeddedCartridges(LatestVersionOf.haProxy())
 				.hasAlias();
 	}
 

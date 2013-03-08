@@ -26,7 +26,8 @@ public interface IEmbeddableCartridge {
 	public static final String NAME_ROCKMONGO = "rockmongo";
 	public static final String NAME_10GEN_MMS_AGENT = "10gen-mms-agent";
 	public static final String NAME_JENKINS_CLIENT = "jenkins-client";
-	public static final String NAME_METRICS = "metrics-0.1";
+	public static final String NAME_METRICS = "metrics";
+	public static final String NAME_HAPROXY = "haproxy";
 	
 	public String getName();
 	

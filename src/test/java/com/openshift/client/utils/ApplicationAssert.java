@@ -117,7 +117,7 @@ public class ApplicationAssert implements AssertExtension {
 	}
 	
 	public ApplicationAssert hasEmbeddedCartridges(ICartridgeConstraint constraint) throws OpenShiftException {
-		List<IEmbeddableCartridge> embeddableCartridges = getConnection(application).getEmbeddableCartridges();
+		Collection<IEmbeddableCartridge> embeddableCartridges = constraint.getMatching(getConnection(application).getEmbeddableCartridges());
 		for (IEmbeddableCartridge cartridge : constraint.getMatching(embeddableCartridges)) {
 			assertTrue(application.hasEmbeddedCartridge(cartridge));
 		}

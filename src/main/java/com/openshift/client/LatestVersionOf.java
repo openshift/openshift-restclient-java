@@ -49,4 +49,9 @@ public class LatestVersionOf {
 	public static  ICartridgeConstraint metrics() {
 		return new LatestVersionOfName(IEmbeddableCartridge.NAME_METRICS);
 	}
+
+	public static  ICartridgeConstraint haProxy() {
+		return new LatestVersionOfName(IEmbeddableCartridge.NAME_HAPROXY);
+	}
+
 }
