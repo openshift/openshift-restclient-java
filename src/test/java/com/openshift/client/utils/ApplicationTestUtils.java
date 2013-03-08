@@ -103,7 +103,7 @@ public class ApplicationTestUtils {
 	 * @param maxApplications
 	 * @param domain
 	 */
-	public static void silentlyDestroyIfMoreThan(int maxApplications, IDomain domain) {
+	public static void destroyIfMoreThan(int maxApplications, IDomain domain) {
 		if (domain == null) {
 			return;
 		}
@@ -111,7 +111,7 @@ public class ApplicationTestUtils {
 		int toDestroy = domain.getApplications().size() - maxApplications;
 
 		for (Iterator<IApplication> it = domain.getApplications().iterator(); it.hasNext() && toDestroy > 0; toDestroy--) {
-			silentlyDestroy(it.next());
+			it.next().destroy();
 		}
 	}
 
