@@ -212,6 +212,14 @@ public interface IApplication extends IOpenShiftResource {
 	 */
 	public void removeEmbeddedCartridges(Collection<IEmbeddableCartridge> cartridges) throws OpenShiftException;
 
+
+	/**
+	 * Returns the gear groups for this application 
+	 * @return
+	 * @throws OpenShiftException
+	 */
+	public Collection<IGearGroup> getGearGroups() throws OpenShiftException;
+	
 	/**
 	 * Returns the timestamp at which this app was created.
 	 * 
@@ -419,6 +427,4 @@ public interface IApplication extends IOpenShiftResource {
 	public List<String> getEnvironmentProperties() throws OpenShiftSSHOperationException;
 	
 	public String getCartridge(String cartridgeName) throws OpenShiftException;
-	
-	public List<IGearGroup> getGearGroups() throws OpenShiftException;
 }

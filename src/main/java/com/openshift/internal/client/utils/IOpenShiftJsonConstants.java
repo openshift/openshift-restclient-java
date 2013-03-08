@@ -41,6 +41,9 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_FIELD = "field";
 	public static final String PROPERTY_FORCE = "force";
 	public static final String PROPERTY_FRAMEWORK = "framework";
+	public static final String PROPERTY_GEARS = "gears";
+	public static final String PROPERTY_GEAR_PROFILE = "gear_profile";
+	public static final String PROPERTY_GEAR_STATE = "state";
 	public static final String PROPERTY_HEALTH_CHECK_PATH = "health_check_path";
 	public static final String PROPERTY_HREF = "href";
 	public static final String PROPERTY_ID = "id";
@@ -60,7 +63,6 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_PROXY_PORT = "proxy_port";
 	public static final String PROPERTY_PROXY_HOST = "proxy_host";
 	public static final String PROPERTY_SUFFIX = "suffix";
-	public static final String PROPERTY_GEAR_PROFILE = "gear_profile";
 	public static final String PROPERTY_SCALABLE = "scalable";
 	public static final String PROPERTY_OPTIONAL_PARAMS = "optional_params";
 	public static final String PROPERTY_REL = "rel";
@@ -81,8 +83,6 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_VALID_OPTIONS = "valid_options";
 	public static final String PROPERTY_APP_URL = "app_url";
 	public static final String PROPERTY_GIT_URL = "git_url";
-	public static final String PROPERTY_GEARS_COMPONENTS = "components";
-	
 	
 	public static final String VALUE_STATUS_OK = "ok";
 	public static final String VALUE_STATUS_CREATED = "created";

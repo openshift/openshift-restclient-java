@@ -19,6 +19,12 @@ import org.apache.commons.io.IOUtils;
  */
 public enum Samples {
 
+	// gear groups
+	GET_SRINGEAP6_GEARGROUPS("get-sringeap6-geargroups.json"),
+
+	// cartridges
+	GET_SRINGEAP6_CARTRIDGES("get-sringeap6-cartridges.json"),
+
 	// application
 	ADD_APPLICATION_CARTRIDGE_JSON("add-application-cartridge.json"),
 	ADD_APPLICATION_CARTRIDGE_KO_JSON("add-application-cartridge-ko.json"),
@@ -35,8 +41,10 @@ public enum Samples {
 	GET_APPLICATIONS_WITH1APP_JSON("get-applications-with1app.json"),
 	GET_APPLICATIONS_WITH2APPS_JSON("get-applications-with2apps.json"),
 	GET_APPLICATIONS_WITH2APPS_1LOCALHOST_JSON("get-applications-with2apps-1localhost.json"),
+	GET_APPLICATIONS_SRINGEAP6("get-applications-sringeap6.json"),
 	GET_APPLICATION_WITH1CARTRIDGE1ALIAS_JSON("get-application-1cartridge-1alias.json"),
 	GET_APPLICATION_WITH2CARTRIDGES2ALIASES_JSON("get-application-2cartridges-2aliases.json"),
+	GET_APPLICATION_SRINGEAP6("get-application-sringeap6.json"),
 	REMOVE_APPLICATION_ALIAS_JSON("remove-application-alias.json"),
 	REMOVE_APPLICATION_ALIAS_KO_JSON("remove-application-alias-ko.json"),
 	RESTART_APPLICATION_JSON("restart-application.json"),
@@ -55,6 +63,7 @@ public enum Samples {
 	GET_DOMAIN_NOTFOUND_JSON("get-domain-notfound.json"),
 	GET_DOMAINS_1329997507457_JSON("get-domains-1329997507457.json"),
 	GET_DOMAINS_1329997507457_XML("get-domains-1329997507457.xml"),
+	GET_DOMAINS_HONKABONKA2("get-domains-honkabonka2.json"),
 	GET_DOMAINS_1EXISTING("get-domains-1existing.json"),
 	GET_DOMAINS_JSON("get-domains.json"),
 	GET_DOMAINS_NOEXISTING_JSON("get-domains-noexisting.json"),

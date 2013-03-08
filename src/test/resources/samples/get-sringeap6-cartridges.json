@@ -1,0 +1,254 @@
+{
+   "data":[
+      {
+         "links":{
+            "GET":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mysql-5.1",
+               "method":"GET",
+               "optional_params":[
+
+               ],
+               "rel":"Get embedded cartridge",
+               "required_params":[
+
+               ]
+            },
+            "START":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mysql-5.1/events",
+               "method":"POST",
+               "optional_params":[
+
+               ],
+               "rel":"Start embedded cartridge",
+               "required_params":[
+                  {
+                     "description":"event",
+                     "invalid_options":[
+
+                     ],
+                     "name":"event",
+                     "type":"string",
+                     "valid_options":[
+                        "start"
+                     ]
+                  }
+               ]
+            },
+            "STOP":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mysql-5.1/events",
+               "method":"POST",
+               "optional_params":[
+
+               ],
+               "rel":"Stop embedded cartridge",
+               "required_params":[
+                  {
+                     "description":"event",
+                     "invalid_options":[
+
+                     ],
+                     "name":"event",
+                     "type":"string",
+                     "valid_options":[
+                        "stop"
+                     ]
+                  }
+               ]
+            },
+            "RESTART":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mysql-5.1/events",
+               "method":"POST",
+               "optional_params":[
+
+               ],
+               "rel":"Restart embedded cartridge",
+               "required_params":[
+                  {
+                     "description":"event",
+                     "invalid_options":[
+
+                     ],
+                     "name":"event",
+                     "type":"string",
+                     "valid_options":[
+                        "restart"
+                     ]
+                  }
+               ]
+            },
+            "RELOAD":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mysql-5.1/events",
+               "method":"POST",
+               "optional_params":[
+
+               ],
+               "rel":"Reload embedded cartridge",
+               "required_params":[
+                  {
+                     "description":"event",
+                     "invalid_options":[
+
+                     ],
+                     "name":"event",
+                     "type":"string",
+                     "valid_options":[
+                        "reload"
+                     ]
+                  }
+               ]
+            },
+            "DELETE":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mysql-5.1",
+               "method":"DELETE",
+               "optional_params":[
+
+               ],
+               "rel":"Delete embedded cartridge",
+               "required_params":[
+
+               ]
+            }
+         },
+         "name":"mysql-5.1",
+         "properties":{
+            "connection_url":"mysql://5142080143-honkabonka2.rhcloud.com:48681/",
+            "username":"admincwvAI3T",
+            "password":"mFUEPu2S67st",
+            "database_name":"sringeap6"
+         },
+         "status_messages":null,
+         "type":"embedded"
+      },
+      {
+         "links":{
+            "GET":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mongodb-2.2",
+               "method":"GET",
+               "optional_params":[
+
+               ],
+               "rel":"Get embedded cartridge",
+               "required_params":[
+
+               ]
+            },
+            "START":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mongodb-2.2/events",
+               "method":"POST",
+               "optional_params":[
+
+               ],
+               "rel":"Start embedded cartridge",
+               "required_params":[
+                  {
+                     "description":"event",
+                     "invalid_options":[
+
+                     ],
+                     "name":"event",
+                     "type":"string",
+                     "valid_options":[
+                        "start"
+                     ]
+                  }
+               ]
+            },
+            "STOP":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mongodb-2.2/events",
+               "method":"POST",
+               "optional_params":[
+
+               ],
+               "rel":"Stop embedded cartridge",
+               "required_params":[
+                  {
+                     "description":"event",
+                     "invalid_options":[
+
+                     ],
+                     "name":"event",
+                     "type":"string",
+                     "valid_options":[
+                        "stop"
+                     ]
+                  }
+               ]
+            },
+            "RESTART":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mongodb-2.2/events",
+               "method":"POST",
+               "optional_params":[
+
+               ],
+               "rel":"Restart embedded cartridge",
+               "required_params":[
+                  {
+                     "description":"event",
+                     "invalid_options":[
+
+                     ],
+                     "name":"event",
+                     "type":"string",
+                     "valid_options":[
+                        "restart"
+                     ]
+                  }
+               ]
+            },
+            "RELOAD":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mongodb-2.2/events",
+               "method":"POST",
+               "optional_params":[
+
+               ],
+               "rel":"Reload embedded cartridge",
+               "required_params":[
+                  {
+                     "description":"event",
+                     "invalid_options":[
+
+                     ],
+                     "name":"event",
+                     "type":"string",
+                     "valid_options":[
+                        "reload"
+                     ]
+                  }
+               ]
+            },
+            "DELETE":{
+               "href":"https://openshift.redhat.com/broker/rest/domains/honkabonka2/applications/sringeap6/cartridges/mongodb-2.2",
+               "method":"DELETE",
+               "optional_params":[
+
+               ],
+               "rel":"Delete embedded cartridge",
+               "required_params":[
+
+               ]
+            }
+         },
+         "name":"mongodb-2.2",
+         "properties":{
+            "connection_url":"mongodb://514212ce50-honkabonka2.rhcloud.com:37076/",
+            "username":"admin",
+            "password":"DLCVKnnzuGfF",
+            "database_name":"sringeap6"
+         },
+         "status_messages":null,
+         "type":"embedded"
+      }
+   ],
+   "messages":[
+
+   ],
+   "status":"ok",
+   "supported_api_versions":[
+      1.0,
+      1.1,
+      1.2,
+      1.3
+   ],
+   "type":"cartridges",
+   "version":"1.0"
+}

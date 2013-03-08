@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,10 @@ public abstract class BaseResourceDTO {
 	/** the indexed map of links to perform operations from this resource. */
 	private final Map<String, Link> links;
 	private final List<Message> creationLog;
+
+	protected BaseResourceDTO() {
+		this(new HashMap<String, Link>(), null);
+	}
 
 	/**
 	 * Instantiates a new base resource dto.

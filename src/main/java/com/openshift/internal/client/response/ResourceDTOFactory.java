@@ -19,21 +19,19 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DOMAIN_ID;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_EMBEDDED;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_FRAMEWORK;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GEARS_COMPONENTS;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GEARS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GEAR_STATE;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GIT_URL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_HREF;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_ID;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_INFO;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_INTERNAL_PORT;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_LINKS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_LOGIN;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_MAX_GEARS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_METHOD;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_NAME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_OPTIONAL_PARAMS;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROXY_HOST;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROXY_PORT;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REQUIRED_PARAMS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SCALABLE;
@@ -43,6 +41,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_VALID_OPTIONS;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,10 +53,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.client.ApplicationScale;
-import com.openshift.client.IGearGroup;
+import com.openshift.client.GearState;
+import com.openshift.client.IGear;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
+import com.openshift.internal.client.Gear;
 import com.openshift.internal.client.GearProfile;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 import com.openshift.internal.client.utils.StringUtils;
@@ -117,14 +118,12 @@ public class ResourceDTOFactory {
 			return new RestResponse(status, messages, createApplications(rootNode), dataType);
 		case application:
 			return new RestResponse(status, messages, createApplication(rootNode, messages), dataType);
-		case gears:
-			return new RestResponse(status, messages, createGears(rootNode), dataType);
+		case gear_groups:
+			return new RestResponse(status, messages, createGearGroups(rootNode), dataType);
 		case cartridges:
 			return new RestResponse(status, messages, createCartridges(rootNode), dataType);
 		case cartridge:
 			return new RestResponse(status, messages, createCartridge(rootNode, messages), dataType);
-		case gear_groups:
-			return new RestResponse(status, messages, createGearGroups(rootNode), dataType);
 		default:
 			return null;
 		}
@@ -436,60 +435,34 @@ public class ResourceDTOFactory {
 		}
 		return embeddedCartridgeNode.get(PROPERTY_INFO).asString();
 	}
-	
-	private static List<GearGroupDTO> createGearGroups(ModelNode gearGroupsNode) {
-		if (gearGroupsNode.has(PROPERTY_DATA)) {
-			// loop inside 'data' node
-			return createGearGroups(gearGroupsNode.get(PROPERTY_DATA));
-		}
-		final List<GearGroupDTO> gearGroups = new ArrayList<GearGroupDTO>();
-		if (gearGroupsNode.getType() == ModelType.LIST) {
-			for (ModelNode childNode : gearGroupsNode.asList()) {
-				gearGroups.add(createGearGroup(childNode, null));
-			}
-		}
-		return gearGroups;
-	}
-	
-	private static GearGroupDTO createGearGroup(ModelNode gearGroupNode, List<Message> creationLog) {
-		if (gearGroupNode.has(PROPERTY_DATA)) {
-			// recurse into 'data' node
-			return createGearGroup(gearGroupNode.get(PROPERTY_DATA), creationLog);
+
+	private static Collection<GearGroupResourceDTO> createGearGroups(ModelNode dataNode) {
+		Collection<GearGroupResourceDTO> gearGroupDTOs = new ArrayList<GearGroupResourceDTO>();
+		for(ModelNode gearGroupNode : dataNode.get(PROPERTY_DATA).asList()) {
+			gearGroupDTOs.add(createGearGroupResourceDTO(gearGroupNode));
 		}
 		
-		String name = getAsString(gearGroupNode, "name");
-		String gear_profile = getAsString(gearGroupNode, "gear_profile");
-		final List<GearDTO> gears = createGears(gearGroupNode.get("gears"));
-				
-		return new GearGroupDTO(name, gear_profile, gears, creationLog);
+		return gearGroupDTOs;
+	}
+
+	private static GearGroupResourceDTO createGearGroupResourceDTO(ModelNode gearGroupNode) {
+		String uuid = getAsString(gearGroupNode, PROPERTY_UUID);
+		String name = getAsString(gearGroupNode, PROPERTY_NAME);
+		Collection<IGear> gears = createGears(gearGroupNode.get(PROPERTY_GEARS));
+		return new GearGroupResourceDTO(uuid, name, gears);
 	}
 	
-	private static List<GearDTO> createGears(ModelNode gearNode) {
-		if (gearNode.has(PROPERTY_DATA)) {
-			// loop inside 'data' node
-			return createGears(gearNode.get(PROPERTY_DATA));
-		}
-		final List<GearDTO> gears = new ArrayList<GearDTO>();
-		if (gearNode.getType() == ModelType.LIST) {
-			for (ModelNode childNode : gearNode.asList()) {
-				gears.add(createGear(childNode, null));
-			}
+	private static Collection<IGear> createGears(ModelNode gearsNode) {
+		List<IGear> gears = new ArrayList<IGear>();
+		for (ModelNode gearNode : gearsNode.asList()) {
+			gears.add(
+					new Gear(
+							getAsString(gearNode, PROPERTY_ID),
+							GearState.safeValueOf(getAsString(gearNode, PROPERTY_GEAR_STATE))));
 		}
 		return gears;
 	}
 	
-	private static GearDTO createGear(ModelNode gearNode, List<Message> creationLog) {
-		if (gearNode.has(PROPERTY_DATA)) {
-			// recurse into 'data' node
-			return createGear(gearNode.get(PROPERTY_DATA), creationLog);
-		}
-		
-		String uuid = getAsString(gearNode, "id");
-		String state = getAsString(gearNode, "state");
-				
-		return new GearDTO(uuid, state, creationLog);
-	}
-
 	/**
 	 * Creates a new ResourceDTO object.
 	 * 

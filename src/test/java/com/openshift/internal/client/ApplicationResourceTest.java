@@ -92,11 +92,6 @@ public class ApplicationResourceTest {
 		this.domain = user.getDomain("foobar");
 	}
 
-	/**
-	 * Syntactic sugar.
-	 * 
-	 * @return
-	 */
 	@Test
 	public void shouldLoadListOfApplicationsWithNoElement() throws Throwable {
 		// pre-conditions

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.List;
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +34,7 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
+import com.openshift.client.utils.GearGroupsAssert;
 import com.openshift.client.utils.StringUtils;
 import com.openshift.client.utils.TestConnectionFactory;
 
@@ -80,24 +81,23 @@ public class ApplicationResourceIntegrationTest {
 				.hasEmbeddableCartridges()
 				.hasAlias();
 	}
-	
-    @Test
-	public void shouldAccessGears() throws Exception {
-			// pre-conditions
-			ApplicationTestUtils.destroyIfMoreThan(2, domain);
 
-			// operation
-			String applicationName =
-					ApplicationTestUtils.createRandomApplicationName();
-			IApplication application =
-					domain.createApplication(applicationName, ICartridge.JBOSSAS_7);
+	@Test
+	public void shouldReturnGears() throws Exception {
+		// pre-conditions
+		ApplicationTestUtils.destroyIfMoreThan(2, domain);
 
-			List<IGearGroup> gearGroups = application.getGearGroups();
-			assertTrue(gearGroups != null);
-			assertTrue(gearGroups.size() == 1);
-			assertTrue(gearGroups.get(0).getGears() != null);
-			assertTrue(gearGroups.get(0).getGears().size() == 1);
-			assertTrue(gearGroups.get(0).getGears().get(0).getUuid() != null);
+		// operation
+		String applicationName =
+				ApplicationTestUtils.createRandomApplicationName();
+		IApplication application =
+				domain.createApplication(applicationName, ICartridge.JBOSSAS_7);
+
+		Collection<IGearGroup> gearGroups = application.getGearGroups();
+		assertThat(new GearGroupsAssert(gearGroups)).hasSize(1);
+		assertThat(new GearGroupsAssert(gearGroups))
+				.assertGroup(0).hasUUID()
+				.hasGears().assertGear(0).hasId().hasState();
 	}
 
 	@Test

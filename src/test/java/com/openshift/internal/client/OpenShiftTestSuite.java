@@ -28,6 +28,8 @@ import com.openshift.internal.client.response.ResourceDTOFactoryTest;
 	LatestVersionOfTest.class,
 	UserTest.class,
 	SSHKeyTest.class,
+	GearGroupsResourceTest.class,
+	GearTest.class,
 	OpenShiftExceptionTest.class
 })
 

@@ -51,7 +51,7 @@ import com.openshift.client.utils.HostUtils;
 import com.openshift.client.utils.RFC822DateUtils;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
-import com.openshift.internal.client.response.GearGroupDTO;
+import com.openshift.internal.client.response.GearGroupResourceDTO;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.Message;
 import com.openshift.internal.client.ssh.ApplicationPortForwarding;
@@ -74,7 +74,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private static final String LINK_DELETE_APPLICATION = "DELETE";
 	private static final String LINK_START_APPLICATION = "START";
 	private static final String LINK_STOP_APPLICATION = "STOP";
-	private static final String LINK_STATUS_APPLICATION = "STATUS";
 	private static final String LINK_FORCE_STOP_APPLICATION = "FORCE_STOP";
 	private static final String LINK_RESTART_APPLICATION = "RESTART";
 	private static final String LINK_SCALE_UP = "SCALE_UP";
@@ -135,7 +134,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	private Map<String, String> embeddedCartridgesInfos;
 	
-	private List<IGearGroup> gearGroups;
+	private Collection<IGearGroup> gearGroups;
 
 	/**
 	 * Constructor...
@@ -197,41 +196,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.embeddedCartridgesInfos = embeddedCartridgesInfos;
 	}
 	
-	public List<IGearGroup> getGearGroups() throws OpenShiftException {
-		return CollectionUtils.toUnmodifiableCopy(getOrLoadGearGroups());
-	}
-	
-	protected List<IGearGroup> getOrLoadGearGroups() throws OpenShiftException {
-		if (gearGroups == null) {
-			this.gearGroups = loadGearGroups();
-		}
-		return gearGroups;
-	}
-	
-	private List<IGearGroup> loadGearGroups() throws OpenShiftException {
-		List<IGearGroup> gearGroups = new ArrayList<IGearGroup>();
-		List<GearGroupDTO> gearGroupDTOs = new ListGearGroupsRequest().execute();
-		for (GearGroupDTO gearGroupDTO :  gearGroupDTOs) {
-			final IGearGroup gearGroup =
-					new GearGroupResource(gearGroupDTO, this);
-			gearGroups.add(gearGroup);
-		}
-		return gearGroups;
-	}
-	
-	private class ListGearGroupsRequest extends ServiceRequest {
-
-		public ListGearGroupsRequest() throws OpenShiftException {
-			super(LINK_GET_GEAR_GROUPS);
-		}
-		
-		public List<GearGroupDTO> execute() throws OpenShiftException {
-			return super
-					.execute();
-		}
-
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -471,6 +435,23 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
+	public Collection<IGearGroup> getGearGroups() throws OpenShiftException {
+		if (gearGroups == null) {
+			loadGearGroups();
+		}
+		return gearGroups;
+	}
+
+	private Collection<IGearGroup> loadGearGroups() throws OpenShiftException {
+		List<IGearGroup> gearGroups = new ArrayList<IGearGroup>();
+		Collection<GearGroupResourceDTO> dtos = new GetGearGroupsRequest().execute(); 
+		for(GearGroupResourceDTO dto : dtos) {
+			gearGroups.add(new GearGroupResource(dto, getService()));
+		}
+		
+		return this.gearGroups = gearGroups;
+	}
+	
 	public boolean waitForAccessible(long timeout) throws OpenShiftException {
 		try {
 			return waitForResolved(timeout, System.currentTimeMillis());
@@ -521,6 +502,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	public void refresh() throws OpenShiftException {
 		if (this.embeddedCartridges != null) {
 			this.embeddedCartridges = loadEmbeddedCartridges();
+		}
+		if (this.gearGroups != null) {
+			this.gearGroups = loadGearGroups();
 		}
 		if (this.ports != null) {
 			this.ports = loadPorts();
@@ -884,6 +868,13 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		public String execute(String cartridgeName) throws OpenShiftException {
 			return super
 					.execute(cartridgeName);
+		}
+	}
+
+	private class GetGearGroupsRequest extends ServiceRequest {
+
+		protected GetGearGroupsRequest() {
+			super(LINK_GET_GEAR_GROUPS);
 		}
 	}
 }

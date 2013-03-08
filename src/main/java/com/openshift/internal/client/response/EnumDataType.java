@@ -16,30 +16,22 @@ package com.openshift.internal.client.response;
 public enum EnumDataType {
 	/** Links / the root node that allows for navigation amongst resources.*/
 	links,
-	/** the user type. */
 	user,
 	/** the user's keys. */
 	keys,
 	/** one user's key.*/
 	key,
-	/** The domains type. */
 	domains,
-	/** The domain type. */
 	domain,
-	/** The applications type. */
 	applications,
-	/** The application type. */
 	application,
 	/** The embedded cartridge type. */
 	embedded,
-	/** the gears type. */
-	gears,
-	/** The cartridges type. */
+	gear_groups,
+	/** The standalone cartridges type. */
 	cartridges,
-	/** The cartridge type. */
-	cartridge,
-	/** The gear_groups type. */
-	gear_groups;
+	/** The standalone cartridge type. */
+	cartridge;
 	
 
 	/**

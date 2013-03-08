@@ -4,3 +4,4 @@
 target
 bin
 .metadata
+**/integrationTest.properties

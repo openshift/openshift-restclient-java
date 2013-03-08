@@ -10,20 +10,17 @@
  ******************************************************************************/
 package com.openshift.client;
 
-public interface IGear {
+import com.openshift.internal.client.utils.StringUtils;
 
+
+public enum GearState {
+	STOPPED, BUILDING, DEPLOYING, STARTED, IDLE, UNKNOWN;
+
+	public static GearState safeValueOf(String gearStateString) {
+		if (StringUtils.isEmpty(gearStateString)) {
+			return UNKNOWN;
+		}
+		return valueOf(gearStateString.toUpperCase());
+	}
 	
-	/**
-	 * Returns the id of this gear.
-	 * 
-	 * @return the id
-	 */
-	public String getId();
-
-	/**
-	 * Returns the state of this gear
-	 * 
-	 * @return the state
-	 */
-	public GearState getState();
 }
