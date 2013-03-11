@@ -25,11 +25,7 @@ public interface IUser extends IOpenShiftResource {
 	public String getPassword();
 
 	public String getServer();
-	
-	public String getAuthKey();
-	
-	public String getAuthIV();
-	
+		
 	public IOpenShiftConnection getConnection();
 
 	public IDomain createDomain(String id) throws OpenShiftException;

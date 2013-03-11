@@ -74,16 +74,6 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		return consumedGears;
 	}
 
-	public String getAuthKey() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getAuthIV() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public IDomain createDomain(String id) throws OpenShiftException {
 		Assert.notNull(id);
 		
