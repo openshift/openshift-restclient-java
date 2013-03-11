@@ -92,21 +92,20 @@ public class RestService implements IRestService {
 		return ResourceDTOFactory.get(response);
 	}
 
-	public String request(String url, HttpMethod httpMethod, Map<String, Object> parameters) throws OpenShiftException {
+	public String request(String href, HttpMethod httpMethod, Map<String, Object> parameters) throws OpenShiftException {
+		URL url = getUrl(href);
 		try {
-			return request(getUrl(url), httpMethod, parameters);
-		} catch (UnauthorizedException e) {
-			throw new InvalidCredentialsOpenShiftException(url, e);
-		} catch (NotFoundException e) {
-			throw new NotFoundOpenShiftException(url, e);
-		} catch (HttpClientException e) {
-			throw new OpenShiftEndpointException(
-					url, e, e.getMessage(),
-					"Could not request {0}: {1}", url, getResponseMessage(e));
+			return request(url, httpMethod, parameters);
 		} catch (UnsupportedEncodingException e) {
 			throw new OpenShiftException(e, e.getMessage());
-		} catch (MalformedURLException e) {
-			throw new OpenShiftException(e, e.getMessage());
+		} catch (UnauthorizedException e) {
+			throw new InvalidCredentialsOpenShiftException(url.toString(), e);
+		} catch (NotFoundException e) {
+			throw new NotFoundOpenShiftException(url.toString(), e);
+		} catch (HttpClientException e) {
+			throw new OpenShiftEndpointException(
+					url.toString(), e, e.getMessage(),
+					"Could not request {0}: {1}", url.toString(), getResponseMessage(e));
 		} catch (SocketTimeoutException e) {
 			throw new OpenShiftTimeoutException("Could not request url {0}, connection timed out", url);
 		}
@@ -168,24 +167,24 @@ public class RestService implements IRestService {
 		return response;
 	}
 
-	private URL getUrl(String href) throws MalformedURLException, OpenShiftException {
-		if (href == null) {
-			throw new OpenShiftException("Invalid empty url");
+	private URL getUrl(String href) throws OpenShiftException {
+		try {
+			if (href == null) {
+				throw new OpenShiftException("Invalid empty url");
+			}
+			if (href.startsWith(HTTP)) {
+				return new URL(href);
+			}
+			if (href.startsWith(SERVICE_PATH)) {
+				return new URL(baseUrl + href);
+			}
+			if (href.charAt(0) == SLASH) {
+				href = href.substring(1, href.length());
+			}
+			return new URL(getServiceUrl() + href);
+		} catch (MalformedURLException e) {
+			throw new OpenShiftException(e, e.getMessage());
 		}
-
-		if (href.startsWith(HTTP)) {
-			return new URL(href);
-		}
-
-		if (href.startsWith(SERVICE_PATH)) {
-			return new URL(baseUrl + href);
-		}
-
-		if (href.charAt(0) == SLASH) {
-			href = href.substring(1, href.length());
-		}
-
-		return new URL(getServiceUrl() + href);
 	}
 
 	private void validateParameters(Map<String, Object> parameters, Link link)

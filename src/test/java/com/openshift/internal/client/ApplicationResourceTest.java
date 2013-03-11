@@ -22,8 +22,6 @@ import static com.openshift.client.utils.Samples.GET_APPLICATIONS_WITH2APPS_JSON
 import static com.openshift.client.utils.Samples.GET_APPLICATIONS_WITHNOAPP_JSON;
 import static com.openshift.client.utils.Samples.GET_APPLICATION_CARTRIDGES_WITH1ELEMENT_JSON;
 import static com.openshift.client.utils.Samples.GET_APPLICATION_CARTRIDGES_WITH2ELEMENTS_JSON;
-import static com.openshift.client.utils.Samples.GET_APPLICATION_GEARS_WITH1ELEMENT_JSON;
-import static com.openshift.client.utils.Samples.GET_APPLICATION_GEARS_WITH2ELEMENTS_JSON;
 import static com.openshift.client.utils.Samples.GET_APPLICATION_WITH1CARTRIDGE1ALIAS_JSON;
 import static com.openshift.client.utils.Samples.GET_APPLICATION_WITH2CARTRIDGES2ALIASES_JSON;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_1EXISTING;
@@ -54,7 +52,6 @@ import org.junit.Test;
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.EmbeddableCartridge;
 import com.openshift.client.IApplication;
-import com.openshift.client.IApplicationGear;
 import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
 import com.openshift.client.IEmbeddedCartridge;
@@ -100,7 +97,6 @@ public class ApplicationResourceTest {
 	 * 
 	 * @return
 	 */
-	@Ignore("temporary")
 	@Test
 	public void shouldLoadListOfApplicationsWithNoElement() throws Throwable {
 		// pre-conditions
@@ -115,7 +111,6 @@ public class ApplicationResourceTest {
 		verify(mockClient, times(4)).get(any(URL.class));
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldLoadListOfApplicationsWith1Element() throws Throwable {
 		// pre-conditions
@@ -131,7 +126,6 @@ public class ApplicationResourceTest {
 
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldLoadListOfApplicationsWith2Elements() throws Throwable {
 		// pre-conditions
@@ -146,7 +140,6 @@ public class ApplicationResourceTest {
 		verify(mockClient, times(4)).get(any(URL.class));
 	}
 
-	@Ignore("temporary")
 	@Test(expected = InvalidCredentialsOpenShiftException.class)
 	public void shouldNotLoadListOfApplicationsWithInvalidCredentials() throws OpenShiftException,
 			HttpClientException, SocketTimeoutException {
@@ -159,7 +152,6 @@ public class ApplicationResourceTest {
 		// expect an exception
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldCreateApplication() throws Throwable {
 		// pre-conditions
@@ -185,7 +177,6 @@ public class ApplicationResourceTest {
 		assertThat(domain.getApplications()).hasSize(1).contains(app);
 	}
 
-	@Ignore("temporary")
 	@Test(expected = OpenShiftException.class)
 	public void shouldNotCreateApplicationWithMissingName() throws Throwable {
 		// pre-conditions
@@ -198,7 +189,6 @@ public class ApplicationResourceTest {
 		// expected exception
 	}
 
-	@Ignore("temporary")
 	@Test(expected = OpenShiftException.class)
 	public void shouldNotCreateApplicationWithMissingCartridge() throws Throwable {
 		// pre-conditions
@@ -211,7 +201,6 @@ public class ApplicationResourceTest {
 		// expected exception
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldNotRecreateExistingApplication() throws Throwable {
 		// pre-conditions
@@ -229,7 +218,6 @@ public class ApplicationResourceTest {
 		assertThat(domain.getApplications()).hasSize(2);
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldDestroyApplication() throws Throwable {
 		// pre-conditions
@@ -242,7 +230,6 @@ public class ApplicationResourceTest {
 		assertThat(domain.getApplications()).hasSize(1).excludes(app);
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldStopApplication() throws Throwable {
 		// pre-conditions
@@ -257,7 +244,6 @@ public class ApplicationResourceTest {
 		verify(mockClient, times(1)).post(anyForm(), urlEndsWith("/domains/foobar/applications/sample/events"));
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldForceStopApplication() throws Throwable {
 		// pre-conditions
@@ -272,7 +258,6 @@ public class ApplicationResourceTest {
 		verify(mockClient, times(1)).post(anyForm(), urlEndsWith("/domains/foobar/applications/sample/events"));
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldStartApplication() throws Throwable {
 		// pre-conditions
@@ -287,7 +272,6 @@ public class ApplicationResourceTest {
 		verify(mockClient, times(1)).post(anyForm(), urlEndsWith("/domains/foobar/applications/sample/events"));
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldRestartApplication() throws Throwable {
 		// pre-conditions
@@ -303,24 +287,11 @@ public class ApplicationResourceTest {
 
 	}
 
-	@Ignore("Unused feature")
-	@Test
-	public void shouldGetApplicationGears() throws Throwable {
-
-	}
-
-	@Ignore("Unused feature")
-	@Test
-	public void shouldGetApplicationDescriptor() throws Throwable {
-
-	}
-
 	@Ignore("Need higher quotas on stg")
 	@Test
 	public void shouldScaleDownApplication() throws Throwable {
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldNotScaleDownApplication() throws Throwable {
 		// pre-conditions
@@ -348,7 +319,6 @@ public class ApplicationResourceTest {
 
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldNotScaleUpApplication() throws Throwable {
 		// pre-conditions
@@ -370,7 +340,6 @@ public class ApplicationResourceTest {
 		verify(mockClient, times(1)).post(anyForm(), urlEndsWith("/domains/foobar/applications/sample/events"));
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldAddAliasToApplication() throws Throwable {
 		// pre-conditions
@@ -389,7 +358,6 @@ public class ApplicationResourceTest {
 		assertThat(app.getAliases()).hasSize(2).contains("an_alias", "another_alias");
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldNotAddExistingAliasToApplication() throws Throwable {
 		// pre-conditions
@@ -415,7 +383,6 @@ public class ApplicationResourceTest {
 		verify(mockClient, times(1)).post(anyForm(), urlEndsWith("/domains/foobar/applications/sample/events"));
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldRemoveAliasFromApplication() throws Throwable {
 		// pre-conditions
@@ -434,7 +401,6 @@ public class ApplicationResourceTest {
 		assertThat(app.getAliases()).hasSize(0);
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldNotRemoveAliasFromApplication() throws Throwable {
 		// pre-conditions
@@ -460,7 +426,6 @@ public class ApplicationResourceTest {
 		verify(mockClient, times(1)).post(anyForm(), urlEndsWith("/domains/foobar/applications/sample/events"));
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldListExistingCartridges() throws Throwable {
 		// pre-conditions
@@ -477,7 +442,6 @@ public class ApplicationResourceTest {
 		assertThat(embeddedCartridges).hasSize(2);
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldReloadExistingEmbeddedCartridges() throws Throwable {
 		// pre-conditions
@@ -499,15 +463,21 @@ public class ApplicationResourceTest {
 		verify(mockClient, times(2)).get(urlEndsWith("/domains/foobar/applications/sample/cartridges"));
 	}
 
-	@Ignore("temporary")
 	@Test
 	public void shouldListAvailableCartridges() throws Throwable {
 		// pre-conditions
 		// operation
 		final List<String> availableCartridges = domain.getAvailableCartridgeNames();
 		// verifications
-		assertThat(availableCartridges).containsExactly("nodejs-0.6", "jbossas-7", "python-2.6", "jenkins-1.4",
-				"ruby-1.8", "diy-0.1", "php-5.3", "perl-5.10");
+		assertThat(availableCartridges).containsExactly(
+				"nodejs-0.6", 
+				"jbossas-7", 
+				"python-2.6", 
+				"jenkins-1.4",
+				"ruby-1.8", 
+				"diy-0.1", 
+				"php-5.3", 
+				"perl-5.10");
 	}
 
 	@Test
@@ -616,70 +586,8 @@ public class ApplicationResourceTest {
 	}
 
 	@Test
-	public void shouldListExistingGears() throws Throwable {
-		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications/sample"))).thenReturn(
-				GET_APPLICATION_WITH2CARTRIDGES2ALIASES_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications/sample/gears"))).thenReturn(
-				GET_APPLICATION_GEARS_WITH2ELEMENTS_JSON.getContentAsString());
-		final IApplication app = domain.getApplicationByName("sample");
-		// operation
-		final List<IApplicationGear> gears = app.getGears();
-		// verifications
-		assertThat(gears).hasSize(2).onProperty("uuid").isNotNull();
-		assertThat(gears).onProperty("components").satisfies(new Condition<List<?>>() {
-
-			@Override
-			public boolean matches(List<?> value) {
-				return value.size() == 2 || value.size() == 3;
-			}
-		});
-	}
-
-	@Test
-	public void shouldReloadExistingGears() throws Throwable {
-		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications/sample"))).thenReturn(
-				GET_APPLICATION_WITH1CARTRIDGE1ALIAS_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications/sample/gears"))).thenReturn(
-				GET_APPLICATION_GEARS_WITH1ELEMENT_JSON.getContentAsString());
-		final IApplication app = domain.getApplicationByName("sample");
-		assertThat(app.getGears()).hasSize(1);
-		// simulate new content on openshift, that should be grabbed while doing
-		// a refresh()
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications/sample/gears"))).thenReturn(
-				GET_APPLICATION_GEARS_WITH2ELEMENTS_JSON.getContentAsString());
-		// operation
-		app.refresh();
-		assertThat(app.getGears()).hasSize(2);
-		verify(mockClient, times(2)).get(urlEndsWith("/domains/foobar/applications/sample/gears"));
-	}
-
-	@Test
 	@Ignore
 	public void shouldNotLoadApplicationTwice() throws Throwable {
-		fail("not implemented yet");
-	}
-
-	@Test
-	@Ignore
-	public void shouldNotifyAfterApplicationCreated() throws Throwable {
-		fail("not implemented yet");
-	}
-
-	@Test
-	@Ignore
-	public void shouldNotifyAfterApplicationUpdated() throws Throwable {
-		fail("not implemented yet");
-	}
-
-	@Test
-	@Ignore
-	public void shouldNotifyAfterApplicationDestroyed() throws Throwable {
 		fail("not implemented yet");
 	}
 

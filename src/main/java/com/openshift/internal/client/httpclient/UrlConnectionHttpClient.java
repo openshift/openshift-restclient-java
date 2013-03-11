@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.openshift.internal.client.httpclient;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -22,7 +21,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.text.MessageFormat;
 import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
@@ -101,10 +99,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			connection = createConnection(username, password, authKey, authIV, userAgent, url);
 			
 			return StreamUtils.readToString(connection.getInputStream());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			throw new NotFoundException(
-					MessageFormat.format("Could not find resource \"{0}\"", url.toString()), e);
 		} catch (IOException e) {
 			throw createException(e, connection);
 		} finally {
@@ -168,9 +162,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 				StreamUtils.writeTo(data.getBytes(), connection.getOutputStream());
 			}
 			return StreamUtils.readToString(connection.getInputStream());
-		} catch (FileNotFoundException e) {
-			throw new NotFoundException(
-					MessageFormat.format("Could not find resource {0}", url.toString()), e);
 		} catch (IOException e) {
 			throw createException(e, connection);
 		} finally {
@@ -189,7 +180,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			throws SocketTimeoutException {
 		try {
 			int responseCode = connection.getResponseCode();
-			String errorMessage = StreamUtils.readToString(connection.getErrorStream());
+			String errorMessage = createErrorMessage(connection);
 			switch (responseCode) {
 			case STATUS_INTERNAL_SERVER_ERROR:
 				return new InternalServerErrorException(errorMessage, ioe);
@@ -207,6 +198,20 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		} catch (IOException e) {
 			return new HttpClientException(e);
 		}
+	}
+
+	protected String createErrorMessage(HttpURLConnection connection) throws IOException {
+		StringBuilder builder = new StringBuilder("Connection to ")
+			.append(connection.getURL());
+		String reason = connection.getResponseMessage();
+		if (!StringUtils.isEmpty(reason)) {
+			builder.append(": ").append(reason);
+		}
+		String errorMessage = StreamUtils.readToString(connection.getErrorStream());
+		if (!StringUtils.isEmpty(errorMessage)) {
+			builder.append(", ").append(errorMessage);
+		}
+		return builder.toString();
 	}
 
 

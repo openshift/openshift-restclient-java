@@ -174,7 +174,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldGetMessageIfErrors() throws Throwable {
+	public void shouldHaveMessageIfErrors() throws Throwable {
 		try {
 			// pre-conditions
 			when(clientMock.post(anyForm(), any(URL.class)))
@@ -194,6 +194,21 @@ public class RestServiceTest {
 					.hasSeverity(Severity.ERROR)
 					.hasExitCode(102)
 					.hasParameter(null);
+		}
+	}
+
+	@Test
+	public void shouldReportPlatformUrlInException() throws Throwable {
+		try {
+			// pre-conditions
+			when(clientMock.post(anyForm(), any(URL.class)))
+					.thenThrow(new HttpClientException(Samples.POST_DOMAINS_NEWDOMAIN_KO.getContentAsString()));
+			// operation
+			service.request(new Link("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));
+			// verifications
+			fail("OpenShiftEndPointException expected, did not occurr");
+		} catch (OpenShiftEndpointException e) {
+			assertThat(e.getMessage()).contains(service.getPlatformUrl());
 		}
 	}
 

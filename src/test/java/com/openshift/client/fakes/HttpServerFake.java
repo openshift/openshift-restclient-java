@@ -40,7 +40,7 @@ import com.openshift.internal.client.utils.StreamUtils;
 public class HttpServerFake {
 
 	public static final int DEFAULT_PORT = 1234;
-	private static final String DEFAULT_STATUSLINE = "HTTP/1.1 200 OK\n\n";
+	private static final String DEFAULT_STATUSLINE = "HTTP/1.1 200 OK\n";
 	
 	private ExecutorService executor;
 	private int port;
@@ -134,6 +134,7 @@ public class HttpServerFake {
 
 		protected void writeResponseHeader(OutputStream outputStream) throws IOException {
 			outputStream.write(statusLine.getBytes());
+			outputStream.write("\n".getBytes());
 		}
 		
 		/**

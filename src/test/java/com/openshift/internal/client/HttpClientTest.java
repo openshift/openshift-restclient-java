@@ -237,6 +237,25 @@ public class HttpClientTest {
 		}
 	}
 
+	@Test
+	public void shouldHaveURLInExceptionMessage() throws IOException {
+		HttpServerFake server = null;
+		try {
+			// precondition
+			this.serverFake.stop();
+			// RFC 1945 6.1.1 / Reason Phrase is optional
+			server = startHttServerFake("HTTP/1.0 404 Not Found");
+
+			// operation
+			httpClient.get(server.getUrl());
+			fail("Expected NotFoundException not thrown");
+		} catch(NotFoundException e) {
+			assertTrue(e.getMessage().contains(server.getUrl().toString()));
+		} finally {
+			server.stop();
+		}
+	}
+
 	protected HttpServerFake startHttServerFake(String statusLine) throws IOException {
 		int port = new Random().nextInt(9 * 1024) + 1024;
 		HttpServerFake serverFake = null;
