@@ -14,8 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.openshift.client.IOpenShiftConnection;
-import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftConnectionFactory;
+import com.openshift.client.OpenShiftException;
 
 /**
  * User Builder, used to establish a connection and retrieve a user.
@@ -26,6 +26,7 @@ import com.openshift.client.OpenShiftConnectionFactory;
 public class TestConnectionFactory extends OpenShiftConnectionFactory {
 
 	public IOpenShiftConnection getConnection() throws FileNotFoundException, IOException, OpenShiftException {
+
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
 		
 		IOpenShiftConnection connection = getConnection(
@@ -34,10 +35,7 @@ public class TestConnectionFactory extends OpenShiftConnectionFactory {
 				, configuration.getPassword()
 				, null
 				, null
-				, configuration.getLibraServer()
-				, configuration.getProxySet()
-				, configuration.getProxyHost()
-				, configuration.getProxyPort());
+				, configuration.getLibraServer());
 		
 		return connection;
 	}

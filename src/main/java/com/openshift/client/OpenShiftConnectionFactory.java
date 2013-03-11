@@ -31,13 +31,14 @@ import com.openshift.internal.client.utils.Assert;
 public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFactory {
 
 	/**
-	 * Establish a connection with the clientId along with user's password. User's login and Server URL are retrieved
-	 * from the local configuration file (in see $USER_HOME/.openshift/express.conf)
+	 * Establish a connection with the clientId along with user's password.
+	 * User's login and Server URL are retrieved from the local configuration
+	 * file (in see $USER_HOME/.openshift/express.conf)
 	 * 
 	 * @param clientId
-	 *            : http client id
+	 *            http client id
 	 * @param password
-	 *            : user's password
+	 *            user's password
 	 * @return a valid connection
 	 * @throws FileNotFoundException
 	 * @throws IOException
@@ -47,8 +48,6 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 		IOpenShiftConfiguration configuration = null;
 		try {
 			configuration = new OpenShiftConfiguration();
-		} catch (FileNotFoundException e) {
-			throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
 		} catch (IOException e) {
 			throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
 		}
@@ -56,15 +55,16 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	}
 
 	/**
-	 * Establish a connection with the clientId along with user's login and password. Server URL is retrieved from the
-	 * local configuration file (in see $USER_HOME/.openshift/express.conf)
+	 * Establish a connection with the clientId along with user's login and
+	 * password. Server URL is retrieved from the local configuration file (in
+	 * see $USER_HOME/.openshift/express.conf)
 	 * 
 	 * @param clientId
-	 *            : http client id
+	 *            http client id
 	 * @param login
-	 *            : user's login
+	 *            user's login
 	 * @param password
-	 *            : user's password
+	 *            user's password
 	 * @return a valid connection
 	 * @throws FileNotFoundException
 	 * @throws IOException
@@ -75,25 +75,24 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 		IOpenShiftConfiguration configuration;
 		try {
 			configuration = new OpenShiftConfiguration();
-		} catch (FileNotFoundException e) {
-			throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
 		} catch (IOException e) {
 			throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
 		}
 		return getConnection(clientId, login, password, configuration.getLibraServer());
 	}
-	
+
 	/**
-	 * Establish a connection with the clientId along with user's login and password.
+	 * Establish a connection with the clientId along with user's login and
+	 * password.
 	 * 
 	 * @param clientId
-	 *            : http client id
+	 *            http client id
 	 * @param login
-	 *            : user's login.
+	 *            user's login.
 	 * @param password
-	 *            : user's password.
+	 *            user's password.
 	 * @param serverUrl
-	 *            : the server url.
+	 *            the server url.
 	 * @return a valid connection
 	 * @throws FileNotFoundException
 	 * @throws IOException
@@ -105,16 +104,17 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	}
 
 	/**
-	 * Establish a connection with the clientId along with user's login and password.
+	 * Establish a connection with the clientId along with user's login and
+	 * password.
 	 * 
 	 * @param clientId
-	 *            : http client id
+	 *            http client id
 	 * @param login
-	 *            : user's login.
+	 *            user's login.
 	 * @param password
-	 *            : user's password.
+	 *            user's password.
 	 * @param serverUrl
-	 *            : the server url.
+	 *            the server url.
 	 * @return a valid connection
 	 * @throws FileNotFoundException
 	 * @throws IOException
@@ -128,39 +128,10 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 		Assert.notNull(serverUrl);
 
 		try {
-			final IHttpClient httpClient = new UrlConnectionHttpClientBuilder().setCredentials(login, password, authKey, authIV)
-					.client();
-		
+			final IHttpClient httpClient =
+					new UrlConnectionHttpClientBuilder().setCredentials(login, password, authKey, authIV).client();
 			final IRestService service = new RestService(serverUrl, clientId, httpClient);
 			return getConnection(service, login, password);
-		} catch (FileNotFoundException e) {
-			throw new OpenShiftException(e, "Failed to establish connection for user ''{0}}''", login);
-		} catch (IOException e) {
-			throw new OpenShiftException(e, "Failed to establish connection for user ''{0}}''", login);
-		}
-	}
-	
-	public IOpenShiftConnection getConnection(final String clientId, final String login, final String password,
-			final String authKey, final String authIV, final String serverUrl,
-			final boolean proxySet, final String proxyHost, final String proxyPort) throws OpenShiftException {
-		Assert.notNull(clientId);
-		Assert.notNull(login);
-		Assert.notNull(password);
-		Assert.notNull(serverUrl);
-		
-		if (proxySet) {
-			System.setProperty("proxyHost", proxyHost);
-			System.setProperty("proxyPort", proxyPort);
-		}
-
-		try {
-			final IHttpClient httpClient = new UrlConnectionHttpClientBuilder().setCredentials(login, password, authKey, authIV)
-					.client();
-		
-			final IRestService service = new RestService(serverUrl, clientId, httpClient);
-			return getConnection(service, login, password);
-		} catch (FileNotFoundException e) {
-			throw new OpenShiftException(e, "Failed to establish connection for user ''{0}}''", login);
 		} catch (IOException e) {
 			throw new OpenShiftException(e, "Failed to establish connection for user ''{0}}''", login);
 		}

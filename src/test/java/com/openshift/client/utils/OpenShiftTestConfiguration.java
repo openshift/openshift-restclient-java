@@ -69,8 +69,6 @@ public class OpenShiftTestConfiguration extends AbstractOpenshiftConfiguration {
 				StreamUtils.close(in);
 			}
 		}
-
-		
 	}
 
 }

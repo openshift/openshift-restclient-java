@@ -15,12 +15,12 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	SSHKeyIntegrationTest.class,
-	UserResourceIntegrationTest.class,
-	DomainResourceIntegrationTest.class,
-	ApplicationResourceIntegrationTest.class,
+//	SSHKeyIntegrationTest.class,
+//	UserResourceIntegrationTest.class,
+//	DomainResourceIntegrationTest.class,
+//	ApplicationResourceIntegrationTest.class,
 	CartridgesIntegrationTest.class,
-	EmbeddedCartridgeResourceIntegrationTest.class
+//	EmbeddedCartridgeResourceIntegrationTest.class
 })
 /**
  * @author André Dietisheim

@@ -35,6 +35,9 @@
 		<version.shrinkwrap_shrinkwrap>1.0.0-beta-6</version.shrinkwrap_shrinkwrap>
 		<version.shrinkwrap_resolver>1.0.0-beta-5</version.shrinkwrap_resolver>
 		<version.shrinkwrap_descriptors>1.1.0-beta-1</version.shrinkwrap_descriptors>
+		
+		<!-- integration test properties file -->
+		<integrationtest.properties>${basedir}/src/test/resources/integrationTest.properties</integrationtest.properties>
 
 	</properties>
 
@@ -60,6 +63,25 @@
 			</resource>
 		</resources>
 		<plugins>
+			<!-- read integration test properties -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0-alpha-1</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>${integrationtest.properties}</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.12</version>
@@ -68,7 +90,11 @@
 						<libra_server>${libra_server}</libra_server>
 						<default_rhlogin>${default_rhlogin}</default_rhlogin>
 						<rhpassword>${rhpassword}</rhpassword>
-					</systemPropertyVariables>
+						<https.proxyHost>${proxyHost}</https.proxyHost>
+						<https.proxyPort>${proxyPort}</https.proxyPort>
+						<http.proxyHost>${proxyHost}</http.proxyHost>
+						<http.proxyPort>${proxyPort}</http.proxyPort>
+          			</systemPropertyVariables>
 					<excludes>
 						<exclude>**/OpenShiftIntegrationTestSuite.java</exclude>
 					</excludes>
@@ -222,7 +248,13 @@
 								<libra_server>${libra_server}</libra_server>
 								<default_rhlogin>${default_rhlogin}</default_rhlogin>
 								<rhpassword>${rhpassword}</rhpassword>
-							</systemPropertyVariables>
+                <https.proxyHost>${proxyHost}</https.proxyHost>
+                <https.proxyPort>${proxyPort}</https.proxyPort>
+                <http.proxyHost>${proxyHost}</http.proxyHost>
+                <http.proxyPort>${proxyPort}</http.proxyPort>
+                <proxyHost>${proxyHost}</proxyHost>
+                <proxyPort>${proxyPort}</proxyPort>
+              </systemPropertyVariables>
 							<excludes>
 								<exclude>**/OpenShiftSuite.java</exclude>
 							</excludes>

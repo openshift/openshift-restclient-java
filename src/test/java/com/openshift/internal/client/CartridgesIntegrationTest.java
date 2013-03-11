@@ -13,7 +13,6 @@ package com.openshift.internal.client;
 import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.List;
 
 import org.junit.Before;
@@ -21,9 +20,8 @@ import org.junit.Test;
 
 import com.openshift.client.IEmbeddableCartridge;
 import com.openshift.client.IOpenShiftConnection;
-import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.utils.OpenShiftTestConfiguration;
+import com.openshift.client.utils.TestConnectionFactory;
 
 /**
  * @author André Dietisheim
@@ -34,16 +32,11 @@ public class CartridgesIntegrationTest {
 
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
-		final OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
-		this.connection = new OpenShiftConnectionFactory().getConnection(
-				configuration.getClientId(),
-				configuration.getRhlogin(),
-				configuration.getPassword(),
-				configuration.getLibraServer());
+		this.connection = new TestConnectionFactory().getConnection();
 	}
 
 	@Test
-	public void shouldListEmbeddableCartridges() throws SocketTimeoutException, OpenShiftException {
+	public void shouldListEmbeddableCartridges() throws OpenShiftException {
 		// pre-condition
 
 		// operation
