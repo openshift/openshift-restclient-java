@@ -36,8 +36,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
-import com.openshift.client.IApplicationGear;
-import com.openshift.client.IApplicationGearComponent;
 import com.openshift.client.IApplicationPortForwarding;
 import com.openshift.client.ICartridge;
 import com.openshift.client.ICartridgeConstraint;
@@ -52,8 +50,6 @@ import com.openshift.client.utils.HostUtils;
 import com.openshift.client.utils.RFC822DateUtils;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
-import com.openshift.internal.client.response.GearComponentDTO;
-import com.openshift.internal.client.response.GearResourceDTO;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.Message;
 import com.openshift.internal.client.ssh.ApplicationPortForwarding;
@@ -85,7 +81,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private static final String LINK_REMOVE_ALIAS = "REMOVE_ALIAS";
 	private static final String LINK_ADD_CARTRIDGE = "ADD_CARTRIDGE";
 	private static final String LINK_LIST_CARTRIDGES = "LIST_CARTRIDGES";
-	private static final String LINK_LIST_GEARS = "GET_GEARS";
 
 	/** The (unique) uuid of this application. */
 	private final String uuid;
@@ -123,12 +118,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 */
 	// TODO: replace by a map indexed by cartridge names ?
 	private List<IEmbeddedCartridge> embeddedCartridges = null;
-
-	/**
-	 * List of configured gears. <code>null</code> means list if not loaded yet.
-	 */
-	// TODO: replace by a map indexed by cartridge names ?
-	private List<IApplicationGear> gears = null;
 
 	/**
 	 * SSH Fowardable ports for the current application.
@@ -441,40 +430,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
-	/**
-	 * Returns the gears that this application is running on.
-	 * 
-	 * @return
-	 * 
-	 * @return the gears
-	 * @throws OpenShiftException
-	 */
-	public List<IApplicationGear> getGears() throws OpenShiftException {
-		// load collection if necessary
-		if (gears == null) {
-			this.gears = loadGears();
-		}
-		return Collections.unmodifiableList(gears);
-	}
-
-	/**
-	 * @return
-	 * @throws OpenShiftException
-	 */
-	private List<IApplicationGear> loadGears() throws OpenShiftException {
-		this.gears = new ArrayList<IApplicationGear>();
-		List<GearResourceDTO> gearDTOs = new ListGearsRequest().execute();
-		for (GearResourceDTO gearDTO : gearDTOs) {
-			final List<IApplicationGearComponent> components = new ArrayList<IApplicationGearComponent>();
-			for (GearComponentDTO gearComponentDTO : gearDTO.getComponents()) {
-				components.add(new ApplicationGearComponentResource(gearComponentDTO));
-			}
-			IApplicationGear gear = new ApplicationGearResource(gearDTO, components, this);
-			gears.add(gear);
-		}
-		return gears;
-	}
-
 	public boolean waitForAccessible(long timeout) throws OpenShiftException {
 		try {
 			return waitForResolved(timeout, System.currentTimeMillis());
@@ -525,9 +480,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	public void refresh() throws OpenShiftException {
 		if (this.embeddedCartridges != null) {
 			this.embeddedCartridges = loadEmbeddedCartridges();
-		}
-		if (this.gears != null) {
-			this.gears = loadGears();
 		}
 		if (this.ports != null) {
 			this.ports = loadPorts();
@@ -891,13 +843,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		public String execute(String cartridgeName) throws OpenShiftException {
 			return super
 					.execute(cartridgeName);
-		}
-	}
-
-	private class ListGearsRequest extends ServiceRequest {
-
-		protected ListGearsRequest() {
-			super(LINK_LIST_GEARS);
 		}
 	}
 }

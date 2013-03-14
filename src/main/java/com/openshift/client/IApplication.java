@@ -213,16 +213,6 @@ public interface IApplication extends IOpenShiftResource {
 	public void removeEmbeddedCartridges(Collection<IEmbeddableCartridge> cartridges) throws OpenShiftException;
 
 	/**
-	 * Returns all gears.
-	 * 
-	 * @return all gears.
-	 * @throws OpenShiftException
-	 * 
-	 * @see IApplicationGear
-	 */
-	public List<IApplicationGear> getGears() throws OpenShiftException;
-
-	/**
 	 * Returns the timestamp at which this app was created.
 	 * 
 	 * @return the creation time
