@@ -25,12 +25,10 @@ import org.junit.Test;
 import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
 import com.openshift.client.IUser;
-import com.openshift.client.InvalidCredentialsOpenShiftException;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
-import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.client.utils.StringUtils;
 import com.openshift.client.utils.TestConnectionFactory;
 
@@ -44,12 +42,6 @@ public class DomainResourceIntegrationTest {
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
 		this.user = new TestConnectionFactory().getConnection().getUser();
-	}
-
-	@Test(expected = InvalidCredentialsOpenShiftException.class)
-	public void shouldThrowInvalidCredentialsWhenConnectingWithInvalidCredentials() throws Exception {
-		new TestConnectionFactory().getConnection(
-				new OpenShiftTestConfiguration().getClientId(), "bogus-password").getUser();
 	}
 	
 	@Test

@@ -24,16 +24,18 @@ import com.openshift.client.configuration.SystemConfiguration;
 import com.openshift.client.configuration.SystemProperties;
 import com.openshift.client.configuration.UserConfiguration;
 import com.openshift.internal.client.utils.StreamUtils;
+import com.openshift.internal.client.utils.StringUtils;
 
 /**
  * @author André Dietisheim
  */
 public class OpenShiftTestConfiguration extends AbstractOpenshiftConfiguration {
 
-	public static final String LIBRA_SERVER_STG = "http://stg.openshift.redhat.com";
-	public static final String LIBRA_SERVER_PROD = "http://openshift.redhat.com";
+	public static final String LIBRA_SERVER_STG = "https://stg.openshift.redhat.com";
+	public static final String LIBRA_SERVER_PROD = "https://openshift.redhat.com";
 
 	private static final String INTEGRATION_TEST_PROPERTIES = "/integrationTest.properties";
+	private static final String DEVSERVER_PREFIX = "https://ec2-";
 
 	public OpenShiftTestConfiguration() throws FileNotFoundException, IOException, OpenShiftException {
 		super(new SystemProperties(
@@ -49,6 +51,11 @@ public class OpenShiftTestConfiguration extends AbstractOpenshiftConfiguration {
 
 	public String getProductionServer() {
 		return LIBRA_SERVER_PROD;
+	}
+
+	public boolean isDevelopmentServer() {
+		return !StringUtils.isEmpty(getLibraServer())
+				&& getLibraServer().startsWith(DEVSERVER_PREFIX);
 	}
 
 	private static class IntegrationTestConfiguration extends AbstractOpenshiftConfiguration {
@@ -70,5 +77,4 @@ public class OpenShiftTestConfiguration extends AbstractOpenshiftConfiguration {
 			}
 		}
 	}
-
 }

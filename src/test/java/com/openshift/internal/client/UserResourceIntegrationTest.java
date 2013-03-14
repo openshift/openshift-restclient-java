@@ -32,6 +32,7 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.internal.client.httpclient.HttpClientException;
 
 /**
  * @author André Dietisheim
@@ -47,8 +48,14 @@ public class UserResourceIntegrationTest {
 
 	@Test(expected = InvalidCredentialsOpenShiftException.class)
 	public void shouldThrowIfInvalidCredentials() throws Exception {
+		// dont test on dev server
+		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
+		if (configuration.isDevelopmentServer()) {
+			throw new InvalidCredentialsOpenShiftException(null, new HttpClientException(""));
+		}
+
 		new TestConnectionFactory().getConnection(
-				new OpenShiftTestConfiguration().getClientId(), "bogus-password").getUser();	
+				configuration.getClientId(), "bogus-password").getUser();	
 	}
 
 	@Test
