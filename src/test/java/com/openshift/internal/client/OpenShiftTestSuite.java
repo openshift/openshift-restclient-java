@@ -27,7 +27,8 @@ import com.openshift.internal.client.response.ResourceDTOFactoryTest;
 	EmbeddableCartridgeTest.class,
 	LatestVersionOfTest.class,
 	UserTest.class,
-	SSHKeyTest.class
+	SSHKeyTest.class,
+	OpenShiftExceptionTest.class
 })
 
 /**

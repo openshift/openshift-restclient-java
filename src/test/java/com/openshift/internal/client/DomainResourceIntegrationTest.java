@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.openshift.client.ICartridge;
@@ -59,12 +58,6 @@ public class DomainResourceIntegrationTest {
 	}
 
 	@Test
-	@Ignore
-	public void canWaitForDomainToBecomeAccessible() throws OpenShiftException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Test
 	public void shouldDeleteDomainWithoutApplications() throws Exception {
 		// pre-condition
 		IDomain domain = DomainTestUtils.ensureHasDomain(user);
@@ -81,7 +74,25 @@ public class DomainResourceIntegrationTest {
 	}
 
 	@Test
-	public void shouldNotDeleteDomainWithApplications() throws OpenShiftException, SocketTimeoutException {
+	public void shouldNotDeleteDomainWithApplications() throws OpenShiftException {
+		IDomain domain = null;
+		try {
+			// pre-condition
+			domain = DomainTestUtils.ensureHasDomain(user);
+			ApplicationTestUtils.getOrCreateApplication(domain);
+			assertThat(domain.getApplications()).isNotEmpty();
+			
+			// operation
+			domain.destroy();
+			// verification
+			fail("OpenShiftEndpointException did not occurr");
+		} catch (OpenShiftEndpointException e) {
+			// verification
+		}
+	}
+
+	@Test
+	public void shouldReportErrorCode128() throws OpenShiftException {
 		IDomain domain = null;
 		try {
 			// pre-condition
@@ -94,6 +105,9 @@ public class DomainResourceIntegrationTest {
 			fail("OpenShiftEndpointException did not occurr");
 		} catch (OpenShiftEndpointException e) {
 			// verification
+			assertThat(e.getRestResponse()).isNotNull();
+			assertThat(e.getRestResponse().getMessages()).isNotEmpty();
+			assertThat(e.getRestResponse().getMessages().get(0)).isNotNull();
 			assertThat(e.getRestResponse().getMessages().get(0).getExitCode()).isEqualTo(128);
 		}
 	}

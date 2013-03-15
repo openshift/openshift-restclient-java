@@ -59,6 +59,7 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
 import com.openshift.internal.client.GearProfile;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
+import com.openshift.internal.client.utils.StringUtils;
 
 /**
  * A factory for creating DTO objects.
@@ -80,7 +81,7 @@ public class ResourceDTOFactory {
 	 */
 	public static RestResponse get(final String content) throws OpenShiftException {
 		// in case the server answers with 'no-content'
-		if (content == null || content.length() == 0) {
+		if (StringUtils.isEmpty(content)) {
 			return null;
 		}
 		LOGGER.trace("Unmarshalling response\n{}", content);

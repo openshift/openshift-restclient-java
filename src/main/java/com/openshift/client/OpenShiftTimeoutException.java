@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2013 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -13,16 +13,12 @@ package com.openshift.client;
 /**
  * @author Andre Dietisheim
  */
-public class OpenShiftTimeoutException  extends OpenShiftException {
+public class OpenShiftTimeoutException  extends OpenShiftEndpointException {
 
 	private static final long serialVersionUID = 1L;
 
-	public OpenShiftTimeoutException(String message, Object... arguments) {
-		super(message, arguments);
-	}
-
-	public OpenShiftTimeoutException(Throwable e, String message, Object... arguments) {
-		super(e, message, arguments);
+	public OpenShiftTimeoutException(String url, Throwable e, String message, Object... arguments) {
+		super(url, e, null, message, arguments);
 	}
 
 }

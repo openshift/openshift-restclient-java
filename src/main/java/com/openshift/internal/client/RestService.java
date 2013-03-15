@@ -107,7 +107,7 @@ public class RestService implements IRestService {
 					url.toString(), e, e.getMessage(),
 					"Could not request {0}: {1}", url.toString(), getResponseMessage(e));
 		} catch (SocketTimeoutException e) {
-			throw new OpenShiftTimeoutException("Could not request url {0}, connection timed out", url);
+			throw new OpenShiftTimeoutException(url.toString(), e, e.getMessage(), "Could not request url {0}, connection timed out", url.toString());
 		}
 	}
 
@@ -115,6 +115,9 @@ public class RestService implements IRestService {
 		try {
 			StringBuilder builder = new StringBuilder();
 			RestResponse restResponse = ResourceDTOFactory.get(clientException.getMessage());
+			if (restResponse == null) {
+				return null;
+			}
 			for (Message message : restResponse.getMessages()) {
 				builder.append(message.toString()).append('\n');
 			}

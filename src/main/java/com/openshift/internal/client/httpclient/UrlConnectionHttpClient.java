@@ -97,7 +97,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		HttpURLConnection connection = null;
 		try {			
 			connection = createConnection(username, password, authKey, authIV, userAgent, url);
-			
 			return StreamUtils.readToString(connection.getInputStream());
 		} catch (IOException e) {
 			throw createException(e, connection);
@@ -180,7 +179,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			throws SocketTimeoutException {
 		try {
 			int responseCode = connection.getResponseCode();
-			String errorMessage = createErrorMessage(connection);
+			String errorMessage = createErrorMessage(ioe, connection);
 			switch (responseCode) {
 			case STATUS_INTERNAL_SERVER_ERROR:
 				return new InternalServerErrorException(errorMessage, ioe);
@@ -200,16 +199,16 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		}
 	}
 
-	protected String createErrorMessage(HttpURLConnection connection) throws IOException {
+	protected String createErrorMessage(IOException ioe, HttpURLConnection connection) throws IOException {
+		String errorMessage = StreamUtils.readToString(connection.getErrorStream());
+		if (!StringUtils.isEmpty(errorMessage)) {
+			return errorMessage;
+		}
 		StringBuilder builder = new StringBuilder("Connection to ")
 			.append(connection.getURL());
 		String reason = connection.getResponseMessage();
 		if (!StringUtils.isEmpty(reason)) {
 			builder.append(": ").append(reason);
-		}
-		String errorMessage = StreamUtils.readToString(connection.getErrorStream());
-		if (!StringUtils.isEmpty(errorMessage)) {
-			builder.append(", ").append(errorMessage);
 		}
 		return builder.toString();
 	}
