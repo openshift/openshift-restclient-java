@@ -297,8 +297,8 @@ public class UrlConnectionHttpClient implements IHttpClient {
 				connection.setRequestProperty(PROPERTY_AUTHIV, authIV);
 			}
 		} else {
-			String credentials = Base64Coder.encodeString(
-					new StringBuilder().append(username).append(COLON).append(password).toString());
+			String credentials = Base64Coder.encode(
+					new StringBuilder().append(username).append(COLON).append(password).toString().getBytes());
 			connection.setRequestProperty(PROPERTY_AUTHORIZATION,
 					new StringBuilder().append(AUTHORIZATION_BASIC).append(SPACE).append(credentials).toString());
 		}

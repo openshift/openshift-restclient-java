@@ -112,7 +112,8 @@ public class HttpClientTest {
 		assertTrue(matcher.find());
 		assertEquals(1, matcher.groupCount());
 		String credentials = matcher.group(1);
-		String cleartextCredentials = new String(Base64Coder.decode(credentials));
+		String cleartextCredentials = Base64Coder.decode(credentials);
+		assertThat(credentials).describedAs("credentials were not encoded in httpClient").isNotEqualTo(cleartextCredentials);
 		assertEquals(username + ":" + password, cleartextCredentials);
 	}
 

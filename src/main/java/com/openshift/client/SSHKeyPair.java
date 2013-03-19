@@ -106,7 +106,7 @@ public class SSHKeyPair extends AbstractSSHKey {
 	}
 
 	public String getPublicKey() {
-		return new String(Base64Coder.encode(keyPair.getPublicKeyBlob()));
+		return Base64Coder.encode(keyPair.getPublicKeyBlob());
 	}
 
 	public String getPrivateKeyPath() {
