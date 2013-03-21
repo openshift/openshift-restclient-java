@@ -42,14 +42,17 @@ import com.openshift.client.ICartridgeConstraint;
 import com.openshift.client.IDomain;
 import com.openshift.client.IEmbeddableCartridge;
 import com.openshift.client.IEmbeddedCartridge;
+import com.openshift.client.IGearGroup;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftSSHOperationException;
 import com.openshift.client.utils.HostUtils;
 import com.openshift.client.utils.RFC822DateUtils;
+import com.openshift.internal.client.AbstractOpenShiftResource.ServiceRequest;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
+import com.openshift.internal.client.response.GearGroupDTO;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.Message;
 import com.openshift.internal.client.ssh.ApplicationPortForwarding;
@@ -81,6 +84,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private static final String LINK_REMOVE_ALIAS = "REMOVE_ALIAS";
 	private static final String LINK_ADD_CARTRIDGE = "ADD_CARTRIDGE";
 	private static final String LINK_LIST_CARTRIDGES = "LIST_CARTRIDGES";
+	private static final String LINK_GET_GEAR_GROUPS = "GET_GEAR_GROUPS";
 
 	/** The (unique) uuid of this application. */
 	private final String uuid;
@@ -131,6 +135,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private Session session;
 
 	private Map<String, String> embeddedCartridgesInfos;
+	
+	private List<IGearGroup> gearGroups;
 
 	/**
 	 * Constructor...
@@ -141,7 +147,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 */
 	protected ApplicationResource(ApplicationResourceDTO dto, ICartridge cartridge, DomainResource domain) {
 		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getCreationLog(), dto.getApplicationUrl(), dto
-				.getGitUrl(), dto.getGearProfile(), dto.getApplicationScale(), cartridge, dto
+				.getGitUrl(), dto.getGearProfile(), dto.getGearGroups(), dto.getApplicationScale(), cartridge, dto
 				.getAliases(), dto.getEmbeddedCartridgeInfos(), dto.getLinks(), domain);
 	}
 
@@ -172,7 +178,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 */
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
 			final List<Message> creationLog, final String applicationUrl, final String gitUrl,
-			final IGearProfile gearProfile, final ApplicationScale scale, 
+			final IGearProfile gearProfile, final List<IGearGroup> gearGroups, final ApplicationScale scale, 
 			final ICartridge cartridge, final List<String> aliases, final Map<String, String> embeddedCartridgesInfos,
 			final Map<String, Link> links, final DomainResource domain) {
 		super(domain.getService(), links, creationLog);
@@ -181,6 +187,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.creationTime = RFC822DateUtils.safeGetDate(creationTime);
 		this.scale = scale;
 		this.gearProfile = gearProfile;
+		this.gearGroups = gearGroups;
 		this.cartridge = cartridge;
 		this.applicationUrl = applicationUrl;
 		this.gitUrl = gitUrl;
@@ -189,6 +196,41 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		// TODO: fix this workaround once
 		// https://bugzilla.redhat.com/show_bug.cgi?id=812046 is fixed
 		this.embeddedCartridgesInfos = embeddedCartridgesInfos;
+	}
+	
+	public List<IGearGroup> getGearGroups() throws OpenShiftException {
+		return CollectionUtils.toUnmodifiableCopy(getOrLoadGearGroups());
+	}
+	
+	protected List<IGearGroup> getOrLoadGearGroups() throws OpenShiftException {
+		if (gearGroups == null) {
+			this.gearGroups = loadGearGroups();
+		}
+		return gearGroups;
+	}
+	
+	private List<IGearGroup> loadGearGroups() throws OpenShiftException {
+		List<IGearGroup> gearGroups = new ArrayList<IGearGroup>();
+		List<GearGroupDTO> gearGroupDTOs = new ListGearGroupsRequest().execute();
+		for (GearGroupDTO gearGroupDTO :  gearGroupDTOs) {
+			final IGearGroup gearGroup =
+					new GearGroupResource(gearGroupDTO, this);
+			gearGroups.add(gearGroup);
+		}
+		return gearGroups;
+	}
+	
+	private class ListGearGroupsRequest extends ServiceRequest {
+
+		public ListGearGroupsRequest() throws OpenShiftException {
+			super(LINK_GET_GEAR_GROUPS);
+		}
+		
+		public List<GearGroupDTO> execute() throws OpenShiftException {
+			return super
+					.execute();
+		}
+
 	}
 
 	public String getName() {

@@ -419,4 +419,6 @@ public interface IApplication extends IOpenShiftResource {
 	public List<String> getEnvironmentProperties() throws OpenShiftSSHOperationException;
 	
 	public String getCartridge(String cartridgeName) throws OpenShiftException;
+	
+	public List<IGearGroup> getGearGroups() throws OpenShiftException;
 }

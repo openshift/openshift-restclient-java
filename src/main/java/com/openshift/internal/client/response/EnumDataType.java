@@ -37,7 +37,9 @@ public enum EnumDataType {
 	/** The cartridges type. */
 	cartridges,
 	/** The cartridge type. */
-	cartridge;
+	cartridge,
+	/** The gear_groups type. */
+	gear_groups;
 	
 
 	/**
