@@ -96,8 +96,8 @@ public class ApplicationResourceIntegrationTest {
 		Collection<IGearGroup> gearGroups = application.getGearGroups();
 		assertThat(new GearGroupsAssert(gearGroups)).hasSize(1);
 		assertThat(new GearGroupsAssert(gearGroups))
-				.assertGroup(0).hasUUID()
-				.hasGears().assertGear(0).hasId().hasState();
+				.assertGroup(0).hasUUID().hasGears()
+				.assertGear(0).hasId().hasState();
 	}
 
 	@Test

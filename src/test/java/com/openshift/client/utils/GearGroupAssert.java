@@ -66,7 +66,7 @@ public class GearGroupAssert implements AssertExtension {
 	}
 
 	public GearAssert assertGear(int number) {
-		assertThat(number).isPositive();
+		assertThat(number).isGreaterThanOrEqualTo(0);
 		assertThat(number).as("gear group " + gearGroup.getName() + " does not contain " + number + " gears")
 				.isLessThanOrEqualTo(gearGroup.getGears().size());
 
