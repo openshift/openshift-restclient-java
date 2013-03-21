@@ -41,12 +41,6 @@ public interface IRestService {
 	public abstract String request(String url, HttpMethod httpMethod, Map<String, Object> parameters)
 			throws OpenShiftException;
 
-	public abstract void setProxySet(boolean proxySet);
-
-	public abstract void setProxyHost(String proxyHost);
-
-	public abstract void setProxyPort(String proxyPort);
-
 	public abstract String getServiceUrl();
 
 	public abstract String getPlatformUrl();

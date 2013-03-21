@@ -52,10 +52,6 @@ public class RestService implements IRestService {
 	private static final String SERVICE_PATH = "/broker/rest/";
 	private static final char SLASH = '/';
 
-	private static final String SYSPROPERTY_PROXY_PORT = "proxyPort";
-	private static final String SYSPROPERTY_PROXY_HOST = "proxyHost";
-	private static final String SYSPROPERTY_PROXY_SET = "proxySet";
-
 	private static final String SERVICE_VERSION = "1.0";
 
 	private String baseUrl;
@@ -234,18 +230,6 @@ public class RestService implements IRestService {
 		return parameter.getType() == LinkParameterType.STRING
 				&& parameterValue instanceof String
 				&& StringUtils.isEmpty((String) parameterValue);
-	}
-
-	public void setProxySet(boolean proxySet) {
-		System.setProperty(SYSPROPERTY_PROXY_SET, String.valueOf(proxySet));
-	}
-
-	public void setProxyHost(String proxyHost) {
-		System.setProperty(SYSPROPERTY_PROXY_HOST, proxyHost);
-	}
-
-	public void setProxyPort(String proxyPort) {
-		System.setProperty(SYSPROPERTY_PROXY_PORT, proxyPort);
 	}
 
 	public String getServiceUrl() {
