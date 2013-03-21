@@ -137,6 +137,8 @@ public class RestService implements IRestService {
 		LOGGER.trace("Requesting {} on {}", httpMethod.name(), url);
 		LOGGER.info("Requesting {} on {}", httpMethod.name(), url);
 		
+		String result = null;
+		
 		switch (httpMethod) {
 		case GET:
 			return client.get(url);
@@ -149,6 +151,8 @@ public class RestService implements IRestService {
 		default:
 			throw new OpenShiftException("Unexpected HTTP method {0}", httpMethod.toString());
 		}
+		
+		
 	}
 	
 	public String request(Link link, String acceptedMediaType,  ServiceParameter... serviceParameters)

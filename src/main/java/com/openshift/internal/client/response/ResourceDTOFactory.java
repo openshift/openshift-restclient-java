@@ -54,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.client.ApplicationScale;
+import com.openshift.client.IGearGroup;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
@@ -92,10 +93,13 @@ public class ResourceDTOFactory {
 
 		final EnumDataType dataType = EnumDataType.safeValueOf(type);
 		// the response is after an error, only the messages are relevant
+		
 
 		if (dataType == null) {
 			return new RestResponse(status, messages, null, null);
 		}
+		
+		
 		switch (dataType) {
 		case user:
 			return new RestResponse(status, messages, createUser(rootNode), dataType);
@@ -119,6 +123,8 @@ public class ResourceDTOFactory {
 			return new RestResponse(status, messages, createCartridges(rootNode), dataType);
 		case cartridge:
 			return new RestResponse(status, messages, createCartridge(rootNode, messages), dataType);
+		case gear_groups:
+			return new RestResponse(status, messages, createGearGroups(rootNode), dataType);
 		default:
 			return null;
 		}
@@ -382,6 +388,7 @@ public class ResourceDTOFactory {
 		final Map<String, Link> links = createLinks(appNode.get(PROPERTY_LINKS));
 		final List<String> aliases = createAliases(appNode.get(PROPERTY_ALIASES));
 		final Map<String, String> embeddedCartridgesInfos = createEmbeddedCartridgesInfos(appNode.get(PROPERTY_EMBEDDED));
+		
 		return new ApplicationResourceDTO(
 				framework, 
 				domainId, 
@@ -429,44 +436,58 @@ public class ResourceDTOFactory {
 		}
 		return embeddedCartridgeNode.get(PROPERTY_INFO).asString();
 	}
-
-	private static List<GearResourceDTO> createGears(ModelNode gearsNode) {
-		if (gearsNode.has(PROPERTY_DATA)) {
+	
+	private static List<GearGroupDTO> createGearGroups(ModelNode gearGroupsNode) {
+		if (gearGroupsNode.has(PROPERTY_DATA)) {
 			// loop inside 'data' node
-			return createGears(gearsNode.get(PROPERTY_DATA));
+			return createGearGroups(gearGroupsNode.get(PROPERTY_DATA));
 		}
-		final List<GearResourceDTO> gears = new ArrayList<GearResourceDTO>();
-		if (gearsNode.getType() == ModelType.LIST) {
-			for (ModelNode childNode : gearsNode.asList()) {
+		final List<GearGroupDTO> gearGroups = new ArrayList<GearGroupDTO>();
+		if (gearGroupsNode.getType() == ModelType.LIST) {
+			for (ModelNode childNode : gearGroupsNode.asList()) {
+				gearGroups.add(createGearGroup(childNode, null));
+			}
+		}
+		return gearGroups;
+	}
+	
+	private static GearGroupDTO createGearGroup(ModelNode gearGroupNode, List<Message> creationLog) {
+		if (gearGroupNode.has(PROPERTY_DATA)) {
+			// recurse into 'data' node
+			return createGearGroup(gearGroupNode.get(PROPERTY_DATA), creationLog);
+		}
+		
+		String name = getAsString(gearGroupNode, "name");
+		String gear_profile = getAsString(gearGroupNode, "gear_profile");
+		final List<GearDTO> gears = createGears(gearGroupNode.get("gears"));
+				
+		return new GearGroupDTO(name, gear_profile, gears, creationLog);
+	}
+	
+	private static List<GearDTO> createGears(ModelNode gearNode) {
+		if (gearNode.has(PROPERTY_DATA)) {
+			// loop inside 'data' node
+			return createGears(gearNode.get(PROPERTY_DATA));
+		}
+		final List<GearDTO> gears = new ArrayList<GearDTO>();
+		if (gearNode.getType() == ModelType.LIST) {
+			for (ModelNode childNode : gearNode.asList()) {
 				gears.add(createGear(childNode, null));
 			}
 		}
 		return gears;
 	}
-
-	private static GearResourceDTO createGear(ModelNode gearNode, List<Message> creationLog) {
+	
+	private static GearDTO createGear(ModelNode gearNode, List<Message> creationLog) {
 		if (gearNode.has(PROPERTY_DATA)) {
 			// recurse into 'data' node
 			return createGear(gearNode.get(PROPERTY_DATA), creationLog);
 		}
-		final String uuid = getAsString(gearNode, PROPERTY_UUID);
-		final String gitUrl = getAsString(gearNode, PROPERTY_GIT_URL);
-		final List<GearComponentDTO> components = createGearComponents(gearNode.get(PROPERTY_GEARS_COMPONENTS));
-		return new GearResourceDTO(uuid, gitUrl, components, creationLog);
-	}
-
-	private static List<GearComponentDTO> createGearComponents(ModelNode gearsComponentNode) {
-		final List<GearComponentDTO> components = new ArrayList<GearComponentDTO>();
-		if (gearsComponentNode.getType() == ModelType.LIST) {
-			for (ModelNode componentNode : gearsComponentNode.asList()) {
-				final String name = getAsString(componentNode, PROPERTY_NAME);
-				final String internalPort = getAsString(componentNode, PROPERTY_INTERNAL_PORT);
-				final String proxyPort = getAsString(componentNode, PROPERTY_PROXY_PORT);
-				final String proxyHost = getAsString(componentNode, PROPERTY_PROXY_HOST);
-				components.add(new GearComponentDTO(name, internalPort, proxyHost, proxyPort, null));
-			}
-		}
-		return components;
+		
+		String uuid = getAsString(gearNode, "id");
+		String state = getAsString(gearNode, "state");
+				
+		return new GearDTO(uuid, state, creationLog);
 	}
 
 	/**

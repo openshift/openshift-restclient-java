@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.openshift.client.ApplicationScale;
+import com.openshift.client.IGearGroup;
 import com.openshift.client.IGearProfile;
 
 /**
@@ -54,6 +55,8 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	private final String gitUrl;
 	
 	private Map<String, String> embeddedCartridgeInfos;
+	
+	private List<IGearGroup> gearGroups;
 
 	/**
 	 * Instantiates a new application dto.
@@ -131,6 +134,10 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	 */
 	public final IGearProfile getGearProfile() {
 		return gearProfile;
+	}
+	
+	public final List<IGearGroup> getGearGroups() {
+		return gearGroups;
 	}
 
 	/**

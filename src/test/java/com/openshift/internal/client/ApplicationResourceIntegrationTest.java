@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
 import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
+import com.openshift.client.IGearGroup;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
@@ -77,6 +79,25 @@ public class ApplicationResourceIntegrationTest {
 				.hasValidGitUrl()
 				.hasEmbeddableCartridges()
 				.hasAlias();
+	}
+	
+    @Test
+	public void shouldAccessGears() throws Exception {
+			// pre-conditions
+			ApplicationTestUtils.destroyIfMoreThan(2, domain);
+
+			// operation
+			String applicationName =
+					ApplicationTestUtils.createRandomApplicationName();
+			IApplication application =
+					domain.createApplication(applicationName, ICartridge.JBOSSAS_7);
+
+			List<IGearGroup> gearGroups = application.getGearGroups();
+			assertTrue(gearGroups != null);
+			assertTrue(gearGroups.size() == 1);
+			assertTrue(gearGroups.get(0).getGears() != null);
+			assertTrue(gearGroups.get(0).getGears().size() == 1);
+			assertTrue(gearGroups.get(0).getGears().get(0).getUuid() != null);
 	}
 
 	@Test
