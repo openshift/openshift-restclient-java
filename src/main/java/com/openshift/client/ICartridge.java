@@ -35,7 +35,4 @@ public interface ICartridge {
 	public static final ICartridge WSGI_32 = new Cartridge("python-2.6");
 
 	public abstract String getName();
-	
-	public abstract String getLogLocation();
-
 }
