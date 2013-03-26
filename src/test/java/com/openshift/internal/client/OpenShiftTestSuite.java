@@ -26,7 +26,7 @@ import com.openshift.internal.client.response.ResourceDTOFactoryTest;
 	ApplicationResourceTest.class,
 	CartridgesTest.class,
 	EmbeddableCartridgeTest.class,
-	LatestVersionOfTest.class,
+	LatestVersionSelectorTest.class,
 	UserTest.class,
 	SSHKeyTest.class,
 	GearGroupsResourceTest.class,

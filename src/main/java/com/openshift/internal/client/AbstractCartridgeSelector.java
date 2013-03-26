@@ -14,8 +14,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.openshift.client.ICartridgeConstraint;
-import com.openshift.client.IEmbeddableCartridge;
+import com.openshift.client.IApplication;
+import com.openshift.client.IDomain;
+import com.openshift.client.IOpenShiftConnection;
+import com.openshift.client.cartridge.ICartridge;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.internal.client.utils.Assert;
 
 /**
  * A base class for a constraint that shall match available embeddable
@@ -27,9 +31,9 @@ import com.openshift.client.IEmbeddableCartridge;
  * @see IEmbeddableCartridge for cartridges that have already been added and
  *      configured to an application.
  */
-public abstract class AbstractCartridgeConstraint implements ICartridgeConstraint {
+public abstract class AbstractCartridgeSelector {
 	
-	public <C extends IEmbeddableCartridge> Collection<C> getMatching(Collection<C> cartridges) {
+	protected <C extends ICartridge> Collection<C> getAllMatching(Collection<C> cartridges) {
 		List<C> matchingCartridges = new ArrayList<C>();
 
 		if (cartridges == null) {
@@ -45,6 +49,15 @@ public abstract class AbstractCartridgeConstraint implements ICartridgeConstrain
 		return matchingCartridges;
 	}
 	
-	public abstract <C extends IEmbeddableCartridge> boolean matches(C cartridge);
+	public abstract <C extends ICartridge> boolean matches(C cartridge);
 
+	protected IOpenShiftConnection getConnection(IApplication application) {
+		Assert.notNull(application);
+		return application.getDomain().getUser().getConnection();
+	}
+
+	protected IOpenShiftConnection getConnection(IDomain domain) {
+		Assert.notNull(domain);
+		return domain.getUser().getConnection();
+	}
 }

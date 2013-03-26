@@ -17,12 +17,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.openshift.client.EmbeddableCartridge;
-import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
-import com.openshift.client.IEmbeddableCartridge;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
 import com.openshift.internal.client.response.DomainResourceDTO;
 import com.openshift.internal.client.response.Link;
@@ -47,7 +47,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	private UserResource user;
 	//TODO: implement switch that allows to turn ssl checks on/off 
 	private boolean doSSLChecks = false;
-	private final List<ICartridge> standaloneCartridgeNames = new ArrayList<ICartridge>();
+	private final List<IStandaloneCartridge> standaloneCartridgeNames = new ArrayList<IStandaloneCartridge>();
 	private final List<IEmbeddableCartridge> embeddedCartridgeNames = new ArrayList<IEmbeddableCartridge>();
 	private final ExecutorService executorService;
 	
@@ -147,7 +147,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		return domain;
 	}
 
-	public List<ICartridge> getStandaloneCartridges() throws OpenShiftException {
+	public List<IStandaloneCartridge> getStandaloneCartridges() throws OpenShiftException {
 		if (standaloneCartridgeNames.isEmpty()) {
 			retrieveCartridges();
 		}
@@ -167,7 +167,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 			// TODO replace by enum (standalone, embedded)
 			switch (cartridgeDTO.getType()) {
 			case STANDALONE:
-				this.standaloneCartridgeNames.add(new Cartridge(cartridgeDTO.getName()));
+				this.standaloneCartridgeNames.add(new StandaloneCartridge(cartridgeDTO.getName()));
 				break;
 			case EMBEDDED:
 				this.embeddedCartridgeNames.add(new EmbeddableCartridge(cartridgeDTO.getName()));

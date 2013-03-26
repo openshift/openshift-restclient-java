@@ -22,15 +22,15 @@ import org.junit.Test;
 
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
-import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
 import com.openshift.client.IGearGroup;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
-import com.openshift.client.LatestVersionOf;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.cartridge.selector.LatestVersionOf;
 import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
@@ -45,14 +45,15 @@ public class ApplicationResourceIntegrationTest {
 
 	private static final long WAIT_TIMEOUT = 3 * 60 * 1000;
 
-	private static IDomain domain;
+	private IUser user;
+	private IDomain domain;
 
 	@Before
 	public void setUp() throws Exception {
 		try {
 			IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
-			IUser user = connection.getUser();
-			domain = DomainTestUtils.ensureHasDomain(user);
+			this.user = connection.getUser();
+			this.domain = DomainTestUtils.ensureHasDomain(user);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -67,15 +68,16 @@ public class ApplicationResourceIntegrationTest {
 		// operation
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
 		IApplication application =
-				domain.createApplication(applicationName, ICartridge.JBOSSAS_7);
+				domain.createApplication(applicationName, jbossas);
 
 		// verification
 		assertThat(new ApplicationAssert(application))
 				.hasName(applicationName)
 				.hasUUID()
 				.hasCreationTime()
-				.hasCartridge(ICartridge.JBOSSAS_7)
+				.hasCartridge(jbossas)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
 				.hasEmbeddableCartridges()
@@ -90,8 +92,9 @@ public class ApplicationResourceIntegrationTest {
 		// operation
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);		
 		IApplication application =
-				domain.createApplication(applicationName, ICartridge.JBOSSAS_7);
+				domain.createApplication(applicationName, jbossas);
 
 		Collection<IGearGroup> gearGroups = application.getGearGroups();
 		assertThat(new GearGroupsAssert(gearGroups)).hasSize(1);
@@ -108,15 +111,16 @@ public class ApplicationResourceIntegrationTest {
 		// operation
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
 		IApplication application = domain.createApplication(
-				applicationName, ICartridge.JBOSSAS_7, IGearProfile.SMALL);
+				applicationName, jbossas, IGearProfile.SMALL);
 
 		// verification
 		assertThat(new ApplicationAssert(application))
 				.hasName(applicationName)
 				.hasUUID()
 				.hasCreationTime()
-				.hasCartridge(ICartridge.JBOSSAS_7)
+				.hasCartridge(jbossas)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
 				.hasEmbeddableCartridges()
@@ -131,19 +135,20 @@ public class ApplicationResourceIntegrationTest {
 		// operation
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
 		IApplication application = domain.createApplication(
-				applicationName, ICartridge.JBOSSAS_7, ApplicationScale.SCALE, GearProfile.SMALL);
+				applicationName, jbossas, ApplicationScale.SCALE, GearProfile.SMALL);
 
 		// verification
 		assertThat(new ApplicationAssert(application))
 				.hasName(applicationName)
 				.hasUUID()
 				.hasCreationTime()
-				.hasCartridge(ICartridge.JBOSSAS_7)
+				.hasCartridge(jbossas)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
 				// scalable apps always have ha-proxy embedded automatically
-				.hasEmbeddedCartridges(LatestVersionOf.haProxy())
+				.hasEmbeddedCartridge(LatestVersionOf.haProxy())
 				.hasAlias();
 	}
 
@@ -155,15 +160,16 @@ public class ApplicationResourceIntegrationTest {
 		// operation
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jenkins = LatestVersionOf.jenkins().get(user);
 		IApplication application = domain.createApplication(
-				applicationName, ICartridge.JENKINS_14);
+				applicationName, jenkins );
 
 		// verification
 		assertThat(new ApplicationAssert(application))
 				.hasName(applicationName)
 				.hasUUID()
 				.hasCreationTime()
-				.hasCartridge(ICartridge.JENKINS_14)
+				.hasCartridge(jenkins)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
 				.hasEmbeddableCartridges()
@@ -190,7 +196,7 @@ public class ApplicationResourceIntegrationTest {
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 
 		// operation
-		domain.createApplication(application.getName(), ICartridge.JBOSSAS_7);
+		domain.createApplication(application.getName(), LatestVersionOf.jbossAs().get(user));
 	}
 
 	@Test
@@ -269,7 +275,7 @@ public class ApplicationResourceIntegrationTest {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-				DomainTestUtils.createRandomName(), ICartridge.JBOSSAS_7, ApplicationScale.NO_SCALE);
+				DomainTestUtils.createRandomName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.NO_SCALE);
 
 		// operation
 		application.scaleDown();
@@ -283,7 +289,7 @@ public class ApplicationResourceIntegrationTest {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-				DomainTestUtils.createRandomName(), ICartridge.JBOSSAS_7, ApplicationScale.NO_SCALE);
+				DomainTestUtils.createRandomName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.NO_SCALE);
 
 		// operation
 		application.scaleUp();
@@ -296,7 +302,7 @@ public class ApplicationResourceIntegrationTest {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-				DomainTestUtils.createRandomName(), ICartridge.JBOSSAS_7, ApplicationScale.SCALE);
+				DomainTestUtils.createRandomName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.SCALE);
 
 		// operation
 		application.scaleUp();
@@ -310,7 +316,7 @@ public class ApplicationResourceIntegrationTest {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-				DomainTestUtils.createRandomName(), ICartridge.JBOSSAS_7, ApplicationScale.SCALE);
+				DomainTestUtils.createRandomName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.SCALE);
 		application.scaleUp();
 
 		// operation
@@ -368,7 +374,7 @@ public class ApplicationResourceIntegrationTest {
 		// pre-condition
 		ApplicationTestUtils.destroyIfMoreThan(2, domain);
 		long startTime = System.currentTimeMillis();
-		IApplication application = domain.createApplication(StringUtils.createRandomString(), ICartridge.JBOSSAS_7);
+		IApplication application = domain.createApplication(StringUtils.createRandomString(), LatestVersionOf.jbossAs().get(user));
 
 		// operation
 		boolean successfull = application.waitForAccessible(WAIT_TIMEOUT);

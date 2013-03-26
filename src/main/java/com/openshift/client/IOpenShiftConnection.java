@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IStandaloneCartridge;
+
 /**
  * @author Xavier Coulon
  * @author Andre Dietisheim
@@ -50,7 +53,7 @@ public interface IOpenShiftConnection {
 	 * @return the available standalone cartridges
 	 * @throws OpenShiftException
 	 */
-	public List<ICartridge> getStandaloneCartridges() throws OpenShiftException;
+	public List<IStandaloneCartridge> getStandaloneCartridges() throws OpenShiftException;
 
 	/**
 	 * Returns the available embeddable cartridges associated with the current

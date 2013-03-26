@@ -15,7 +15,7 @@ import static org.junit.Assert.fail;
 import java.text.MessageFormat;
 import java.util.Collection;
 
-import com.openshift.client.ICartridge;
+import com.openshift.client.cartridge.ICartridge;
 
 /**
  * @author André Dietisheim

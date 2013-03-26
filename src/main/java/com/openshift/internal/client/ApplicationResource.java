@@ -37,16 +37,15 @@ import com.jcraft.jsch.Session;
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
 import com.openshift.client.IApplicationPortForwarding;
-import com.openshift.client.ICartridge;
-import com.openshift.client.ICartridgeConstraint;
 import com.openshift.client.IDomain;
-import com.openshift.client.IEmbeddableCartridge;
-import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.IGearGroup;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftSSHOperationException;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IEmbeddedCartridge;
+import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.HostUtils;
 import com.openshift.client.utils.RFC822DateUtils;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
@@ -94,7 +93,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private final Date creationTime;
 
 	/** The cartridge (application type/framework) of this application. */
-	private final ICartridge cartridge;
+	private final IStandaloneCartridge cartridge;
 
 	/** The scalability enablement. */
 	private final ApplicationScale scale;
@@ -143,7 +142,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * @param cartridge
 	 * @param domain
 	 */
-	protected ApplicationResource(ApplicationResourceDTO dto, ICartridge cartridge, DomainResource domain) {
+	protected ApplicationResource(ApplicationResourceDTO dto, IStandaloneCartridge cartridge, DomainResource domain) {
 		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getCreationLog(), dto.getApplicationUrl(), dto
 				.getGitUrl(), dto.getGearProfile(), dto.getGearGroups(), dto.getApplicationScale(), cartridge, dto
 				.getAliases(), dto.getEmbeddedCartridgeInfos(), dto.getLinks(), domain);
@@ -177,7 +176,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
 			final List<Message> creationLog, final String applicationUrl, final String gitUrl,
 			final IGearProfile gearProfile, final List<IGearGroup> gearGroups, final ApplicationScale scale, 
-			final ICartridge cartridge, final List<String> aliases, final Map<String, String> embeddedCartridgesInfos,
+			final IStandaloneCartridge cartridge, final List<String> aliases, final Map<String, String> embeddedCartridgesInfos,
 			final Map<String, Link> links, final DomainResource domain) {
 		super(domain.getService(), links, creationLog);
 		this.name = name;
@@ -214,7 +213,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return uuid;
 	}
 
-	public ICartridge getCartridge() {
+	public IStandaloneCartridge getCartridge() {
 		return cartridge;
 	}
 
@@ -304,11 +303,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return applicationUrl;
 	}
 
-	public List<IEmbeddedCartridge> addEmbeddableCartridge(ICartridgeConstraint cartridgeConstraint) throws OpenShiftException {
-		Collection<IEmbeddableCartridge> cartridges = (Collection<IEmbeddableCartridge>) cartridgeConstraint.getMatching(getConnection().getEmbeddableCartridges());
-		return addEmbeddableCartridges(cartridges);
-	}
-
 	/**
 	 * Adds the given embedded cartridge to this application.
 	 * 
@@ -393,12 +387,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 		return getEmbeddedCartridge(cartridge.getName());
 	}
-
-	public Collection<IEmbeddedCartridge> getEmbeddedCartridges(ICartridgeConstraint constraint) throws OpenShiftException {
-		Assert.notNull(constraint);
-
-		return constraint.getMatching(getEmbeddedCartridges());
-	}
 	
 	public IEmbeddedCartridge getEmbeddedCartridge(String cartridgeName) throws OpenShiftException {
 		Assert.notNull(cartridgeName);
@@ -410,12 +398,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 		return null;
 	}
-	
-	public void removeEmbeddedCartridges(ICartridgeConstraint cartridgeConstraint) throws OpenShiftException {
-		Collection<IEmbeddableCartridge> embeddableCartridges = cartridgeConstraint.getMatching(getConnection().getEmbeddableCartridges());
-		removeEmbeddedCartridges(embeddableCartridges);
-	}
-	
+		
 	public void removeEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
 		Assert.notNull(cartridge);
 

@@ -10,29 +10,25 @@
  ******************************************************************************/
 package com.openshift.client.utils;
 
-import java.util.List;
-
 import com.openshift.client.IApplication;
-import com.openshift.client.ICartridgeConstraint;
-import com.openshift.client.IEmbeddableCartridge;
-import com.openshift.client.IEmbeddedCartridge;
-import com.openshift.client.IOpenShiftConnection;
-import com.openshift.client.LatestVersionOf;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IEmbeddedCartridge;
+import com.openshift.client.cartridge.selector.LatestEmbeddableCartridge;
+import com.openshift.client.cartridge.selector.LatestVersionOf;
 
 /**
  * @author André Dietisheim
  */
 public class EmbeddedCartridgeTestUtils {
 
-	public static void silentlyDestroy(ICartridgeConstraint cartridgeConstraint,
-			IApplication application) {
+	public static void silentlyDestroy(LatestEmbeddableCartridge selector, IApplication application) {
 		try {
-			if (cartridgeConstraint == null
+			if (selector == null
 					|| application == null) {
 				return;
 			}
-			application.removeEmbeddedCartridges(cartridgeConstraint);
+			application.removeEmbeddedCartridge(selector.get(application));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -61,8 +57,7 @@ public class EmbeddedCartridgeTestUtils {
 			return;
 		}
 
-		IEmbeddableCartridge haProxy =
-				getFirstEmbeddableCartridge(LatestVersionOf.haProxy(), ApplicationTestUtils.getConnection(application));
+		IEmbeddableCartridge haProxy = LatestVersionOf.haProxy().get(application);
 		for (IEmbeddedCartridge cartridge : application.getEmbeddedCartridges()) {
 			// ha proxy can't get removed
 			if (cartridge.equals(haProxy)) {
@@ -84,16 +79,21 @@ public class EmbeddedCartridgeTestUtils {
 	 *            the application that should have the constrained cartridges
 	 * @throws OpenShiftException
 	 */
-	public static void ensureHasEmbeddedCartridges(ICartridgeConstraint constraint, IApplication application)
+	public static void ensureHasEmbeddedCartridges(LatestEmbeddableCartridge constraint, IApplication application)
 			throws OpenShiftException {
 		if (constraint == null
 				|| application == null) {
 			return;
 		}
 
-		IOpenShiftConnection connection = ApplicationTestUtils.getConnection(application);
-		for (IEmbeddableCartridge embeddedCartridge : constraint.getMatching(connection.getEmbeddableCartridges())) {
-			ensureHasEmbeddedCartridge(embeddedCartridge, application);
+		IEmbeddableCartridge embeddedCartridge = constraint.get(application);
+		ensureHasEmbeddedCartridge(embeddedCartridge, application);
+	}
+
+	public static void ensureHasEmbeddedCartridges(IApplication application, LatestEmbeddableCartridge... selectors)
+			throws OpenShiftException {
+		for (LatestEmbeddableCartridge selector : selectors) {
+			ensureHasEmbeddedCartridges(selector, application);
 		}
 	}
 
@@ -109,18 +109,5 @@ public class EmbeddedCartridgeTestUtils {
 		}
 
 		application.addEmbeddableCartridge(cartridge);
-	}
-
-	public static IEmbeddableCartridge getFirstEmbeddableCartridge(ICartridgeConstraint constraint,
-			IOpenShiftConnection connection) {
-		List<IEmbeddableCartridge> allCartridges = connection.getEmbeddableCartridges();
-		if (allCartridges.size() < 1) {
-			throw new IllegalStateException("No embeddable cartridges found!");
-		}
-		return constraint.getMatching(allCartridges).iterator().next();
-	}
-
-	public static IEmbeddableCartridge getLatestMySqlCartridge(IOpenShiftConnection connection) {
-		return getFirstEmbeddableCartridge(LatestVersionOf.mySQL(), connection);
 	}
 }

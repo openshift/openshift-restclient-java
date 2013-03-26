@@ -8,22 +8,21 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.client;
+package com.openshift.client.cartridge;
 
 /**
- * Interface to designate a cartridge that has been added and configured
  * @author André Dietisheim
  */
-public interface IEmbeddedCartridge extends IOpenShiftResource, IEmbeddableCartridge {
+public interface IStandaloneCartridge extends ICartridge {
 
-	public String getUrl() throws OpenShiftException;
-			
-	/**
-	 * Destroys this cartridge (and removes it from the list of existing cartridges)
-	 * 
-	 * @throws OpenShiftException
-	 */
-	public void destroy() throws OpenShiftException;
-
+	public static final String NAME_EWS = "ews";
+	public static final String NAME_JBOSSAS = "jbossas";
+	public static final String NAME_JBOSSEAP = "jbosseap";
+	public static final String NAME_JENKINS = "jenkins";
+	public static final String NAME_PERL = "perl";
+	public static final String NAME_PHP = "php";
+	public static final String NAME_PYTHON = "python";
+	public static final String NAME_RUBY = "ruby";
+	public static final String NAME_ZEND = "zend";
 
 }

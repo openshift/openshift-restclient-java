@@ -23,11 +23,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.client.EmbeddableCartridge;
-import com.openshift.client.ICartridge;
-import com.openshift.client.IEmbeddableCartridge;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftConnectionFactory;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.response.Link;
 
@@ -56,7 +56,7 @@ public class CartridgesTest {
 	public void shouldLoadListOfStandaloneCartridges() throws Throwable {
 		// pre-conditions
 		// operation
-		final List<ICartridge> cartridges = connection.getStandaloneCartridges();
+		final List<IStandaloneCartridge> cartridges = connection.getStandaloneCartridges();
 		// verifications
 		assertThat(cartridges)
 				.hasSize(8)

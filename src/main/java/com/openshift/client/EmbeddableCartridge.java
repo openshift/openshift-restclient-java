@@ -10,7 +10,7 @@
  ******************************************************************************/
 package com.openshift.client;
 
-import com.openshift.client.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
 
 
 /**

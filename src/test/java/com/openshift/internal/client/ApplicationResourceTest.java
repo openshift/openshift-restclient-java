@@ -52,9 +52,7 @@ import org.junit.Test;
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.EmbeddableCartridge;
 import com.openshift.client.IApplication;
-import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
-import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
@@ -63,6 +61,8 @@ import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftTimeoutException;
+import com.openshift.client.cartridge.IEmbeddedCartridge;
+import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.InternalServerErrorException;
@@ -155,7 +155,7 @@ public class ApplicationResourceTest {
 		when(mockClient.post(anyForm(), urlEndsWith("/domains/foobar/applications"))).thenReturn(
 				ADD_APPLICATION_JSON.getContentAsString());
 		// operation
-		final ICartridge cartridge = new Cartridge("jbossas-7");
+		final IStandaloneCartridge cartridge = new StandaloneCartridge("jbossas-7");
 		final IApplication app = domain.createApplication("sample", cartridge, ApplicationScale.NO_SCALE, null);
 		// verifications
 		assertThat(app.getName()).isEqualTo("sample");
@@ -179,7 +179,7 @@ public class ApplicationResourceTest {
 				GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
 		when(mockClient.post(anyForm(), urlEndsWith("/domains"))).thenReturn(ADD_DOMAIN_JSON.getContentAsString());
 		// operation
-		domain.createApplication(null, new Cartridge("jbossas-7"), null, null);
+		domain.createApplication(null, new StandaloneCartridge("jbossas-7"), null, null);
 		// verifications
 		// expected exception
 	}
@@ -203,7 +203,7 @@ public class ApplicationResourceTest {
 				GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
 		// operation
 		try {
-			domain.createApplication("sample", new Cartridge("jbossas-7"), null, null);
+			domain.createApplication("sample", new StandaloneCartridge("jbossas-7"), null, null);
 			// expect an exception
 			fail("Expected exception here...");
 		} catch (OpenShiftException e) {

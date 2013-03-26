@@ -17,6 +17,9 @@ import java.util.concurrent.Future;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IEmbeddedCartridge;
+import com.openshift.client.cartridge.IStandaloneCartridge;
 
 /**
  * @author André Dietisheim
@@ -76,16 +79,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @return the cartridge of this application
 	 * 
 	 */
-	public ICartridge getCartridge();
-
-	/**
-	 * Adds the embeddable cartridges that match the given constraint.
-	 * 
-	 * @param cartridgeConstraint the constraint that determines what cartridges shall be added
-	 * @throws OpenShiftException if no cartridge matches the constraint
-	 */
-	public List<IEmbeddedCartridge> addEmbeddableCartridge(ICartridgeConstraint cartridgeConstraint)
-			throws OpenShiftException;
+	public IStandaloneCartridge getCartridge();
 
 	/**
 	 * Adds the given embeddable cartridge to this application.
@@ -170,25 +164,6 @@ public interface IApplication extends IOpenShiftResource {
 	 */
 
 	public IEmbeddedCartridge getEmbeddedCartridge(IEmbeddableCartridge cartridge)
-			throws OpenShiftException;
-
-	/**
-	 * Returns the embedded cartridges in this application that match the given cartridge constraint.
-	 * 
-	 * @param constraint the constraint that the embedded cartridges shall match
-	 * @return the matching embedded cartridges
-	 * @throws OpenShiftException
-	 */
-	public Collection<IEmbeddedCartridge> getEmbeddedCartridges(ICartridgeConstraint constraint) throws OpenShiftException;
-	/**
-	 * Removes the embeddable cartridges that match the given constraint.
-	 * 
-	 * @param cartridgeConstraint
-	 *            the constraint that the cartridge shall match
-	 * @throws OpenShiftException
-	 *             if no cartridge matches the constraint
-	 */
-	public void removeEmbeddedCartridges(ICartridgeConstraint cartridgeConstraint)
 			throws OpenShiftException;
 
 	/**

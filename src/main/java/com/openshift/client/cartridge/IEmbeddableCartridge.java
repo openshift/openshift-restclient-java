@@ -8,17 +8,16 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.client;
+package com.openshift.client.cartridge;
 
 
 
 /**
  * @author Xavier Coulon
+ * @author Andre Dietisheim
  */
-public interface IEmbeddableCartridge {
+public interface IEmbeddableCartridge extends ICartridge {
 	
-	public static final char NAME_VERSION_DELIMITER = '-';
-
 	public static final String NAME_MYSQL = "mysql";
 	public static final String NAME_PHPMYADMIN = "phpmyadmin";
 	public static final String NAME_POSTGRESQL = "postgresql";
@@ -28,7 +27,5 @@ public interface IEmbeddableCartridge {
 	public static final String NAME_JENKINS_CLIENT = "jenkins-client";
 	public static final String NAME_METRICS = "metrics";
 	public static final String NAME_HAPROXY = "haproxy";
-	
-	public String getName();
 	
 }

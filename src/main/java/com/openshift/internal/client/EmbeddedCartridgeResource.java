@@ -16,9 +16,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.openshift.client.IApplication;
-import com.openshift.client.IEmbeddableCartridge;
-import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.Message;

@@ -8,18 +8,20 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client;
+package com.openshift.client.cartridge.selector;
 
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.openshift.client.IEmbeddableCartridge;
+import com.openshift.client.IApplication;
+import com.openshift.client.cartridge.ICartridge;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.internal.client.AbstractCartridgeSelector;
 import com.openshift.internal.client.utils.Assert;
 
 /**
@@ -31,57 +33,59 @@ import com.openshift.internal.client.utils.Assert;
  * @see IEmbeddableCartridge for cartridges that have already been added and
  *      configured to an application.
  */
-public class LatestVersionOfName extends AbstractCartridgeConstraint {
+public class LatestVersionSelector extends AbstractCartridgeSelector {
 
 	private final String nameConstraint;
 
-	public LatestVersionOfName(final String name) {
+	public LatestVersionSelector(final String name) {
 		Assert.isTrue(name != null);
 		this.nameConstraint = name;
 	}
-	
+
 	public String getNameConstraint() {
 		return nameConstraint;
 	}
-	
-	@Override
-	public <C extends IEmbeddableCartridge> Collection<C> getMatching(Collection<C> cartridges) {
-		C latest = getLatest(new ArrayList<C>(super.getMatching(cartridges)));
-		if (latest == null) {
-			return Collections.emptyList();
+
+	public <C extends ICartridge> C get(Collection<C> cartridges) {
+		return getLatest(new ArrayList<C>(super.getAllMatching(cartridges)));
+	}
+
+	public <C extends ICartridge> boolean matches(C cartridge) {
+		String name = cartridge.getName();
+		int delimiterIndex = name.lastIndexOf(ICartridge.NAME_VERSION_DELIMITER);
+		if (delimiterIndex == -1) {
+			return false;
 		}
-		return Collections.singletonList(latest);
+		return nameConstraint.equals(name.substring(0, delimiterIndex));
 	}
 
-	@Override
-	public <C extends IEmbeddableCartridge> boolean matches(C cartridge) {
-		return cartridge.getName().startsWith(nameConstraint);
-	}
-
-	protected <C extends IEmbeddableCartridge> C getLatest(List<C> matchingCartridges) {
-		if (matchingCartridges.size() == 0) {
+	protected <C extends ICartridge> C getLatest(Collection<C> matchingCartridges) {
+		Iterator<C> it = matchingCartridges.iterator();
+		if (!it.hasNext()) {
 			return null;
-		} else if (matchingCartridges.size() == 1) {
-			return matchingCartridges.get(0);
 		}
-		
-		Collections.sort(matchingCartridges, new Comparator<C>() {
-
-			@Override
-			public int compare(C thisCartridge, C thatCartridge) {
-				VersionedName thisName = new VersionedName(thisCartridge.getName());
-				VersionedName thatName = new VersionedName(thatCartridge.getName());
-				return thisName.compareTo(thatName);
+		C latest = it.next();
+		while (it.hasNext()) {
+			C cartridge = it.next();
+			VersionedName latestName = new VersionedName(latest.getName());
+			VersionedName cartridgeName = new VersionedName(cartridge.getName());
+			switch (latestName.compareTo(cartridgeName)) {
+			case 0:
+			case 1:
+				break;
+			case -1:
+				latest = cartridge;
+				break;
 			}
-		});
-		return matchingCartridges.get(matchingCartridges.size() - 1);
+		}
+		return latest;
 	}
 
 	protected class VersionedName implements Comparable<VersionedName> {
 
-		private Pattern versionPattern =
-				Pattern.compile("([^" + IEmbeddableCartridge.NAME_VERSION_DELIMITER + "]+)" 
-						+ IEmbeddableCartridge.NAME_VERSION_DELIMITER
+		private Pattern versionPattern = Pattern.compile(
+				"(([^" + ICartridge.NAME_VERSION_DELIMITER + " ]+" + ICartridge.NAME_VERSION_DELIMITER + ")*([^"
+						+ ICartridge.NAME_VERSION_DELIMITER + "]+))" + ICartridge.NAME_VERSION_DELIMITER
 						+ "([0-9a-zA-Z]+)\\.{0,1}([0-9a-zA-Z]*)");
 		private Collator collator = Collator.getInstance();
 
@@ -93,13 +97,14 @@ public class LatestVersionOfName extends AbstractCartridgeConstraint {
 			Matcher matcher = versionPattern.matcher(name);
 			if (!matcher.matches()) {
 				this.name = name;
+				return;
 			}
 
 			this.name = matcher.group(1);
-			if (matcher.groupCount() >= 2) {
-				this.major = matcher.group(2);
-				if (matcher.groupCount() >= 3) {
-					this.minor = matcher.group(3);
+			if (matcher.groupCount() >= 4) {
+				this.major = matcher.group(4);
+				if (matcher.groupCount() >= 5) {
+					this.minor = matcher.group(5);
 				}
 			}
 		}
@@ -135,6 +140,11 @@ public class LatestVersionOfName extends AbstractCartridgeConstraint {
 			return collator.compare(minor, other.getMinor());
 		}
 	}
+	
+	public Collection<IStandaloneCartridge> allStandaloneCartridges(IApplication application) {
+		Assert.notNull(application);
+		return getConnection(application).getStandaloneCartridges();
+	}
 
 	@Override
 	public int hashCode() {
@@ -152,10 +162,10 @@ public class LatestVersionOfName extends AbstractCartridgeConstraint {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof LatestVersionOfName)) {
+		if (!(obj instanceof LatestVersionSelector)) {
 			return false;
 		}
-		LatestVersionOfName other = (LatestVersionOfName) obj;
+		LatestVersionSelector other = (LatestVersionSelector) obj;
 		if (nameConstraint == null) {
 			if (other.nameConstraint != null) {
 				return false;

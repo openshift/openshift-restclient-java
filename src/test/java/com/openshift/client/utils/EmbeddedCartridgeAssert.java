@@ -17,8 +17,8 @@ import java.net.URISyntaxException;
 
 import org.fest.assertions.AssertExtension;
 
-import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.IEmbeddedCartridge;
 
 /**
  * @author André Dietisheim

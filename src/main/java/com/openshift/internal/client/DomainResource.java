@@ -17,11 +17,11 @@ import java.util.Map;
 
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
-import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.DomainResourceDTO;
 import com.openshift.internal.client.response.Link;
@@ -98,22 +98,22 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		// return accessible;
 	}
 
-	public IApplication createApplication(final String name, final ICartridge cartridge)
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge)
 			throws OpenShiftException {
 		return createApplication(name, cartridge, null, null);
 	}
 
-	public IApplication createApplication(final String name, final ICartridge cartridge, final ApplicationScale scale)
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, final ApplicationScale scale)
 			throws OpenShiftException {
 		return createApplication(name, cartridge, scale, null);
 	}
 
-	public IApplication createApplication(final String name, final ICartridge cartridge, final IGearProfile gearProfile)
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, final IGearProfile gearProfile)
 			throws OpenShiftException {
 		return createApplication(name, cartridge, null, gearProfile);
 	}
 
-	public IApplication createApplication(final String name, final ICartridge cartridge,
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
 			final ApplicationScale scale, final IGearProfile gearProfile)
 			throws OpenShiftException {
 		if (cartridge == null) {
@@ -159,7 +159,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return matchingApplication;
 	}
 
-	public List<IApplication> getApplicationsByCartridge(ICartridge cartridge) throws OpenShiftException {
+	public List<IApplication> getApplicationsByCartridge(IStandaloneCartridge cartridge) throws OpenShiftException {
 		List<IApplication> matchingApplications = new ArrayList<IApplication>();
 		for (IApplication application : getApplications()) {
 			if (cartridge.equals(application.getCartridge())) {
@@ -169,7 +169,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return matchingApplications;
 	}
 
-	public boolean hasApplicationByCartridge(ICartridge cartridge) throws OpenShiftException {
+	public boolean hasApplicationByCartridge(IStandaloneCartridge cartridge) throws OpenShiftException {
 		return getApplicationsByCartridge(cartridge).size() > 0;
 	}
 
@@ -200,7 +200,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		List<IApplication> apps = new ArrayList<IApplication>();
 		List<ApplicationResourceDTO> applicationDTOs = new ListApplicationsRequest().execute();
 		for (ApplicationResourceDTO applicationDTO : applicationDTOs) {
-			final ICartridge cartridge = new Cartridge(applicationDTO.getFramework());
+			final IStandaloneCartridge cartridge = new StandaloneCartridge(applicationDTO.getFramework());
 			final IApplication application =
 					new ApplicationResource(applicationDTO, cartridge, this);
 			apps.add(application);

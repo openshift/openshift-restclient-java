@@ -10,29 +10,35 @@
  ******************************************************************************/
 package com.openshift.client.utils;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 import java.util.List;
 
+import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
-import com.openshift.client.ICartridge;
 import com.openshift.client.IDomain;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.ICartridge;
+import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.cartridge.selector.LatestStandaloneCartridge;
+import com.openshift.client.cartridge.selector.LatestVersionOf;
 
 /**
  * @author André Dietisheim
  */
 public class ApplicationTestUtils {
 
+	// 3 minutes
 	private static final long WAIT_FOR_APPLICATION = 3 * 60 * 1000;
 
 	public static String createRandomApplicationName() {
 		return String.valueOf(System.currentTimeMillis());
 	}
 
-	public static IApplication createApplication(ICartridge cartridge, IDomain domain) {
+	public static IApplication createApplication(IStandaloneCartridge cartridge, IDomain domain) {
 		IApplication application = domain.createApplication(createRandomApplicationName(), cartridge);
 		assertTrue(application.waitForAccessible(WAIT_FOR_APPLICATION));
 		return application;
@@ -69,7 +75,7 @@ public class ApplicationTestUtils {
 		}
 	}
 
-	public static void silentlyDestroyAllApplicationsByCartridge(ICartridge cartridge, IDomain domain) {
+	public static void silentlyDestroyAllApplicationsByCartridge(IStandaloneCartridge cartridge, IDomain domain) {
 		if (domain == null) {
 			return;
 		}
@@ -81,10 +87,10 @@ public class ApplicationTestUtils {
 	}
 
 	public static IApplication getOrCreateApplication(IDomain domain) throws OpenShiftException {
-		return getOrCreateApplication(domain, ICartridge.JBOSSAS_7);
+		return getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(domain.getUser()));
 	}
 
-	public static IApplication getOrCreateApplication(IDomain domain, ICartridge cartridge)
+	public static IApplication getOrCreateApplication(IDomain domain, IStandaloneCartridge cartridge)
 			throws OpenShiftException {
 		for (Iterator<IApplication> it = domain.getApplications().iterator(); it.hasNext();) {
 			IApplication application = it.next();
@@ -116,29 +122,40 @@ public class ApplicationTestUtils {
 	}
 
 	/**
-	 * Makes sure the given domain has exactly the given number of applications.
-	 * Either the excessive applications are destroyed or new ones (with the
-	 * given cartridge) are created to match the given number.
+	 * Makes sure the given domain has exactly the given number of applications
+	 * with the given type. Either the excessive applications are destroyed or
+	 * new ones (with the given cartridge) are created to match the given
+	 * number.
 	 * 
 	 * @param numOfApplications
 	 * @param cartridge
+	 *            the required cartridge
 	 * @param domain
 	 */
-	public static void ensureHasExactly(int numOfApplications, ICartridge cartridge, IDomain domain) {
+	public static void ensureHasExactly(int numOfApplications, IStandaloneCartridge cartridge, IDomain domain) {
+		assertNotNull(cartridge);
 		if (domain == null) {
 			return;
 		}
 
-		destroyAllByCartridge(cartridge, domain);
-		List<IApplication> applications = domain.getApplications();
-		int delta = numOfApplications - applications.size();
+		destroyAllNotOfType(cartridge, domain.getApplications());
+		int delta = numOfApplications - domain.getApplications().size();
 		if (delta < 0) {
-			for (Iterator<IApplication> it = applications.iterator(); it.hasNext() && delta < 0; delta++) {
+			for (Iterator<IApplication> it = domain.getApplications().iterator(); it.hasNext() && delta < 0; delta++) {
 				it.next().destroy();
 			}
 		} else {
-			for (Iterator<IApplication> it = applications.iterator(); it.hasNext() && delta > 0; delta--) {
+			for (; delta > 0; delta--) {
 				createApplication(cartridge, domain);
+			}
+		}
+	}
+
+	protected static void destroyAllNotOfType(IStandaloneCartridge cartridge, List<IApplication> applications) {
+		for (Iterator<IApplication> it = applications.iterator(); it.hasNext();) {
+			IApplication application = it.next();
+			if (!cartridge.equals(application.getCartridge())) {
+				application.destroy();
 			}
 		}
 	}
@@ -152,9 +169,39 @@ public class ApplicationTestUtils {
 		}
 	}
 
-	public static IApplication ensureHasExactly1Application(ICartridge cartridge, IDomain domain) {
-		ensureHasExactly(1, ICartridge.JBOSSAS_7, domain);
+	public static IApplication ensureHasExactly1Application(IStandaloneCartridge cartridge, IDomain domain) {
+		ensureHasExactly(1, cartridge, domain);
 		return domain.getApplications().get(0);
+	}
+
+	public static IApplication ensureHasExactly1Application(LatestStandaloneCartridge selector, IDomain domain) {
+		IStandaloneCartridge cartridge = selector.get(domain.getUser());
+		ensureHasExactly(1, cartridge, domain);
+		return domain.getApplications().get(0);
+	}
+
+	public static IApplication ensureHasExactly1NonScalableApplication(LatestStandaloneCartridge selector,
+			IDomain domain) {
+		IApplication application = ensureHasExactly1Application(selector, domain);
+		return destroyAbdCreateIfScalable(application);
+	}
+
+	/**
+	 * Returns the given application if it is not scalable, destroys it and
+	 * creates a new one with the same cartridge and name otherwise.
+	 * 
+	 * @param application
+	 * @return
+	 */
+	public static IApplication destroyAbdCreateIfScalable(IApplication application) {
+		if (!ApplicationScale.NO_SCALE.equals(application.getGearProfile())) {
+			IStandaloneCartridge cartridge = application.getCartridge();
+			IDomain domain = application.getDomain();
+			application.destroy();
+			application = domain.createApplication(
+					createRandomApplicationName(), cartridge, ApplicationScale.NO_SCALE);
+		}
+		return application;
 	}
 
 	public static IOpenShiftConnection getConnection(IApplication application) {
@@ -162,6 +209,13 @@ public class ApplicationTestUtils {
 			return null;
 		}
 		return application.getDomain().getUser().getConnection();
+	}
+
+	public static IOpenShiftConnection getConnection(IDomain domain) {
+		if (domain == null) {
+			return null;
+		}
+		return domain.getUser().getConnection();
 	}
 
 }

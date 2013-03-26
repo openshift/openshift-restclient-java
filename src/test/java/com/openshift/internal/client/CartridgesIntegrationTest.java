@@ -18,9 +18,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.openshift.client.IEmbeddableCartridge;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.utils.TestConnectionFactory;
 
 /**

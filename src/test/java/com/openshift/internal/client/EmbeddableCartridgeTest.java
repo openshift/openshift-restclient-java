@@ -30,10 +30,10 @@ import org.mockito.Mockito;
 
 import com.openshift.client.EmbeddableCartridge;
 import com.openshift.client.IApplication;
-import com.openshift.client.IEmbeddedCartridge;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftConnectionFactory;
+import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.Message;

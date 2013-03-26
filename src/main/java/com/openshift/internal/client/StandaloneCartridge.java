@@ -10,7 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import com.openshift.client.ICartridge;
+import com.openshift.client.cartridge.IStandaloneCartridge;
 
 
 /**
@@ -19,14 +19,18 @@ import com.openshift.client.ICartridge;
  * 
  * @author André Dietisheim
  */
-public class Cartridge implements ICartridge {
+public class StandaloneCartridge implements IStandaloneCartridge {
 	
 	private final String name;
 
-	public Cartridge(String name) {
+	public StandaloneCartridge(String name) {
 		this.name = name;
 	}
 
+	public StandaloneCartridge(final String name, String version) {
+		this(name + NAME_VERSION_DELIMITER + version);
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -45,7 +49,7 @@ public class Cartridge implements ICartridge {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Cartridge other = (Cartridge) obj;
+		StandaloneCartridge other = (StandaloneCartridge) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;
@@ -55,6 +59,6 @@ public class Cartridge implements ICartridge {
 	}
 
 	public String toString() {
-		return "Cartridge [name=" + name + "]";
+		return "StandaloneCartridge [name=" + name + "]";
 	}
 }
