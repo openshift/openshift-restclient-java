@@ -26,10 +26,10 @@ public class RestServiceProperties {
 
 	private static final String PROPERTIES_FILE = "restservice.properties";
 
-	private static final String KEY_USERAGENTPATTERN = "useragent";
-	private static final String KEY_VERSION = "version";
-	private static final String KEY_CLIENTID = "clientid";
-
+	static final String KEY_USERAGENTPATTERN = "useragent";
+	static final String KEY_VERSION = "version";
+	static final String KEY_CLIENTID = "clientid";
+	
 	private String version;
 	private String userAgent;
 	private String clientId;
@@ -52,14 +52,15 @@ public class RestServiceProperties {
 	}
 
 	public String getUseragent(String id) {
+		String userAgent = null;
 		String version = getVersion();
 		String useragentPattern = getUseragentPattern();
 		if (!StringUtils.isEmpty(id)
 				&& !StringUtils.isEmpty(version)
 				&& !StringUtils.isEmpty(useragentPattern)) {
-			String userAgent = MessageFormat.format(getUseragentPattern(), getVersion(), id);
+			userAgent = MessageFormat.format(getUseragentPattern(), getVersion(), id);
 		}
-		return null;
+		return userAgent;
 	}
 
 	protected String getUseragentPattern() {
@@ -78,7 +79,7 @@ public class RestServiceProperties {
 		return clientId;
 	}
 
-	private Properties getProperties() throws IOException {
+	protected Properties getProperties() throws IOException {
 		if (properties == null) {
 			InputStream in = null;
 			try {

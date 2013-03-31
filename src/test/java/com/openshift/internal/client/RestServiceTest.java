@@ -27,6 +27,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -66,13 +67,6 @@ public class RestServiceTest {
 
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
 		this.service = createService(configuration.getStagingServer(), configuration.getClientId());
-	}
-
-	private IRestService createService(String server, String clientId) {
-		return new RestService(
-				server,
-				clientId,
-				clientMock);
 	}
 
 	@Test(expected = OpenShiftException.class)
@@ -118,7 +112,8 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldDeleteIfDeleteHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException, UnsupportedEncodingException {
+	public void shouldDeleteIfDeleteHttpMethod() throws OpenShiftException, SocketTimeoutException,
+			HttpClientException, UnsupportedEncodingException {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.DELETE, null, null));
 		// verifications
@@ -215,7 +210,7 @@ public class RestServiceTest {
 	@Test
 	public void shouldReturnPlatformWithSchema() throws Throwable {
 		// pre-conditions
-		final String serverUrl = "nonHttpUrl";		
+		final String serverUrl = "nonHttpUrl";
 		IRestService service = createService(serverUrl, new OpenShiftTestConfiguration().getClientId());
 		// operation
 		String platformUrl = service.getPlatformUrl();
@@ -227,11 +222,43 @@ public class RestServiceTest {
 	@Test
 	public void shouldReturnUnchangedPlatformUrl() throws Throwable {
 		// pre-conditions
-		final String serverUrl = "http://fakeUrl";		
+		final String serverUrl = "http://fakeUrl";
 		IRestService service = createService(serverUrl, new OpenShiftTestConfiguration().getClientId());
 		// operation
 		String platformUrl = service.getPlatformUrl();
 		// verifications
 		assertThat(platformUrl).isEqualTo(serverUrl);
 	}
+
+	@Test
+	public void shouldSetUserAgentToHttpClient() throws OpenShiftException, SocketTimeoutException, HttpClientException {
+		// pre-condition
+		RestServiceProperties properties = new RestServiceProperties() {
+			protected Properties getProperties() throws IOException {
+				Properties properties = new Properties();
+				properties.put(KEY_VERSION, "11");
+				properties.put(KEY_USERAGENTPATTERN, "{0} {1}");
+				return properties;
+			}
+		};
+		IHttpClient httpClientMock = mock(IHttpClient.class);
+
+		// operation
+		String clientId = "unit-test";
+		createService("jboss.org", clientId, properties, httpClientMock);
+
+		// verifications
+		String userAgent = properties.getUseragent(clientId);
+		verify(httpClientMock, times(1)).setUserAgent(userAgent);
+	}
+
+	private IRestService createService(String server, String clientId) {
+		return createService(server, clientId, new RestServiceProperties(), clientMock);
+	}
+
+	private IRestService createService(String server, String clientId, RestServiceProperties properties,
+			IHttpClient httpClient) {
+		return new RestService(server, clientId, httpClient, properties);
+	}
+
 }

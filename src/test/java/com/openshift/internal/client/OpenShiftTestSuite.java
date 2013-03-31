@@ -19,6 +19,7 @@ import com.openshift.internal.client.response.ResourceDTOFactoryTest;
 @Suite.SuiteClasses({
 	ConfigurationTest.class,
 	HttpClientTest.class,
+	RestServicePropertiesTest.class,
 	RestServiceTest.class,
 	ResourceDTOFactoryTest.class,
 	DomainResourceTest.class,

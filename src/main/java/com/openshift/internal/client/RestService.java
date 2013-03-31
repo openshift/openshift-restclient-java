@@ -58,9 +58,13 @@ public class RestService implements IRestService {
 	private IHttpClient client;
 
 	public RestService(String baseUrl, String clientId, IHttpClient client) {
+		this(baseUrl, clientId, client, new RestServiceProperties());
+	}
+
+	RestService(String baseUrl, String clientId, IHttpClient client, RestServiceProperties properties) {
 		this.baseUrl = UrlUtils.ensureStartsWithHttps(baseUrl);
 		this.client = client;
-		client.setUserAgent(new RestServiceProperties().getUseragent(clientId));
+		client.setUserAgent(properties.getUseragent(clientId));
 		client.setVersion(SERVICE_VERSION);
 	}
 
