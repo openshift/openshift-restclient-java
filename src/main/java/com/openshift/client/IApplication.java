@@ -396,7 +396,7 @@ public interface IApplication extends IOpenShiftResource {
 	/**
 	 * Retrieves the list of environment properties.
 	 * 
-	 * @return he list of environment properties.
+	 * @return the list of environment properties.
 	 * @throws OpenShiftSSHOperationException
 	 */
 	public List<String> getEnvironmentProperties() throws OpenShiftSSHOperationException;
