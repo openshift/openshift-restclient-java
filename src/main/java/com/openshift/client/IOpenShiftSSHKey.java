@@ -32,7 +32,7 @@ public interface IOpenShiftSSHKey extends ISSHPublicKey {
 	public void setPublicKey(String publicKey) throws OpenShiftException;
 	
 	/**
-	 * Sets the new type and public key of this ssh key to the Openshift PaaS
+	 * Sets the new type and public key of this ssh key to the OpenShift PaaS
 	 * @param type
 	 * @throws OpenShiftException
 	 */
