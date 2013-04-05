@@ -76,7 +76,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			IMediaType requestMediaType, String acceptedMediaType, String version, String authKey, String authIV) {
 		this.username = username;
 		this.password = password;
-		this.userAgent = userAgent;
+		this.userAgent = setupUserAgent(authKey, authIV, userAgent);
 		this.sslChecks = sslChecks;
 		this.requestMediaType = requestMediaType;
 		this.acceptedMediaType = acceptedMediaType;
@@ -84,6 +84,17 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		this.authIV = authIV;
 	}
 	
+	private String setupUserAgent(String authKey, String authIV, String userAgent) {
+		if (!StringUtils.isEmpty(authKey)) {
+			if (userAgent == null) {
+				userAgent = "OpenShift";
+			} else if (!userAgent.startsWith("OpenShift")) {
+				userAgent = "OpenShift-" + userAgent;
+			}
+		}
+		return userAgent;
+	}
+
 	public void setAcceptedMediaType(String acceptedMediaType) {
 		this.acceptedMediaType = acceptedMediaType;
 	}
