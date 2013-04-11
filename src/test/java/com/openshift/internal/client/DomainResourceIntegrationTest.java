@@ -19,13 +19,19 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import com.openshift.client.ApplicationScale;
+import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
+import com.openshift.client.IGearProfile;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.selector.LatestVersionOf;
+import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.StringUtils;
@@ -37,12 +43,15 @@ import com.openshift.client.utils.TestConnectionFactory;
 public class DomainResourceIntegrationTest {
 
 	private IUser user;
+	private IDomain domain;
 
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
 		this.user = new TestConnectionFactory().getConnection().getUser();
+		this.domain = DomainTestUtils.ensureHasDomain(user);
 	}
 	
+	@Ignore
 	@Test
 	public void shouldSetNamespace() throws Exception {
 		// pre-condition
@@ -57,6 +66,7 @@ public class DomainResourceIntegrationTest {
 		assertThat(domainByNamespace.getId()).isEqualTo(namespace);
 	}
 
+	@Ignore
 	@Test
 	public void shouldDeleteDomainWithoutApplications() throws Exception {
 		// pre-condition
@@ -73,6 +83,7 @@ public class DomainResourceIntegrationTest {
 		assertThat(domainByNamespace).isNull();
 	}
 
+	@Ignore
 	@Test
 	public void shouldNotDeleteDomainWithApplications() throws OpenShiftException {
 		IDomain domain = null;
@@ -91,6 +102,7 @@ public class DomainResourceIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void shouldReportErrorCode128() throws OpenShiftException {
 		IDomain domain = null;
@@ -112,6 +124,7 @@ public class DomainResourceIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void shouldDeleteDomainWithApplications() throws OpenShiftException, SocketTimeoutException {
 		// pre-condition
@@ -127,6 +140,7 @@ public class DomainResourceIntegrationTest {
 		domain = null;
 	}
 
+	@Ignore
 	@Test
 	public void shouldSeeNewApplicationAfterRefresh() throws OpenShiftException, FileNotFoundException, IOException {
 		// pre-condition
@@ -146,4 +160,141 @@ public class DomainResourceIntegrationTest {
 		// verification
 		assertThat(domain.getApplications().size()).isEqualTo(numOfApplications + 1);
 	}
+
+	@Test
+	public void shouldGetApplicationByNameCaseInsensitive() throws OpenShiftException, FileNotFoundException, IOException {
+		// pre-condition
+		IDomain domain = DomainTestUtils.ensureHasDomain(user);
+		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(LatestVersionOf.jbossAs(), domain);
+		assertThat(application).isNotNull();
+		String name = application.getName();
+		assertThat(name).isNotNull();
+		
+		// operation
+		IApplication exactNameQueryResult = domain.getApplicationByName(name);
+		IApplication upperCaseNameQueryResult = domain.getApplicationByName(name.toUpperCase());
+		
+		// verification
+		assertThat(exactNameQueryResult).isNotNull();
+		assertThat(exactNameQueryResult.getName()).isEqualTo(name);
+		assertThat(upperCaseNameQueryResult).isNotNull();
+		assertThat(upperCaseNameQueryResult.getName()).isEqualTo(name);
+	}
+	
+	@Test
+	public void shouldCreateNonScalableApplication() throws Exception {
+		// pre-conditions
+		ApplicationTestUtils.destroyIfMoreThan(2, domain);
+
+		// operation
+		String applicationName =
+				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
+		IApplication application =
+				domain.createApplication(applicationName, jbossas);
+
+		// verification
+		assertThat(new ApplicationAssert(application))
+				.hasName(applicationName)
+				.hasUUID()
+				.hasCreationTime()
+				.hasCartridge(jbossas)
+				.hasValidApplicationUrl()
+				.hasValidGitUrl()
+				.hasEmbeddableCartridges()
+				.hasAlias();
+	}
+	
+	@Test
+	public void shouldCreateNonScalableApplicationWithSmallGear() throws Exception {
+		// pre-conditions
+		ApplicationTestUtils.destroyIfMoreThan(2, domain);
+
+		// operation
+		String applicationName =
+				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
+		IApplication application = domain.createApplication(
+				applicationName, jbossas, IGearProfile.SMALL);
+
+		// verification
+		assertThat(new ApplicationAssert(application))
+				.hasName(applicationName)
+				.hasUUID()
+				.hasCreationTime()
+				.hasCartridge(jbossas)
+				.hasValidApplicationUrl()
+				.hasValidGitUrl()
+				.hasEmbeddableCartridges()
+				.hasAlias();
+	}
+
+	@Test
+	public void shouldCreateScalableApplication() throws Exception {
+		// pre-conditions
+		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
+
+		// operation
+		String applicationName =
+				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
+		IApplication application = domain.createApplication(
+				applicationName, jbossas, ApplicationScale.SCALE, GearProfile.SMALL);
+
+		// verification
+		assertThat(new ApplicationAssert(application))
+				.hasName(applicationName)
+				.hasUUID()
+				.hasCreationTime()
+				.hasCartridge(jbossas)
+				.hasValidApplicationUrl()
+				.hasValidGitUrl()
+				// scalable apps always have ha-proxy embedded automatically
+				.hasEmbeddedCartridge(LatestVersionOf.haProxy())
+				.hasAlias();
+	}
+
+	@Test
+	public void shouldCreateJenkinsApplication() throws Exception {
+		// pre-conditions
+		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
+
+		// operation
+		String applicationName =
+				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jenkins = LatestVersionOf.jenkins().get(user);
+		IApplication application = domain.createApplication(
+				applicationName, jenkins );
+
+		// verification
+		assertThat(new ApplicationAssert(application))
+				.hasName(applicationName)
+				.hasUUID()
+				.hasCreationTime()
+				.hasCartridge(jenkins)
+				.hasValidApplicationUrl()
+				.hasValidGitUrl()
+				.hasEmbeddableCartridges()
+				.hasAlias();
+	}
+	
+	@Test(expected = OpenShiftException.class)
+	public void createDuplicateApplicationThrowsException() throws Exception {
+		// pre-condition
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+
+		// operation
+		domain.createApplication(application.getName(), LatestVersionOf.jbossAs().get(user));
+	}
+
+	@Test(expected = OpenShiftException.class)
+	public void createApplicationWithSameButUppercaseNameThrowsException() throws Exception {
+		// pre-condition
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		String name = application.getName();
+		
+		// operation
+		domain.createApplication(name.toUpperCase(), LatestVersionOf.jbossAs().get(user));
+	}
+
 }
