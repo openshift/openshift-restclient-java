@@ -8,9 +8,8 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.client;
+package com.openshift.client.cartridge;
 
-import com.openshift.client.cartridge.IEmbeddableCartridge;
 
 
 /**

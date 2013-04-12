@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.openshift.client.EmbeddableCartridge;
+import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.selector.LatestEmbeddableCartridge;
