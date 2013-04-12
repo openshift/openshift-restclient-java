@@ -13,13 +13,9 @@ package com.openshift.internal.client;
 import static com.openshift.client.utils.MockUtils.anyForm;
 import static com.openshift.client.utils.Samples.ADD_APPLICATION_ALIAS_JSON;
 import static com.openshift.client.utils.Samples.ADD_APPLICATION_CARTRIDGE_JSON;
-import static com.openshift.client.utils.Samples.ADD_APPLICATION_JSON;
-import static com.openshift.client.utils.Samples.ADD_DOMAIN_JSON;
 import static com.openshift.client.utils.Samples.DELETE_APPLICATION_CARTRIDGE_JSON;
-import static com.openshift.client.utils.Samples.GET_APPLICATIONS_WITH1APP_JSON;
 import static com.openshift.client.utils.Samples.GET_APPLICATIONS_WITH2APPS_1LOCALHOST_JSON;
 import static com.openshift.client.utils.Samples.GET_APPLICATIONS_WITH2APPS_JSON;
-import static com.openshift.client.utils.Samples.GET_APPLICATIONS_WITHNOAPP_JSON;
 import static com.openshift.client.utils.Samples.GET_APPLICATION_CARTRIDGES_WITH1ELEMENT_JSON;
 import static com.openshift.client.utils.Samples.GET_APPLICATION_CARTRIDGES_WITH2ELEMENTS_JSON;
 import static com.openshift.client.utils.Samples.GET_APPLICATION_WITH1CARTRIDGE1ALIAS_JSON;
@@ -34,14 +30,12 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.List;
 
 import org.fest.assertions.Condition;
@@ -49,24 +43,19 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.openshift.client.ApplicationScale;
 import com.openshift.client.EmbeddableCartridge;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
-import com.openshift.client.InvalidCredentialsOpenShiftException;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
-import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftTimeoutException;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
-import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.InternalServerErrorException;
-import com.openshift.internal.client.httpclient.UnauthorizedException;
 
 /**
  * @author Xavier Coulon
@@ -92,126 +81,7 @@ public class ApplicationResourceTest {
 		this.domain = user.getDomain("foobar");
 	}
 
-	@Test
-	public void shouldLoadListOfApplicationsWithNoElement() throws Throwable {
-		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITHNOAPP_JSON.getContentAsString());
-		// operation
-		final List<IApplication> apps = domain.getApplications();
-		// verifications
-		assertThat(apps).isEmpty();
-		// 4 calls: /API + /API/user + /API/domains +
-		// /API/domains/foobar/applications
-		verify(mockClient, times(4)).get(any(URL.class));
-	}
 
-	@Test
-	public void shouldLoadListOfApplicationsWith1Element() throws Throwable {
-		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITH1APP_JSON.getContentAsString());
-		// operation
-		final List<IApplication> apps = domain.getApplications();
-		// verifications
-		assertThat(apps).hasSize(1);
-		// 4 calls: /API + /API/user + /API/domains +
-		// /API/domains/foobar/applications
-		verify(mockClient, times(4)).get(any(URL.class));
-
-	}
-
-	@Test
-	public void shouldLoadListOfApplicationsWith2Elements() throws Throwable {
-		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
-		// operation
-		final List<IApplication> apps = domain.getApplications();
-		// verifications
-		assertThat(apps).hasSize(2);
-		// 4 calls: /API + /API/user + /API/domains +
-		// /API/domains/foobar/applications
-		verify(mockClient, times(4)).get(any(URL.class));
-	}
-
-	@Test(expected = InvalidCredentialsOpenShiftException.class)
-	public void shouldNotLoadListOfApplicationsWithInvalidCredentials() throws OpenShiftException,
-			HttpClientException, SocketTimeoutException {
-		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenThrow(
-				new UnauthorizedException("invalid credentials (mock)", null));
-		// operation
-		domain.getApplications();
-		// verifications
-		// expect an exception
-	}
-
-	@Test
-	public void shouldCreateApplication() throws Throwable {
-		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITHNOAPP_JSON.getContentAsString());
-		when(mockClient.post(anyForm(), urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				ADD_APPLICATION_JSON.getContentAsString());
-		// operation
-		final IStandaloneCartridge cartridge = new StandaloneCartridge("jbossas-7");
-		final IApplication app = domain.createApplication("sample", cartridge, ApplicationScale.NO_SCALE, null);
-		// verifications
-		assertThat(app.getName()).isEqualTo("sample");
-		assertThat(app.getGearProfile().getName()).isEqualTo("small");
-		assertThat(app.getApplicationScale()).isEqualTo(ApplicationScale.NO_SCALE);
-		assertThat(app.getApplicationUrl()).isEqualTo("http://sample-foobar.stg.rhcloud.com/");
-		assertThat(app.getCreationTime()).isNotNull();
-		assertThat(app.getGitUrl()).isNotNull().startsWith("ssh://")
-				.endsWith("@sample-foobar.stg.rhcloud.com/~/git/sample.git/");
-		assertThat(app.getCartridge()).isEqualTo(cartridge);
-		assertThat(app.getUUID()).isNotNull();
-		assertThat(app.getDomain()).isEqualTo(domain);
-		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(14);
-		assertThat(domain.getApplications()).hasSize(1).contains(app);
-	}
-
-	@Test(expected = OpenShiftException.class)
-	public void shouldNotCreateApplicationWithMissingName() throws Throwable {
-		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
-		when(mockClient.post(anyForm(), urlEndsWith("/domains"))).thenReturn(ADD_DOMAIN_JSON.getContentAsString());
-		// operation
-		domain.createApplication(null, new StandaloneCartridge("jbossas-7"), null, null);
-		// verifications
-		// expected exception
-	}
-
-	@Test(expected = OpenShiftException.class)
-	public void shouldNotCreateApplicationWithMissingCartridge() throws Throwable {
-		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
-		when(mockClient.post(anyForm(), urlEndsWith("/domains"))).thenReturn(ADD_DOMAIN_JSON.getContentAsString());
-		// operation
-		domain.createApplication("foo", null, null, null);
-		// verifications
-		// expected exception
-	}
-
-	@Test
-	public void shouldNotRecreateExistingApplication() throws Throwable {
-		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
-		// operation
-		try {
-			domain.createApplication("sample", new StandaloneCartridge("jbossas-7"), null, null);
-			// expect an exception
-			fail("Expected exception here...");
-		} catch (OpenShiftException e) {
-			// OK
-		}
-		// verifications
-		assertThat(domain.getApplications()).hasSize(2);
-	}
 
 	@Test
 	public void shouldDestroyApplication() throws Throwable {
@@ -311,7 +181,6 @@ public class ApplicationResourceTest {
 	@Ignore("Need higher quotas on stg")
 	@Test
 	public void shouldScaleUpApplication() throws Throwable {
-
 	}
 
 	@Test
@@ -459,23 +328,6 @@ public class ApplicationResourceTest {
 	}
 
 	@Test
-	public void shouldListAvailableCartridges() throws Throwable {
-		// pre-conditions
-		// operation
-		final List<String> availableCartridges = domain.getAvailableCartridgeNames();
-		// verifications
-		assertThat(availableCartridges).containsExactly(
-				"nodejs-0.6", 
-				"jbossas-7", 
-				"python-2.6", 
-				"jenkins-1.4",
-				"ruby-1.8", 
-				"diy-0.1", 
-				"php-5.3", 
-				"perl-5.10");
-	}
-
-	@Test
 	public void shouldAddCartridgeToApplication() throws Throwable {
 		// pre-conditions
 		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
@@ -607,8 +459,6 @@ public class ApplicationResourceTest {
 		// pre-conditions
 		when(mockClient.get(urlEndsWith("/domains/foobar/applications")))
 				.thenReturn(GET_APPLICATIONS_WITH2APPS_1LOCALHOST_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/health")))
-				.thenReturn("1"); // return health ok
 		long startTime = System.currentTimeMillis();
 		long timeout = 10 * 1024;
 		final IApplication app = domain.getApplicationByName("sample");

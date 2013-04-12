@@ -151,7 +151,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 
 		IApplication matchingApplication = null;
 		for (IApplication application : applications) {
-			if (application.getName().equals(name)) {
+			if (application.getName().equalsIgnoreCase(name)) {
 				matchingApplication = application;
 				break;
 			}

@@ -24,14 +24,12 @@ import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IGearGroup;
-import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.selector.LatestVersionOf;
-import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.GearGroupsAssert;
@@ -50,38 +48,9 @@ public class ApplicationResourceIntegrationTest {
 
 	@Before
 	public void setUp() throws Exception {
-		try {
-			IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
-			this.user = connection.getUser();
-			this.domain = DomainTestUtils.ensureHasDomain(user);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
-	}
-
-	@Test
-	public void shouldCreateNonScalableApplication() throws Exception {
-		// pre-conditions
-		ApplicationTestUtils.destroyIfMoreThan(2, domain);
-
-		// operation
-		String applicationName =
-				ApplicationTestUtils.createRandomApplicationName();
-		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
-		IApplication application =
-				domain.createApplication(applicationName, jbossas);
-
-		// verification
-		assertThat(new ApplicationAssert(application))
-				.hasName(applicationName)
-				.hasUUID()
-				.hasCreationTime()
-				.hasCartridge(jbossas)
-				.hasValidApplicationUrl()
-				.hasValidGitUrl()
-				.hasEmbeddableCartridges()
-				.hasAlias();
+		IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
+		this.user = connection.getUser();
+		this.domain = DomainTestUtils.ensureHasDomain(user);
 	}
 
 	@Test
@@ -104,79 +73,6 @@ public class ApplicationResourceIntegrationTest {
 	}
 
 	@Test
-	public void shouldCreateNonScalableApplicationWithSmallGear() throws Exception {
-		// pre-conditions
-		ApplicationTestUtils.destroyIfMoreThan(2, domain);
-
-		// operation
-		String applicationName =
-				ApplicationTestUtils.createRandomApplicationName();
-		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
-		IApplication application = domain.createApplication(
-				applicationName, jbossas, IGearProfile.SMALL);
-
-		// verification
-		assertThat(new ApplicationAssert(application))
-				.hasName(applicationName)
-				.hasUUID()
-				.hasCreationTime()
-				.hasCartridge(jbossas)
-				.hasValidApplicationUrl()
-				.hasValidGitUrl()
-				.hasEmbeddableCartridges()
-				.hasAlias();
-	}
-
-	@Test
-	public void shouldCreateScalableApplication() throws Exception {
-		// pre-conditions
-		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
-
-		// operation
-		String applicationName =
-				ApplicationTestUtils.createRandomApplicationName();
-		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
-		IApplication application = domain.createApplication(
-				applicationName, jbossas, ApplicationScale.SCALE, GearProfile.SMALL);
-
-		// verification
-		assertThat(new ApplicationAssert(application))
-				.hasName(applicationName)
-				.hasUUID()
-				.hasCreationTime()
-				.hasCartridge(jbossas)
-				.hasValidApplicationUrl()
-				.hasValidGitUrl()
-				// scalable apps always have ha-proxy embedded automatically
-				.hasEmbeddedCartridge(LatestVersionOf.haProxy())
-				.hasAlias();
-	}
-
-	@Test
-	public void shouldCreateJenkinsApplication() throws Exception {
-		// pre-conditions
-		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
-
-		// operation
-		String applicationName =
-				ApplicationTestUtils.createRandomApplicationName();
-		IStandaloneCartridge jenkins = LatestVersionOf.jenkins().get(user);
-		IApplication application = domain.createApplication(
-				applicationName, jenkins );
-
-		// verification
-		assertThat(new ApplicationAssert(application))
-				.hasName(applicationName)
-				.hasUUID()
-				.hasCreationTime()
-				.hasCartridge(jenkins)
-				.hasValidApplicationUrl()
-				.hasValidGitUrl()
-				.hasEmbeddableCartridges()
-				.hasAlias();
-	}
-
-	@Test
 	public void shouldDestroyApplication() throws Exception {
 		// pre-condition
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
@@ -188,15 +84,6 @@ public class ApplicationResourceIntegrationTest {
 		// verification
 		assertThat(domain.hasApplicationByName(application.getName())).isFalse();
 
-	}
-
-	@Test(expected = OpenShiftException.class)
-	public void createDuplicateApplicationThrowsException() throws Exception {
-		// pre-condition
-		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-
-		// operation
-		domain.createApplication(application.getName(), LatestVersionOf.jbossAs().get(user));
 	}
 
 	@Test
