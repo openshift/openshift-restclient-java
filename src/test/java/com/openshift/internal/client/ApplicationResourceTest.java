@@ -43,7 +43,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.openshift.client.EmbeddableCartridge;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IHttpClient;
@@ -52,6 +51,7 @@ import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftTimeoutException;
+import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.httpclient.HttpClientException;

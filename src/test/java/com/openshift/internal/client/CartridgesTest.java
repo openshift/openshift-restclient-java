@@ -22,10 +22,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.openshift.client.EmbeddableCartridge;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftConnectionFactory;
+import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.Samples;
