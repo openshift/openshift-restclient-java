@@ -54,8 +54,10 @@ public interface IHttpClient {
 	
 	public String getUserAgent();
 	
-	public void setVersion(String serviceVersion);
+	public void setAcceptVersion(String serviceVersion);
 
+	public String getAcceptVersion();
+	
 	public String get(URL url) throws HttpClientException, SocketTimeoutException;
 
 	public String post(Map<String, Object> parameters, URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
@@ -66,7 +68,7 @@ public interface IHttpClient {
 
 	public String delete(URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 	
-	public String getAcceptedMediaType();
-	
 	public void setAcceptedMediaType(String acceptedMediaType);
+	
+	public String getAcceptedMediaType();
 }

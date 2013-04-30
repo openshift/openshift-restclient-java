@@ -20,73 +20,45 @@ import org.apache.commons.io.IOUtils;
 public enum Samples {
 
 	// gear groups
-	GET_SRINGEAP6_GEARGROUPS("get-sringeap6-geargroups.json"),
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS("get-domains-foobarz-applications-springeap6-geargroups.json"), // 1.2
 
 	// cartridges
-	GET_SRINGEAP6_CARTRIDGES("get-sringeap6-cartridges.json"),
-
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED("get-domains-foobarz-applications-springeap6-cartridges_1embedded.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED("get-domains-foobarz-applications-springeap6-cartridges_2embedded.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_MYSQL("get-domains-foobarz-applications-springeap6-cartridges-mysql.json"), //1.2
+	POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES("post-mysql-domains-foobarz-applications-springeap6-cartridges.json"), // 1.2
+	
 	// application
-	ADD_APPLICATION_CARTRIDGE_JSON("add-application-cartridge.json"),
-	ADD_APPLICATION_CARTRIDGE_KO_JSON("add-application-cartridge-ko.json"),
-	ADD_APPLICATION_ALIAS_JSON("add-application-alias.json"),
-	ADD_APPLICATION_ALIAS_KO_JSON("add-application-alias-ko.json"),
-	ADD_APPLICATION_JSON("add-application.json"),
-	DELETE_APPLICATION_CARTRIDGE_JSON("delete-application-cartridge.json"),
-	GET_APPLICATION_CARTRIDGE_JSON("get-application-cartridge.json"),
-	GET_APPLICATION_CARTRIDGES_WITH1ELEMENT_JSON("get-application-cartridges-with1element.json"),
-	GET_APPLICATION_CARTRIDGES_WITH2ELEMENTS_JSON("get-application-cartridges-with2elements.json"),
-	GET_APPLICATION_GEARS_WITH1ELEMENT_JSON("get-application-gears-with1element.json"),
-	GET_APPLICATION_GEARS_WITH2ELEMENTS_JSON("get-application-gears-with2elements.json"),
-	GET_APPLICATIONS_WITHNOAPP_JSON("get-applications-withnoapp.json"),
-	GET_APPLICATIONS_WITH1APP_JSON("get-applications-with1app.json"),
-	GET_APPLICATIONS_WITH2APPS_JSON("get-applications-with2apps.json"),
-	GET_APPLICATIONS_WITH2APPS_1LOCALHOST_JSON("get-applications-with2apps-1localhost.json"),
-	GET_APPLICATIONS_SRINGEAP6("get-applications-sringeap6.json"),
-	GET_APPLICATION_WITH1CARTRIDGE1ALIAS_JSON("get-application-1cartridge-1alias.json"),
-	GET_APPLICATION_WITH2CARTRIDGES2ALIASES_JSON("get-application-2cartridges-2aliases.json"),
-	GET_APPLICATION_SRINGEAP6("get-application-sringeap6.json"),
-	REMOVE_APPLICATION_ALIAS_JSON("remove-application-alias.json"),
-	REMOVE_APPLICATION_ALIAS_KO_JSON("remove-application-alias-ko.json"),
-	RESTART_APPLICATION_JSON("restart-application.json"),
-	START_APPLICATION_JSON("start-application.json"),
-	STOP_APPLICATION_JSON("stop-application.json"),
-	STOP_FORCE_APPLICATION_JSON("stop-application-force.json"),
-
+	GET_DOMAINS_FOOBARZ_APPLICATIONS("get-domains-foobarz-applications.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS("get-domains-foobarz-applications_noapps.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6("get-domains-foobarz-applications-springeap6.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2ALIAS("get-domains-foobarz-applications-springeap6_2alias.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATONS_SPRINGEAP6_0ALIAS("get-domains-foobarz-applications-springeap6_0alias.json"), // 1.2
+	POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT("post-stop-domains-foobarz-applications-springeap6-events.json"), // 1.2
+	POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS("post-scalable-domains-foobarz-applications.json"), // 1.2
+	
 	// domain
-	ADD_DOMAIN_JSON("add-domain.json"),
-	ADD_DOMAIN_KO_JSON("add-domain-ko.json"),
-	DELETE_DOMAIN_KO_NOTFOUND_JSON("delete-domain-ko-notfound.json"),
-	DELETE_DOMAIN_EXISTING_OK_JSON("delete-domain-existing-ok.json"),
-	DELETE_DOMAIN_JSON("delete-domain.json"),
-	DELETE_DOMAIN_KO_EXISTING_APPS_JSON("delete-domain-ko-existingapps.json"),
-	GET_DOMAIN("get-domain.json"),
-	GET_DOMAIN_NOTFOUND_JSON("get-domain-notfound.json"),
-	GET_DOMAINS_1329997507457_JSON("get-domains-1329997507457.json"),
-	GET_DOMAINS_1329997507457_XML("get-domains-1329997507457.xml"),
-	GET_DOMAINS_HONKABONKA2("get-domains-honkabonka2.json"),
-	GET_DOMAINS_1EXISTING("get-domains-1existing.json"),
-	GET_DOMAINS_JSON("get-domains.json"),
-	GET_DOMAINS_NOEXISTING_JSON("get-domains-noexisting.json"),
-	REMOVE_DOMAIN_EXISTING_JSON("remove-domain-existing.json"),
-	REMOVE_DOMAIN_UNEXISTING_JSON("remove-domain-unexisting.json"),
-	UPDATE_DOMAIN_ID("update-domain-id.json"),
-	POST_DOMAINS_NEWDOMAIN_KO("post-domains-newdomain-ko.json"),	
-
+	DELETE_DOMAINS_FOOBAR_KO("delete-domains-foobar_ko.json"), // 1.2
+	DELETE_DOMAINS_FOOBARZ("delete-domains-foobarz.json"), // 1.2
+	DELETE_DOMAINS_FOOBARZ_KO_EXISTINGAPPS("delete-domains-foobarz_ko-existingapps.json"), // 1.2
+	GET_DOMAINS_FOOBAR_KO_NOTFOUND("get-domains-foobar_ko-notfound.json"), // 1.2
+	GET_DOMAINS_FOOBARZ("get-domains-foobarz.json"), // 1.2
+	GET_DOMAINS_FOOBARS("get-domains-foobars.json"), // 1.2
+	GET_DOMAINS("get-domains.json"), // 1.2
+	GET_DOMAINS_EMPTY("get-domains_empty.json"), // 1.2
+	POST_FOOBAR_DOMAINS_KO_INUSE("post-foobar-domains_ko-inuse.json"), // 1.2	
+	POST_FOOBARZ_DOMAINS("post-foobarz-domains"), // 1.2
+	
 	// user
-	ADD_USER_KEY2_OK_JSON("add-user-key2-ok.json"),
-	ADD_USER_KEY_KO_JSON("add-user-key-ko.json"),
-	ADD_USER_KEY_OK_JSON("add-user-key-ok.json"),
-	DELETE_USER_KEY_KO_JSON("delete-user-key-ko.json"),
-	GET_REST_API_JSON("get-rest-api.json"),
-	GET_USER_JSON("get-user.json"),
-	GET_USER_KEY_DEFAULT_JSON("get-user-key-default.json"),
-	GET_USER_KEYS_MULTIPLE_JSON("get-user-keys-multiple.json"),
-	GET_USER_KEYS_NONE_JSON("get-user-keys-none.json"),
-	GET_USER_KEYS_SINGLE_JSON("get-user-keys-single.json"),
-	UPDATE_USER_KEY_JSON("update-user-key.json"),
-	UPDATE_USER_KEY_RSA_JSON("update-user-key-rsa.json"),
-	// pre-defined cartridges
-	GET_CARTRIDGES("get-cartridges.json");
+	GET_API("get-api.json"), // 1.2 
+	GET_USER_JSON("get-user.json"), // 1.2
+	GET_USER_KEYS_2KEYS("get-user-keys_2keys.json"), // 1.2
+	GET_USER_KEYS_NONE("get-user-keys_none.json"), // 1.2
+	GET_USER_KEYS_1KEY("get-user-keys_1key.json"), // 1.2
+	PUT_BBCC_DSA_USER_KEYS_SOMEKEY("put-bbcc-dsa-user-keys-somekey.json"), // 1.2
+
+	// cartridges
+	GET_CARTRIDGES("get-cartridges.json"); // 1.2
 	
 	private static final String SAMPLES_FOLDER = "/samples/";
 

@@ -14,6 +14,7 @@ import static com.openshift.internal.client.response.ILinkNames.ADD_APPLICATION;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,7 +22,9 @@ import java.util.Map.Entry;
 import org.fest.assertions.Condition;
 import org.junit.Test;
 
+import com.openshift.client.GearState;
 import com.openshift.client.HttpMethod;
+import com.openshift.client.IGear;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.CartridgeType;
 
@@ -51,13 +54,15 @@ public class ResourceDTOFactoryTest {
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.user);
 		UserResourceDTO userResourceDTO = response.getData();
 		assertThat(userResourceDTO.getRhLogin()).isEqualTo("foo@redhat.com");
-		assertThat(userResourceDTO.getLinks()).hasSize(3);
+		assertThat(userResourceDTO.getMaxGears()).isEqualTo(10);
+		assertThat(userResourceDTO.getConsumedGears()).isEqualTo(3);
+		assertThat(userResourceDTO.getLinks()).hasSize(2);
 	}
 
 	@Test
 	public void shouldUnmarshallGetUserNoKeyResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_USER_KEYS_NONE_JSON.getContentAsString();
+		String content = Samples.GET_USER_KEYS_NONE.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -70,7 +75,7 @@ public class ResourceDTOFactoryTest {
 	@Test
 	public void shouldUnmarshallGetUserSingleKeyResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_USER_KEYS_SINGLE_JSON.getContentAsString();
+		String content = Samples.GET_USER_KEYS_1KEY.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -80,15 +85,15 @@ public class ResourceDTOFactoryTest {
 		assertThat(keys).hasSize(1);
 		final KeyResourceDTO key = keys.get(0);
 		assertThat(key.getLinks()).hasSize(3);
-		assertThat(key.getName()).isEqualTo("default");
+		assertThat(key.getName()).isEqualTo("somekey");
 		assertThat(key.getType()).isEqualTo("ssh-rsa");
-		assertThat(key.getContent()).isEqualTo("AAAA");
+		assertThat(key.getContent()).isEqualTo("ABBA");
 	}
 
 	@Test
 	public void shouldUnmarshallGetUserMultipleKeyResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_USER_KEYS_MULTIPLE_JSON.getContentAsString();
+		String content = Samples.GET_USER_KEYS_2KEYS.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -99,20 +104,20 @@ public class ResourceDTOFactoryTest {
 		assertThat(key.getLinks()).hasSize(3);
 		assertThat(key.getName()).isEqualTo("default");
 		assertThat(key.getType()).isEqualTo("ssh-rsa");
-		assertThat(key.getContent()).isEqualTo("AAAA");
+		assertThat(key.getContent()).isEqualTo("ABBA");
 	}
 
 	@Test
 	public void shouldUnmarshallGetRootAPIResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_REST_API_JSON.getContentAsString();
+		String content = Samples.GET_API.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.links);
 		final Map<String, Link> links = response.getData();
-		assertThat(links).hasSize(6);
+		assertThat(links).hasSize(12);
 		assertThat(links).satisfies(new ValidLinkCondition());
 
 	}
@@ -120,7 +125,7 @@ public class ResourceDTOFactoryTest {
 	@Test
 	public void shouldUnmarshallGetDomainsWith1ExistingResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_DOMAINS_1EXISTING.getContentAsString();
+		String content = Samples.GET_DOMAINS.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -130,21 +135,21 @@ public class ResourceDTOFactoryTest {
 		assertThat(domainDTOs).isNotEmpty();
 		assertThat(domainDTOs).hasSize(1);
 		final DomainResourceDTO domainDTO = domainDTOs.get(0);
-		assertThat(domainDTO.getNamespace()).isEqualTo("foobar");
-		assertThat(domainDTO.getLinks()).hasSize(6);
+		assertThat(domainDTO.getId()).isEqualTo("foobarz");
+		assertThat(domainDTO.getLinks()).hasSize(5);
 		final Link link = domainDTO.getLink(ADD_APPLICATION);
 		assertThat(link).isNotNull();
-		assertThat(link.getHref()).isEqualTo("/domains/foobar/applications");
+		assertThat(link.getHref()).isEqualTo("https://openshift.redhat.com/broker/rest/domains/foobarz/applications");
 		assertThat(link.getRel()).isEqualTo("Create new application");
 		assertThat(link.getHttpMethod()).isEqualTo(HttpMethod.POST);
 		final List<LinkParameter> requiredParams = link.getRequiredParams();
-		assertThat(requiredParams).hasSize(2);
+		assertThat(requiredParams).hasSize(1);
 	}
 
 	@Test
 	public void shouldUnmarshallGetDomainsWithNoExistingResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_DOMAINS_NOEXISTING_JSON.getContentAsString();
+		String content = Samples.GET_DOMAINS_EMPTY.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -157,7 +162,7 @@ public class ResourceDTOFactoryTest {
 	@Test
 	public void shouldUnmarshallGetDomainResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_DOMAIN.getContentAsString();
+		String content = Samples.GET_DOMAINS_FOOBARZ.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -165,14 +170,14 @@ public class ResourceDTOFactoryTest {
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.domain);
 		final DomainResourceDTO domain = response.getData();
 		assertNotNull(domain);
-		assertThat(domain.getNamespace()).isEqualTo("foobar");
-		assertThat(domain.getLinks()).hasSize(6);
+		assertThat(domain.getId()).isEqualTo("foobarz");
+		assertThat(domain.getLinks()).hasSize(5);
 	}
 
 	@Test
 	public void shouldUnmarshallDeleteDomainKoNotFoundResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.DELETE_DOMAIN_KO_NOTFOUND_JSON.getContentAsString();
+		String content = Samples.DELETE_DOMAINS_FOOBAR_KO.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -184,7 +189,7 @@ public class ResourceDTOFactoryTest {
 	@Test
 	public void shouldUnmarshallGetApplicationsWith2AppsResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString();
+		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -201,20 +206,20 @@ public class ResourceDTOFactoryTest {
 	@Test
 	public void shouldUnmarshallGetApplicationWithAliasesResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_APPLICATION_WITH2CARTRIDGES2ALIASES_JSON.getContentAsString();
+		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2ALIAS.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.application);
 		final ApplicationResourceDTO application = response.getData();
-		assertThat(application.getUuid()).hasSize(32);
-		assertThat(application.getCreationTime()).startsWith("2012-");
-		assertThat(application.getDomainId()).isEqualTo("foobar");
-		assertThat(application.getFramework()).isEqualTo("jbossas-7");
-		assertThat(application.getName()).isEqualTo("sample");
-		assertThat(application.getLinks()).hasSize(14);
-		assertThat(application.getAliases()).contains("an_alias", "another_alias");
+		assertThat(application.getUuid()).hasSize(24);
+		assertThat(application.getCreationTime()).startsWith("2013-");
+		assertThat(application.getDomainId()).isEqualTo("foobarz");
+		assertThat(application.getFramework()).isEqualTo("jbosseap-6.0");
+		assertThat(application.getName()).isEqualTo("springeap6");
+		assertThat(application.getLinks()).hasSize(18);
+		assertThat(application.getAliases()).contains("jbosstools.org", "redhat.com");
 	}
 
 	/**
@@ -224,7 +229,7 @@ public class ResourceDTOFactoryTest {
 	@Test
 	public void shouldUnmarshallAddApplicationEmbeddedCartridgeResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.ADD_APPLICATION_CARTRIDGE_JSON.getContentAsString();
+		String content = Samples.POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -234,7 +239,7 @@ public class ResourceDTOFactoryTest {
 		final CartridgeResourceDTO cartridge = response.getData();
 		assertThat(cartridge.getName()).isEqualTo("mysql-5.1");
 		assertThat(cartridge.getType()).isEqualTo(CartridgeType.EMBEDDED);
-		assertThat(cartridge.getLinks()).hasSize(6);
+		assertThat(cartridge.getLinks()).hasSize(7);
 
 	}
 
@@ -245,7 +250,7 @@ public class ResourceDTOFactoryTest {
 	@Test
 	public void shouldUnmarshallGetApplicationCartridgesWith1ElementResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_APPLICATION_CARTRIDGES_WITH1ELEMENT_JSON.getContentAsString();
+		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -253,8 +258,8 @@ public class ResourceDTOFactoryTest {
 		assertThat(response.getMessages()).hasSize(0);
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridges);
 		final List<CartridgeResourceDTO> cartridges = response.getData();
-		assertThat(cartridges).hasSize(1);
-		assertThat(cartridges).onProperty("name").contains("mongodb-2.0");
+		assertThat(cartridges).hasSize(3); // mysql, mongo, jbosseap
+		assertThat(cartridges).onProperty("name").contains("mongodb-2.2", "mysql-5.1", "jbosseap-6.0");
 	}
 
 	/**
@@ -262,9 +267,9 @@ public class ResourceDTOFactoryTest {
 	 * @throws Throwable 
 	 */
 	@Test
-	public void shouldUnmarshallGetApplicationCartridgesWith2ElementsResponseBody() throws Throwable {
+	public void shouldUnmarshallGetApplicationCartridgesWith3ElementsResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_APPLICATION_CARTRIDGES_WITH2ELEMENTS_JSON.getContentAsString();
+		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -272,38 +277,33 @@ public class ResourceDTOFactoryTest {
 		assertThat(response.getMessages()).hasSize(0);
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridges);
 		final List<CartridgeResourceDTO> cartridges = response.getData();
-		assertThat(cartridges).hasSize(2);
-		assertThat(cartridges).onProperty("name").contains("mongodb-2.0", "mysql-5.1");
+		assertThat(cartridges).hasSize(3);
+		assertThat(cartridges).onProperty("name").contains("mongodb-2.2", "mysql-5.1", "jbosseap-6.0");
 	}
 
-	/**
-	 * Should unmarshall get application response body.
-	 * @throws Throwable 
-	 */
-	//@Test
-	public void shouldUnmarshallGetApplicationGearsResponseBody() throws Throwable {
+	@Test
+	public void shouldUnmarshallGetApplicationGearGroupsResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_APPLICATION_GEARS_WITH2ELEMENTS_JSON.getContentAsString();
+		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
 		// verifications
-		final List<GearDTO> gears = response.getData();
-		assertThat(gears).hasSize(2);
-		final GearDTO gear = gears.get(1); 
-		assertThat(gear.getUuid()).isEqualTo("f936d82ee6b146adbb18e3f41d922006");
-		//assertThat(gear.getGitUrl()).isEqualTo(
-		//		"ssh://f936d82ee6b146adbb18e3f41d922006@scalable-foobar.stg.rhcloud.com/~/git/scalable.git/");
-		//assertThat(gear.getComponents()).contains(
-		//		new GearComponentDTO("jbossas-7", "8080", "proxy", "3128", null),
-		//		new GearComponentDTO("mongodb-2.0", null, null, null, null), 
-		//		new GearComponentDTO("mysql-5.1", null, null, null, null));
+		Collection<GearGroupResourceDTO> gearGroups = response.getData();
+		assertThat(gearGroups.size()).isEqualTo(3);
+		GearGroupResourceDTO gearGroup = gearGroups.iterator().next();
+		assertThat(gearGroup.getName()).isEqualTo("514207b84382ec1fef0000ab");
+		assertThat(gearGroup.getUuid()).isEqualTo("514207b84382ec1fef0000ab");
+		assertThat(gearGroup.getGears()).hasSize(2);
+		final IGear gear = gearGroup.getGears().iterator().next(); 
+		assertThat(gear.getId()).isEqualTo("514207b84382ec1fef000098");
+		assertThat(gear.getState()).isEqualTo(GearState.IDLE);
 	}
 
 	@Test
 	public void shouldUnmarshallSingleValidOptionInResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.ADD_APPLICATION_CARTRIDGE_JSON.getContentAsString();
+		String content = Samples.POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -317,7 +317,7 @@ public class ResourceDTOFactoryTest {
 	@Test
 	public void shouldUnmarshallMultipleValidOptionInResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.ADD_USER_KEY2_OK_JSON.getContentAsString();
+		String content = Samples.PUT_BBCC_DSA_USER_KEYS_SOMEKEY.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -325,7 +325,7 @@ public class ResourceDTOFactoryTest {
 		final KeyResourceDTO key = response.getData();
 		final Link link = key.getLink("UPDATE");
 		assertThat(link.getOptionalParams()).hasSize(0);
-		assertThat(link.getRequiredParams().get(0).getValidOptions()).containsExactly("ssh-rsa", "ssh-dss");
+		assertThat(link.getRequiredParams().get(0).getValidOptions()).contains("ssh-rsa", "ssh-dss");
 	}
 
 }

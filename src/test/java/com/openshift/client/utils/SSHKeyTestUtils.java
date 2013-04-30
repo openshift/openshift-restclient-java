@@ -44,22 +44,22 @@ public class SSHKeyTestUtils {
 		}
 
 		public SSHPublicKeyAssertion hasName(String name) {
-			assertEquals(sshKey.getName(), name);
+			assertEquals(name, sshKey.getName());
 			return this;
 		}
 
 		public SSHPublicKeyAssertion hasPublicKey(String publicKey) {
-			assertEquals(sshKey.getPublicKey(), publicKey);
+			assertEquals(publicKey, sshKey.getPublicKey());
 			return this;
 		}
 
 		public SSHPublicKeyAssertion isType(String type) {
-			assertEquals(sshKey.getKeyType().getTypeId(), type);
+			assertEquals(type, sshKey.getKeyType().getTypeId());
 			return this;
 		}
 
 		public SSHPublicKeyAssertion isType(SSHKeyType type) {
-			assertEquals(sshKey.getKeyType(), type);
+			assertEquals(type, sshKey.getKeyType());
 			return this;
 		}
 	}

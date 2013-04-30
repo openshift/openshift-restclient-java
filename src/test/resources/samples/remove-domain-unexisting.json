@@ -1,1 +1,0 @@
-{"version":"1.0","type":null,"data":null,"messages":[{"field":null,"exit_code":128,"text":"Domain contains applications. Delete applications first or set force to true.","severity":"error"}],"status":"bad_request"}

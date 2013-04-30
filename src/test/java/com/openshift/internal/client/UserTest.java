@@ -33,7 +33,6 @@ import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.utils.Samples;
-import com.openshift.internal.client.RestService;
 
 /**
  * @author Xavier Coulon
@@ -49,10 +48,11 @@ public class UserTest {
 	public void setup() throws Throwable {
 		mockClient = mock(IHttpClient.class);
 		when(mockClient.get(urlEndsWith("/broker/rest/api")))
-		.thenReturn(Samples.GET_REST_API_JSON.getContentAsString());
+				.thenReturn(Samples.GET_API.getContentAsString());
 		when(mockClient.get(urlEndsWith("/user"))).thenReturn(
 				Samples.GET_USER_JSON.getContentAsString());
-		final IOpenShiftConnection connection = new OpenShiftConnectionFactory().getConnection(new RestService(SERVER_URL,
+		final IOpenShiftConnection connection = new OpenShiftConnectionFactory().getConnection(new RestService(
+				SERVER_URL,
 				"clientId", mockClient), "foo@redhat.com", "bar");
 		this.user = connection.getUser();
 	}
@@ -73,17 +73,20 @@ public class UserTest {
 	@Test
 	public void shouldUpdateDomainNamespace() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains"))).thenReturn(
-				Samples.GET_DOMAINS_1EXISTING.getContentAsString());
-		when(mockClient.put(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobar"))).thenReturn(
-				Samples.UPDATE_DOMAIN_ID.getContentAsString());
-		final IDomain domain = user.getDomain("foobar");
+		when(mockClient.get(urlEndsWith("/domains")))
+				.thenReturn(Samples.GET_DOMAINS.getContentAsString());
+		when(mockClient.put(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz")))
+				.thenReturn(Samples.GET_DOMAINS_FOOBARS.getContentAsString());
+		final IDomain domain = user.getDomain("foobarz");
+		assertThat(domain).isNotNull();
 		// operation
-		domain.rename("foobarbaz");
+		domain.rename("foobars");
 		// verifications
-		final IDomain updatedDomain = user.getDomain("foobarbaz");
-		assertThat(updatedDomain.getId()).isEqualTo("foobarbaz");
-		assertThat(LinkRetriever.retrieveLink(updatedDomain, "UPDATE").getHref()).contains("/foobarbaz");
+		assertThat(domain.getId()).isEqualTo("foobars");
+		final IDomain updatedDomain = user.getDomain("foobars");
+		assertThat(updatedDomain).isNotNull();
+		assertThat(updatedDomain.getId()).isEqualTo("foobars");
+		assertThat(LinkRetriever.retrieveLink(updatedDomain, "UPDATE").getHref()).contains("/foobars");
 		verify(mockClient, times(1)).put(anyMapOf(String.class, Object.class), any(URL.class));
 	}
 
@@ -92,9 +95,9 @@ public class UserTest {
 	public void shouldLoadEmptyListOfApplications() throws Throwable {
 		// pre-conditions
 		when(mockClient.get(urlEndsWith("/domains"))).thenReturn(
-				Samples.GET_DOMAINS_1EXISTING.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				Samples.GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
+				Samples.GET_DOMAINS.getContentAsString());
+		when(mockClient.get(urlEndsWith("/domains/foobar/applications")))
+				.thenReturn(Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
 		// operation
 		final List<IApplication> applications = user.getDomains().get(0).getApplications();
 		// verifications

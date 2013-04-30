@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-import com.openshift.client.IHttpClient;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.internal.client.httpclient.FormUrlEncodedMediaType;
@@ -27,8 +26,8 @@ import com.openshift.internal.client.httpclient.UrlConnectionHttpClient;
  */
 public class HttpClientFake extends UrlConnectionHttpClient {
 
-	public HttpClientFake(String version) throws FileNotFoundException, IOException, OpenShiftException {
-		this(new OpenShiftTestConfiguration(), version);
+	public HttpClientFake(String mediaType, String version) throws FileNotFoundException, IOException, OpenShiftException {
+		this(new OpenShiftTestConfiguration(), mediaType, version);
 	}
 	
 	@Override
@@ -37,14 +36,14 @@ public class HttpClientFake extends UrlConnectionHttpClient {
 		return data;
 	}
 
-	protected HttpClientFake(OpenShiftTestConfiguration configuration, String version) {
+	protected HttpClientFake(OpenShiftTestConfiguration configuration, String mediaType, String version) {
 		super(configuration.getRhlogin(),
 				configuration.getPassword(),
 				configuration.getClientId(),
 				false,
 				new FormUrlEncodedMediaType(),
-				IHttpClient.MEDIATYPE_APPLICATION_JSON,
-				"1.0");
+				mediaType,
+				version);
 	}
 
 }

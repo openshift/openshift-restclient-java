@@ -25,6 +25,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -154,7 +155,7 @@ public class HttpClientTest {
 		String value2 = "redhat";
 		parameters.put(key2, value2);
 
-		IHttpClient httpClient = new HttpClientFake("1.0");
+		IHttpClient httpClient = new HttpClientFake(IHttpClient.MEDIATYPE_APPLICATION_JSON, "1.0");
 		// operation
 		String response = httpClient.post(parameters, serverFake.getUrl());
 
@@ -175,8 +176,10 @@ public class HttpClientTest {
 	public void shouldAddServiceVersionToAcceptHeader() throws FileNotFoundException, IOException, OpenShiftException,
 			HttpClientException {
 		// pre-conditions
-		final String version = "1.0";
-		IHttpClient httpClient = new HttpClientFake(version) {
+		final AtomicReference<Boolean> verified = new AtomicReference<Boolean>();
+		verified.set(false);
+		final String version = "4.0";
+		IHttpClient httpClient = new HttpClientFake(IHttpClient.MEDIATYPE_APPLICATION_JSON, version) {
 
 			@Override
 			protected String write(String data, String requestMethod, URL url)
@@ -185,7 +188,8 @@ public class HttpClientTest {
 					HttpURLConnection connection = createConnection("dummyUser", "dummyPassword", "dummyUserAgent", url);
 					// verification
 					String accept = connection.getRequestProperty(IHttpClient.PROPERTY_ACCEPT);
-					assertThat(accept).contains("; version=" + version);
+					assertThat(accept).endsWith("; version=" + version);
+					verified.set(true);
 					return data;
 				} catch (IOException e) {
 					fail("could not create HttpURLConnection");
@@ -196,6 +200,9 @@ public class HttpClientTest {
 
 		// operation
 		httpClient.get(serverFake.getUrl());
+		
+		// verification
+		assertThat(verified.get()).as("The protocol version sent by the client was not verified").isTrue();
 	}
 
 	@Test(expected = NotFoundException.class)

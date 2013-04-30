@@ -25,7 +25,7 @@ public class UrlConnectionHttpClientBuilder {
 	private String authIV;
 	private IMediaType requestMediaType = new FormUrlEncodedMediaType();
 	private String acceptedMediaType = IHttpClient.MEDIATYPE_APPLICATION_JSON;
-	private String version = "1.0";
+	private String version;
 
 	public UrlConnectionHttpClientBuilder setUserAgent(String userAgent) {
 		this.userAgent = userAgent;

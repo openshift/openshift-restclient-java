@@ -28,7 +28,6 @@ public class GearTest {
 		GearState state = GearState.safeValueOf(null);
 		// verification
 		assertThat(state).isEqualTo(GearState.UNKNOWN);
-		
 	}
 
 	@Test
@@ -37,6 +36,14 @@ public class GearTest {
 		GearState state = GearState.safeValueOf("");
 		// verification
 		assertThat(state).isEqualTo(GearState.UNKNOWN);
-		
 	}
+
+	@Test
+	public void stateCaseShouldNotMatter() {
+		// operation
+		GearState state = GearState.safeValueOf("sTaRtEd");
+		// verification
+		assertThat(state).isEqualTo(GearState.STARTED);
+	}
+
 }

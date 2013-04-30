@@ -10,10 +10,10 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.Samples.GET_APPLICATIONS_SRINGEAP6;
-import static com.openshift.client.utils.Samples.GET_APPLICATION_SRINGEAP6;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_HONKABONKA2;
-import static com.openshift.client.utils.Samples.GET_SRINGEAP6_GEARGROUPS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS;
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -48,27 +48,27 @@ public class GearGroupsResourceTest {
 	public void setup() throws Throwable {
 		mockClient = mock(IHttpClient.class);
 		when(mockClient.get(urlEndsWith("/broker/rest/api")))
-				.thenReturn(Samples.GET_REST_API_JSON.getContentAsString());
+				.thenReturn(Samples.GET_API.getContentAsString());
 		when(mockClient.get(urlEndsWith("/user"))).thenReturn(
 				Samples.GET_USER_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains"))).thenReturn(GET_DOMAINS_HONKABONKA2.getContentAsString());
+		when(mockClient.get(urlEndsWith("/domains"))).thenReturn(GET_DOMAINS.getContentAsString());
 		final IOpenShiftConnection connection =
 				new OpenShiftConnectionFactory().getConnection(
 						new RestService("http://mock", "clientId", mockClient), "foo@redhat.com", "bar");
 		IUser user = connection.getUser();
-		this.domain = user.getDomain("honkabonka2");
+		this.domain = user.getDomain("foobarz");
 	}
 
 	@Test
 	public void shouldGetGearGroups() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/honkabonka2/applications"))).thenReturn(
-				GET_APPLICATIONS_SRINGEAP6.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/honkabonka2/applications/sringeap6"))).thenReturn(
-				GET_APPLICATION_SRINGEAP6.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/honkabonka2/applications/sringeap6/gear_groups"))).thenReturn(
-				GET_SRINGEAP6_GEARGROUPS.getContentAsString());
-		final IApplication app = domain.getApplicationByName("sringeap6");
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications/springeap6")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6.getContentAsString());
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications/springeap6/gear_groups")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS.getContentAsString());
+		final IApplication app = domain.getApplicationByName("springeap6");
 		// operation
 		final Collection<IGearGroup> gearGroups = app.getGearGroups();
 		// verifications

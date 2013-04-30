@@ -31,6 +31,7 @@ import com.openshift.internal.client.response.ResourceDTOFactoryTest;
 	SSHKeyTest.class,
 	GearGroupsResourceTest.class,
 	GearTest.class,
+	GearTest.class,
 	OpenShiftExceptionTest.class
 })
 

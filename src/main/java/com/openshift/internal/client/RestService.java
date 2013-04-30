@@ -52,20 +52,31 @@ public class RestService implements IRestService {
 	private static final String SERVICE_PATH = "/broker/rest/";
 	private static final char SLASH = '/';
 
-	private static final String SERVICE_VERSION = "1.0";
+	private static final String SERVICE_VERSION = "1.2";
 
 	private String baseUrl;
 	private IHttpClient client;
 
 	public RestService(String baseUrl, String clientId, IHttpClient client) {
-		this(baseUrl, clientId, client, new RestServiceProperties());
+		this(baseUrl, clientId, new RestServiceProperties(), client);
 	}
 
-	RestService(String baseUrl, String clientId, IHttpClient client, RestServiceProperties properties) {
+	RestService(String baseUrl, String clientId, RestServiceProperties properties, IHttpClient client) {
+		this(baseUrl, clientId, null,  properties, client);
+	}
+
+	RestService(String baseUrl, String clientId, String protocolVersion, RestServiceProperties properties, IHttpClient client) {
 		this.baseUrl = UrlUtils.ensureStartsWithHttps(baseUrl);
 		this.client = client;
-		client.setUserAgent(properties.getUseragent(clientId));
-		client.setVersion(SERVICE_VERSION);
+		setupClient(properties.getUseragent(clientId), protocolVersion, client);
+	}
+
+	private void setupClient(String userAgent, String protocolVersion, IHttpClient client) {
+		if (StringUtils.isEmpty(protocolVersion)) {
+			protocolVersion = SERVICE_VERSION;
+		}
+		client.setAcceptVersion(protocolVersion);
+		client.setUserAgent(userAgent);
 	}
 
 	public RestResponse request(Link link) throws OpenShiftException {
@@ -134,10 +145,8 @@ public class RestService implements IRestService {
 
 	private String request(URL url, HttpMethod httpMethod, Map<String, Object> parameters)
 			throws HttpClientException, SocketTimeoutException, OpenShiftException, UnsupportedEncodingException {
-		LOGGER.trace("Requesting {} on {}", httpMethod.name(), url);
-		LOGGER.info("Requesting {} on {}", httpMethod.name(), url);
-		
-		String result = null;
+		LOGGER.info("Requesting {} with protocol {} on {}",
+				new Object[] { httpMethod.name(), client.getAcceptVersion(), url });
 		
 		switch (httpMethod) {
 		case GET:

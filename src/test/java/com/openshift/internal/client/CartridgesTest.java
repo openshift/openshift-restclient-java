@@ -45,7 +45,7 @@ public class CartridgesTest {
 	public void setup() throws Throwable {
 		mockClient = mock(IHttpClient.class);
 		when(mockClient.get(urlEndsWith("/broker/rest/api")))
-				.thenReturn(Samples.GET_REST_API_JSON.getContentAsString());
+				.thenReturn(Samples.GET_API.getContentAsString());
 		when(mockClient.get(urlEndsWith("/cartridges")))
 				.thenReturn(Samples.GET_CARTRIDGES.getContentAsString());
 		connection = new OpenShiftConnectionFactory()
@@ -59,8 +59,10 @@ public class CartridgesTest {
 		final List<IStandaloneCartridge> cartridges = connection.getStandaloneCartridges();
 		// verifications
 		assertThat(cartridges)
-				.hasSize(8)
-				.onProperty("name").contains("nodejs-0.6", "jbossas-7").excludes("mongodb-2.0", "mysql-5.1");
+				.hasSize(15)
+				.onProperty("name")
+					.contains("nodejs-0.6", "jbossas-7", "jbosseap-6.0", "jbossews-1.0", "jbossews-2.0")
+					.excludes("mongodb-2.2", "mysql-5.1", "switchyard-0.6");
 	}
 
 	@Test
@@ -70,8 +72,10 @@ public class CartridgesTest {
 		final List<IEmbeddableCartridge> cartridges = connection.getEmbeddableCartridges();
 		// verifications
 		assertThat(cartridges)
-				.hasSize(10)
-				.onProperty("name").contains("mongodb-2.0", "mysql-5.1").excludes("nodejs-0.6", "jbossas-7");
+				.hasSize(11)
+				.onProperty("name")
+				.excludes("nodejs-0.6", "jbossas-7", "jbosseap-6.0", "jbossews-1.0", "jbossews-2.0")
+				.contains("mongodb-2.2", "mysql-5.1", "switchyard-0.6");
 	}
 
 	@Test
@@ -83,8 +87,12 @@ public class CartridgesTest {
 		// operation
 		EmbeddedCartridgeResource jenkinsEmbeddedCartridgeResource =
 				new EmbeddedCartridgeResource( 
-						jenkinsEmbeddableCartridge.getName(), CartridgeType.EMBEDDED, "embedded-info", Collections.<String, Link> emptyMap(), null,
-						applicationMock);
+						jenkinsEmbeddableCartridge.getName()
+						, CartridgeType.EMBEDDED
+						, "embedded-info"
+						, Collections.<String, Link> emptyMap()
+						, null
+						, applicationMock);
 
 		// verifications
 		assertTrue(jenkinsEmbeddableCartridge.equals(jenkinsEmbeddedCartridgeResource));
