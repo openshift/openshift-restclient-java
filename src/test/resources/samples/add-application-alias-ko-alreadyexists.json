@@ -1,1 +1,0 @@
-{"type":null,"messages":[{"field":null,"severity":"error","exit_code":255,"text":"Failed to add event add-alias to application sample1 due to: Alias 'an_alias' already exists for 'sample1'"}],"version":"1.0","data":null,"status":"internal_server_error"}

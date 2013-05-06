@@ -58,7 +58,7 @@ public class RestServiceProperties {
 		if (!StringUtils.isEmpty(id)
 				&& !StringUtils.isEmpty(version)
 				&& !StringUtils.isEmpty(useragentPattern)) {
-			userAgent = MessageFormat.format(getUseragentPattern(), getVersion(), id);
+			userAgent = MessageFormat.format(useragentPattern, version, id);
 		}
 		return userAgent;
 	}

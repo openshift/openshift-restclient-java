@@ -10,8 +10,8 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.Samples.DELETE_DOMAIN_KO_EXISTING_APPS_JSON;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_1EXISTING;
+import static com.openshift.client.utils.Samples.DELETE_DOMAINS_FOOBARZ_KO_EXISTINGAPPS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -55,9 +55,11 @@ public class OpenShiftExceptionTest {
 	public void setup() throws Throwable {
 		mockClient = mock(IHttpClient.class);
 		when(mockClient.get(urlEndsWith("/broker/rest/api")))
-				.thenReturn(Samples.GET_REST_API_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/user"))).thenReturn(Samples.GET_USER_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains"))).thenReturn(GET_DOMAINS_1EXISTING.getContentAsString());
+				.thenReturn(Samples.GET_API.getContentAsString());
+		when(mockClient.get(urlEndsWith("/user")))
+				.thenReturn(Samples.GET_USER_JSON.getContentAsString());
+		when(mockClient.get(urlEndsWith("/domains")))
+				.thenReturn(GET_DOMAINS.getContentAsString());
 		final IOpenShiftConnection connection = new OpenShiftConnectionFactory().getConnection(new RestService(
 				"http://mock", "clientId", mockClient), "foo@redhat.com", "bar");
 		this.user = connection.getUser();
@@ -85,7 +87,7 @@ public class OpenShiftExceptionTest {
 	public void shouldReportRestResponseOnError() throws Throwable {
 			// pre-conditions
 		try {
-		when(mockClient.delete(urlEndsWith("/domains/foobar"))).thenReturn(DELETE_DOMAIN_KO_EXISTING_APPS_JSON.getContentAsString());
+		when(mockClient.delete(urlEndsWith("/domains/foobar"))).thenReturn(DELETE_DOMAINS_FOOBARZ_KO_EXISTINGAPPS.getContentAsString());
 			IDomain domain = user.getDefaultDomain();
 			// operation
 			domain.destroy();

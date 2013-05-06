@@ -11,7 +11,7 @@
 package com.openshift.internal.client;
 
 import static com.openshift.client.utils.FileUtils.createRandomTempFile;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_1EXISTING;
+import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -60,14 +60,14 @@ public class SSHKeyTest {
 	public void setUp() throws SocketTimeoutException, HttpClientException, Throwable {
 		mockClient = mock(IHttpClient.class);
 		when(mockClient.get(urlEndsWith("/broker/rest/api")))
-				.thenReturn(Samples.GET_REST_API_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/user"))).thenReturn(
-				Samples.GET_USER_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains"))).thenReturn(GET_DOMAINS_1EXISTING.getContentAsString());
-		this.service = new RestService("http://mock",
-				"clientId", mockClient);
-		final IOpenShiftConnection connection = new OpenShiftConnectionFactory().getConnection(service,
-				"foo@redhat.com", "bar");
+				.thenReturn(Samples.GET_API.getContentAsString());
+		when(mockClient.get(urlEndsWith("/user")))
+				.thenReturn(Samples.GET_USER_JSON.getContentAsString());
+		when(mockClient.get(urlEndsWith("/domains")))
+				.thenReturn(GET_DOMAINS.getContentAsString());
+		this.service = new RestService("http://mock", "clientId", mockClient);
+		final IOpenShiftConnection connection = 
+				new OpenShiftConnectionFactory().getConnection(service,"foo@redhat.com", "bar");
 		this.user = connection.getUser();
 	}
 
@@ -193,30 +193,30 @@ public class SSHKeyTest {
 	public void shouldReturn2SSHKeys() throws HttpClientException, Throwable {
 		// pre-conditions
 		when(mockClient.get(urlEndsWith("/user/keys")))
-				.thenReturn(Samples.GET_USER_KEYS_MULTIPLE_JSON.getContentAsString());
+				.thenReturn(Samples.GET_USER_KEYS_2KEYS.getContentAsString());
 		// operation
 		List<IOpenShiftSSHKey> sshKeys = user.getSSHKeys();
 		// verifications
 		assertThat(sshKeys).hasSize(2);
 		assertThat(new SSHPublicKeyAssertion(sshKeys.get(0)))
-				.hasName("default").hasPublicKey("AAAA").isType(SSHKeyTestUtils.SSH_RSA);
+				.hasName("default").hasPublicKey("ABBA").isType(SSHKeyTestUtils.SSH_RSA);
 		assertThat(new SSHPublicKeyAssertion(sshKeys.get(1)))
-				.hasName("default2").hasPublicKey("AAAB").isType(SSHKeyTestUtils.SSH_DSA);
+				.hasName("default2").hasPublicKey("AABB").isType(SSHKeyTestUtils.SSH_DSA);
 	}
 
 	@Test
 	public void shouldAddAndUpdateKey() throws SocketTimeoutException, HttpClientException, Throwable {
 		// pre-conditions
 		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/user/keys")))
-				.thenReturn(Samples.ADD_USER_KEY2_OK_JSON.getContentAsString());
+				.thenReturn(Samples.PUT_BBCC_DSA_USER_KEYS_SOMEKEY.getContentAsString());
 		when(mockClient.get(urlEndsWith("/user/keys")))
-				.thenReturn(Samples.GET_USER_KEYS_NONE_JSON.getContentAsString());
+				.thenReturn(Samples.GET_USER_KEYS_NONE.getContentAsString());
 		String publicKeyPath = createRandomTempFile().getAbsolutePath();
 		String privateKeyPath = createRandomTempFile().getAbsolutePath();
 		SSHKeyTestUtils.createDsaKeyPair(publicKeyPath, privateKeyPath);
 		SSHPublicKey publicKey = new SSHPublicKey(publicKeyPath);
 
-		String keyName = "default2";
+		String keyName = "somekey";
 		// operation
 		user.putSSHKey(keyName, publicKey);
 
@@ -225,27 +225,31 @@ public class SSHKeyTest {
 		assertThat(keys).hasSize(1);
 		assertThat(new SSHPublicKeyAssertion(keys.get(0)))
 				.hasName(keyName)
-				.hasPublicKey("AAAAB3Nz")
-				.isType(SSHKeyTestUtils.SSH_RSA);
+				.hasPublicKey("BBCC")
+				.isType(SSHKeyTestUtils.SSH_DSA);
 	}
 
 	@Test
 	public void shouldUpdateKeyTypeAndPublicKey() throws SocketTimeoutException, HttpClientException, Throwable {
 		// pre-conditions
-		String keyName = "default";
+		String keyName = "somekey";
 		String keyUrl = service.getServiceUrl() + "user/keys/" + keyName;
-		String newPublicKey = "AAAAB3Nza...";
+		String newPublicKey = "BBCC";
 
 		when(mockClient.get(urlEndsWith("/user/keys")))
-				.thenReturn(Samples.GET_USER_KEYS_SINGLE_JSON.getContentAsString());
+				.thenReturn(Samples.GET_USER_KEYS_1KEY.getContentAsString());
 		when(mockClient.put(anyMapOf(String.class, Object.class), urlEndsWith(keyUrl)))
-				.thenReturn(Samples.UPDATE_USER_KEY_JSON.getContentAsString());
+				.thenReturn(Samples.PUT_BBCC_DSA_USER_KEYS_SOMEKEY.getContentAsString());
 
 		// operation
 		List<IOpenShiftSSHKey> keys = user.getSSHKeys();
 		assertThat(keys).hasSize(1);
 		IOpenShiftSSHKey key = keys.get(0);
+		
+		// verification
 		assertThat(key.getKeyType()).isEqualTo(SSHKeyType.SSH_RSA);
+		
+		// operation
 		key.setKeyType(SSHKeyType.SSH_DSA, newPublicKey);
 
 		// verification
@@ -260,13 +264,13 @@ public class SSHKeyTest {
 	@Test
 	public void shouldUpdatePublicKey() throws SocketTimeoutException, HttpClientException, Throwable {
 		// pre-conditions
-		String keyName = "default";
+		String keyName = "somekey";
 		String keyUrl = service.getServiceUrl() + "user/keys/" + keyName;
-		String newPublicKey = "AAAAB3Nza...";
+		String newPublicKey = "BBCC";
 		when(mockClient.get(urlEndsWith("/user/keys")))
-				.thenReturn(Samples.GET_USER_KEYS_SINGLE_JSON.getContentAsString());
+				.thenReturn(Samples.GET_USER_KEYS_1KEY.getContentAsString());
 		when(mockClient.put(anyMapOf(String.class, Object.class), urlEndsWith(keyUrl)))
-				.thenReturn(Samples.UPDATE_USER_KEY_RSA_JSON.getContentAsString());
+				.thenReturn(Samples.PUT_BBCC_DSA_USER_KEYS_SOMEKEY.getContentAsString());
 
 		// operation
 		List<IOpenShiftSSHKey> keys = user.getSSHKeys();
@@ -277,7 +281,7 @@ public class SSHKeyTest {
 		key.setPublicKey(newPublicKey);
 
 		// verification
-		assertThat(key.getKeyType()).isEqualTo(SSHKeyType.SSH_RSA);
+		assertThat(key.getKeyType()).isEqualTo(SSHKeyType.SSH_DSA);
 		assertThat(key.getPublicKey()).isEqualTo(newPublicKey);
 		HashMap<String, Object> parameterMap = new HashMap<String, Object>();
 		parameterMap.put("type", SSHKeyTestUtils.SSH_RSA);
@@ -289,7 +293,7 @@ public class SSHKeyTest {
 	public void shouldNotAddKeyWithExistingName() throws SocketTimeoutException, HttpClientException, Throwable {
 		// pre-conditions
 		when(mockClient.get(urlEndsWith("/user/keys")))
-				.thenReturn(Samples.GET_USER_KEYS_SINGLE_JSON.getContentAsString());
+				.thenReturn(Samples.GET_USER_KEYS_1KEY.getContentAsString());
 		String publicKeyPath = createRandomTempFile().getAbsolutePath();
 		String privateKeyPath = createRandomTempFile().getAbsolutePath();
 		SSHKeyTestUtils.createDsaKeyPair(publicKeyPath, privateKeyPath);
@@ -304,20 +308,20 @@ public class SSHKeyTest {
 	@Test(expected = OpenShiftSSHKeyException.class)
 	public void shouldNotAddKeyTwice() throws SocketTimeoutException, HttpClientException, Throwable {
 		// pre-conditions
-		String keyName = "default";
+		String keyName = "somekey";
 		String keyUrl = service.getServiceUrl() + "user/keys/" + keyName;
 		when(mockClient.get(urlEndsWith("/user/keys")))
-				.thenReturn(Samples.GET_USER_KEYS_SINGLE_JSON.getContentAsString());
+				.thenReturn(Samples.GET_USER_KEYS_1KEY.getContentAsString());
 		when(mockClient.put(anyMapOf(String.class, Object.class), urlEndsWith(keyUrl)))
-				.thenReturn(Samples.UPDATE_USER_KEY_RSA_JSON.getContentAsString());
+				.thenReturn(Samples.PUT_BBCC_DSA_USER_KEYS_SOMEKEY.getContentAsString());
 		String publicKeyPath = createRandomTempFile().getAbsolutePath();
 		String privateKeyPath = createRandomTempFile().getAbsolutePath();
 		SSHKeyTestUtils.createDsaKeyPair(publicKeyPath, privateKeyPath);
 		SSHPublicKey publicKey = new SSHPublicKey(publicKeyPath);
 
 		// operation
-		user.putSSHKey(keyName, publicKey);
-		user.putSSHKey("someOtherName", publicKey);
+		assertThat(user.getSSHKeys()).onProperty("name").contains(keyName);
+		user.putSSHKey(keyName, publicKey); // throws
 	}
 
 }

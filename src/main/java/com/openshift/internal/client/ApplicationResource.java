@@ -354,12 +354,15 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private List<IEmbeddedCartridge> loadEmbeddedCartridges() throws OpenShiftException {
 		// load collection if necessary
 		this.embeddedCartridges = new ArrayList<IEmbeddedCartridge>();
-		List<CartridgeResourceDTO> embeddableCartridgeDTOs = new ListEmbeddableCartridgesRequest().execute();
-		for (CartridgeResourceDTO embeddableCartridgeDTO : embeddableCartridgeDTOs) {
+		List<CartridgeResourceDTO> cartridgeDTOs = new ListEmbeddableCartridgesRequest().execute();
+		for (CartridgeResourceDTO cartridgeDTO : cartridgeDTOs) {
+			if (cartridgeDTO.getType() != CartridgeType.EMBEDDED) {
+				continue;
+			}
 			IEmbeddedCartridge embeddableCartridge =
 					new EmbeddedCartridgeResource(
-							embeddedCartridgesInfos.get(embeddableCartridgeDTO.getName()),
-							embeddableCartridgeDTO, this);
+							embeddedCartridgesInfos.get(cartridgeDTO.getName()),
+							cartridgeDTO, this);
 			embeddedCartridges.add(embeddableCartridge);
 		}
 		return embeddedCartridges;
@@ -466,11 +469,11 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	private boolean waitForResolved(long timeout, long startTime) throws OpenShiftException, InterruptedException {
 		try {
-			while (!HostUtils.canResolv(applicationUrl)
+			while (!canResolv(applicationUrl)
 					&& !isTimeouted(timeout, startTime)) {
 				Thread.sleep(APPLICATION_WAIT_RETRY_DELAY);
 			}
-			return HostUtils.canResolv(applicationUrl);
+			return canResolv(applicationUrl);
 		} catch (MalformedURLException e) {
 			throw new OpenShiftException(e,
 					"Could not wait for application {0} to become accessible, it has an invalid URL \"{1}\": {2}",
@@ -478,6 +481,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
+	protected boolean canResolv(String url) throws MalformedURLException {
+		return HostUtils.canResolv(url);
+	}
+	
 	private boolean isTimeouted(long timeout, long startTime) {
 		return !(System.currentTimeMillis() < (startTime + timeout));
 	}
@@ -831,7 +838,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 		public <DTO> DTO execute(String embeddedCartridgeName) throws OpenShiftException {
 			return super
-					.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, embeddedCartridgeName));
+					.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_NAME, embeddedCartridgeName));
 		}
 	}
 

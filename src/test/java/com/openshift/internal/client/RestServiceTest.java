@@ -53,6 +53,7 @@ import com.openshift.internal.client.response.RestResponse;
  */
 public class RestServiceTest {
 
+	protected static final Object KEY_PROTOCOL_VERSION = "protocol_version";
 	private IRestService service;
 	private IHttpClient clientMock;
 
@@ -66,7 +67,7 @@ public class RestServiceTest {
 		when(clientMock.delete(anyForm(), any(URL.class))).thenReturn(jsonResponse);
 
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
-		this.service = createService(configuration.getStagingServer(), configuration.getClientId());
+		this.service = new RestService(configuration.getStagingServer(), configuration.getClientId(), clientMock);
 	}
 
 	@Test(expected = OpenShiftException.class)
@@ -157,7 +158,7 @@ public class RestServiceTest {
 	public void shouldThrowExceptionWithResponseOnNotFound() throws Throwable {
 		try {
 			// pre-conditions
-			NotFoundException e = new NotFoundException(Samples.GET_DOMAIN_NOTFOUND_JSON.getContentAsString());
+			NotFoundException e = new NotFoundException(Samples.GET_DOMAINS_FOOBAR_KO_NOTFOUND.getContentAsString());
 			when(clientMock.get(any(URL.class))).thenThrow(e);
 			// operation
 			service.request(new Link("0 require parameter", "/broker/rest/adietisheim", HttpMethod.GET, null, null));
@@ -173,7 +174,7 @@ public class RestServiceTest {
 		try {
 			// pre-conditions
 			when(clientMock.post(anyForm(), any(URL.class)))
-					.thenThrow(new HttpClientException(Samples.POST_DOMAINS_NEWDOMAIN_KO.getContentAsString()));
+					.thenThrow(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
 			// operation
 			service.request(new Link("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));
 			// verifications
@@ -185,10 +186,10 @@ public class RestServiceTest {
 			Message message = restResponse.getMessages().get(0);
 			assertThat(message).isNotNull();
 			assertThat(new MessageAssert(message))
-					.hasText("User already has a domain associated. Update the domain to modify.")
+					.hasText("Namespace 'foobar' is already in use. Please choose another.")
 					.hasSeverity(Severity.ERROR)
-					.hasExitCode(102)
-					.hasParameter(null);
+					.hasExitCode(103)
+					.hasParameter("id");
 		}
 	}
 
@@ -197,7 +198,7 @@ public class RestServiceTest {
 		try {
 			// pre-conditions
 			when(clientMock.post(anyForm(), any(URL.class)))
-					.thenThrow(new HttpClientException(Samples.POST_DOMAINS_NEWDOMAIN_KO.getContentAsString()));
+					.thenThrow(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
 			// operation
 			service.request(new Link("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));
 			// verifications
@@ -211,7 +212,7 @@ public class RestServiceTest {
 	public void shouldReturnPlatformWithSchema() throws Throwable {
 		// pre-conditions
 		final String serverUrl = "nonHttpUrl";
-		IRestService service = createService(serverUrl, new OpenShiftTestConfiguration().getClientId());
+		IRestService service = new RestService(serverUrl, new OpenShiftTestConfiguration().getClientId(), clientMock);
 		// operation
 		String platformUrl = service.getPlatformUrl();
 		// verifications
@@ -223,7 +224,7 @@ public class RestServiceTest {
 	public void shouldReturnUnchangedPlatformUrl() throws Throwable {
 		// pre-conditions
 		final String serverUrl = "http://fakeUrl";
-		IRestService service = createService(serverUrl, new OpenShiftTestConfiguration().getClientId());
+		IRestService service = new RestService(serverUrl, new OpenShiftTestConfiguration().getClientId(), clientMock);
 		// operation
 		String platformUrl = service.getPlatformUrl();
 		// verifications
@@ -236,7 +237,6 @@ public class RestServiceTest {
 		RestServiceProperties properties = new RestServiceProperties() {
 			protected Properties getProperties() throws IOException {
 				Properties properties = new Properties();
-				properties.put(KEY_VERSION, "11");
 				properties.put(KEY_USERAGENTPATTERN, "{0} {1}");
 				return properties;
 			}
@@ -245,20 +245,39 @@ public class RestServiceTest {
 
 		// operation
 		String clientId = "unit-test";
-		createService("jboss.org", clientId, properties, httpClientMock);
+		new RestService("jboss.org", clientId, properties, httpClientMock);
 
 		// verifications
 		String userAgent = properties.getUseragent(clientId);
 		verify(httpClientMock, times(1)).setUserAgent(userAgent);
 	}
 
-	private IRestService createService(String server, String clientId) {
-		return createService(server, clientId, new RestServiceProperties(), clientMock);
-	}
+	@Test
+	public void shouldDefaultTo12ProtocolVersion() 
+			throws OpenShiftException, SocketTimeoutException, HttpClientException, UnsupportedEncodingException {
+		// pre-condition
+		RestServiceProperties properties = new RestServiceProperties();
+		IHttpClient httpClientMock = mock(IHttpClient.class);
 
-	private IRestService createService(String server, String clientId, RestServiceProperties properties,
-			IHttpClient httpClient) {
-		return new RestService(server, clientId, httpClient, properties);
-	}
+		// operation
+		String clientId = "unit-test";
+		new RestService("jboss.org", clientId, properties, httpClientMock);
 
+		// verifications
+		verify(clientMock, times(1)).setAcceptVersion("1.2");
+	}
+	
+	@Test
+	public void shouldUseGivenProtocolVersion() throws OpenShiftException, SocketTimeoutException, HttpClientException {
+		// pre-condition
+		RestServiceProperties properties = new RestServiceProperties();
+		IHttpClient httpClientMock = mock(IHttpClient.class);
+
+		// operation
+		String clientId = "unit-test";
+		new RestService("jboss.org", clientId, "5.2", properties, httpClientMock);
+
+		// verifications
+		verify(httpClientMock, times(1)).setAcceptVersion("5.2");
+	}
 }

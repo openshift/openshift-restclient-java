@@ -1,0 +1,24 @@
+{
+   "data":null,
+   "errors":{
+
+   },
+   "messages":[
+      {
+         "exit_code":128,
+         "field":null,
+         "severity":"error",
+         "text":"Domain contains applications. Delete applications first or set force to true."
+      }
+   ],
+   "status":"bad_request",
+   "supported_api_versions":[
+      1.0,
+      1.1,
+      1.2,
+      1.3,
+      1.4
+   ],
+   "type":null,
+   "version":"1.2"
+}

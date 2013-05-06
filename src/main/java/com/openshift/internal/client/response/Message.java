@@ -38,18 +38,18 @@ public class Message {
 
 	private String text;
 	private Severity severity;
-	private String parameter;
+	private String field;
 	private int exitCode;
 
-	public Message(String text, String parameter, String severity, int exitCode) {
+	public Message(String text, String field, String severity, int exitCode) {
 		this.text = text;
 		this.severity = Severity.safeValueOf(severity);
-		this.parameter = parameter;
+		this.field = field;
 		this.exitCode = exitCode;
 	}
 
 	public String getParameter() {
-		return parameter;
+		return field;
 	}
 
 	public String getText() {
@@ -68,8 +68,8 @@ public class Message {
 	public String toString() {
 		StringBuilder builder = new StringBuilder(getOperationState());
 
-		if (!StringUtils.isEmpty(parameter)) {
-			builder.append(" on parameter \"{0}\"");
+		if (!StringUtils.isEmpty(field)) {
+			builder.append(" on field \"{0}\"");
 			if (severity != null) {
 				builder.append(", sevirty \"{1}\"");
 			}
@@ -82,7 +82,7 @@ public class Message {
 			builder.append("Reason given: \"{3}\"");
 		}
 
-		return MessageFormat.format(builder.toString(), parameter, severity, exitCode, text);
+		return MessageFormat.format(builder.toString(), field, severity, exitCode, text);
 	}
 
 	private String getOperationState() {

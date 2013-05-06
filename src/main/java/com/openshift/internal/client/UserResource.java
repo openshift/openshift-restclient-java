@@ -259,4 +259,10 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		}
 	}
 
+
+	@Override
+	public String toString() {
+		return "UserResource [rhLogin=" + rhLogin + "]";
+	}
+
 }

@@ -18,22 +18,22 @@ import java.util.Map;
  */
 public class DomainResourceDTO extends BaseResourceDTO {
 
-	/** the domain's configured namespace. */
-	private final String namespace;
+	/** the domain's configured id. */
+	private final String id;
 	/** the domain's configured suffix (cannot be configured by user, returned by platform). */
 	private String suffix;
 	
-	protected DomainResourceDTO(final String namespace, final String suffix, final Map<String, Link> links, final List<Message> creationLog) {
+	protected DomainResourceDTO(final String id, final String suffix, final Map<String, Link> links, final List<Message> creationLog) {
 		super(links, creationLog);
-		this.namespace = namespace;
+		this.id = id;
 		this.suffix = suffix;
 	}
 
 	/**
-	 * @return the namespace
+	 * @return the id
 	 */
-	public final String getNamespace() {
-		return namespace;
+	public final String getId() {
+		return id;
 	}
 
 	public String getSuffix() {

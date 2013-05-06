@@ -29,4 +29,9 @@ public class GearProfile implements IGearProfile {
 	public String getName() {
 		return name;
 	}
+
+	@Override
+	public String toString() {
+		return "GearProfile [name=" + name + "]";
+	}
 }

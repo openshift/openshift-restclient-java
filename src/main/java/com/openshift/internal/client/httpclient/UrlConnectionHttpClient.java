@@ -65,7 +65,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	private String authIV;
 	private IMediaType requestMediaType;
 	private String acceptedMediaType;
-	private String version;
+	private String acceptVersion;
 
 	public UrlConnectionHttpClient(String username, String password, String userAgent, boolean sslChecks,
 			IMediaType requestMediaType, String acceptedMediaType, String version) {
@@ -82,6 +82,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		this.acceptedMediaType = acceptedMediaType;
 		this.authKey = authKey;
 		this.authIV = authIV;
+		this.acceptVersion = version;
 	}
 	
 	private String setupUserAgent(String authKey, String authIV, String userAgent) {
@@ -107,8 +108,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	public String get(URL url) throws HttpClientException, SocketTimeoutException {
 		HttpURLConnection connection = null;
 		try {			
-			connection = createConnection(username, password, authKey, authIV, userAgent, url);
-			return StreamUtils.readToString(connection.getInputStream());
+			return write(null, HttpMethod.GET.toString(), url);
 		} catch (IOException e) {
 			throw createException(e, connection);
 		} finally {
@@ -124,10 +124,14 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		return userAgent;
 	}
 	
-	public void setVersion(String version) {
-		this.version = version;
+	public void setAcceptVersion(String version) {
+		this.acceptVersion = version;
 	}
 
+	public String getAcceptVersion() {
+		return acceptVersion;
+	}
+	
 	public String put(Map<String, Object> parameters, URL url)
 			throws SocketTimeoutException, UnsupportedEncodingException, HttpClientException {
 		return put(requestMediaType.encodeParameters(parameters), url);
@@ -292,9 +296,9 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	private void setAcceptHeader(HttpURLConnection connection) {
 		StringBuilder builder =
 				new StringBuilder(acceptedMediaType);
-		if (version != null) {
+		if (acceptVersion != null) {
 			builder.append(SEMICOLON).append(SPACE)
-					.append(VERSION).append(EQUALS).append(version);
+					.append(VERSION).append(EQUALS).append(acceptVersion);
 		}
 
 		connection.setRequestProperty(PROPERTY_ACCEPT, builder.toString());

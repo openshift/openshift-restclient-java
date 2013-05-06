@@ -1,46 +1,26 @@
 {
    "data":{
-      "capabilities":{
-         "subaccounts":false,
-         "gear_sizes":[
-            "small",
-            "medium"
-         ]
-      },
-      "consumed_gears":3,
-      "created_at":"2013-02-12T17:12:44Z",
-      "id":"511a780cf2cb83f4d0001b23",
+      "content":"BBCC",
       "links":{
-         "LIST_KEYS":{
-            "href":"https://openshift.redhat.com/broker/rest/user/keys",
+         "GET":{
+            "href":"https://mock/broker/rest/user/keys/somekey",
             "method":"GET",
             "optional_params":[
 
             ],
-            "rel":"Get SSH keys",
+            "rel":"Get SSH key",
             "required_params":[
 
             ]
          },
-         "ADD_KEY":{
-            "href":"https://openshift.redhat.com/broker/rest/user/keys",
-            "method":"POST",
+         "UPDATE":{
+            "href":"https://mock/broker/rest/user/keys/somekey",
+            "method":"PUT",
             "optional_params":[
 
             ],
-            "rel":"Add new SSH key",
+            "rel":"Update SSH key",
             "required_params":[
-               {
-                  "description":"Name of the key",
-                  "invalid_options":[
-
-                  ],
-                  "name":"name",
-                  "type":"string",
-                  "valid_options":[
-
-                  ]
-               },
                {
                   "description":"Type of Key",
                   "invalid_options":[
@@ -64,7 +44,7 @@
                   ]
                },
                {
-                  "description":"The key portion of an rsa key (excluding ssh-rsa and comment)",
+                  "description":"The key portion of an dsa key (excluding ssh key type and comment)",
                   "invalid_options":[
 
                   ],
@@ -75,16 +55,32 @@
                   ]
                }
             ]
+         },
+         "DELETE":{
+            "href":"https://mock/broker/rest/user/keys/somekey",
+            "method":"DELETE",
+            "optional_params":[
+
+            ],
+            "rel":"Delete SSH key",
+            "required_params":[
+
+            ]
          }
       },
-      "login":"foo@redhat.com",
-      "max_gears":10,
-      "plan_id":"free",
-      "plan_state":"ACTIVE",
-      "usage_account_id":null
+      "name":"somekey",
+      "type":"ssh-dss"
+   },
+   "errors":{
+
    },
    "messages":[
-
+      {
+         "exit_code":null,
+         "field":null,
+         "severity":"info",
+         "text":"Updated SSH key with name default for user adietish@redhat.com"
+      }
    ],
    "status":"ok",
    "supported_api_versions":[
@@ -94,6 +90,6 @@
       1.3,
       1.4
    ],
-   "type":"user",
+   "type":"key",
    "version":"1.2"
 }

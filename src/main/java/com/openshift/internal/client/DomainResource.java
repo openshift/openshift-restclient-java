@@ -59,7 +59,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	}
 
 	protected DomainResource(DomainResourceDTO domainDTO, final APIResource api) {
-		this(domainDTO.getNamespace(), domainDTO.getSuffix(), domainDTO.getLinks(), domainDTO.getCreationLog(), api);
+		this(domainDTO.getId(), domainDTO.getSuffix(), domainDTO.getLinks(), domainDTO.getCreationLog(), api);
 	}
 
 	public String getId() {
@@ -74,7 +74,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		Assert.notNull(id);
 
 		DomainResourceDTO domainDTO = new UpdateDomainRequest().execute(id);
-		this.id = domainDTO.getNamespace();
+		this.id = domainDTO.getId();
 		this.suffix = domainDTO.getSuffix();
 		this.getLinks().clear();
 		this.getLinks().putAll(domainDTO.getLinks());
@@ -241,7 +241,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	
 	public void refresh() throws OpenShiftException {
 		final DomainResourceDTO domainResourceDTO =  new GetDomainRequest().execute();
-		this.id = domainResourceDTO.getNamespace();
+		this.id = domainResourceDTO.getId();
 		this.suffix = domainResourceDTO.getSuffix();
 		if(this.applications != null) {
 			this.applications = loadApplications();
@@ -253,7 +253,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	public String toString() {
 		return "Domain ["
 				+ "id=" + id + ", "
-				+ "suffix = " + suffix
+				+ "suffix=" + suffix
 				+ "]";
 	}
 

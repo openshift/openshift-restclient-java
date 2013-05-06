@@ -10,10 +10,10 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.Samples.GET_APPLICATIONS_WITH2APPS_JSON;
-import static com.openshift.client.utils.Samples.GET_APPLICATION_CARTRIDGES_WITH2ELEMENTS_JSON;
-import static com.openshift.client.utils.Samples.GET_APPLICATION_WITH2CARTRIDGES2ALIASES_JSON;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_1EXISTING;
+import static com.openshift.client.utils.Samples.GET_DOMAINS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED;
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -115,30 +115,31 @@ public class EmbeddableCartridgeTest {
 	public void shouldHaveUrl() throws Throwable {
 		// pre-conditions
 		IHttpClient mockClient = mock(IHttpClient.class);
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
 		when(mockClient.get(urlEndsWith("/broker/rest/api")))
-				.thenReturn(Samples.GET_REST_API_JSON.getContentAsString());
+				.thenReturn(Samples.GET_API.getContentAsString());
 		when(mockClient.get(urlEndsWith("/user")))
 				.thenReturn(Samples.GET_USER_JSON.getContentAsString());
 		when(mockClient.get(urlEndsWith("/domains")))
-				.thenReturn(GET_DOMAINS_1EXISTING.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications"))).thenReturn(
-				GET_APPLICATIONS_WITH2APPS_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications/sample"))).thenReturn(
-				GET_APPLICATION_WITH2CARTRIDGES2ALIASES_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobar/applications/sample/cartridges"))).thenReturn(
-				GET_APPLICATION_CARTRIDGES_WITH2ELEMENTS_JSON.getContentAsString());
+				.thenReturn(GET_DOMAINS.getContentAsString());
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications/springeap6")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6.getContentAsString());
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications/springeap6/cartridges")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED.getContentAsString());
 
 		final IOpenShiftConnection connection =
 				new OpenShiftConnectionFactory().getConnection(
 						new RestService("http://mock", "clientId", mockClient), "foo@redhat.com", "bar");
-		final IApplication app = connection.getUser().getDomain("foobar").getApplicationByName("sample");
+		final IApplication app = connection.getUser().getDomain("foobarz").getApplicationByName("springeap6");
+		assertThat(app).isNotNull();
 		// operation
 
 		// verifications
-		IEmbeddedCartridge embeddedCartridge = app.getEmbeddedCartridge("mongodb-2.0");
-		assertThat(embeddedCartridge.getUrl()).isEqualTo("mongodb://127.13.83.1:27017/");
+		IEmbeddedCartridge embeddedCartridge = app.getEmbeddedCartridge("mongodb-2.2");
+		assertThat(embeddedCartridge.getUrl()).isEqualTo("mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/");
 
 		embeddedCartridge = app.getEmbeddedCartridge("mysql-5.1");
 		assertThat(embeddedCartridge.getUrl()).isNull();
