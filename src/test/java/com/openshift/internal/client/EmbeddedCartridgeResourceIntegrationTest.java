@@ -18,7 +18,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
+import java.util.List;
 
+import org.fest.assertions.Condition;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,7 +29,9 @@ import com.openshift.client.IDomain;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.selector.LatestVersionOf;
 import com.openshift.client.utils.ApplicationAssert;
@@ -59,9 +63,36 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(jbossAs, domain);
 
 		// operation
-
+		List<IEmbeddedCartridge> embeddedCartridges = application.getEmbeddedCartridges();
 		// verification
-		assertThat(application.getEmbeddedCartridges()).isNotNull();
+		assertThat(embeddedCartridges).isNotNull();
+	}
+
+	@Test
+	public void shouldNotContainTypeInEmbeddedCartridges() throws SocketTimeoutException, OpenShiftException {
+		// pre-conditions
+		final IStandaloneCartridge jbossAs = LatestVersionOf.jbossAs().get(user);
+		assertThat(jbossAs).isNotNull();
+		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(jbossAs, domain);
+
+		// operation
+		List<IEmbeddedCartridge> embeddedCartridges = application.getEmbeddedCartridges();
+		// verification
+		assertThat(embeddedCartridges).doesNotSatisfy(new Condition<List<?>>() {
+			
+			@Override
+			public boolean matches(List<?> values) {
+				for(Object value : values) {
+					if (!(value instanceof ICartridge)) {
+						continue;
+					}
+					if (jbossAs.getName().equals(((ICartridge)value).getName())) {
+						return true;
+					};
+				}
+				return false;
+			}
+		});
 	}
 
 	@Test
