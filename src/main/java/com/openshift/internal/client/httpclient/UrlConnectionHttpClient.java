@@ -48,7 +48,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UrlConnectionHttpClient.class);
 
-	private static final int DEFAULT_CONNECT_TIMEOUT = 10 * 1000;
+	private static final int DEFAULT_CONNECT_TIMEOUT = 10 * 	1000;
 	private static final int DEFAULT_READ_TIMEOUT = 2 * 60 * 1000;
 	private static final String SYSPROP_OPENSHIFT_CONNECT_TIMEOUT = "com.openshift.httpclient.timeout";
 	private static final String SYSPROP_DEFAULT_CONNECT_TIMEOUT = "sun.net.client.defaultConnectTimeout";
