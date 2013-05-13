@@ -459,13 +459,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		});
 	}
 	
-	public String getCartridge(String cartridgeName) throws OpenShiftException {
-		Assert.notNull(cartridgeName);
-
-		return new GetCartridgeRequest().execute(cartridgeName);
-
-	}
-
 	protected IOpenShiftConnection getConnection() {
 		return getDomain().getUser().getConnection();
 	}
@@ -857,18 +850,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 	
-	private class GetCartridgeRequest extends ServiceRequest {
-
-		protected GetCartridgeRequest() {
-			super(LINK_LIST_CARTRIDGES);
-		}
-		
-		public String execute(String cartridgeName) throws OpenShiftException {
-			return super
-					.execute(cartridgeName);
-		}
-	}
-
 	private class GetGearGroupsRequest extends ServiceRequest {
 
 		protected GetGearGroupsRequest() {
