@@ -17,9 +17,6 @@ package com.openshift.client;
  */
 public class OpenShiftSSHOperationException extends OpenShiftException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -1058021959768485317L;
 
 	public OpenShiftSSHOperationException(Throwable cause, String message, Object... arguments) {

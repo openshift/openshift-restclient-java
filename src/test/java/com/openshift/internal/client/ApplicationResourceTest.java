@@ -14,10 +14,10 @@ import static com.openshift.client.utils.MockUtils.anyForm;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATONS_SPRINGEAP6_0ALIAS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2ALIAS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATONS_SPRINGEAP6_0ALIAS;
 import static com.openshift.client.utils.Samples.POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES;
 import static com.openshift.client.utils.Samples.POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT;
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
@@ -31,6 +31,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.fest.assertions.Condition;
@@ -40,6 +41,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.openshift.client.IApplication;
+import com.openshift.client.IApplicationPortForwarding;
 import com.openshift.client.IDomain;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
@@ -463,4 +465,38 @@ public class ApplicationResourceTest {
 		assertTrue(System.currentTimeMillis() < (startTime + timeout));
 	}
 
+	@Test
+	public void shouldGetForwardablePorts() throws Throwable {
+		// pre-conditions
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		final IApplication app = domain.getApplicationByName("springeap6");
+		assertThat(app).isNotNull().isInstanceOf(ApplicationResource.class);
+		String[] rhcListPortsOutput = new String[] { 
+				"haproxy -> 127.7.233.2:8080",
+				" haproxy -> 127.7.233.3:8080",
+				" java -> 127.7.233.1:3528",
+				" java -> 127.7.233.1:4447",
+				" java -> 127.7.233.1:5445",
+				" java -> 127.7.233.1:5455",
+				" java -> 127.7.233.1:8080",
+				" java -> 127.7.233.1:9990",
+				" java -> 127.7.233.1:9999",
+				" mysql -> 5190d701500446506a0000e4-foobarz.rhcloud.com:56756" };
+		ApplicationResource spy = Mockito.spy(((ApplicationResource) app));
+		Mockito.doReturn(Arrays.asList(rhcListPortsOutput)).when(spy).sshExecCmd(Mockito.anyString(), (ApplicationResource.SshStreams) Mockito.any());
+
+		// operation
+		List<IApplicationPortForwarding> forwardablePorts = spy.getForwardablePorts();
+		
+		// verification
+		assertThat(forwardablePorts).isNotEmpty().hasSize(10);
+		assertThat(forwardablePorts)
+			.onProperty("name").containsExactly("haproxy", "haproxy", "java", "java", "java", "java", "java", "java", "java", "mysql");
+		assertThat(forwardablePorts)
+			.onProperty("remoteAddress").containsExactly("127.7.233.2", "127.7.233.3", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "5190d701500446506a0000e4-foobarz.rhcloud.com");
+		assertThat(forwardablePorts)
+			.onProperty("remotePort").containsExactly(8080, 8080, 3528, 4447, 5445, 5455, 8080, 9990, 9999, 56756);
+	}
+	
 }

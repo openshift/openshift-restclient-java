@@ -12,6 +12,7 @@ package com.openshift.internal.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -20,10 +21,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
@@ -83,6 +84,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private static final String LINK_LIST_CARTRIDGES = "LIST_CARTRIDGES";
 	private static final String LINK_GET_GEAR_GROUPS = "GET_GEAR_GROUPS";
 
+	private static final Pattern REGEX_FORWARDED_PORT = Pattern.compile("([^ ]+) -> ([^:]+):(\\d+)");
+	
 	/** The (unique) uuid of this application. */
 	private final String uuid;
 
@@ -537,7 +540,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	@Override
 	public List<String> getEnvironmentProperties() throws OpenShiftSSHOperationException {
 		List<String> openshiftProps = new ArrayList<String>();
-		List<String> allEnvProps = sshExecCmd("set", EnumSshStream.INPUT);
+		List<String> allEnvProps = sshExecCmd("set", SshStreams.INPUT);
 		for (String line : allEnvProps) {
 			if (line.startsWith("OPENSHIFT_") || line.startsWith("JENKINS_")) {
 				openshiftProps.add(line);
@@ -556,18 +559,14 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 */
 	private List<IApplicationPortForwarding> loadPorts() throws OpenShiftSSHOperationException {
 		this.ports = new ArrayList<IApplicationPortForwarding>();
-		List<String> lines = sshExecCmd("rhc-list-ports", EnumSshStream.EXT_INPUT);
+		List<String> lines = sshExecCmd("rhc-list-ports", SshStreams.EXT_INPUT);
 		for (String line : lines) {
-			ApplicationPortForwarding port = extractForwardablePortFrom(this, line);
+			ApplicationPortForwarding port = extractForwardablePortFrom(line);
 			if (port != null) {
 				ports.add(port);
 			}
 		}
 		return ports;
-	}
-
-	private enum EnumSshStream {
-		EXT_INPUT, INPUT;
 	}
 
 	/**
@@ -576,7 +575,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * @return
 	 * @throws OpenShiftSSHOperationException
 	 */
-	private List<String> sshExecCmd(final String command, final EnumSshStream streamToUse)
+	protected List<String> sshExecCmd(final String command, final SshStreams sshStream)
 			throws OpenShiftSSHOperationException {
 		final Session session = getSSHSession();
 		if (session == null) {
@@ -589,24 +588,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			channel = session.openChannel("exec");
 			((ChannelExec) channel).setCommand(command);
 			channel.connect();
-			List<String> lines = new ArrayList<String>();
-			String line;
-			// Read File Line By Line, but from only one of the 2 inputstreams
-			// (the other one blocks..)
-			switch (streamToUse) {
-			case EXT_INPUT:
-				reader = new BufferedReader(new InputStreamReader(channel.getExtInputStream()));
-				break;
-			case INPUT:
-				reader = new BufferedReader(new InputStreamReader(channel.getInputStream()));
-				break;
-			}
-			// Read File Line By Line
-			while ((line = reader.readLine()) != null) {
-				lines.add(line);
-			}
-
-			return lines;
+			return sshStream.getLines(channel);
 		} catch (JSchException e) {
 			throw new OpenShiftSSHOperationException(e, "Failed to list forwardable ports for application \"{0}\"",
 					this.getName());
@@ -637,29 +619,28 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * @param portValue
 	 * @return the forwardable port.
 	 */
-	private static ApplicationPortForwarding extractForwardablePortFrom(final IApplication application,
-			final String portValue) {
-		if (portValue.contains("->")) {
-			try {
-				final StringTokenizer nameTokenizer = new StringTokenizer(portValue, "->");
-				final String name = nameTokenizer.nextToken().trim();
-				final StringTokenizer ipPortTokenizer = new StringTokenizer(nameTokenizer.nextToken(), ":");
-				final String remoteIp = ipPortTokenizer.nextToken().trim();
-				final int remotePort = Integer.parseInt(ipPortTokenizer.nextToken().trim());
-				return new ApplicationPortForwarding(application, name, remoteIp, remotePort);
-			} catch (NoSuchElementException e) {
-				LOGGER.error("Failed to parse remote port: " + portValue, e);
-				throw e;
-			}
+	private ApplicationPortForwarding extractForwardablePortFrom(final String portValue) {
+		Matcher matcher = REGEX_FORWARDED_PORT.matcher(portValue);
+		if (!matcher.find()
+				|| matcher.groupCount() != 3) {
+			return null;
 		}
-		return null;
+		try {
+			final String name = matcher.group(1);
+			final String host = matcher.group(2);
+			final int remotePort = Integer.parseInt(matcher.group(3));
+			return new ApplicationPortForwarding(this, name, host, remotePort);
+		} catch(NumberFormatException e) {
+			throw new OpenShiftSSHOperationException(e,
+					"Couild not determine forwarded port in application {0}", getName());
+		}
 	}
 
 	public List<IApplicationPortForwarding> startPortForwarding() throws OpenShiftSSHOperationException {
 		if (!hasSSHSession()) {
 			throw new OpenShiftSSHOperationException(
 					"SSH session for application \"{0}\" is closed or null. Cannot start port forwarding",
-					this.getName());
+					getName());
 		}
 		for (IApplicationPortForwarding port : ports) {
 			try {
@@ -718,6 +699,33 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return name;
 	}
 
+	protected enum SshStreams {
+		EXT_INPUT {
+			protected InputStream getInputStream(Channel channel) throws IOException {
+				return channel.getExtInputStream(); 
+			}
+
+		}, INPUT {
+			protected InputStream getInputStream(Channel channel) throws IOException {
+				return channel.getInputStream(); 
+			}
+		};
+		
+		public List<String> getLines(Channel channel) throws IOException {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(getInputStream(channel)));
+			List<String> lines = new ArrayList<String>();
+			String line = null;
+			// Read File Line By Line
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+			return lines;
+		}
+		
+		protected abstract InputStream getInputStream(Channel channel) throws IOException;
+
+	}
+	
 	private class RefreshApplicationRequest extends ServiceRequest {
 
 		protected RefreshApplicationRequest() {
@@ -867,4 +875,5 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			super(LINK_GET_GEAR_GROUPS);
 		}
 	}
+
 }
