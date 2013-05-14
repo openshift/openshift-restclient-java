@@ -33,31 +33,25 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 
 	private static final Pattern INFO_URL_PATTERN = Pattern.compile("URL: (.+)\\n*");
 
-	protected static final String JENKINS_CLIENT = "jenkins-client";
-	protected static final String MYSQL = "mysql";
-	protected static final String PHPMYADMIN = "phpmyadmin";
-	protected static final String METRICS = "metrics";
-	protected static final String POSTGRES = "postgresql";
-	protected static final String MONGO = "mongodb";
-	protected static final String ROCKMONGO = "rockmongo";
-	protected static final String CRON = "cron";
-	protected static final String GEN_MMS_AGENT = "10gen-mms-agent";
-
 	private static final String LINK_DELETE_CARTRIDGE = "DELETE";
 
 	private final String name;
+	private final String displayName;
+	private final String description;
 	private final CartridgeType type;
 	private String url;
 	private final ApplicationResource application;
 
 	protected EmbeddedCartridgeResource(String info, final CartridgeResourceDTO dto, final ApplicationResource application) {
-		this(dto.getName(), dto.getType(), info, dto.getLinks(), dto.getCreationLog(), application);
+		this(dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getType(), info, dto.getLinks(), dto.getCreationLog(), application);
 	}
 
-	protected EmbeddedCartridgeResource(final String name, final CartridgeType type, String info, final Map<String, Link> links,
+	protected EmbeddedCartridgeResource(final String name, final String displayName, final String description, final CartridgeType type, String info, final Map<String, Link> links,
 			final List<Message> creationLog, final ApplicationResource application) {
 		super(application.getService(), links, creationLog);
 		this.name = name;
+		this.displayName = displayName;
+		this.description = description;
 		this.type = type;
 		// TODO: fix this workaround once
 		// https://bugzilla.redhat.com/show_bug.cgi?id=812046 is fixed
@@ -65,24 +59,23 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		this.application = application;
 	}
 	
-	/**
-	 * @return the name
-	 */
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @return the type
-	 */
-	protected final CartridgeType getType() {
+	public String getDisplayName() {
+		return displayName;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	protected CartridgeType getType() {
 		return type;
 	}
 
-	/**
-	 * @return the application
-	 */
-	public final IApplication getApplication() {
+	public IApplication getApplication() {
 		return application;
 	}
 

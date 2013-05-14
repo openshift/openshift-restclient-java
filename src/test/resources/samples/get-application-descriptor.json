@@ -1,9 +1,0 @@
-{
-    "type":"descriptor",
-    "messages":[
-        
-    ],
-    "version":"1.0",
-    "data":"--- \nRequires: \n- jbossas-7\n- mongodb-2.0\nArchitecture: noarch\nSubscribes: \n  doc-root: \n    Required: false\n    Type: FILESYSTEM:doc-root\nDescription: \"\"\nLicense: unknown\nVersion: \"0.0\"\nVendor: unknown\nDisplay-Name: sample1-0.0-noarch\nName: sample1\nConnections: \n  mongodb-2.0-jbossas-7: \n    Components: \n    - jbossas-7\n    - mongodb-2.0\n",
-    "status":"ok"
-}

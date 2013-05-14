@@ -23,7 +23,7 @@ public class DomainResourceDTO extends BaseResourceDTO {
 	/** the domain's configured suffix (cannot be configured by user, returned by platform). */
 	private String suffix;
 	
-	protected DomainResourceDTO(final String id, final String suffix, final Map<String, Link> links, final List<Message> creationLog) {
+	DomainResourceDTO(final String id, final String suffix, final Map<String, Link> links, final List<Message> creationLog) {
 		super(links, creationLog);
 		this.id = id;
 		this.suffix = suffix;

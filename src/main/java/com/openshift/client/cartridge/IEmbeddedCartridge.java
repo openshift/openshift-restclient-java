@@ -19,8 +19,14 @@ import com.openshift.client.OpenShiftException;
  */
 public interface IEmbeddedCartridge extends IOpenShiftResource, IEmbeddableCartridge {
 
+	/**
+	 * The url at which this cartridge may be reached
+	 * 
+	 * @return the url for this cartridge
+	 * @throws OpenShiftException
+	 */
 	public String getUrl() throws OpenShiftException;
-			
+	
 	/**
 	 * Destroys this cartridge (and removes it from the list of existing cartridges)
 	 * 

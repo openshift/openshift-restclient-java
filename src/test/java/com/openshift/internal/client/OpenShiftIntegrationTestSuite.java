@@ -15,11 +15,12 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+	APIResourceIntegrationTest.class,
 	SSHKeyIntegrationTest.class,
 	UserResourceIntegrationTest.class,
 	DomainResourceIntegrationTest.class,
 	ApplicationResourceIntegrationTest.class,
-	CartridgesIntegrationTest.class,
+	StandaloneCartridgesIntegrationTest.class,
 	EmbeddedCartridgeResourceIntegrationTest.class
 })
 /**

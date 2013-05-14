@@ -24,17 +24,33 @@ package com.openshift.client.cartridge;
 public class EmbeddableCartridge implements IEmbeddableCartridge {
 
 	private final String name;
+	private String displayName;
+	private String description;
 
 	public EmbeddableCartridge(final String name) {
-		this.name = name;
+		this(name, null, null);
 	}
 
 	public EmbeddableCartridge(final String name, String version) {
-		this(name + NAME_VERSION_DELIMITER + version);
+		this(name + NAME_VERSION_DELIMITER + version, null, null);
+	}
+
+	public EmbeddableCartridge(final String name, String displayName, String description) {
+		this.name = name;
+		this.displayName = displayName;
+		this.description = description;
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	@Override

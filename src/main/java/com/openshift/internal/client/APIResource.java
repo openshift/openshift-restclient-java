@@ -167,10 +167,14 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 			// TODO replace by enum (standalone, embedded)
 			switch (cartridgeDTO.getType()) {
 			case STANDALONE:
-				this.standaloneCartridgeNames.add(new StandaloneCartridge(cartridgeDTO.getName()));
+				this.standaloneCartridgeNames.add(
+						new StandaloneCartridge(
+								cartridgeDTO.getName(), cartridgeDTO.getDisplayName(), cartridgeDTO.getDescription()));
 				break;
 			case EMBEDDED:
-				this.embeddedCartridgeNames.add(new EmbeddableCartridge(cartridgeDTO.getName()));
+				this.embeddedCartridgeNames.add(
+						new EmbeddableCartridge(
+								cartridgeDTO.getName(), cartridgeDTO.getDisplayName(), cartridgeDTO.getDescription()));
 				break;
 			default:
 			}

@@ -15,6 +15,8 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_CONSUMED_GEARS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_CREATION_TIME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DATA;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DESCRIPTION;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DISPLAY_NAME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DOMAIN;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DOMAIN_ID;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_EMBEDDED;
@@ -497,9 +499,11 @@ public class ResourceDTOFactory {
 		}
 		
 		final String name = getAsString(cartridgeNode, PROPERTY_NAME);
+		final String displayName = getAsString(cartridgeNode, PROPERTY_DISPLAY_NAME);
+		final String description = getAsString(cartridgeNode, PROPERTY_DESCRIPTION);
 		final String type = getAsString(cartridgeNode, PROPERTY_TYPE);
 		final Map<String, Link> links = createLinks(cartridgeNode.get(PROPERTY_LINKS));
-		return new CartridgeResourceDTO(name, type, links, creationLog);
+		return new CartridgeResourceDTO(name, displayName, description, type, links, creationLog);
 	}
 
 	/**

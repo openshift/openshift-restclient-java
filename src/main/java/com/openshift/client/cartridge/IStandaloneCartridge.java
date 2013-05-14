@@ -25,4 +25,18 @@ public interface IStandaloneCartridge extends ICartridge {
 	public static final String NAME_RUBY = "ruby";
 	public static final String NAME_ZEND = "zend";
 
+	/**
+	 * Returns a (human readable, nice) display name for this cartridge
+	 * 
+	 * @return the display name
+	 */
+	public String getDisplayName();
+	
+	/**
+	 * Returns a description for this cartridge
+	 * 
+	 * @return the description
+	 */
+	public String getDescription();
+
 }
