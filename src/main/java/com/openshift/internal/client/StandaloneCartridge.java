@@ -29,6 +29,10 @@ public class StandaloneCartridge implements IStandaloneCartridge {
 		this(name, null, null);
 	}
 
+	public StandaloneCartridge(String name, String version) {
+		this(name + NAME_VERSION_DELIMITER + version, null, null);
+	}
+	
 	public StandaloneCartridge(String name, String displayName, String description) {
 		this.name = name;
 		this.displayName = displayName;
