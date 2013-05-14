@@ -17,17 +17,22 @@ import com.openshift.internal.client.CartridgeType;
 
 /**
  * @author Xavier Coulon
+ * @author Andre Dietisheim
  * 
  */
 public class CartridgeResourceDTO extends BaseResourceDTO {
 
 	private final String name;
 	private final CartridgeType type;
+	private String displayName;
+	private String description;
 
-	public CartridgeResourceDTO(final String name, final String type, final Map<String, Link> links,
-			final List<Message> creationLog) {
+	CartridgeResourceDTO(final String name, final String displayName, final String description,
+			final String type, final Map<String, Link> links, final List<Message> creationLog) {
 		super(links, creationLog);
 		this.name = name;
+		this.displayName = displayName;
+		this.description = description;
 		this.type = CartridgeType.safeValueOf(type);
 	}
 
@@ -35,6 +40,14 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 		return name;
 	}
 
+	public String getDisplayName() {
+		return displayName;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	
 	public CartridgeType getType() {
 		return type;
 	}

@@ -56,7 +56,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	}
 
 	@Test
-	public void shouldReturnEmbeddedCartridges() throws SocketTimeoutException, OpenShiftException {
+	public void shouldReturnEmbeddedCartridgesForApplication() throws SocketTimeoutException, OpenShiftException {
 		// pre-conditions
 		IStandaloneCartridge jbossAs = LatestVersionOf.jbossAs().get(user);
 		assertThat(jbossAs).isNotNull();
@@ -141,6 +141,27 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 				.hasUrl();
 	}
 
+	/**
+	 * Verify in application created with different user instance.
+	 */
+	@Test
+	public void shouldHaveDescriptionAndDisplayNameInEmbeddedMySQL() throws OpenShiftException, URISyntaxException, FileNotFoundException,
+			IOException {
+		// pre-conditions
+		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(
+				LatestVersionOf.jbossAs(), domain);
+		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(LatestVersionOf.mySQL(), application);
+		// verify using user instance that's not the one used to create
+
+		// operation
+		IEmbeddedCartridge mysql = application.getEmbeddedCartridge(LatestVersionOf.mySQL().get(user));
+		
+		// verification
+		new EmbeddedCartridgeAssert(mysql)
+				.hasDescription()
+				.hasDisplayName();
+	}
+
 	@Test
 	public void shouldReturnThatHasMySQL() throws OpenShiftException, FileNotFoundException, IOException {
 		// pre-conditions
@@ -206,8 +227,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	@Test
 	public void shouldEmbedMongo() throws Exception {
 		// pre-conditions
-		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(
-				LatestVersionOf.jbossAs(), domain);
+		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(LatestVersionOf.jbossAs(), domain);
 		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(application);
 		IEmbeddableCartridge mongo = LatestVersionOf.mongoDB().get(user);
 		assertThat(new ApplicationAssert(application))
@@ -228,7 +248,6 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 			IOException {
 		// pre-conditions
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
-		jbossAs = ApplicationTestUtils.destroyAbdCreateIfScalable(jbossAs);
 		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
 
 		// operation
@@ -250,7 +269,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		// have to make sure have non-scalable app without cartridges
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
-		jbossAs = ApplicationTestUtils.destroyAbdCreateIfScalable(jbossAs);
+		jbossAs = ApplicationTestUtils.destroyAndRecreateIfScalable(jbossAs);
 		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
 
 		assertThat(new ApplicationAssert(jbossAs)
@@ -272,7 +291,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 			throws OpenShiftException, URISyntaxException, FileNotFoundException, IOException {
 		// pre-conditions
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
-		jbossAs = ApplicationTestUtils.destroyAbdCreateIfScalable(jbossAs);
+		jbossAs = ApplicationTestUtils.destroyAndRecreateIfScalable(jbossAs);
 		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
 		assertThat(new ApplicationAssert(jbossAs)
 				.hasNotEmbeddableCartridges(LatestVersionOf.mongoDB())
@@ -299,7 +318,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	public void shouldEmbedPhpMyAdmin() throws Exception {
 		// pre-conditions
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
-		jbossAs = ApplicationTestUtils.destroyAbdCreateIfScalable(jbossAs);
+		jbossAs = ApplicationTestUtils.destroyAndRecreateIfScalable(jbossAs);
 		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
 		assertThat(new ApplicationAssert(jbossAs)
 				.hasNotEmbeddableCartridges(LatestVersionOf.mySQL())
@@ -321,7 +340,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		// pre-conditions
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
-		jbossAs = ApplicationTestUtils.destroyAbdCreateIfScalable(jbossAs);
+		jbossAs = ApplicationTestUtils.destroyAndRecreateIfScalable(jbossAs);
 		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
 		assertThat(new ApplicationAssert(jbossAs)
 				.hasNotEmbeddableCartridges(LatestVersionOf.mySQL())
@@ -373,7 +392,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 			FileNotFoundException, IOException {
 		// pre-conditions
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
-		jbossAs = ApplicationTestUtils.destroyAbdCreateIfScalable(jbossAs);
+		jbossAs = ApplicationTestUtils.destroyAndRecreateIfScalable(jbossAs);
 		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
 		ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jenkins().get(user));
 

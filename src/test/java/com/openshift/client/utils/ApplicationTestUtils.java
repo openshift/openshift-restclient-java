@@ -183,7 +183,7 @@ public class ApplicationTestUtils {
 	public static IApplication ensureHasExactly1NonScalableApplication(LatestStandaloneCartridge selector,
 			IDomain domain) {
 		IApplication application = ensureHasExactly1Application(selector, domain);
-		return destroyAbdCreateIfScalable(application);
+		return destroyAndRecreateIfScalable(application);
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class ApplicationTestUtils {
 	 * @param application
 	 * @return
 	 */
-	public static IApplication destroyAbdCreateIfScalable(IApplication application) {
+	public static IApplication destroyAndRecreateIfScalable(IApplication application) {
 		if (!ApplicationScale.NO_SCALE.equals(application.getGearProfile())) {
 			IStandaloneCartridge cartridge = application.getCartridge();
 			IDomain domain = application.getDomain();

@@ -22,19 +22,31 @@ import com.openshift.client.cartridge.IStandaloneCartridge;
 public class StandaloneCartridge implements IStandaloneCartridge {
 	
 	private final String name;
+	private String displayName;
+	private String description;
 
 	public StandaloneCartridge(String name) {
-		this.name = name;
+		this(name, null, null);
 	}
 
-	public StandaloneCartridge(final String name, String version) {
-		this(name + NAME_VERSION_DELIMITER + version);
+	public StandaloneCartridge(String name, String displayName, String description) {
+		this.name = name;
+		this.displayName = displayName;
+		this.description = description;
 	}
 	
 	public String getName() {
 		return name;
 	}
 	
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

@@ -12,11 +12,9 @@ package com.openshift.internal.client;
 
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -25,17 +23,15 @@ import org.junit.Test;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftConnectionFactory;
-import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.Samples;
-import com.openshift.internal.client.response.Link;
 
 /**
  * @author Xavier Coulon
  * @author Andre Dietisheim
  */
-public class CartridgesTest {
+public class APIResourceTest {
 
 	private IHttpClient mockClient;
 
@@ -77,41 +73,4 @@ public class CartridgesTest {
 				.excludes("nodejs-0.6", "jbossas-7", "jbosseap-6.0", "jbossews-1.0", "jbossews-2.0")
 				.contains("mongodb-2.2", "mysql-5.1", "switchyard-0.6");
 	}
-
-	@Test
-	public void embeddableCartridgeShouldEqualEmbeddedCartridge() throws Throwable {
-		// pre-conditions
-		IEmbeddableCartridge jenkinsEmbeddableCartridge = new EmbeddableCartridge("jenkins");
-		ApplicationResource applicationMock = mock(ApplicationResource.class);
-
-		// operation
-		EmbeddedCartridgeResource jenkinsEmbeddedCartridgeResource =
-				new EmbeddedCartridgeResource( 
-						jenkinsEmbeddableCartridge.getName()
-						, CartridgeType.EMBEDDED
-						, "embedded-info"
-						, Collections.<String, Link> emptyMap()
-						, null
-						, applicationMock);
-
-		// verifications
-		assertTrue(jenkinsEmbeddableCartridge.equals(jenkinsEmbeddedCartridgeResource));
-	}
-
-	@Test
-	public void embeddedCartridgeShouldEqualEmbeddableCartridge() throws Throwable {
-		// pre-conditions
-		IEmbeddableCartridge jenkinsEmbeddableCartridge = new EmbeddableCartridge("jenkins");
-		ApplicationResource applicationMock = mock(ApplicationResource.class);
-	
-		// operation
-		EmbeddedCartridgeResource jenkinsEmbeddedCartridgeResource =
-				new EmbeddedCartridgeResource(
-						jenkinsEmbeddableCartridge.getName(), CartridgeType.EMBEDDED, "embedded-info", Collections.<String, Link> emptyMap(), null,
-						applicationMock);
-
-		// verifications
-		assertTrue(jenkinsEmbeddedCartridgeResource.equals(jenkinsEmbeddableCartridge));
-	}
-
 }

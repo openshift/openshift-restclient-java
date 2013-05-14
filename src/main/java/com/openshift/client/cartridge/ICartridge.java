@@ -17,5 +17,25 @@ public interface ICartridge {
 
 	public static final char NAME_VERSION_DELIMITER = '-';
 
+	/**
+	 * Returns the name of this cartridge
+	 * 
+	 * @return the name
+	 */
 	public abstract String getName();
+
+	/**
+	 * Returns a (human readable, nice) display name for this cartridge
+	 * 
+	 * @return the display name
+	 */
+	public String getDisplayName();
+	
+	/**
+	 * Returns a description for this cartridge
+	 * 
+	 * @return the description
+	 */
+	public String getDescription();
+
 }

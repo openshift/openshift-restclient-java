@@ -15,26 +15,22 @@ import static org.fest.assertions.Assertions.assertThat;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.fest.assertions.AssertExtension;
-
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 
 /**
  * @author André Dietisheim
  */
-public class EmbeddedCartridgeAssert implements AssertExtension {
-
-	private IEmbeddedCartridge embeddedCartridge;
+public class EmbeddedCartridgeAssert extends AbstractCartridgeAssert<IEmbeddedCartridge> {
 
 	public EmbeddedCartridgeAssert(IEmbeddedCartridge embeddedCartridge) {
-		assertThat(embeddedCartridge).isNotNull();
-		this.embeddedCartridge = embeddedCartridge;
+		super(embeddedCartridge);
 	}
 
 	public EmbeddedCartridgeAssert hasUrl() throws OpenShiftException, URISyntaxException {
-		assertThat(embeddedCartridge.getUrl()).isNotEmpty();
-		new URI(embeddedCartridge.getUrl());
+		IEmbeddedCartridge cartridge = getCartridge();
+		assertThat(cartridge.getUrl()).isNotEmpty();
+		new URI(cartridge.getUrl());
 		return this;
 	}
 }
