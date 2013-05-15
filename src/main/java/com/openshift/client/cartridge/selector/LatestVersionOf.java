@@ -56,8 +56,8 @@ public class LatestVersionOf {
 		return new LatestEmbeddableCartridge(IEmbeddableCartridge.NAME_HAPROXY);
 	}
 
-	public static LatestStandaloneCartridge ews(){
-		return new LatestStandaloneCartridge(IStandaloneCartridge.NAME_EWS);
+	public static LatestStandaloneCartridge jbossEws(){
+		return new LatestStandaloneCartridge(IStandaloneCartridge.NAME_JBOSSEWS);
 	}
 
 	public static LatestStandaloneCartridge jbossEap(){

@@ -16,6 +16,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	APIResourceIntegrationTest.class,
+	LatestVersionSelectorIntegrationTest.class,
 	SSHKeyIntegrationTest.class,
 	UserResourceIntegrationTest.class,
 	DomainResourceIntegrationTest.class,

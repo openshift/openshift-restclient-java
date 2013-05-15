@@ -15,7 +15,7 @@ package com.openshift.client.cartridge;
  */
 public interface IStandaloneCartridge extends ICartridge {
 
-	public static final String NAME_EWS = "ews";
+	public static final String NAME_JBOSSEWS = "jbossews";
 	public static final String NAME_JBOSSAS = "jbossas";
 	public static final String NAME_JBOSSEAP = "jbosseap";
 	public static final String NAME_JENKINS = "jenkins";
