@@ -16,6 +16,7 @@ import java.util.Map;
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IGearGroup;
 import com.openshift.client.IGearProfile;
+import com.openshift.client.Message;
 
 /**
  * The Class ApplicationDTO.
@@ -71,8 +72,8 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	public ApplicationResourceDTO(final String framework, final String domainId, final String creationTime,
 			final String name, final IGearProfile gearProfile, final ApplicationScale scale, final String uuid,
 			final String applicationUrl, final String gitUrl, final List<String> aliases,
-			final Map<String, String> embeddedCartridgeInfos, final Map<String, Link> links, List<Message> creationLog) {
-	super(links, creationLog);
+			final Map<String, String> embeddedCartridgeInfos, final Map<String, Link> links, Map<String, Message> messages) {
+	super(links, messages);
 		this.framework = framework;
 		this.domainId = domainId;
 		this.creationTime = creationTime;

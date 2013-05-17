@@ -11,8 +11,9 @@
 package com.openshift.internal.client.response;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import com.openshift.client.Message;
 
 /**
  * The Class BaseResourceDTO.
@@ -24,7 +25,7 @@ public abstract class BaseResourceDTO {
 
 	/** the indexed map of links to perform operations from this resource. */
 	private final Map<String, Link> links;
-	private final List<Message> creationLog;
+	private final Map<String, Message> messages;
 
 	protected BaseResourceDTO() {
 		this(new HashMap<String, Link>(), null);
@@ -36,9 +37,9 @@ public abstract class BaseResourceDTO {
 	 * @param links
 	 *            the links
 	 */
-	protected BaseResourceDTO(final Map<String, Link> links, List<Message> creationLog) {
+	protected BaseResourceDTO(final Map<String, Link> links, Map<String, Message> messages) {
 		this.links = links;
-		this.creationLog = creationLog;
+		this.messages = messages;
 	}
 
 	/**
@@ -62,18 +63,13 @@ public abstract class BaseResourceDTO {
 	}
 
 	/**
-	 * Returns the creationLog that were reported when this resource was created.
+	 * Returns the messages that were reported when this resource was created.
 	 * May be <code>null</code> if retrieved in a session in which we did not
 	 * create this resource.
 	 * 
-	 * @return the creationLog that were reported when this resource was created
+	 * @return the messages that were reported when this resource was created
 	 */
-	public List<Message> getCreationLog() {
-		return creationLog;
-	}
-
-	public boolean hasCreationLog() {
-		return creationLog != null
-				&& creationLog.size() > 0;
+	public Map<String, Message> getMessages() {
+		return messages;
 	}
 }

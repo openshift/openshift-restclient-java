@@ -20,13 +20,13 @@ import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IUser;
+import com.openshift.client.Message;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.DomainResourceDTO;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.LinkParameter;
-import com.openshift.internal.client.response.Message;
 import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
@@ -50,16 +50,16 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	private List<IApplication> applications = null;
 
 	protected DomainResource(final String namespace, final String suffix, final Map<String, Link> links,
-			final List<Message> creationLog,
+			final Map<String, Message> messages,
 			final APIResource api) {
-		super(api.getService(), links, creationLog);
+		super(api.getService(), links, messages);
 		this.id = namespace;
 		this.suffix = suffix;
 		this.connectionResource = api;
 	}
 
 	protected DomainResource(DomainResourceDTO domainDTO, final APIResource api) {
-		this(domainDTO.getId(), domainDTO.getSuffix(), domainDTO.getLinks(), domainDTO.getCreationLog(), api);
+		this(domainDTO.getId(), domainDTO.getSuffix(), domainDTO.getLinks(), domainDTO.getMessages(), api);
 	}
 
 	public String getId() {

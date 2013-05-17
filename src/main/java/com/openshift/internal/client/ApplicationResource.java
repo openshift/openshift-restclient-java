@@ -42,6 +42,7 @@ import com.openshift.client.IDomain;
 import com.openshift.client.IGearGroup;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
+import com.openshift.client.Message;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftSSHOperationException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
@@ -53,7 +54,6 @@ import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
 import com.openshift.internal.client.response.GearGroupResourceDTO;
 import com.openshift.internal.client.response.Link;
-import com.openshift.internal.client.response.Message;
 import com.openshift.internal.client.ssh.ApplicationPortForwarding;
 import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
@@ -146,7 +146,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * @param domain
 	 */
 	protected ApplicationResource(ApplicationResourceDTO dto, IStandaloneCartridge cartridge, DomainResource domain) {
-		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getCreationLog(), dto.getApplicationUrl(), dto
+		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getMessages(), dto.getApplicationUrl(), dto
 				.getGitUrl(), dto.getGearProfile(), dto.getGearGroups(), dto.getApplicationScale(), cartridge, dto
 				.getAliases(), dto.getEmbeddedCartridgeInfos(), dto.getLinks(), domain);
 	}
@@ -177,7 +177,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * @throws DatatypeConfigurationException
 	 */
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
-			final List<Message> creationLog, final String applicationUrl, final String gitUrl,
+			final Map<String, Message> creationLog, final String applicationUrl, final String gitUrl,
 			final IGearProfile gearProfile, final List<IGearGroup> gearGroups, final ApplicationScale scale, 
 			final IStandaloneCartridge cartridge, final List<String> aliases, final Map<String, String> embeddedCartridgesInfos,
 			final Map<String, Link> links, final DomainResource domain) {

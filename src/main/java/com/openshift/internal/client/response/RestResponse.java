@@ -10,7 +10,9 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
-import java.util.List;
+import java.util.Map;
+
+import com.openshift.client.Message;
 
 /**
  * The Class Response.
@@ -21,7 +23,7 @@ public class RestResponse {
 	final String status;
 
 	/** The messages in which the service reports errors. */
-	final List<Message> messages;
+	final Map<String, Message> messages;
 
 	/** The type of the payload (data) in this response. */
 	final EnumDataType dataType;
@@ -37,7 +39,7 @@ public class RestResponse {
 	 * @param data the data
 	 * @param dataType the data type
 	 */
-	protected RestResponse(final String status, final List<Message> messages, final Object data, final EnumDataType dataType) {
+	protected RestResponse(final String status, final Map<String, Message> messages, final Object data, final EnumDataType dataType) {
 		this.status = status;
 		this.messages = messages;
 		this.data = data;
@@ -58,7 +60,7 @@ public class RestResponse {
 	 *
 	 * @return the messages
 	 */
-	public final List<Message> getMessages() {
+	public final Map<String, Message> getMessages() {
 		return messages;
 	}
 

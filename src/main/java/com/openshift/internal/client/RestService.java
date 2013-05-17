@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.InvalidCredentialsOpenShiftException;
+import com.openshift.client.Message;
 import com.openshift.client.NotFoundOpenShiftException;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
@@ -34,7 +35,6 @@ import com.openshift.internal.client.httpclient.UnauthorizedException;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.LinkParameter;
 import com.openshift.internal.client.response.LinkParameterType;
-import com.openshift.internal.client.response.Message;
 import com.openshift.internal.client.response.ResourceDTOFactory;
 import com.openshift.internal.client.response.RestResponse;
 import com.openshift.internal.client.utils.StringUtils;
@@ -51,8 +51,6 @@ public class RestService implements IRestService {
 	
 	private static final String SERVICE_PATH = "/broker/rest/";
 	private static final char SLASH = '/';
-
-	private static final String SERVICE_VERSION = "1.2";
 
 	private String baseUrl;
 	private IHttpClient client;
@@ -129,8 +127,8 @@ public class RestService implements IRestService {
 			if (restResponse == null) {
 				return null;
 			}
-			for (Message message : restResponse.getMessages()) {
-				builder.append(message.toString()).append('\n');
+			for (Map.Entry<String, Message> entry : restResponse.getMessages().entrySet()) {
+				builder.append(entry.toString()).append('\n');
 			}
 			return builder.toString();
 		} catch (OpenShiftException e) {
@@ -164,25 +162,6 @@ public class RestService implements IRestService {
 		
 	}
 	
-	public String request(Link link, String acceptedMediaType,  ServiceParameter... serviceParameters)
-			throws MalformedURLException, HttpClientException, SocketTimeoutException, OpenShiftException, UnsupportedEncodingException {
-		String save = client.getAcceptedMediaType();
-		client.setAcceptedMediaType(acceptedMediaType);
-		
-		HttpMethod httpMethod = link.getHttpMethod();
-		URL url = getUrl(link.getHref());
-		Map<String, Object> parameters = toMap(serviceParameters);
-		
-		LOGGER.trace("Requesting {} on {}", httpMethod.name(), url);
-		LOGGER.info("Requesting {} on {}", httpMethod.name(), url);
-		
-		String response = client.get(url);
-
-		client.setAcceptedMediaType(save);
-		
-		return response;
-	}
-
 	private URL getUrl(String href) throws OpenShiftException {
 		try {
 			if (href == null) {

@@ -10,9 +10,9 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
-import java.util.List;
 import java.util.Map;
 
+import com.openshift.client.Message;
 import com.openshift.internal.client.CartridgeType;
 
 /**
@@ -28,8 +28,8 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 	private String description;
 
 	CartridgeResourceDTO(final String name, final String displayName, final String description,
-			final String type, final Map<String, Link> links, final List<Message> creationLog) {
-		super(links, creationLog);
+			final String type, final Map<String, Link> links, final Map<String, Message> messages) {
+		super(links, messages);
 		this.name = name;
 		this.displayName = displayName;
 		this.description = description;

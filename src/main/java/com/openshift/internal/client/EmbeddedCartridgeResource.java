@@ -10,18 +10,18 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.openshift.client.IApplication;
+import com.openshift.client.Message;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
 import com.openshift.internal.client.response.Link;
-import com.openshift.internal.client.response.Message;
 
 /**
  * A cartridge that may be embedded into an application. This class is no enum
@@ -43,19 +43,19 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	private final ApplicationResource application;
 
 	protected EmbeddedCartridgeResource(String info, final CartridgeResourceDTO dto, final ApplicationResource application) {
-		this(dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getType(), info, dto.getLinks(), dto.getCreationLog(), application);
+		this(dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getType(), info, dto.getLinks(), dto.getMessages(), application);
 	}
 
 	protected EmbeddedCartridgeResource(final String name, final String displayName, final String description, final CartridgeType type, String info, final Map<String, Link> links,
-			final List<Message> creationLog, final ApplicationResource application) {
-		super(application.getService(), links, creationLog);
+			final Map<String, Message> messages, final ApplicationResource application) {
+		super(application.getService(), links, messages);
 		this.name = name;
 		this.displayName = displayName;
 		this.description = description;
 		this.type = type;
 		// TODO: fix this workaround once
 		// https://bugzilla.redhat.com/show_bug.cgi?id=812046 is fixed
-		this.url = extractUrl(info, creationLog);
+		this.url = extractUrl(info, messages);
 		this.application = application;
 	}
 	
@@ -79,7 +79,7 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		return application;
 	}
 
-	private String extractUrl(String info, List<Message> messages) {
+	private String extractUrl(String info, Map<String, Message> messages) {
 		if (info != null) {
 			return extractUrl(info);
 		} else {
@@ -100,11 +100,11 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		return matcher.group(1);
 	}
 	
-	private String extractUrl(List<Message> messages) {
+	private String extractUrl(Map<String, Message> messages) {
 		if (messages == null) {
 			return null;
 		}
-		for (Message message : messages) {
+		for (Message message : messages.values()) {
 			String url = extractUrl(message.getText());
 			if (url != null) {
 				return url;
