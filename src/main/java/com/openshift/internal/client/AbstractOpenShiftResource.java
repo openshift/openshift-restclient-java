@@ -10,14 +10,13 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import java.util.List;
 import java.util.Map;
 
 import com.openshift.client.IOpenShiftResource;
+import com.openshift.client.Message;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
 import com.openshift.internal.client.response.Link;
-import com.openshift.internal.client.response.Message;
 import com.openshift.internal.client.response.RestResponse;
 
 /**
@@ -34,7 +33,7 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 	/** The service. */
 	private final IRestService service;
 
-	private List<Message> creationLog;
+	private Map<String, Message> messagesByField;
 
 	/**
 	 * Instantiates a new abstract open shift resource.
@@ -54,10 +53,10 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 	 * @param links
 	 *            the links
 	 */
-	public AbstractOpenShiftResource(final IRestService service, final Map<String, Link> links, final List<Message> creationLog) {
+	public AbstractOpenShiftResource(final IRestService service, final Map<String, Link> links, final Map<String, Message> messages) {
 		this.service = service;
 		this.links = links;
-		this.creationLog = creationLog;
+		this.messagesByField = messages;
 	}
 
 	/**
@@ -132,20 +131,30 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 		}
 	}
 
+	public boolean hasCreationLog() {
+		return messagesByField != null
+				&& messagesByField.size() > 0;
+	}
+
 	public String getCreationLog() {
 		if (!hasCreationLog()) {
 			return null;
 		}
 		StringBuilder builder = new StringBuilder();
-		for (Message message : creationLog) {
+		for (Message message : messagesByField.values()) {
 			builder.append(message.getText());
 		}
 		return builder.toString();
 	}
 
-	public boolean hasCreationLog() {
-		return creationLog != null
-				&& creationLog.size() > 0;
+	public Map<String, Message> getMessages() {
+		return messagesByField;
 	}
 	
+	public Message getMessage(String field) {
+		if (messagesByField == null) {
+			return null;
+		}
+		return messagesByField.get(field);
+	}
 }

@@ -14,8 +14,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.fest.assertions.AssertExtension;
 
-import com.openshift.internal.client.response.Message;
-import com.openshift.internal.client.response.Message.Severity;
+import com.openshift.client.Message;
+import com.openshift.client.Message.Severity;
 
 /**
  * @author Andre Dietisheim
@@ -43,8 +43,8 @@ public class MessageAssert implements AssertExtension {
 		return this;
 	}
 
-	public MessageAssert hasParameter(String parameter) {
-		assertEquals(parameter, message.getParameter());
+	public MessageAssert hasField(String parameter) {
+		assertEquals(parameter, message.getField());
 		return this;
 	}
 }

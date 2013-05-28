@@ -35,13 +35,13 @@ import com.openshift.client.IDomain;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
+import com.openshift.client.Message;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.response.Link;
-import com.openshift.internal.client.response.Message;
 
 /**
  * @author Andre Dietisheim
@@ -154,7 +154,7 @@ public class EmbeddedCartridgeTest {
 						CartridgeType.EMBEDDED,
 						"embedded-info",
 						Collections.<String, Link> emptyMap(),
-						Collections.<Message> emptyList(),
+						Collections.<String, Message> emptyMap(),
 						applicationResourceMock);
 	}
 }

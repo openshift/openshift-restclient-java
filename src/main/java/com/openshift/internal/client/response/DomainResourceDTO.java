@@ -10,8 +10,9 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
-import java.util.List;
 import java.util.Map;
+
+import com.openshift.client.Message;
 
 /**
  * @author Xavier Coulon
@@ -23,8 +24,8 @@ public class DomainResourceDTO extends BaseResourceDTO {
 	/** the domain's configured suffix (cannot be configured by user, returned by platform). */
 	private String suffix;
 	
-	DomainResourceDTO(final String id, final String suffix, final Map<String, Link> links, final List<Message> creationLog) {
-		super(links, creationLog);
+	DomainResourceDTO(final String id, final String suffix, final Map<String, Link> links, final Map<String, Message> messages) {
+		super(links, messages);
 		this.id = id;
 		this.suffix = suffix;
 	}

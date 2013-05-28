@@ -58,6 +58,7 @@ import com.openshift.client.ApplicationScale;
 import com.openshift.client.GearState;
 import com.openshift.client.IGear;
 import com.openshift.client.IGearProfile;
+import com.openshift.client.Message;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
 import com.openshift.internal.client.Gear;
@@ -92,7 +93,7 @@ public class ResourceDTOFactory {
 		final ModelNode rootNode = getModelNode(content);
 		final String type = rootNode.get(IOpenShiftJsonConstants.PROPERTY_TYPE).asString();
 		final String status = rootNode.get(IOpenShiftJsonConstants.PROPERTY_STATUS).asString();
-		final List<Message> messages = createMessages(rootNode.get(IOpenShiftJsonConstants.PROPERTY_MESSAGES));
+		final Map<String, Message> messages = createMessages(rootNode.get(IOpenShiftJsonConstants.PROPERTY_MESSAGES));
 
 		final EnumDataType dataType = EnumDataType.safeValueOf(type);
 		// the response is after an error, only the messages are relevant
@@ -138,11 +139,12 @@ public class ResourceDTOFactory {
 	 *            the messages node
 	 * @return the list< string>
 	 */
-	private static List<Message> createMessages(ModelNode messagesNode) {
-		List<Message> messages = new ArrayList<Message>();
+	private static Map<String, Message> createMessages(ModelNode messagesNode) {
+		Map<String, Message> messages = new HashMap<String, Message>();
 		if (messagesNode.getType() == ModelType.LIST) {
 			for (ModelNode messageNode : messagesNode.asList()) {
-				messages.add(createMessage(messageNode));
+				Message message = createMessage(messageNode);
+				messages.put(message.getField(), message);
 			}
 		}
 		return messages;
@@ -243,16 +245,16 @@ public class ResourceDTOFactory {
 	 * @return the key resource dto
 	 * @throws OpenShiftException
 	 */
-	private static KeyResourceDTO createKey(ModelNode keyNode, List<Message> creationLog) throws OpenShiftException {
+	private static KeyResourceDTO createKey(ModelNode keyNode, Map<String, Message> messages) throws OpenShiftException {
 		if (keyNode.has(PROPERTY_DATA)) {
 			// loop inside 'data' node
-			return createKey(keyNode.get(PROPERTY_DATA), creationLog);
+			return createKey(keyNode.get(PROPERTY_DATA), messages);
 		}
 		final String name = getAsString(keyNode, IOpenShiftJsonConstants.PROPERTY_NAME);
 		final String type = getAsString(keyNode, IOpenShiftJsonConstants.PROPERTY_TYPE);
 		final String content = getAsString(keyNode, IOpenShiftJsonConstants.PROPERTY_CONTENT);
 		final Map<String, Link> links = createLinks(keyNode.get(PROPERTY_LINKS));
-		return new KeyResourceDTO(name, type, content, links, creationLog);
+		return new KeyResourceDTO(name, type, content, links, messages);
 	}
 
 	/**
@@ -332,16 +334,16 @@ public class ResourceDTOFactory {
 	 * @return the domain dto
 	 * @throws OpenShiftException
 	 */
-	private static DomainResourceDTO createDomain(final ModelNode domainNode, List<Message> creationLog)
+	private static DomainResourceDTO createDomain(final ModelNode domainNode, Map<String, Message> messages)
 			throws OpenShiftException {
 		if (domainNode.has(PROPERTY_DATA)) {
 			// recurse into "data" node
-			return createDomain(domainNode.get(PROPERTY_DATA), creationLog);
+			return createDomain(domainNode.get(PROPERTY_DATA), messages);
 		}
 		final String namespace = getAsString(domainNode, PROPERTY_ID);
 		final String suffix = getAsString(domainNode, PROPERTY_SUFFIX);
 		final Map<String, Link> links = createLinks(domainNode.get(PROPERTY_LINKS));
-		return new DomainResourceDTO(namespace, suffix, links, creationLog);
+		return new DomainResourceDTO(namespace, suffix, links, messages);
 	}
 
 	/**
@@ -371,11 +373,11 @@ public class ResourceDTOFactory {
 	 * @return the application dto
 	 * @throws OpenShiftException
 	 */
-	private static ApplicationResourceDTO createApplication(ModelNode appNode, List<Message> creationLog)
+	private static ApplicationResourceDTO createApplication(ModelNode appNode, Map<String, Message> messages)
 			throws OpenShiftException {
 		if (appNode.has(PROPERTY_DATA)) {
 			// recurse into 'data' node
-			return createApplication(appNode.get(PROPERTY_DATA), creationLog);
+			return createApplication(appNode.get(PROPERTY_DATA), messages);
 		}
 		final String framework = getAsString(appNode, PROPERTY_FRAMEWORK);
 		final String creationTime = getAsString(appNode, PROPERTY_CREATION_TIME);
@@ -403,7 +405,7 @@ public class ResourceDTOFactory {
 				aliases, 
 				embeddedCartridgesInfos, 
 				links, 
-				creationLog);
+				messages);
 	}
 
 	private static GearProfile createGearProfile(ModelNode appNode) {
@@ -491,11 +493,11 @@ public class ResourceDTOFactory {
 	 * @return the cartridge resource dto
 	 * @throws OpenShiftException
 	 */
-	private static CartridgeResourceDTO createCartridge(ModelNode cartridgeNode, List<Message> creationLog)
+	private static CartridgeResourceDTO createCartridge(ModelNode cartridgeNode, Map<String, Message> messages)
 			throws OpenShiftException {
 		if (cartridgeNode.has(PROPERTY_DATA)) {
 			// recurse into 'data' node
-			return createCartridge(cartridgeNode.get(PROPERTY_DATA), creationLog);
+			return createCartridge(cartridgeNode.get(PROPERTY_DATA), messages);
 		}
 		
 		final String name = getAsString(cartridgeNode, PROPERTY_NAME);
@@ -503,7 +505,7 @@ public class ResourceDTOFactory {
 		final String description = getAsString(cartridgeNode, PROPERTY_DESCRIPTION);
 		final String type = getAsString(cartridgeNode, PROPERTY_TYPE);
 		final Map<String, Link> links = createLinks(cartridgeNode.get(PROPERTY_LINKS));
-		return new CartridgeResourceDTO(name, displayName, description, type, links, creationLog);
+		return new CartridgeResourceDTO(name, displayName, description, type, links, messages);
 	}
 
 	/**

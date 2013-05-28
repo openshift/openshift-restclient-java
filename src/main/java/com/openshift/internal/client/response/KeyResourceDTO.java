@@ -10,8 +10,9 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
-import java.util.List;
 import java.util.Map;
+
+import com.openshift.client.Message;
 
 /**
  * The Class KeyResourceDTO.
@@ -39,8 +40,8 @@ public class KeyResourceDTO extends BaseResourceDTO {
 	 * @param links
 	 *            the links
 	 */
-	public KeyResourceDTO(final String name, final String type, final String content, final Map<String, Link> links, final List<Message> creationLog) {
-		super(links, creationLog);
+	public KeyResourceDTO(final String name, final String type, final String content, final Map<String, Link> links, final Map<String, Message> messages) {
+		super(links, messages);
 		this.name = name;
 		this.type = type;
 		this.content = content;

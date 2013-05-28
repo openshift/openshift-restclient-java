@@ -11,12 +11,9 @@
 package com.openshift.internal.client.response;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.openshift.client.ApplicationScale;
-import com.openshift.client.IGearGroup;
-import com.openshift.client.IGearProfile;
+import com.openshift.client.Message;
 
 /**
  * The Class ApplicationDTO.
@@ -33,8 +30,8 @@ public class GearDTO extends BaseResourceDTO {
 	String uuid;
 	String state;
 	
-	public GearDTO(String uuid, String state, List<Message> creationLog) {
-		super(new HashMap<String, Link>(), creationLog);
+	public GearDTO(String uuid, String state, Map<String, Message> messages) {
+		super(new HashMap<String, Link>(), messages);
 		this.uuid = uuid;
 		this.state = state;
 	}

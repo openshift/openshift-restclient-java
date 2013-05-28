@@ -27,6 +27,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -34,8 +35,10 @@ import org.junit.Test;
 
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
+import com.openshift.client.Message;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.Message.Severity;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.client.utils.Samples;
@@ -44,8 +47,6 @@ import com.openshift.internal.client.httpclient.NotFoundException;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.LinkParameter;
 import com.openshift.internal.client.response.LinkParameterType;
-import com.openshift.internal.client.response.Message;
-import com.openshift.internal.client.response.Message.Severity;
 import com.openshift.internal.client.response.RestResponse;
 
 /**
@@ -53,7 +54,7 @@ import com.openshift.internal.client.response.RestResponse;
  */
 public class RestServiceTest {
 
-	protected static final Object KEY_PROTOCOL_VERSION = "protocol_version";
+	protected static final String KEY_PROTOCOL_VERSION = "protocol_version";
 	private IRestService service;
 	private IHttpClient clientMock;
 
@@ -61,6 +62,7 @@ public class RestServiceTest {
 	public void setUp() throws FileNotFoundException, IOException, OpenShiftException, HttpClientException {
 		this.clientMock = mock(IHttpClient.class);
 		String jsonResponse = "{}";
+		when(clientMock.getAcceptVersion()).thenReturn(IRestService.SERVICE_VERSION);
 		when(clientMock.get(any(URL.class))).thenReturn(jsonResponse);
 		when(clientMock.post(anyForm(), any(URL.class))).thenReturn(jsonResponse);
 		when(clientMock.put(anyForm(), any(URL.class))).thenReturn(jsonResponse);
@@ -183,13 +185,14 @@ public class RestServiceTest {
 			RestResponse restResponse = e.getRestResponse();
 			assertThat(restResponse).isNotNull();
 			assertThat(restResponse.getMessages()).hasSize(1);
-			Message message = restResponse.getMessages().get(0);
+			Map<String, Message> messages = restResponse.getMessages();
+			Message message = messages.values().iterator().next();
 			assertThat(message).isNotNull();
 			assertThat(new MessageAssert(message))
 					.hasText("Namespace 'foobar' is already in use. Please choose another.")
 					.hasSeverity(Severity.ERROR)
 					.hasExitCode(103)
-					.hasParameter("id");
+					.hasField("id");
 		}
 	}
 
