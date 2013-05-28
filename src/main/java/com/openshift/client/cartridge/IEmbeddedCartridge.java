@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.client.cartridge;
 
+import com.openshift.client.IApplication;
 import com.openshift.client.IOpenShiftResource;
 import com.openshift.client.OpenShiftException;
 
@@ -34,5 +35,11 @@ public interface IEmbeddedCartridge extends IOpenShiftResource, IEmbeddableCartr
 	 */
 	public void destroy() throws OpenShiftException;
 
-
+	
+	/**
+	 * Returns the application this cartridge is embedded into.
+	 * 
+	 * @return application this is embedded into
+	 */
+	public IApplication getApplication();
 }
