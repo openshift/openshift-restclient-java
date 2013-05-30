@@ -22,9 +22,7 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_APP_INFO = "app_info";
 	public static final String PROPERTY_APP_NAME = "app_name";
 	public static final String PROPERTY_CREATION_TIME = "creation_time";
-	public static final String PROPERTY_CART_TYPE = "cart_type";
 	public static final String PROPERTY_CARTRIDGE = "cartridge";
-	public static final String PROPERTY_CARTS = "carts";
 	public static final String PROPERTY_CONSUMED_GEARS = "consumed_gears";
 	public static final String PROPERTY_CONTENT = "content";
 	public static final String PROPERTY_DATA = "data";
@@ -49,6 +47,7 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_HREF = "href";
 	public static final String PROPERTY_ID = "id";
 	public static final String PROPERTY_INFO = "info";
+	public static final String PROPERTY_INITIAL_GIT_URL = "initial_git_url";
 	public static final String PROPERTY_INTERNAL_PORT = "internal_port";
 	public static final String PROPERTY_KEY_TYPE = "key_type";
 	public static final String PROPERTY_KEYS = "keys";

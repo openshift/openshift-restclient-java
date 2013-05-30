@@ -113,6 +113,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	/** The url at which the git repo of this application may be reached. */
 	private final String gitUrl;
 
+	/** the git url for the initial code and configuration for the application */
+	private final String initialGitUrl;
+	
 	/** The aliases of this application. */
 	private final List<String> aliases;
 
@@ -146,9 +149,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * @param domain
 	 */
 	protected ApplicationResource(ApplicationResourceDTO dto, IStandaloneCartridge cartridge, DomainResource domain) {
-		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getMessages(), dto.getApplicationUrl(), dto
-				.getGitUrl(), dto.getGearProfile(), dto.getGearGroups(), dto.getApplicationScale(), cartridge, dto
-				.getAliases(), dto.getEmbeddedCartridgeInfos(), dto.getLinks(), domain);
+		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getMessages(), dto.getApplicationUrl(),
+				dto.getGitUrl(), dto.getInitialGitUrl(), dto.getGearProfile(), dto.getGearGroups(),
+				dto.getApplicationScale(), cartridge, dto.getAliases(), dto.getEmbeddedCartridgeInfos(),
+				dto.getLinks(), domain);
 	}
 
 	/**
@@ -178,9 +182,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 */
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
 			final Map<String, Message> creationLog, final String applicationUrl, final String gitUrl,
-			final IGearProfile gearProfile, final List<IGearGroup> gearGroups, final ApplicationScale scale, 
-			final IStandaloneCartridge cartridge, final List<String> aliases, final Map<String, String> embeddedCartridgesInfos,
-			final Map<String, Link> links, final DomainResource domain) {
+			final String initialGitUrl, final IGearProfile gearProfile, final List<IGearGroup> gearGroups,
+			final ApplicationScale scale, final IStandaloneCartridge cartridge, final List<String> aliases,
+			final Map<String, String> embeddedCartridgesInfos, final Map<String, Link> links,
+			final DomainResource domain) {
 		super(domain.getService(), links, creationLog);
 		this.name = name;
 		this.uuid = uuid;
@@ -191,6 +196,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.cartridge = cartridge;
 		this.applicationUrl = applicationUrl;
 		this.gitUrl = gitUrl;
+		this.initialGitUrl = initialGitUrl;
 		this.domain = domain;
 		this.aliases = aliases;
 		// TODO: fix this workaround once
@@ -299,7 +305,11 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	public String getGitUrl() {
-		return this.gitUrl;
+		return gitUrl;
+	}
+
+	public String getInitialGitUrl() {
+		return initialGitUrl;
 	}
 
 	public String getApplicationUrl() {

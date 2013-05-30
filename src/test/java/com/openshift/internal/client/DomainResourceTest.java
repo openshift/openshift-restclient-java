@@ -10,14 +10,13 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.MockUtils.anyForm;
 import static com.openshift.client.utils.Samples.DELETE_DOMAINS_FOOBARZ;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_EMPTY;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_EMPTY;
 import static com.openshift.client.utils.Samples.POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS;
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
@@ -32,9 +31,11 @@ import static org.mockito.Mockito.when;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -42,6 +43,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
 
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
@@ -54,11 +56,11 @@ import com.openshift.client.InvalidCredentialsOpenShiftException;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.UnauthorizedException;
+import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
 /**
  * @author Xavier Coulon
@@ -66,6 +68,7 @@ import com.openshift.internal.client.httpclient.UnauthorizedException;
  */
 public class DomainResourceTest {
 
+	private static final StandaloneCartridge CARTRIDGE_JBOSSAS_7 = new StandaloneCartridge("jbossas-7");
 	private IUser user;
 	private IDomain domain;
 	private IHttpClient mockClient;
@@ -148,7 +151,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldDestroyDomain() throws Throwable {
 		// pre-conditions
-		when(mockClient.delete(anyForm(), urlEndsWith("/domains/foobar")))
+		when(mockClient.delete(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobar")))
 			.thenReturn(DELETE_DOMAINS_FOOBARZ.getContentAsString());
 		// operation
 		final IDomain domain = user.getDomain("foobarz");
@@ -161,7 +164,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldNotDestroyDomainWithApp() throws Throwable {
 		// pre-conditions
-		when(mockClient.delete(anyForm(), urlEndsWith("/domains/foobarz")))
+		when(mockClient.delete(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz")))
 			.thenThrow(new BadRequestException(
 					"Domain contains applications. Delete applications first or set force to true.", null));
 		// operation
@@ -300,11 +303,10 @@ public class DomainResourceTest {
 		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
 			.thenReturn(
 				GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
-		when(mockClient.post(anyForm(), urlEndsWith("/domains/foobarz/applications"))).thenReturn(
+		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications"))).thenReturn(
 				POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
 		// operation
-		final IStandaloneCartridge cartridge = new StandaloneCartridge("jbossas-7");
-		final IApplication app = domain.createApplication("sample", cartridge, ApplicationScale.NO_SCALE, null);
+		final IApplication app = domain.createApplication("sample", CARTRIDGE_JBOSSAS_7, ApplicationScale.NO_SCALE, null);
 		// verifications
 		assertThat(app.getName()).isEqualTo("scalable");
 		assertThat(app.getGearProfile().getName()).isEqualTo("small");
@@ -313,20 +315,122 @@ public class DomainResourceTest {
 		assertThat(app.getCreationTime()).isNotNull();
 		assertThat(app.getGitUrl()).isNotNull().startsWith("ssh://")
 				.endsWith("@scalable-foobarz.rhcloud.com/~/git/scalable.git/");
-		assertThat(app.getCartridge()).isEqualTo(cartridge);
+		assertThat(app.getInitialGitUrl()).isNotNull().isEqualTo("git://github.com/openshift/openshift-java-client.git");
+		assertThat(app.getCartridge()).isEqualTo(CARTRIDGE_JBOSSAS_7);
 		assertThat(app.getUUID()).isNotNull();
 		assertThat(app.getDomain()).isEqualTo(domain);
 		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(18);
 		assertThat(domain.getApplications()).hasSize(1).contains(app);
 	}
 
+	@Test
+	public void shouldRequestCreateApplicationWithNameAndCartridgeOnly() throws Throwable {
+		// pre-conditions
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
+		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		// operation
+		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7);
+		
+		// verification
+		assertPostParameters(mockClient, 
+				new Pair(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()));
+	}
+
+	@Test
+	public void shouldRequestCreateApplicationWithNameCartridgeAndScaleOnly() throws Throwable {
+		// pre-conditions
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
+		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		// operation
+		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7, ApplicationScale.SCALE);
+		
+		// verification
+		assertPostParameters(mockClient, 
+				new Pair(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()));
+	}
+
+	@Test
+	public void shouldRequestCreateApplicationWithNameCartridgeScaleGearProfileOnly() throws Throwable {
+		// pre-conditions
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
+		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		// operation
+		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7, ApplicationScale.SCALE, GearProfile.JUMBO);
+		
+		// verification
+		assertPostParameters(mockClient, 
+				new Pair(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.JUMBO.getName())
+		);
+	}
+
+	@Test
+	public void shouldRequestCreateApplicationWithNameCartridgeScaleGearProfileAndGitUrl() throws Throwable {
+		// pre-conditions
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
+		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		// operation
+		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7, ApplicationScale.SCALE, GearProfile.JUMBO, "git://github.com/adietish/openshift-java-client.git");
+		
+		// verification
+		assertPostParameters(mockClient, 
+				new Pair(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.JUMBO.getName()),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, "git://github.com/adietish/openshift-java-client.git")
+		);
+	}
+
+	private static class Pair {
+		private String key;
+		private String value;
+
+		private Pair(String key, String value) {
+			this.key = key;
+			this.value = value;
+		}
+		
+		public String getKey() {
+			return key;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void assertPostParameters(IHttpClient client, Pair... pairs) throws SocketTimeoutException, HttpClientException, UnsupportedEncodingException {
+		ArgumentCaptor<Map> captor = ArgumentCaptor.forClass(Map.class);
+		verify(mockClient).post(captor.capture(), any(URL.class));
+		Map postedParameters = captor.getValue();
+		assertThat(postedParameters).hasSize(pairs.length);
+		for(Pair pair: pairs) {
+			assertThat(postedParameters.get(pair.getKey())).isEqualTo(pair.getValue());
+		}
+	}
+	
 	@Test(expected = OpenShiftException.class)
 	public void shouldNotCreateApplicationWithMissingName() throws Throwable {
 		// pre-conditions
 		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
 				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
 		// operation
-		domain.createApplication(null, new StandaloneCartridge("jbossas-7"), null, null);
+		domain.createApplication(null, CARTRIDGE_JBOSSAS_7, null, null);
 		// verifications
 		// expected exception
 	}
@@ -349,7 +453,7 @@ public class DomainResourceTest {
 				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
 		// operation
 		try {
-			domain.createApplication("springeap6", new StandaloneCartridge("jbossas-7"), null, null);
+			domain.createApplication("springeap6", CARTRIDGE_JBOSSAS_7, null, null);
 			// expect an exception
 			fail("Expected exception here...");
 		} catch (OpenShiftException e) {
