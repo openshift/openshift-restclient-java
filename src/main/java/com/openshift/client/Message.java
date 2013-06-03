@@ -20,6 +20,7 @@ import com.openshift.internal.client.utils.StringUtils;
  */
 public class Message {
 
+	public static final String FIELD_DEFAULT = null;
 	public static final String FIELD_RESULT = "result";
 	public static final String FIELD_APPINFO = "appinfo";
 	

@@ -14,12 +14,15 @@ import static com.openshift.client.utils.Samples.DELETE_DOMAINS_FOOBARZ_KO_EXIST
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,10 +34,14 @@ import com.openshift.client.IDomain;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
+import com.openshift.client.Message;
+import com.openshift.client.Message.Severity;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.Samples;
+import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
 /**
@@ -60,8 +67,9 @@ public class OpenShiftExceptionTest {
 				.thenReturn(Samples.GET_USER_JSON.getContentAsString());
 		when(mockClient.get(urlEndsWith("/domains")))
 				.thenReturn(GET_DOMAINS.getContentAsString());
-		final IOpenShiftConnection connection = new OpenShiftConnectionFactory().getConnection(new RestService(
-				"http://mock", "clientId", mockClient), "foo@redhat.com", "bar");
+		final IOpenShiftConnection connection = 
+				new OpenShiftConnectionFactory().getConnection(
+						new RestService("http://mock", "clientId", mockClient), "foo@redhat.com", "bar");
 		this.user = connection.getUser();
 	}
 
@@ -69,6 +77,7 @@ public class OpenShiftExceptionTest {
 	public void shouldReportServerInTimeoutExceptionMessage() throws HttpClientException, FileNotFoundException,
 			OpenShiftException, IOException {
 		try {
+			IHttpClient mockClient = mock(IHttpClient.class);
 			// pre-conditions
 			when(mockClient.get(urlEndsWith("/broker/rest/api")))
 					.thenThrow(
@@ -77,6 +86,8 @@ public class OpenShiftExceptionTest {
 			// operation
 			new OpenShiftConnectionFactory().getConnection(
 					new RestService("http://mock", "clientId", mockClient), "foo@redhat.com", "bar");
+			// verification
+			fail("exception expected");
 		} catch (OpenShiftEndpointException e) {
 			// verification
 			assertThat(e.getMessage()).contains("http://mock");
@@ -84,20 +95,30 @@ public class OpenShiftExceptionTest {
 	}
 
 	@Test
-	public void shouldReportRestResponseOnError() throws Throwable {
+	public void shouldThrowWithTextAndExistCode() throws Throwable {
 			// pre-conditions
 		try {
-		when(mockClient.delete(urlEndsWith("/domains/foobar"))).thenReturn(DELETE_DOMAINS_FOOBARZ_KO_EXISTINGAPPS.getContentAsString());
+			when(mockClient.delete(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz")))
+					.thenThrow(
+							new BadRequestException(
+									DELETE_DOMAINS_FOOBARZ_KO_EXISTINGAPPS.getContentAsString(),
+									new IOException(
+											"IOException message: Server returned HTTP response code: 400 for URL: https://openshift.redhat.com/broker/rest/domains/foobarz")));
 			IDomain domain = user.getDefaultDomain();
 			// operation
 			domain.destroy();
 			// verification
+			fail("exception expected");
 		} catch (OpenShiftEndpointException e) {
 			// verification
 			assertThat(e.getRestResponse()).isNotNull();
-			assertThat(e.getRestResponse().getMessages()).isNotEmpty();
-			assertThat(e.getRestResponse().getMessages().get(0)).isNotNull();
-			assertThat(e.getRestResponse().getMessages().get(0).getExitCode()).isEqualTo(128);
+			Map<String, Message> messageByField = e.getRestResponse().getMessages();
+			assertThat(messageByField).isNotEmpty();
+			Message firstMessage = messageByField.values().iterator().next(); 
+			new MessageAssert(firstMessage)
+					.hasExitCode(128)
+					.hasSeverity(Severity.ERROR)
+					.hasText("Domain contains applications. Delete applications first or set force to true.");
 		}
 	}
 

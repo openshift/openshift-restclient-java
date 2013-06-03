@@ -27,6 +27,8 @@ import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IUser;
+import com.openshift.client.Message;
+import com.openshift.client.Message.Severity;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IStandaloneCartridge;
@@ -34,6 +36,7 @@ import com.openshift.client.cartridge.selector.LatestVersionOf;
 import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
+import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.StringUtils;
 import com.openshift.client.utils.TestConnectionFactory;
 
@@ -102,7 +105,6 @@ public class DomainResourceIntegrationTest {
 		}
 	}
 
-	@Ignore
 	@Test
 	public void shouldReportErrorCode128() throws OpenShiftException {
 		IDomain domain = null;
@@ -117,10 +119,11 @@ public class DomainResourceIntegrationTest {
 			fail("OpenShiftEndpointException did not occurr");
 		} catch (OpenShiftEndpointException e) {
 			// verification
-			assertThat(e.getRestResponse()).isNotNull();
-			assertThat(e.getRestResponse().getMessages()).isNotEmpty();
-			assertThat(e.getRestResponse().getMessages().get(0)).isNotNull();
-			assertThat(e.getRestResponse().getMessages().get(0).getExitCode()).isEqualTo(128);
+			assertThat(e.getRestResponseMessages().size()).isEqualTo(1);
+			new MessageAssert(e.getRestResponseMessage(Message.FIELD_DEFAULT))
+					.hasExitCode(128)
+					.hasSeverity(Severity.ERROR)
+					.hasText();
 		}
 	}
 
