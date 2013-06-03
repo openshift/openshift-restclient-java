@@ -17,6 +17,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -31,6 +34,7 @@ import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.selector.LatestEmbeddableCartridge;
+import com.openshift.internal.client.utils.StreamUtils;
 
 /**
  * @author André Dietisheim
@@ -39,6 +43,8 @@ public class ApplicationAssert implements AssertExtension {
 
 	public static final Pattern APPLICATION_URL_PATTERN = Pattern.compile("https*://(.+)-([^\\.]+)\\.(.+)/(.*)");
 	public static final Pattern GIT_URL_PATTERN = Pattern.compile("ssh://(.+)@(.+)-([^\\.]+)\\.(.+)/~/git/(.+).git/");
+	
+	private static final long APPLICATION_WAIT_TIMEOUT = 2 * 60 * 1000;
 	
 	private IApplication application;
 
@@ -91,6 +97,21 @@ public class ApplicationAssert implements AssertExtension {
 		assertEquals(application.getDomain().getSuffix(), matcher.group(4));
 		assertEquals(application.getName(), matcher.group(5));
 
+		return this;
+	}
+
+	public ApplicationAssert hasInitialGitUrl() {
+		assertThat(application.getInitialGitUrl()).isNotEmpty();
+		return this;
+	}
+
+	public ApplicationAssert hasNoInitialGitUrl() {
+		assertThat(application.getInitialGitUrl()).isNull();
+		return this;
+	}
+
+	public ApplicationAssert hasInitialGitUrl(String initialGitUrl) {
+		assertThat(application.getInitialGitUrl()).isEqualTo(initialGitUrl);
 		return this;
 	}
 
@@ -210,5 +231,13 @@ public class ApplicationAssert implements AssertExtension {
 		for (IEmbeddableCartridge cartridge : shouldBeContained) {
 			assertTrue(cartridgesToCheck.contains(cartridge));
 		}
+	}
+	
+	public ApplicationAssert hasContent(String page, String contains) throws IOException {
+		URL appUrl = new URL(application.getApplicationUrl() + page);
+		assertThat(application.waitForAccessible(APPLICATION_WAIT_TIMEOUT)).isTrue();
+		String content = StreamUtils.readToString(appUrl.openConnection().getInputStream());
+		assertThat(content).contains(contains);
+		return this;
 	}
 }

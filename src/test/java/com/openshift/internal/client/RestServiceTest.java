@@ -10,10 +10,10 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.MockUtils.anyForm;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,9 +36,9 @@ import org.junit.Test;
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.Message;
+import com.openshift.client.Message.Severity;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.Message.Severity;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.client.utils.Samples;
@@ -64,9 +64,9 @@ public class RestServiceTest {
 		String jsonResponse = "{}";
 		when(clientMock.getAcceptVersion()).thenReturn(IRestService.SERVICE_VERSION);
 		when(clientMock.get(any(URL.class))).thenReturn(jsonResponse);
-		when(clientMock.post(anyForm(), any(URL.class))).thenReturn(jsonResponse);
-		when(clientMock.put(anyForm(), any(URL.class))).thenReturn(jsonResponse);
-		when(clientMock.delete(anyForm(), any(URL.class))).thenReturn(jsonResponse);
+		when(clientMock.post(anyMapOf(String.class, Object.class), any(URL.class))).thenReturn(jsonResponse);
+		when(clientMock.put(anyMapOf(String.class, Object.class), any(URL.class))).thenReturn(jsonResponse);
+		when(clientMock.delete(anyMapOf(String.class, Object.class), any(URL.class))).thenReturn(jsonResponse);
 
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
 		this.service = new RestService(configuration.getStagingServer(), configuration.getClientId(), clientMock);
@@ -102,7 +102,7 @@ public class RestServiceTest {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.POST, null, null));
 		// verifications
-		verify(clientMock, times(1)).post(anyForm(), any(URL.class));
+		verify(clientMock, times(1)).post(anyMapOf(String.class, Object.class), any(URL.class));
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class RestServiceTest {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.PUT, null, null));
 		// verifications
-		verify(clientMock, times(1)).put(anyForm(), any(URL.class));
+		verify(clientMock, times(1)).put(anyMapOf(String.class, Object.class), any(URL.class));
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class RestServiceTest {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.DELETE, null, null));
 		// verifications
-		verify(clientMock, times(1)).delete(anyForm(), any(URL.class));
+		verify(clientMock, times(1)).delete(anyMapOf(String.class, Object.class), any(URL.class));
 	}
 
 	@Test
@@ -175,7 +175,7 @@ public class RestServiceTest {
 	public void shouldHaveMessageIfErrors() throws Throwable {
 		try {
 			// pre-conditions
-			when(clientMock.post(anyForm(), any(URL.class)))
+			when(clientMock.post(anyMapOf(String.class, Object.class), any(URL.class)))
 					.thenThrow(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
 			// operation
 			service.request(new Link("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));
@@ -200,7 +200,7 @@ public class RestServiceTest {
 	public void shouldReportPlatformUrlInException() throws Throwable {
 		try {
 			// pre-conditions
-			when(clientMock.post(anyForm(), any(URL.class)))
+			when(clientMock.post(anyMapOf(String.class, Object.class), any(URL.class)))
 					.thenThrow(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
 			// operation
 			service.request(new Link("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));

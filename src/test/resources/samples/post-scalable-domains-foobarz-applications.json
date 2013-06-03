@@ -17,7 +17,7 @@
       "gear_profile":"small",
       "git_url":"ssh://5183b49f4382ec9a0e000001@scalable-foobarz.rhcloud.com/~/git/scalable.git/",
       "health_check_path":"health",
-      "initial_git_url":null,
+      "initial_git_url":"git://github.com/openshift/openshift-java-client.git",
       "links":{
          "GET":{
             "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/scalable",

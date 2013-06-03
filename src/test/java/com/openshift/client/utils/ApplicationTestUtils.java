@@ -159,6 +159,16 @@ public class ApplicationTestUtils {
 			}
 		}
 	}
+	
+	public static void destroyAllApplications(IDomain domain) {
+		if (domain == null) {
+			return;
+		}
+
+		for (IApplication application : domain.getApplications()) {
+			application.destroy();
+		}
+	}
 
 	public static void destroyAllByCartridge(ICartridge cartridge, IDomain domain) {
 		for (Iterator<IApplication> it = domain.getApplications().iterator(); it.hasNext();) {

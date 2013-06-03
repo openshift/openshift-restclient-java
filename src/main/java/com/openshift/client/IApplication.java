@@ -49,6 +49,13 @@ public interface IApplication extends IOpenShiftResource {
 	public String getGitUrl();
 
 	/**
+	 * Returns the git url that the application will get its initial code and configuration from.
+	 *  
+	 * @return the initial git url
+	 */
+	public String getInitialGitUrl();
+	
+	/**
 	 * Returns the url at which this application may be reached at.
 	 * 
 	 * @return the url of this application.

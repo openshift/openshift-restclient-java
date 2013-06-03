@@ -71,27 +71,44 @@ public interface IDomain extends IOpenShiftResource {
 	 */
 	public boolean waitForAccessible(long timeout) throws OpenShiftException;
 
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge)
+			throws OpenShiftException;
+
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, String initialGitUrl)
+			throws OpenShiftException;
+
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+			final ApplicationScale scale) throws OpenShiftException;
+
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+			final IGearProfile gearProfile) throws OpenShiftException;
+
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+			final ApplicationScale scale, final IGearProfile gearProfile) throws OpenShiftException;
+
 	/**
-	 * Creates a new application with the given name and the given cartridge/framework. Optionally, adds scalability and
-	 * uses a specific nodeProfile, otherwise (ie, null values), uses default
+	 * Creates a new application with the given name and the given
+	 * cartridge/framework. Optionally, adds scalability and a specific gear
+	 * profile and a git url to use for the initial template.
 	 * 
 	 * @param name
+	 *            the name of the application
 	 * @param cartridge
+	 *            the cartridge (the application type, ex. jbossas-7,
+	 *            jbossews-2, php.5.2, etc.
 	 * @param scale
 	 *            or null (will use default on openshift, ie, false)
-	 * @param nodeProfile
-	 *            ("small", "micro", "medium", "large", "exlarge", "jumbo") or null (will use default on openshift, ie,
-	 *            'small')
+	 * @param gearProfile
+	 *            ("small", "micro", "medium", "large", "exlarge", "jumbo") or
+	 *            null (will use default on openshift, ie, 'small')
+	 * @param initialGitUrl
+	 *            the git url for the initial template app to be used
 	 * @return
 	 * @throws OpenShiftException
 	 */
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, final ApplicationScale scale, final IGearProfile gearProfile) throws OpenShiftException;
-
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, final ApplicationScale scale) throws OpenShiftException ;
-
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, final IGearProfile gearProfile) throws OpenShiftException;
-
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge) throws OpenShiftException;
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, 
+			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl)
+			throws OpenShiftException;
 
 	public List<IApplication> getApplications() throws OpenShiftException;
 	

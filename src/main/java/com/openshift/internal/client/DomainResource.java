@@ -87,38 +87,46 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	public boolean waitForAccessible(long timeout) throws OpenShiftException {
 		throw new UnsupportedOperationException();
 		//TODO: implement
-		
-		// boolean accessible = true;
-		// for (IApplication application : getInternalUser().getApplications())
-		// {
-		// accessible |=
-		// service.waitForHostResolves(application.getApplicationUrl(),
-		// timeout);
-		// }
-		// return accessible;
 	}
 
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge)
 			throws OpenShiftException {
-		return createApplication(name, cartridge, null, null);
+		return createApplication(name, cartridge, (String) null);
 	}
 
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, final ApplicationScale scale)
-			throws OpenShiftException {
-		return createApplication(name, cartridge, scale, null);
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+			final ApplicationScale scale) throws OpenShiftException {
+		return createApplication(name, cartridge, scale, null, null);
 	}
 
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, final IGearProfile gearProfile)
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, String initialGitUrl)
 			throws OpenShiftException {
+		return createApplication(name, cartridge, null, null, initialGitUrl);
+	}
+
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+			final ApplicationScale scale, String initialGitUrl) throws OpenShiftException {
+		return createApplication(name, cartridge, scale, null, initialGitUrl);
+	}
+
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+			final IGearProfile gearProfile) throws OpenShiftException {
 		return createApplication(name, cartridge, null, gearProfile);
 	}
 
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
-			final ApplicationScale scale, final IGearProfile gearProfile)
+			final IGearProfile gearProfile, String initialGitUrl) throws OpenShiftException {
+		return createApplication(name, cartridge, null, gearProfile, initialGitUrl);
+	}
+
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+			final ApplicationScale scale, final IGearProfile gearProfile) throws OpenShiftException {
+		return createApplication(name, cartridge, scale, gearProfile, null);
+	}
+
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl)
 			throws OpenShiftException {
-		if (cartridge == null) {
-			throw new OpenShiftException("Application type is mandatory but none was given.");
-		}
 		if (name == null) {
 			throw new OpenShiftException("Application name is mandatory but none was given.");
 		}
@@ -130,9 +138,9 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		}
 
 		ApplicationResourceDTO applicationDTO =
-				new CreateApplicationRequest().execute(name, cartridge.getName(), scale, gearProfile);
+				new CreateApplicationRequest().execute(name, cartridge, scale, gearProfile, initialGitUrl);
 		IApplication application = new ApplicationResource(applicationDTO, cartridge, this);
-		
+
 		getOrLoadApplications().add(application);
 		return application;
 	}
@@ -283,46 +291,52 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 			super(LINK_ADD_APPLICATION);
 		}
 
-		public ApplicationResourceDTO execute(final String name, final String cartridge,
-				final ApplicationScale scale, final IGearProfile gearProfile) throws OpenShiftException {
-			if (scale == null
-					&& gearProfile == null) {
-				return execute(name, cartridge);
-			} else if (scale != null
-					&& gearProfile == null) {
-				return execute(name, cartridge, scale);
-			} else if (scale == null
-					&& gearProfile != null) {
-				return execute(name, cartridge, gearProfile);
-			} else {
-				return super.execute(
-						new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_NAME, name),
-						new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, cartridge),
-						new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, scale.getValue()),
-						new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, gearProfile.getName()));
+		public ApplicationResourceDTO execute(final String name, final IStandaloneCartridge cartridge,
+				final ApplicationScale scale, final IGearProfile gearProfile, final String initialGitUrl) throws OpenShiftException {
+			if (cartridge == null) {
+				throw new OpenShiftException("Application cartridge is mandatory but was not given.");
+			} 
+			
+			List<ServiceParameter> parameters = new ArrayList<ServiceParameter>();
+			addStringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, name, parameters);
+			addCartridgeParameter(cartridge, parameters);
+			addScaleParameter(scale, parameters);
+			addGearProfileParameter(gearProfile, parameters);
+			addStringParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl, parameters);
+			
+			return super.execute((ServiceParameter[]) parameters.toArray(new ServiceParameter[parameters.size()]));
+		}
+
+		private List<ServiceParameter> addCartridgeParameter(IStandaloneCartridge cartridge, List<ServiceParameter> parameters) {
+			if (cartridge == null) {
+				return parameters;
 			}
+			parameters.add(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, cartridge.getName()));
+			return parameters;
+		}
+		
+		private List<ServiceParameter> addScaleParameter(ApplicationScale scale, List<ServiceParameter> parameters) {
+			if (scale == null) {
+				return parameters;
+			}
+			parameters.add(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, scale.getValue()));
+			return parameters;
 		}
 
-		public ApplicationResourceDTO execute(final String name, final String cartridge,
-				final ApplicationScale scale) throws OpenShiftException {
-			return super.execute(
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_NAME, name),
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, cartridge),
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, scale.getValue()));
+		private List<ServiceParameter> addGearProfileParameter(IGearProfile gearProfile, List<ServiceParameter> parameters) {
+			if (gearProfile == null) {
+				return parameters;
+			}
+			parameters.add(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, gearProfile.getName()));
+			return parameters;
 		}
 
-		public ApplicationResourceDTO execute(final String name, final String cartridge,
-				final IGearProfile gearProfile) throws OpenShiftException {
-			return super.execute(
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_NAME, name),
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, cartridge),
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, gearProfile.getName()));
-		}
-
-		public ApplicationResourceDTO execute(final String name, final String cartridge) throws OpenShiftException {
-			return super.execute(
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_NAME, name),
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, cartridge));
+		private List<ServiceParameter> addStringParameter(String parameterName, String value, List<ServiceParameter> parameters) {
+			if (value == null) {
+				return parameters;
+			}
+			parameters.add(new ServiceParameter(parameterName, value));
+			return parameters;
 		}
 
 	}
