@@ -34,7 +34,6 @@ import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.fest.assertions.Condition;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -46,11 +45,14 @@ import com.openshift.client.IDomain;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
+import com.openshift.client.Message;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftTimeoutException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
+import com.openshift.client.utils.EmbeddedCartridgeAssert;
+import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.InternalServerErrorException;
@@ -337,20 +339,35 @@ public class ApplicationResourceTest {
 		when(mockClient.post(anyForm(), urlEndsWith("/domains/foobarz/applications/springeap6/cartridges")))
 				.thenReturn(POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES.getContentAsString());
 		final IApplication app = domain.getApplicationByName("springeap6");
+		String mySql51Name = "mysql-5.1";
+		
 		// operation
-		app.addEmbeddableCartridge(new EmbeddableCartridge("mysql-5.1"));
+		app.addEmbeddableCartridge(new EmbeddableCartridge(mySql51Name));
 		
 		// verifications
-		assertThat(app.getEmbeddedCartridge("mysql-5.1")).satisfies(new Condition<Object>() {
-			@Override
-			public boolean matches(Object value) {
-				final EmbeddedCartridgeResource cartridge = (EmbeddedCartridgeResource) value;
-				return cartridge != null && cartridge.getName() != null
-						&& !LinkRetriever.retrieveLinks(cartridge).isEmpty();
-			}
-		});
-		verify(mockClient, times(1)).post(anyForm(), urlEndsWith("/domains/foobarz/applications/springeap6/cartridges"));
+		verify(mockClient, times(1))
+				.post(anyForm(), urlEndsWith("/domains/foobarz/applications/springeap6/cartridges"));
 		assertThat(app.getEmbeddedCartridges()).hasSize(2);
+		IEmbeddedCartridge mySqlCartridge = app.getEmbeddedCartridge(mySql51Name);
+		new EmbeddedCartridgeAssert(mySqlCartridge)
+				.hasDescription()
+				.hasName(mySql51Name);
+
+		new MessageAssert(mySqlCartridge.getMessage(Message.FIELD_DEFAULT))
+				.hasExitCode(-1)
+				.hasText("Added mysql-5.1 to application springeap6");
+		new MessageAssert(mySqlCartridge.getMessage(Message.FIELD_RESULT))
+				.hasExitCode(0)
+				.hasText(
+						"\nMySQL 5.1 database added.  Please make note of these credentials:\n\n"
+								+ "       Root User: adminnFC22YQ\n   Root Password: U1IX8AIlrEcl\n   Database Name: springeap6\n\n"
+								+ "Connection URL: mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/\n\n"
+								+ "You can manage your new MySQL database by also embedding phpmyadmin-3.4.\n"
+								+ "The phpmyadmin username and password will be the same as the MySQL credentials above.\n");
+		new MessageAssert(mySqlCartridge.getMessage(Message.FIELD_APPINFO))
+				.hasExitCode(0)
+				.hasText("Connection URL: mysql://127.13.125.1:3306/\n");
+
 	}
 
 	@Test
@@ -497,6 +514,5 @@ public class ApplicationResourceTest {
 			.onProperty("remoteAddress").containsExactly("127.7.233.2", "127.7.233.3", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "5190d701500446506a0000e4-foobarz.rhcloud.com");
 		assertThat(forwardablePorts)
 			.onProperty("remotePort").containsExactly(8080, 8080, 3528, 4447, 5445, 5455, 8080, 9990, 9999, 56756);
-	}
-	
+	}	
 }

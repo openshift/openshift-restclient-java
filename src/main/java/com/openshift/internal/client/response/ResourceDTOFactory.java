@@ -45,6 +45,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -140,7 +141,7 @@ public class ResourceDTOFactory {
 	 * @return the list< string>
 	 */
 	private static Map<String, Message> createMessages(ModelNode messagesNode) {
-		Map<String, Message> messages = new HashMap<String, Message>();
+		Map<String, Message> messages = new LinkedHashMap<String, Message>();
 		if (messagesNode.getType() == ModelType.LIST) {
 			for (ModelNode messageNode : messagesNode.asList()) {
 				Message message = createMessage(messageNode);

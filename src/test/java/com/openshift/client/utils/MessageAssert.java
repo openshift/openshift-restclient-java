@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.client.utils;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import org.fest.assertions.AssertExtension;
@@ -26,6 +27,11 @@ public class MessageAssert implements AssertExtension {
 
 	public MessageAssert(Message message) {
 		this.message = message;
+	}
+
+	public MessageAssert hasText() {
+		assertThat(message.getText()).isNotEmpty();
+		return this;
 	}
 
 	public MessageAssert hasText(String text) {

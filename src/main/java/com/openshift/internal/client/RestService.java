@@ -122,13 +122,13 @@ public class RestService implements IRestService {
 
 	private String getResponseMessage(HttpClientException clientException) {
 		try {
-			StringBuilder builder = new StringBuilder();
 			RestResponse restResponse = ResourceDTOFactory.get(clientException.getMessage());
 			if (restResponse == null) {
 				return null;
 			}
-			for (Map.Entry<String, Message> entry : restResponse.getMessages().entrySet()) {
-				builder.append(entry.toString()).append('\n');
+			StringBuilder builder = new StringBuilder();
+			for (Message message : restResponse.getMessages().values()) {
+				builder.append(message.getText()).append('\n');
 			}
 			return builder.toString();
 		} catch (OpenShiftException e) {

@@ -66,6 +66,24 @@ public class OpenShiftEndpointException extends OpenShiftException {
 		return null;
 	}
 	
+	/**
+	 * Returns the message for the given field. Returns <code>null</code> otherwise.
+	 * 
+	 * @param field
+	 * @return the message for the given field
+	 * 
+	 * @see Message#FIELD_DEFAULT
+	 * @see Message#FIELD_APPINFO
+	 * @see Message#FIELD_RESULT
+	 */
+	public Message getRestResponseMessage(String field) {
+		Map<String, Message> messages = getRestResponseMessages();
+		if (messages == null) {
+			return null;
+		}
+		return messages.get(field);
+	}
+
 	protected String getUrl() {
 		return url;
 	}

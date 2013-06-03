@@ -15,6 +15,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,6 +26,8 @@ import org.junit.Test;
 import com.openshift.client.GearState;
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IGear;
+import com.openshift.client.Message;
+import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.CartridgeType;
 
@@ -201,7 +204,8 @@ public class ResourceDTOFactoryTest {
 
 	/**
 	 * Should unmarshall get application response body.
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void shouldUnmarshallGetApplicationWithAliasesResponseBody() throws Throwable {
@@ -231,10 +235,32 @@ public class ResourceDTOFactoryTest {
 		// pre-conditions
 		String content = Samples.POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES.getContentAsString();
 		assertNotNull(content);
+
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
+
 		// verifications
-		assertThat(response.getMessages()).hasSize(3);
+		Collection<Message> messages = response.getMessages().values();
+		assertThat(messages).hasSize(3);
+		Iterator<Message> it = messages.iterator();
+		new MessageAssert(it.next())
+				.hasField(Message.FIELD_DEFAULT)
+				.hasExitCode(-1)
+				.hasText("Added mysql-5.1 to application springeap6");
+		new MessageAssert(it.next())
+				.hasField(Message.FIELD_RESULT)
+				.hasExitCode(0)
+				.hasText(
+						"\nMySQL 5.1 database added.  Please make note of these credentials:\n\n"
+								+ "       Root User: adminnFC22YQ\n   Root Password: U1IX8AIlrEcl\n   Database Name: springeap6\n\n"
+								+ "Connection URL: mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/\n\n"
+								+ "You can manage your new MySQL database by also embedding phpmyadmin-3.4.\n"
+								+ "The phpmyadmin username and password will be the same as the MySQL credentials above.\n");
+		new MessageAssert(it.next())
+				.hasField(Message.FIELD_APPINFO)
+				.hasExitCode(0)
+				.hasText("Connection URL: mysql://127.13.125.1:3306/\n");
+
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridge);
 		final CartridgeResourceDTO cartridge = response.getData();
 		assertThat(cartridge.getName()).isEqualTo("mysql-5.1");
@@ -245,7 +271,8 @@ public class ResourceDTOFactoryTest {
 
 	/**
 	 * Should unmarshall get application response body.
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void shouldUnmarshallGetApplicationCartridgesWith1ElementResponseBody() throws Throwable {
@@ -264,7 +291,8 @@ public class ResourceDTOFactoryTest {
 
 	/**
 	 * Should unmarshall get application response body.
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void shouldUnmarshallGetApplicationCartridgesWith3ElementsResponseBody() throws Throwable {
@@ -295,7 +323,7 @@ public class ResourceDTOFactoryTest {
 		assertThat(gearGroup.getName()).isEqualTo("514207b84382ec1fef0000ab");
 		assertThat(gearGroup.getUuid()).isEqualTo("514207b84382ec1fef0000ab");
 		assertThat(gearGroup.getGears()).hasSize(2);
-		final IGear gear = gearGroup.getGears().iterator().next(); 
+		final IGear gear = gearGroup.getGears().iterator().next();
 		assertThat(gear.getId()).isEqualTo("514207b84382ec1fef000098");
 		assertThat(gear.getState()).isEqualTo(GearState.IDLE);
 	}
