@@ -217,7 +217,7 @@ public class ApplicationResourceIntegrationTest {
 	public void shouldAddAliasToApplication() throws Throwable {
 		// pre-condition
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-		String alias = String.valueOf(System.currentTimeMillis());
+		String alias = createAlias();
 		// operation
 
 		application.addAlias(alias);
@@ -230,7 +230,7 @@ public class ApplicationResourceIntegrationTest {
 	public void shouldRemoveAliasOfApplication() throws Throwable {
 		// pre-condition
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-		String alias = String.valueOf(System.currentTimeMillis());
+		String alias = createAlias();
 		application.addAlias(alias);
 		assertThat(application.getAliases()).contains(alias);
 
@@ -271,5 +271,16 @@ public class ApplicationResourceIntegrationTest {
 		} else {
 			assertTrue(System.currentTimeMillis() >= startTime + WAIT_TIMEOUT);
 		}
+	}
+
+	/**
+	 * https://issues.jboss.org/browse/JBIDE-14721
+	 */
+	private String createAlias() {
+		return new StringBuilder(String.valueOf(System.currentTimeMillis()))
+		// valid alias is "/\A[a-z0-9]+(-[a-z0-9]+)*(\.[a-z0-9]+(-[a-z0-9]+)*)+\z/"
+		.append('.')
+		.append('1')
+		.toString();
 	}
 }
