@@ -81,8 +81,16 @@ public class RestService implements IRestService {
 		return request(link, (Map<String, Object>) null);
 	}
 
+	public RestResponse request(Link link, int timeout) throws OpenShiftException {
+		return request(link, (Map<String, Object>) null);
+	}
+
 	public RestResponse request(Link link, ServiceParameter... serviceParameters) throws OpenShiftException {
-		return request(link, toMap(serviceParameters));
+		return request(link, IHttpClient.NO_TIMEOUT, serviceParameters);
+	}
+	
+	public RestResponse request(Link link, int timeout, ServiceParameter... serviceParameters) throws OpenShiftException {
+		return request(link, timeout, toMap(serviceParameters));
 	}
 
 	private Map<String, Object> toMap(ServiceParameter... serviceParameters) {
@@ -93,18 +101,25 @@ public class RestService implements IRestService {
 		return parameterMap;
 	}
 
-	public RestResponse request(Link link, Map<String, Object> parameters)
-			throws OpenShiftException {
+	public RestResponse request(Link link, Map<String, Object> parameters) throws OpenShiftException {
+		return request(link, IHttpClient.NO_TIMEOUT, parameters);
+	}
+	
+	public RestResponse request(Link link, int timeout, Map<String, Object> parameters) throws OpenShiftException {
 		validateParameters(parameters, link);
 		HttpMethod httpMethod = link.getHttpMethod();
-		String response = request(link.getHref(), httpMethod, parameters);
+		String response = request(link.getHref(), httpMethod, timeout, parameters);
 		return ResourceDTOFactory.get(response);
 	}
 
 	public String request(String href, HttpMethod httpMethod, Map<String, Object> parameters) throws OpenShiftException {
+		return request(href, httpMethod, IHttpClient.NO_TIMEOUT, parameters);
+	}
+	
+	public String request(String href, HttpMethod httpMethod, int timeout, Map<String, Object> parameters) throws OpenShiftException {
 		URL url = getUrl(href);
 		try {
-			return request(url, httpMethod, parameters);
+			return request(url, httpMethod, timeout, parameters);
 		} catch (UnsupportedEncodingException e) {
 			throw new OpenShiftException(e, e.getMessage());
 		} catch (UnauthorizedException e) {
@@ -116,7 +131,8 @@ public class RestService implements IRestService {
 					url.toString(), e, e.getMessage(),
 					"Could not request {0}: {1}", url.toString(), getResponseMessage(e));
 		} catch (SocketTimeoutException e) {
-			throw new OpenShiftTimeoutException(url.toString(), e, e.getMessage(), "Could not request url {0}, connection timed out", url.toString());
+			throw new OpenShiftTimeoutException(url.toString(), e, e.getMessage(),
+					"Could not request url {0}, connection timed out", url.toString());
 		}
 	}
 
@@ -141,20 +157,20 @@ public class RestService implements IRestService {
 		}
 	}
 
-	private String request(URL url, HttpMethod httpMethod, Map<String, Object> parameters)
+	private String request(URL url, HttpMethod httpMethod, int timeout, Map<String, Object> parameters)
 			throws HttpClientException, SocketTimeoutException, OpenShiftException, UnsupportedEncodingException {
 		LOGGER.info("Requesting {} with protocol {} on {}",
 				new Object[] { httpMethod.name(), client.getAcceptVersion(), url });
 		
 		switch (httpMethod) {
 		case GET:
-			return client.get(url);
+			return client.get(url, timeout);
 		case POST:
-			return client.post(parameters, url);
+			return client.post(parameters, url, timeout);
 		case PUT:
-			return client.put(parameters, url);
+			return client.put(parameters, url, timeout);
 		case DELETE:
-			return client.delete(parameters, url);
+			return client.delete(parameters, url, timeout);
 		default:
 			throw new OpenShiftException("Unexpected HTTP method {0}", httpMethod.toString());
 		}

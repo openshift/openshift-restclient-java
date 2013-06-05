@@ -23,6 +23,7 @@ import com.openshift.internal.client.httpclient.UrlConnectionHttpClient;
 
 /**
  * @author Andre Dietisheim
+ * @author Nicolas Spano
  */
 public class HttpClientFake extends UrlConnectionHttpClient {
 
@@ -31,7 +32,7 @@ public class HttpClientFake extends UrlConnectionHttpClient {
 	}
 	
 	@Override
-	protected String write(String data, String requestMethod, URL url)
+	protected String write(String data, String requestMethod, URL url, int timeout)
 			throws SocketTimeoutException, HttpClientException {
 		return data;
 	}
@@ -45,5 +46,6 @@ public class HttpClientFake extends UrlConnectionHttpClient {
 				mediaType,
 				version);
 	}
+
 
 }

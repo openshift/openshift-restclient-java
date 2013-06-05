@@ -12,12 +12,9 @@ package com.openshift.internal.client;
 
 import static com.openshift.client.utils.Samples.DELETE_DOMAINS_FOOBARZ_KO_EXISTINGAPPS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
-import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyMapOf;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,15 +28,13 @@ import org.junit.rules.ExpectedException;
 
 import com.openshift.client.IDomain;
 import com.openshift.client.IHttpClient;
-import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
-import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.MessageAssert;
-import com.openshift.client.utils.Samples;
+import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
@@ -49,47 +44,39 @@ import com.openshift.internal.client.httpclient.HttpClientException;
 public class OpenShiftExceptionTest {
 
 	private IUser user;
-	private IHttpClient mockClient;
+	private IHttpClient clientMock;
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Rule
 	public ErrorCollector errorCollector = new ErrorCollector();
+	private HttpClientMockDirector mockDirector;
 
 	@Before
 	public void setup() throws Throwable {
-		mockClient = mock(IHttpClient.class);
-		when(mockClient.get(urlEndsWith("/broker/rest/api")))
-				.thenReturn(Samples.GET_API.getContentAsString());
-		when(mockClient.get(urlEndsWith("/user")))
-				.thenReturn(Samples.GET_USER_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains")))
-				.thenReturn(GET_DOMAINS.getContentAsString());
-		final IOpenShiftConnection connection = 
-				new OpenShiftConnectionFactory().getConnection(
-						new RestService("http://mock", "clientId", mockClient), "foo@redhat.com", "bar");
-		this.user = connection.getUser();
+		// pre-conditions
+		this.mockDirector = new HttpClientMockDirector();
+		this.clientMock = mockDirector
+				.mockGetDomains(GET_DOMAINS)
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS)
+				.client();
+		this.user = new TestConnectionFactory().getConnection(clientMock).getUser();
 	}
 
 	@Test
-	public void shouldReportServerInTimeoutExceptionMessage() throws HttpClientException, FileNotFoundException,
-			OpenShiftException, IOException {
+	public void shouldReportServerInTimeoutExceptionMessage() throws FileNotFoundException, OpenShiftException, IOException {
 		try {
-			IHttpClient mockClient = mock(IHttpClient.class);
 			// pre-conditions
-			when(mockClient.get(urlEndsWith("/broker/rest/api")))
-					.thenThrow(
-							new HttpClientException(new ConnectException(
-									"java.net.ConnectException: Connection timed out")));
+			mockDirector.mockGetAPI(
+					new HttpClientException(new ConnectException("java.net.ConnectException: Connection timed out")));
 			// operation
-			new OpenShiftConnectionFactory().getConnection(
-					new RestService("http://mock", "clientId", mockClient), "foo@redhat.com", "bar");
+			new TestConnectionFactory().getConnection(clientMock);
 			// verification
 			fail("exception expected");
 		} catch (OpenShiftEndpointException e) {
 			// verification
-			assertThat(e.getMessage()).contains("http://mock");
+			assertThat(e.getMessage()).contains("https://");
 		}
 	}
 
@@ -97,8 +84,7 @@ public class OpenShiftExceptionTest {
 	public void shouldThrowWithTextAndExistCode() throws Throwable {
 			// pre-conditions
 		try {
-			when(mockClient.delete(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz")))
-					.thenThrow(
+			mockDirector.mockDeleteDomain("foobarz",
 							new BadRequestException(
 									DELETE_DOMAINS_FOOBARZ_KO_EXISTINGAPPS.getContentAsString(),
 									new IOException(

@@ -19,6 +19,7 @@ import com.openshift.internal.client.httpclient.HttpClientException;
 
 /**
  * @author André Dietisheim
+ * @author Nicolas Spano
  */
 public interface IHttpClient {
 
@@ -48,8 +49,12 @@ public interface IHttpClient {
 	public static final char AMPERSAND = '&';
 	public static final char EQUALS = '=';
 	
-	public static final String VERSION = "version"; 
-	
+	public static final String VERSION = "version";
+
+    public static final int DEFAULT_CONNECT_TIMEOUT = 10 * 	1000;
+    public static final int DEFAULT_READ_TIMEOUT = 2 * 60 * 1000;
+	public static final int NO_TIMEOUT = -1;
+
 	public void setUserAgent(String userAgent);
 	
 	public String getUserAgent();
@@ -60,11 +65,19 @@ public interface IHttpClient {
 	
 	public String get(URL url) throws HttpClientException, SocketTimeoutException;
 
+    public String get(URL url, int timeout) throws HttpClientException, SocketTimeoutException;
+
 	public String post(Map<String, Object> parameters, URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+
+    public String post(Map<String, Object> parameters, URL url, int timeout) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 
 	public String put(Map<String, Object> parameters, URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 
+    public String put(Map<String, Object> parameters, URL url, int timeout) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+
 	public String delete(Map<String, Object> parameters, URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+
+    public String delete(Map<String, Object> parameters, URL url, int timeout) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 
 	public String delete(URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 	

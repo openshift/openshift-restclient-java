@@ -12,6 +12,7 @@ package com.openshift.internal.client;
 
 import java.util.Map;
 
+import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftResource;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
@@ -119,8 +120,12 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 		}
 
 		protected <DTO> DTO execute(ServiceParameter... parameters) throws OpenShiftException {
+			return execute(IHttpClient.NO_TIMEOUT, parameters);
+		}
+		
+		protected <DTO> DTO execute(int timeout, ServiceParameter... parameters) throws OpenShiftException {
 			Link link = getLink(linkName);
-			RestResponse response = getService().request(link, parameters);
+			RestResponse response = getService().request(link, timeout, parameters);
 			
 			// in some cases, there is not response body, just a return code to
 			// indicate that the operation was successful (e.g.: delete domain)

@@ -12,15 +12,11 @@ package com.openshift.internal.client;
 
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED;
-import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.net.SocketTimeoutException;
 import java.util.Collections;
@@ -35,14 +31,12 @@ import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IField;
 import com.openshift.client.IHttpClient;
-import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
-import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
-import com.openshift.client.utils.Samples;
+import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.response.Link;
 
@@ -58,29 +52,17 @@ public class EmbeddedCartridgeTest {
 	@Before
 	public void setUp() throws SocketTimeoutException, HttpClientException, Throwable {
 		// pre-conditions
-		IHttpClient mockClient = mock(IHttpClient.class);
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
-		when(mockClient.get(urlEndsWith("/broker/rest/api")))
-				.thenReturn(Samples.GET_API.getContentAsString());
-		when(mockClient.get(urlEndsWith("/user")))
-				.thenReturn(Samples.GET_USER_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains")))
-				.thenReturn(GET_DOMAINS.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications/springeap6")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications/springeap6/cartridges")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED.getContentAsString());
-		final IOpenShiftConnection connection =
-				new OpenShiftConnectionFactory().getConnection(
-						new RestService("http://mock", "clientId", mockClient), "foo@redhat.com", "bar");
-		this.user = connection.getUser();
+		IHttpClient client = new HttpClientMockDirector()
+				.mockGetDomains(GET_DOMAINS)
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS)
+				.mockGetEmbeddableCartridges("foobarz", "springeap6",
+						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED)
+				.client();
+		this.user = new TestConnectionFactory().getConnection(client).getUser();
 		this.domain = user.getDomain("foobarz");
 		this.application = domain.getApplicationByName("springeap6");
 	}
-	
+
 	@Test
 	public void shouldEqualsOtherCartridge() {
 		// pre-coniditions
@@ -97,7 +79,7 @@ public class EmbeddedCartridgeTest {
 
 		// operation
 		// verification
-		assertEquals(new EmbeddableCartridge("redhat"),	embeddedCartridgeMock);
+		assertEquals(new EmbeddableCartridge("redhat"), embeddedCartridgeMock);
 		assertEquals(embeddedCartridgeMock, new EmbeddableCartridge("redhat"));
 		assertFalse(new EmbeddableCartridge("redhat").equals(new EmbeddableCartridge("jboss")));
 	}
@@ -147,17 +129,17 @@ public class EmbeddedCartridgeTest {
 		// verifications
 		assertThat(mysql.getDisplayName()).isEqualTo("MySQL Database 5.1");
 	}
-	
+
 	private IEmbeddedCartridge createEmbeddedCartridgeMock(String name) {
 		ApplicationResource applicationResourceMock = Mockito.mock(ApplicationResource.class);
 		return new EmbeddedCartridgeResource(
-						name,
-						"displayName",
-						"description",
-						CartridgeType.EMBEDDED,
-						"embedded-info",
-						Collections.<String, Link> emptyMap(),
-						new Messages(Collections.<IField, List<Message>> emptyMap()),
-						applicationResourceMock);
+				name,
+				"displayName",
+				"description",
+				CartridgeType.EMBEDDED,
+				"embedded-info",
+				Collections.<String, Link> emptyMap(),
+				new Messages(Collections.<IField, List<Message>> emptyMap()),
+				applicationResourceMock);
 	}
 }

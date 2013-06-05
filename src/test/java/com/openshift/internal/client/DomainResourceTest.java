@@ -22,21 +22,13 @@ import static com.openshift.client.utils.Samples.POST_SCALABLE_DOMAINS_FOOBARZ_A
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyMapOf;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -44,7 +36,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
-import org.mockito.ArgumentCaptor;
 
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
@@ -52,17 +43,16 @@ import com.openshift.client.IDomain;
 import com.openshift.client.IField;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IHttpClient;
-import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.ISeverity;
 import com.openshift.client.IUser;
 import com.openshift.client.InvalidCredentialsOpenShiftException;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
-import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.MessageAssert;
-import com.openshift.client.utils.Samples;
+import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.internal.client.HttpClientMockDirector.Pair;
 import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.UnauthorizedException;
@@ -79,8 +69,9 @@ public class DomainResourceTest {
 
 	private IUser user;
 	private IDomain domain;
-	private IHttpClient mockClient;
-
+	private IHttpClient clientMock;
+	private HttpClientMockDirector mockDirector;
+	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
@@ -89,37 +80,26 @@ public class DomainResourceTest {
 
 	@Before
 	public void setup() throws Throwable {
-		this.mockClient = createMockClient(GET_DOMAINS);
-		this.user = createUser(mockClient);
+		this.mockDirector = new HttpClientMockDirector();
+		this.clientMock = mockDirector.mockGetDomains(GET_DOMAINS).client();
+		this.user = new TestConnectionFactory().getConnection(clientMock).getUser();
 		this.domain = user.getDomain("foobarz");
-	}
-
-	private IHttpClient createMockClient(Samples domainsResponse) throws SocketTimeoutException, Throwable {
-		IHttpClient mockClient = mock(IHttpClient.class);
-		when(mockClient.get(urlEndsWith("/broker/rest/api")))
-				.thenReturn(Samples.GET_API.getContentAsString());
-		when(mockClient.get(urlEndsWith("/user"))).thenReturn(Samples.GET_USER_JSON.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains"))).thenReturn(domainsResponse.getContentAsString());
-		return mockClient;
-	}
-
-	private IUser createUser(IHttpClient client) throws FileNotFoundException, IOException {
-		final IOpenShiftConnection connection = new OpenShiftConnectionFactory().getConnection(new RestService(
-				"http://mock", "clientId", client), "foo@redhat.com", "bar");
-		return connection.getUser();
 	}
 
 	@Test
 	public void shouldLoadEmptyListOfDomains() throws Throwable {
 		// pre-conditions
-		IHttpClient client = createMockClient(GET_DOMAINS_EMPTY);
-		IUser user = createUser(client);
+		HttpClientMockDirector mockBuilder = new HttpClientMockDirector();
+		IHttpClient clientMock =  mockBuilder.mockGetDomains(GET_DOMAINS_EMPTY).client();
+		IUser user = new TestConnectionFactory().getConnection(clientMock).getUser();
 		// operation
 		final List<IDomain> domains = user.getDomains();
 		// verifications
 		assertThat(domains).hasSize(0);
 		// 3 calls: /API + /API/user + /API/domains
-		verify(client, times(3)).get(any(URL.class));
+		mockBuilder
+			.verifyGetAny(3)
+			.verifyGetDomains();
 	}
 
 	@Test
@@ -130,14 +110,13 @@ public class DomainResourceTest {
 		// verifications
 		assertThat(domains).hasSize(1);
 		// 3 calls: /API + /API/user + /API/domains
-		verify(mockClient, times(3)).get(any(URL.class));
+		mockDirector.verifyGetAny(3);
 	}
 
 	@Test
 	public void shouldCreateNewDomain() throws Throwable {
 		// pre-conditions
-		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains"))).thenReturn(
-				GET_DOMAINS_FOOBARS.getContentAsString());
+		mockDirector.mockCreateDomain(GET_DOMAINS_FOOBARS);
 		int numOfDomains = user.getDomains().size();
 		// operation
 		final IDomain domain = user.createDomain("foobars");
@@ -159,8 +138,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldDestroyDomain() throws Throwable {
 		// pre-conditions
-		when(mockClient.delete(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobar")))
-			.thenReturn(DELETE_DOMAINS_FOOBARZ.getContentAsString());
+		mockDirector.mockDeleteDomain("foobarz", DELETE_DOMAINS_FOOBARZ);
 		// operation
 		final IDomain domain = user.getDomain("foobarz");
 		domain.destroy();
@@ -172,7 +150,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldNotDestroyDomainWithApp() throws Throwable {
 		// pre-conditions
-		when(mockClient.delete(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz")))
+		when(clientMock.delete(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz"), anyInt()))
 			.thenThrow(new BadRequestException(
 					"Domain contains applications. Delete applications first or set force to true.", null));
 		// operation
@@ -191,8 +169,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldUpdateDomainId() throws Throwable {
 		// pre-conditions
-		when(mockClient.put(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz")))
-			.thenReturn(GET_DOMAINS_FOOBARS.getContentAsString());
+		mockDirector.mockRenameDomain("foobarz", GET_DOMAINS_FOOBARS);
 		final IDomain domain = user.getDomain("foobarz");
 		// operation
 		domain.rename("foobars");
@@ -202,7 +179,7 @@ public class DomainResourceTest {
 		assertThat(updatedDomain).isNotNull();
 		assertThat(updatedDomain.getId()).isEqualTo("foobars");
 		assertThat(LinkRetriever.retrieveLink(updatedDomain, "UPDATE").getHref()).contains("/foobars");
-		verify(mockClient, times(1)).put(anyMapOf(String.class, Object.class), any(URL.class));
+		mockDirector.verifyRenameDomain("foobarz");
 	}
 
 	@Test
@@ -219,102 +196,108 @@ public class DomainResourceTest {
 	@Test
 	public void shouldRefreshDomainAndReloadApplications() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz")))
-				.thenReturn(GET_DOMAINS_FOOBARZ.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector
+			.mockGetDomain("foobarz", GET_DOMAINS_FOOBARZ)
+			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
+		
 		final IDomain domain = user.getDomain("foobarz");
 		assertThat(domain).isNotNull();
 		domain.getApplications();
 		// operation
 		domain.refresh();
 		// verifications
-		verify(mockClient, times(1)).get(urlEndsWith("/domains/foobarz")); // explicit refresh on this location
-		verify(mockClient, times(2)).get(urlEndsWith("/domains/foobarz/applications")); // two calls, before and while refresh
+		mockDirector
+			.verifyGetDomain("foobarz") // explicit refresh 
+			.verifyGetApplications("foobarz", 2); // two calls, before and while refresh
 	}
 
 	@Test
 	public void shouldRefreshDomainAndNotReloadApplications() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz")))
-				.thenReturn(GET_DOMAINS_FOOBARZ.getContentAsString());
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector
+			.mockGetDomain("foobarz", GET_DOMAINS_FOOBARZ)
+			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
 		final IDomain domain = user.getDomain("foobarz");
 		assertThat(domain).isNotNull();
 		// operation
 		domain.refresh();
 		// verifications
-		verify(mockClient, times(1)).get(urlEndsWith("/domains")); // explicit refresh on this location
-		verify(mockClient, times(0)).get(urlEndsWith("/domains/foobarz/applications")); // no call, neither before and while refresh
+		mockDirector
+			.verifyGetDomains() // explicit refresh 
+			.verifyGetApplications("foobarz", 0); // // no call, neither before and while refresh
 	}
 
 	@Test
 	public void shouldLoadListOfApplicationsWithNoElement() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS);
 		// operation
 		final List<IApplication> apps = domain.getApplications();
 		// verifications
 		assertThat(apps).isEmpty();
-		// 4 calls: /API + /API/user + /API/domains +
-		// /API/domains/foobar/applications
-		verify(mockClient, times(4)).get(any(URL.class));
+		mockDirector
+				.verifyGetAPI()
+				.verifyGetUser()
+				.verifyGetDomains()
+				.verifyGetApplications("foobarz", 1)
+				.verifyGetAny(4);
 	}
 
 	@Test
 	public void shouldLoadListOfApplicationsWith2Elements() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		final List<IApplication> apps = domain.getApplications();
 		// verifications
 		assertThat(apps).hasSize(2);
-		// 4 calls: /API + /API/user + /API/domains +
-		// /API/domains/foobarz/applications
-		verify(mockClient, times(4)).get(any(URL.class));
+		mockDirector
+				.verifyGetAPI()
+				.verifyGetUser()
+				.verifyGetDomains()
+				.verifyGetApplications("foobarz", 1)
+				.verifyGetAny(4);
 	}
 
 	@Test
 	public void shouldNotLoadApplicationTwice() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		List<IApplication> apps = domain.getApplications();
 		assertThat(apps).hasSize(2);
 
 		// verifications
-		reset(mockClient);
+		reset(clientMock);
 		apps = domain.getApplications(); // dont do new client request
-		verify(mockClient, times(0)).get(any(URL.class));
-
+		mockDirector.verifyGetAny(0);
 	}
 	
 	@Test(expected = InvalidCredentialsOpenShiftException.class)
 	public void shouldNotLoadListOfApplicationsWithInvalidCredentials() 
 			throws OpenShiftException, HttpClientException, SocketTimeoutException {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+		when(clientMock.get(urlEndsWith("/domains/foobarz/applications"), anyInt()))
 				.thenThrow(new UnauthorizedException("invalid credentials (mock)", null));
 		// operation
 		domain.getApplications();
 		// verifications
-		// expect an exception
+		mockDirector.verifyGetAPI()
+			.verifyGetUser()
+			.verifyGetAny(2);
 	}
 
 	@Test
 	public void shouldCreateApplication() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-			.thenReturn(
-				GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
-		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications"))).thenReturn(
-				POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
+
+		when(clientMock.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications")))
+				.thenReturn(POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
 		// operation
-		final IApplication app = domain.createApplication("sample", CARTRIDGE_JBOSSAS_7, ApplicationScale.NO_SCALE, null);
+		final IApplication app = domain.createApplication("scalable", CARTRIDGE_JBOSSAS_7, ApplicationScale.NO_SCALE, null);
 		// verifications
 		assertThat(app.getName()).isEqualTo("scalable");
 		assertThat(app.getGearProfile().getName()).isEqualTo("small");
@@ -334,11 +317,9 @@ public class DomainResourceTest {
 	@Test
 	public void shouldHaveMessagesWhenCreating() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-			.thenReturn(
-				GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
-		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications"))).thenReturn(
-				POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector
+			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+			.mockCreateApplication("foobarz", POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		final IApplication app = domain.createApplication("jekyll", CARTRIDGE_JENKINS_14);
 		// verifications
@@ -369,31 +350,29 @@ public class DomainResourceTest {
 	@Test
 	public void shouldRequestCreateApplicationWithNameAndCartridgeOnly() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
-		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector
+			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+			.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7);
 		
 		// verification
-		assertPostParameters(mockClient, 
+		mockDirector.assertPostParameters( 
 				new Pair(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
-				new Pair(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()));
+				new Pair(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName())); 
 	}
 
 	@Test
 	public void shouldRequestCreateApplicationWithNameCartridgeAndScaleOnly() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
-		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7, ApplicationScale.SCALE);
 		
 		// verification
-		assertPostParameters(mockClient, 
+		mockDirector.assertPostParameters( 
 				new Pair(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
 				new Pair(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
 				new Pair(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()));
@@ -402,15 +381,14 @@ public class DomainResourceTest {
 	@Test
 	public void shouldRequestCreateApplicationWithNameCartridgeScaleGearProfileOnly() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
-		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7, ApplicationScale.SCALE, GearProfile.JUMBO);
 		
 		// verification
-		assertPostParameters(mockClient, 
+		mockDirector.assertPostParameters( 
 				new Pair(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
 				new Pair(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
 				new Pair(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
@@ -421,15 +399,14 @@ public class DomainResourceTest {
 	@Test
 	public void shouldRequestCreateApplicationWithNameCartridgeScaleGearProfileAndGitUrl() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
-		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7, ApplicationScale.SCALE, GearProfile.JUMBO, "git://github.com/adietish/openshift-java-client.git");
 		
 		// verification
-		assertPostParameters(mockClient, 
+		mockDirector.assertPostParameters( 
 				new Pair(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
 				new Pair(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
 				new Pair(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
@@ -438,39 +415,10 @@ public class DomainResourceTest {
 		);
 	}
 
-	private static class Pair {
-		private String key;
-		private String value;
-
-		private Pair(String key, String value) {
-			this.key = key;
-			this.value = value;
-		}
-		
-		public String getKey() {
-			return key;
-		}
-		
-		public String getValue() {
-			return value;
-		}
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void assertPostParameters(IHttpClient client, Pair... pairs) throws SocketTimeoutException, HttpClientException, UnsupportedEncodingException {
-		ArgumentCaptor<Map> captor = ArgumentCaptor.forClass(Map.class);
-		verify(mockClient).post(captor.capture(), any(URL.class));
-		Map postedParameters = captor.getValue();
-		assertThat(postedParameters).hasSize(pairs.length);
-		for(Pair pair: pairs) {
-			assertThat(postedParameters.get(pair.getKey())).isEqualTo(pair.getValue());
-		}
-	}
-	
 	@Test(expected = OpenShiftException.class)
 	public void shouldNotCreateApplicationWithMissingName() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+		when(clientMock.get(urlEndsWith("/domains/foobarz/applications")))
 				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
 		// operation
 		domain.createApplication(null, CARTRIDGE_JBOSSAS_7, null, null);
@@ -481,8 +429,7 @@ public class DomainResourceTest {
 	@Test(expected = OpenShiftException.class)
 	public void shouldNotCreateApplicationWithMissingCartridge() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS);
 		// operation
 		domain.createApplication("foo", null, null, null);
 		// verifications
@@ -492,8 +439,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldNotRecreateExistingApplication() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
-				.thenReturn(GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		try {
 			domain.createApplication("springeap6", CARTRIDGE_JBOSSAS_7, null, null);
@@ -509,8 +455,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldGetApplicationByNameCaseInsensitive() throws Throwable {
 		// pre-conditions
-		when(mockClient.get(urlEndsWith("/domains/foobarz/applications"))).thenReturn(
-				GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		IApplication lowerCaseQueryResult = domain.getApplicationByName("springeap6");
 		IApplication upperCaseQueryResult = domain.getApplicationByName("SPRINGEAP6");
@@ -550,5 +495,24 @@ public class DomainResourceTest {
 	@Ignore
 	public void shouldNotifyAfterDomainDestroyed() throws Throwable {
 		fail("not implemented yet");
+	}
+
+	@Test
+	public void shouldPassTimeoutToClient() throws Throwable {
+		// pre-conditions
+		int timeout = 42 * 1000;
+		mockDirector
+			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+			.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
+
+		// operation
+		domain.createApplication("scalable", CARTRIDGE_JBOSSAS_7, ApplicationScale.NO_SCALE, GearProfile.SMALL, null, timeout);
+
+		// verifications
+		mockDirector.verifyCreateApplication("foobarz", timeout, 
+				new Pair(IOpenShiftJsonConstants.PROPERTY_SCALE, String.valueOf(Boolean.FALSE)),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.SMALL.getName()),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
+				new Pair(IOpenShiftJsonConstants.PROPERTY_NAME, "scalable"));
 	}
 }

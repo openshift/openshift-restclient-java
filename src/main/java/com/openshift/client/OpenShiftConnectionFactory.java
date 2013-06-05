@@ -61,7 +61,7 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * 
 	 * @param clientId
 	 *            http client id
-	 * @param login
+	 * @param username
 	 *            user's login
 	 * @param password
 	 *            user's password
@@ -70,7 +70,7 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * @throws IOException
 	 * @throws OpenShiftException
 	 */
-	public IOpenShiftConnection getConnection(final String clientId, final String login, final String password)
+	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password)
 			throws OpenShiftException {
 		IOpenShiftConfiguration configuration;
 		try {
@@ -78,7 +78,7 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 		} catch (IOException e) {
 			throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
 		}
-		return getConnection(clientId, login, password, configuration.getLibraServer());
+		return getConnection(clientId, username, password, configuration.getLibraServer());
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * 
 	 * @param clientId
 	 *            http client id
-	 * @param login
+	 * @param username
 	 *            user's login.
 	 * @param password
 	 *            user's password.
@@ -98,9 +98,9 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * @throws IOException
 	 * @throws OpenShiftException
 	 */
-	public IOpenShiftConnection getConnection(final String clientId, final String login, final String password,
+	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
 			final String serverUrl) throws OpenShiftException {
-		return getConnection(clientId, login, password, null, null, serverUrl);
+		return getConnection(clientId, username, password, null, null, serverUrl);
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * 
 	 * @param clientId
 	 *            http client id
-	 * @param login
+	 * @param username
 	 *            user's login.
 	 * @param password
 	 *            user's password.
@@ -120,20 +120,28 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * @throws IOException
 	 * @throws OpenShiftException
 	 */
-	public IOpenShiftConnection getConnection(final String clientId, final String login, final String password,
+	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
 			final String authKey, final String authIV, final String serverUrl) throws OpenShiftException {
 		Assert.notNull(clientId);
-		Assert.notNull(login);
+		Assert.notNull(username);
 		Assert.notNull(password);
 		Assert.notNull(serverUrl);
 
 		try {
-			final IHttpClient httpClient =
-					new UrlConnectionHttpClientBuilder().setCredentials(login, password, authKey, authIV).client();
-			final IRestService service = new RestService(serverUrl, clientId, httpClient);
-			return getConnection(service, login, password);
+			IHttpClient httpClient =
+					new UrlConnectionHttpClientBuilder().setCredentials(username, password, authKey, authIV).client();
+			return getConnection(clientId, username, password, serverUrl, httpClient);
 		} catch (IOException e) {
-			throw new OpenShiftException(e, "Failed to establish connection for user ''{0}}''", login);
+			throw new OpenShiftException(e, "Failed to establish connection for user ''{0}}''", username);
 		}
+	}
+
+	protected IOpenShiftConnection getConnection(final String clientId, final String username, final String password, final String serverUrl, IHttpClient httpClient) throws OpenShiftException, IOException {
+		Assert.notNull(clientId);
+		Assert.notNull(serverUrl);
+		Assert.notNull(httpClient);
+
+		IRestService service = new RestService(serverUrl, clientId, httpClient);
+		return getConnection(service, username, password);
 	}
 }

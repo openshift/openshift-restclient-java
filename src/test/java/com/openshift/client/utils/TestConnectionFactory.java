@@ -13,6 +13,7 @@ package com.openshift.client.utils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftException;
@@ -29,14 +30,27 @@ public class TestConnectionFactory extends OpenShiftConnectionFactory {
 
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
 		
-		IOpenShiftConnection connection = getConnection(
+		return getConnection(
 				configuration.getClientId()
 				, configuration.getRhlogin()
 				, configuration.getPassword()
 				, null
 				, null
 				, configuration.getLibraServer());
-		
-		return connection;
+	}
+
+	public IOpenShiftConnection getConnection(String password, String server, IHttpClient httpClient) throws FileNotFoundException, IOException, OpenShiftException {
+		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
+		return getConnection(
+				configuration.getClientId(),
+				configuration.getRhlogin(),
+				password,
+				server,
+				httpClient);
+	}
+
+	public IOpenShiftConnection getConnection(IHttpClient httpClient) throws FileNotFoundException, IOException, OpenShiftException {
+		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
+		return getConnection(configuration.getPassword(), configuration.getLibraServer(), httpClient);
 	}
 }

@@ -10,22 +10,18 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
-import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.Samples;
+import com.openshift.client.utils.TestConnectionFactory;
 
 /**
  * @author Xavier Coulon
@@ -33,19 +29,11 @@ import com.openshift.client.utils.Samples;
  */
 public class APIResourceTest {
 
-	private IHttpClient mockClient;
-
 	private IOpenShiftConnection connection;
 
 	@Before
 	public void setup() throws Throwable {
-		mockClient = mock(IHttpClient.class);
-		when(mockClient.get(urlEndsWith("/broker/rest/api")))
-				.thenReturn(Samples.GET_API.getContentAsString());
-		when(mockClient.get(urlEndsWith("/cartridges")))
-				.thenReturn(Samples.GET_CARTRIDGES.getContentAsString());
-		connection = new OpenShiftConnectionFactory()
-				.getConnection(new RestService("http://mock", "clientId", mockClient), "foo@redhat.com", "bar");
+		connection = new TestConnectionFactory().getConnection(new HttpClientMockDirector().client());
 	}
 
 	@Test

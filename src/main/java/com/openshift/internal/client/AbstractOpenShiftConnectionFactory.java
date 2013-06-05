@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ import com.openshift.internal.client.response.RestResponse;
 public abstract class AbstractOpenShiftConnectionFactory {
 	
 	@SuppressWarnings("unchecked")
-	protected IOpenShiftConnection getConnection(IRestService service, final String login, final String password) throws FileNotFoundException, IOException, OpenShiftException {
+	protected IOpenShiftConnection getConnection(IRestService service, final String login, final String password) throws IOException, OpenShiftException {
 		RestResponse response =
 				(RestResponse) service.request(new Link("Get API", "/api", HttpMethod.GET));
 		return new APIResource(login, password, service, (Map<String, Link>) response.getData());

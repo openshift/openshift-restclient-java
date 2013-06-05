@@ -31,10 +31,19 @@ public interface IRestService {
 	public RestResponse request(Link link, ServiceParameter... serviceParameters)
 			throws OpenShiftException;
 	
+	public RestResponse request(Link link, int timeout, ServiceParameter... serviceParameters)
+			throws OpenShiftException;
+
 	public abstract RestResponse request(Link link, Map<String, Object> parameters)
 			throws OpenShiftException;
 
+	public abstract RestResponse request(Link link, int timeout, Map<String, Object> parameters)
+			throws OpenShiftException;
+
 	public abstract String request(String url, HttpMethod httpMethod, Map<String, Object> parameters)
+			throws OpenShiftException;
+
+	public abstract String request(String url, HttpMethod httpMethod, int timeout, Map<String, Object> parameters)
 			throws OpenShiftException;
 
 	public abstract String getServiceUrl();

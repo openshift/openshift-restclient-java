@@ -19,6 +19,7 @@ import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IGearProfile;
+import com.openshift.client.IHttpClient;
 import com.openshift.client.IUser;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
@@ -33,6 +34,7 @@ import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
 /**
  * @author André Dietisheim
+ * @author Nicolas Spano
  */
 public class DomainResource extends AbstractOpenShiftResource implements IDomain {
 
@@ -126,6 +128,12 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
 			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl)
 			throws OpenShiftException {
+		return createApplication(name, cartridge, scale, gearProfile, initialGitUrl, IHttpClient.NO_TIMEOUT);
+	}
+
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl, int timeout)
+			throws OpenShiftException {
 		if (name == null) {
 			throw new OpenShiftException("Application name is mandatory but none was given.");
 		}
@@ -137,14 +145,21 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		}
 
 		ApplicationResourceDTO applicationDTO =
-				new CreateApplicationRequest().execute(name, cartridge, scale, gearProfile, initialGitUrl);
+				new CreateApplicationRequest().execute(name, cartridge, scale, gearProfile, initialGitUrl, timeout);
 		IApplication application = new ApplicationResource(applicationDTO, cartridge, this);
 
 		getOrLoadApplications().add(application);
 		return application;
 	}
 
-	public boolean hasApplicationByName(String name) throws OpenShiftException {
+    @Override
+    public IApplication createApplication(String name, IStandaloneCartridge cartridge, ApplicationScale scale, IGearProfile gearProfile, String initialGitUrl, long timeout) throws OpenShiftException {
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+
+
+    public boolean hasApplicationByName(String name) throws OpenShiftException {
 		return getApplicationByName(name) != null;
 	}
 
@@ -291,7 +306,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		}
 
 		public ApplicationResourceDTO execute(final String name, final IStandaloneCartridge cartridge,
-				final ApplicationScale scale, final IGearProfile gearProfile, final String initialGitUrl) throws OpenShiftException {
+				final ApplicationScale scale, final IGearProfile gearProfile, final String initialGitUrl, final int timeout) throws OpenShiftException {
 			if (cartridge == null) {
 				throw new OpenShiftException("Application cartridge is mandatory but was not given.");
 			} 
@@ -303,7 +318,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 			addGearProfileParameter(gearProfile, parameters);
 			addStringParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl, parameters);
 			
-			return super.execute((ServiceParameter[]) parameters.toArray(new ServiceParameter[parameters.size()]));
+			return super.execute(timeout, (ServiceParameter[]) parameters.toArray(new ServiceParameter[parameters.size()]));
 		}
 
 		private List<ServiceParameter> addCartridgeParameter(IStandaloneCartridge cartridge, List<ServiceParameter> parameters) {

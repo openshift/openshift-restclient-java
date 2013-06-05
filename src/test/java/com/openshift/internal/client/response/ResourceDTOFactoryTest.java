@@ -50,7 +50,7 @@ public class ResourceDTOFactoryTest {
 	@Test
 	public void shouldUnmarshallGetUserResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_USER_JSON.getContentAsString();
+		String content = Samples.GET_USER.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);

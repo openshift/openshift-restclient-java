@@ -12,8 +12,6 @@ package com.openshift.internal.client;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,7 +22,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
@@ -54,18 +51,21 @@ public class RestServiceTest {
 
 	protected static final String KEY_PROTOCOL_VERSION = "protocol_version";
 	private IRestService service;
+	private HttpClientMockDirector mockDirector;
 	private IHttpClient clientMock;
 
 	@Before
 	public void setUp() throws FileNotFoundException, IOException, OpenShiftException, HttpClientException {
-		this.clientMock = mock(IHttpClient.class);
+		this.mockDirector = new HttpClientMockDirector();
 		String jsonResponse = "{}";
+		this.clientMock = mockDirector
+				.mockGetAny(jsonResponse)
+				.mockPostAny(jsonResponse)
+				.mockPutAny(jsonResponse)
+				.mockDeleteAny(jsonResponse)
+				.client();
 		when(clientMock.getAcceptVersion()).thenReturn(IRestService.SERVICE_VERSION);
-		when(clientMock.get(any(URL.class))).thenReturn(jsonResponse);
-		when(clientMock.post(anyMapOf(String.class, Object.class), any(URL.class))).thenReturn(jsonResponse);
-		when(clientMock.put(anyMapOf(String.class, Object.class), any(URL.class))).thenReturn(jsonResponse);
-		when(clientMock.delete(anyMapOf(String.class, Object.class), any(URL.class))).thenReturn(jsonResponse);
-
+		
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
 		this.service = new RestService(configuration.getStagingServer(), configuration.getClientId(), clientMock);
 	}
@@ -91,7 +91,7 @@ public class RestServiceTest {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.GET, null, null));
 		// verifications
-		verify(clientMock, times(1)).get(any(URL.class));
+		mockDirector.verifyGetAny(1);
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class RestServiceTest {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.POST, null, null));
 		// verifications
-		verify(clientMock, times(1)).post(anyMapOf(String.class, Object.class), any(URL.class));
+		mockDirector.verifyPostAny(1);
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class RestServiceTest {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.PUT, null, null));
 		// verifications
-		verify(clientMock, times(1)).put(anyMapOf(String.class, Object.class), any(URL.class));
+		mockDirector.verifyPutAny(1);
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class RestServiceTest {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.DELETE, null, null));
 		// verifications
-		verify(clientMock, times(1)).delete(anyMapOf(String.class, Object.class), any(URL.class));
+		mockDirector.verifyDeleteAny(1);
 	}
 
 	@Test
@@ -128,8 +128,7 @@ public class RestServiceTest {
 		String url = "http://www.redhat.com";
 		service.request(new Link("0 required parameter", url, HttpMethod.GET, null, null));
 		// verifications
-		verify(clientMock, times(1)).get(new URL(url));
-
+		mockDirector.verifyGet(url, 1);
 	}
 
 	@Test
@@ -140,7 +139,7 @@ public class RestServiceTest {
 		service.request(new Link("0 require parameter", url, HttpMethod.GET, null, null));
 		// verifications
 		String targetUrl = service.getServiceUrl() + url.substring(1, url.length());
-		verify(clientMock, times(1)).get(new URL(targetUrl));
+		mockDirector.verifyGet(targetUrl, 1);
 	}
 
 	@Test
@@ -151,15 +150,14 @@ public class RestServiceTest {
 		service.request(new Link("0 require parameter", url, HttpMethod.GET, null, null));
 		// verifications
 		String targetUrl = service.getPlatformUrl() + url;
-		verify(clientMock, times(1)).get(new URL(targetUrl));
+		mockDirector.verifyGet(targetUrl, 1);
 	}
 
 	@Test
 	public void shouldThrowExceptionWithResponseOnNotFound() throws Throwable {
 		try {
 			// pre-conditions
-			NotFoundException e = new NotFoundException(Samples.GET_DOMAINS_FOOBAR_KO_NOTFOUND.getContentAsString());
-			when(clientMock.get(any(URL.class))).thenThrow(e);
+			mockDirector.mockGetAny(new NotFoundException(Samples.GET_DOMAINS_FOOBAR_KO_NOTFOUND.getContentAsString()));
 			// operation
 			service.request(new Link("0 require parameter", "/broker/rest/adietisheim", HttpMethod.GET, null, null));
 			// verifications
@@ -173,8 +171,7 @@ public class RestServiceTest {
 	public void shouldHaveMessageIfErrors() throws Throwable {
 		try {
 			// pre-conditions
-			when(clientMock.post(anyMapOf(String.class, Object.class), any(URL.class)))
-					.thenThrow(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
+			mockDirector.mockPostAny(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
 			// operation
 			service.request(new Link("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));
 			// verifications
@@ -196,8 +193,7 @@ public class RestServiceTest {
 	public void shouldReportPlatformUrlInException() throws Throwable {
 		try {
 			// pre-conditions
-			when(clientMock.post(anyMapOf(String.class, Object.class), any(URL.class)))
-					.thenThrow(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
+			mockDirector.mockPostAny(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
 			// operation
 			service.request(new Link("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));
 			// verifications
