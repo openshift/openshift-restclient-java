@@ -322,9 +322,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	private void setSSLChecks(URL url, HttpURLConnection connection) {
 		if (isHttps(url)
 				&& !sslChecks) {
-			// JDK7 bug workaround
-			System.setProperty(SYSPROP_ENABLE_SNI_EXTENSION, "false");
-
 			HttpsURLConnection httpsConnection = (HttpsURLConnection) connection;
 			httpsConnection.setHostnameVerifier(new NoopHostnameVerifier());
 			setPermissiveSSLSocketFactory(httpsConnection);
