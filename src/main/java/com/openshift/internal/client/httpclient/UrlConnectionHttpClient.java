@@ -52,7 +52,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	private static final String SYSPROP_OPENSHIFT_CONNECT_TIMEOUT = "com.openshift.httpclient.timeout";
 	private static final String SYSPROP_DEFAULT_CONNECT_TIMEOUT = "sun.net.client.defaultConnectTimeout";
 	private static final String SYSPROP_DEFAULT_READ_TIMEOUT = "sun.net.client.defaultReadTimeout";
-	private static final String SYSPROP_ENABLE_SNI_EXTENSION = "jsse.enableSNIExtension";
 
 	private static final String USERAGENT_FOR_KEYAUTH = "OpenShift";
 

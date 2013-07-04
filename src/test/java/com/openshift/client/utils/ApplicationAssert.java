@@ -272,6 +272,4 @@ public class ApplicationAssert implements AssertExtension {
 		}
 		return this;
 	}
-	
-
 }
