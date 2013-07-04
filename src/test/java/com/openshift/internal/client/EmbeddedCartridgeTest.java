@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import java.net.SocketTimeoutException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,10 +33,12 @@ import org.mockito.Mockito;
 
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
+import com.openshift.client.IField;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.Message;
+import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
@@ -154,7 +157,7 @@ public class EmbeddedCartridgeTest {
 						CartridgeType.EMBEDDED,
 						"embedded-info",
 						Collections.<String, Link> emptyMap(),
-						Collections.<String, Message> emptyMap(),
+						new Messages(Collections.<IField, List<Message>> emptyMap()),
 						applicationResourceMock);
 	}
 }

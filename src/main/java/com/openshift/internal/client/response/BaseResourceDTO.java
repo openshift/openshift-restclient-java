@@ -13,7 +13,7 @@ package com.openshift.internal.client.response;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.openshift.client.Message;
+import com.openshift.client.Messages;
 
 /**
  * The Class BaseResourceDTO.
@@ -25,7 +25,7 @@ public abstract class BaseResourceDTO {
 
 	/** the indexed map of links to perform operations from this resource. */
 	private final Map<String, Link> links;
-	private final Map<String, Message> messages;
+	private final Messages messages;
 
 	protected BaseResourceDTO() {
 		this(new HashMap<String, Link>(), null);
@@ -37,7 +37,7 @@ public abstract class BaseResourceDTO {
 	 * @param links
 	 *            the links
 	 */
-	protected BaseResourceDTO(final Map<String, Link> links, Map<String, Message> messages) {
+	protected BaseResourceDTO(final Map<String, Link> links, Messages messages) {
 		this.links = links;
 		this.messages = messages;
 	}
@@ -69,7 +69,7 @@ public abstract class BaseResourceDTO {
 	 * 
 	 * @return the messages that were reported when this resource was created
 	 */
-	public Map<String, Message> getMessages() {
+	public Messages getMessages() {
 		return messages;
 	}
 }

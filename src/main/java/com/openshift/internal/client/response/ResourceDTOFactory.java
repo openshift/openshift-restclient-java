@@ -58,9 +58,11 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.GearState;
+import com.openshift.client.IField;
 import com.openshift.client.IGear;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.Message;
+import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
 import com.openshift.internal.client.Gear;
@@ -95,7 +97,7 @@ public class ResourceDTOFactory {
 		final ModelNode rootNode = getModelNode(content);
 		final String type = rootNode.get(IOpenShiftJsonConstants.PROPERTY_TYPE).asString();
 		final String status = rootNode.get(IOpenShiftJsonConstants.PROPERTY_STATUS).asString();
-		final Map<String, Message> messages = createMessages(rootNode.get(IOpenShiftJsonConstants.PROPERTY_MESSAGES));
+		final Messages messages = createMessages(rootNode.get(IOpenShiftJsonConstants.PROPERTY_MESSAGES));
 
 		final EnumDataType dataType = EnumDataType.safeValueOf(type);
 		// the response is after an error, only the messages are relevant
@@ -141,17 +143,24 @@ public class ResourceDTOFactory {
 	 *            the messages node
 	 * @return the list< string>
 	 */
-	private static Map<String, Message> createMessages(ModelNode messagesNode) {
-		Map<String, Message> messages = new LinkedHashMap<String, Message>();
+	private static Messages createMessages(ModelNode messagesNode) {
+		Map<IField, List<Message>> messagesByField = new LinkedHashMap<IField, List<Message>>();
 		if (messagesNode.getType() == ModelType.LIST) {
 			for (ModelNode messageNode : messagesNode.asList()) {
 				Message message = createMessage(messageNode);
-				messages.put(message.getField(), message);
+				List<Message> messages = (List<Message>) messagesByField.get(message.getField());
+				if (messages == null) {
+					messages = new ArrayList<Message>();
+				}
+				messages.add(message);
+				messagesByField.put(message.getField(), messages);
 			}
 		}
-		return messages;
+		return new Messages(messagesByField);
 	}
 
+	
+	
 	private static Message createMessage(ModelNode messageNode) {
 		String text = getString(messageNode.get(IOpenShiftJsonConstants.PROPERTY_TEXT));
 		String field = getString(messageNode.get(IOpenShiftJsonConstants.PROPERTY_FIELD));
@@ -247,7 +256,7 @@ public class ResourceDTOFactory {
 	 * @return the key resource dto
 	 * @throws OpenShiftException
 	 */
-	private static KeyResourceDTO createKey(ModelNode keyNode, Map<String, Message> messages) throws OpenShiftException {
+	private static KeyResourceDTO createKey(ModelNode keyNode, Messages messages) throws OpenShiftException {
 		if (keyNode.has(PROPERTY_DATA)) {
 			// loop inside 'data' node
 			return createKey(keyNode.get(PROPERTY_DATA), messages);
@@ -336,7 +345,7 @@ public class ResourceDTOFactory {
 	 * @return the domain dto
 	 * @throws OpenShiftException
 	 */
-	private static DomainResourceDTO createDomain(final ModelNode domainNode, Map<String, Message> messages)
+	private static DomainResourceDTO createDomain(final ModelNode domainNode, Messages messages)
 			throws OpenShiftException {
 		if (domainNode.has(PROPERTY_DATA)) {
 			// recurse into "data" node
@@ -375,7 +384,7 @@ public class ResourceDTOFactory {
 	 * @return the application dto
 	 * @throws OpenShiftException
 	 */
-	private static ApplicationResourceDTO createApplication(ModelNode appNode, Map<String, Message> messages)
+	private static ApplicationResourceDTO createApplication(ModelNode appNode, Messages messages)
 			throws OpenShiftException {
 		if (appNode.has(PROPERTY_DATA)) {
 			// recurse into 'data' node
@@ -497,7 +506,7 @@ public class ResourceDTOFactory {
 	 * @return the cartridge resource dto
 	 * @throws OpenShiftException
 	 */
-	private static CartridgeResourceDTO createCartridge(ModelNode cartridgeNode, Map<String, Message> messages)
+	private static CartridgeResourceDTO createCartridge(ModelNode cartridgeNode, Messages messages)
 			throws OpenShiftException {
 		if (cartridgeNode.has(PROPERTY_DATA)) {
 			// recurse into 'data' node

@@ -14,6 +14,7 @@ import java.util.Map;
 
 import com.openshift.client.IOpenShiftResource;
 import com.openshift.client.Message;
+import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
 import com.openshift.internal.client.response.Link;
@@ -33,7 +34,7 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 	/** The service. */
 	private final IRestService service;
 
-	private Map<String, Message> messagesByField;
+	private Messages messages;
 
 	/**
 	 * Instantiates a new abstract open shift resource.
@@ -53,10 +54,10 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 	 * @param links
 	 *            the links
 	 */
-	public AbstractOpenShiftResource(final IRestService service, final Map<String, Link> links, final Map<String, Message> messages) {
+	public AbstractOpenShiftResource(final IRestService service, final Map<String, Link> links, final Messages messages) {
 		this.service = service;
 		this.links = links;
-		this.messagesByField = messages;
+		this.messages = messages;
 	}
 
 	/**
@@ -132,8 +133,7 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 	}
 
 	public boolean hasCreationLog() {
-		return messagesByField != null
-				&& messagesByField.size() > 0;
+		return messages.hasMessages();
 	}
 
 	public String getCreationLog() {
@@ -141,20 +141,13 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 			return null;
 		}
 		StringBuilder builder = new StringBuilder();
-		for (Message message : messagesByField.values()) {
+		for (Message message : messages.getAll()) {
 			builder.append(message.getText());
 		}
 		return builder.toString();
 	}
 
-	public Map<String, Message> getMessages() {
-		return messagesByField;
-	}
-	
-	public Message getMessage(String field) {
-		if (messagesByField == null) {
-			return null;
-		}
-		return messagesByField.get(field);
+	public Messages getMessages() {
+		return messages;
 	}
 }

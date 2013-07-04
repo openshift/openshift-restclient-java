@@ -20,7 +20,7 @@ import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IUser;
-import com.openshift.client.Message;
+import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
@@ -50,8 +50,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	private List<IApplication> applications = null;
 
 	protected DomainResource(final String namespace, final String suffix, final Map<String, Link> links,
-			final Map<String, Message> messages,
-			final APIResource api) {
+			final Messages messages, final APIResource api) {
 		super(api.getService(), links, messages);
 		this.id = namespace;
 		this.suffix = suffix;

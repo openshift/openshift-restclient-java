@@ -1,6 +1,5 @@
 package com.openshift.client;
 
-import java.util.Map;
 
 public interface IOpenShiftResource {
 
@@ -30,19 +29,7 @@ public interface IOpenShiftResource {
 	 * 
 	 * @see #getCreationLog()
 	 */
-	public Map<String, Message> getMessages();
-
-	/**
-	 * Returns the message of the given field type. These messages only exist
-	 * at creation time. See {@link #getCreationLog()} for further details.
-	 * 
-	 * @param field the field type 
-	 * @return
-	 * 
-	 * @see Message#FIELD_APPINFO
-	 * @see Message#FIELD_RESULT
-	 */
-	public Message getMessage(String field);
+	public Messages getMessages();
 
 	/**
 	 * Refresh the resource and its list of children resources that were

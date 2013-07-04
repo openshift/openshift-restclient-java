@@ -27,7 +27,6 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -36,7 +35,6 @@ import org.junit.Test;
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.Message;
-import com.openshift.client.Message.Severity;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.MessageAssert;
@@ -184,15 +182,13 @@ public class RestServiceTest {
 		} catch (OpenShiftEndpointException e) {
 			RestResponse restResponse = e.getRestResponse();
 			assertThat(restResponse).isNotNull();
-			assertThat(restResponse.getMessages()).hasSize(1);
-			Map<String, Message> messages = restResponse.getMessages();
-			Message message = messages.values().iterator().next();
-			assertThat(message).isNotNull();
+			assertThat(restResponse.getMessages().size()).isEqualTo(1);
+			Message message = restResponse.getMessages().getAll().iterator().next();
 			assertThat(new MessageAssert(message))
 					.hasText("Namespace 'foobar' is already in use. Please choose another.")
 					.hasSeverity(Severity.ERROR)
 					.hasExitCode(103)
-					.hasField("id");
+					.hasField(new Field("id"));
 		}
 	}
 

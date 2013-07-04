@@ -15,8 +15,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.fest.assertions.AssertExtension;
 
+import com.openshift.client.IField;
+import com.openshift.client.ISeverity;
 import com.openshift.client.Message;
-import com.openshift.client.Message.Severity;
 
 /**
  * @author Andre Dietisheim
@@ -26,6 +27,7 @@ public class MessageAssert implements AssertExtension {
 	private Message message;
 
 	public MessageAssert(Message message) {
+		assertThat(message).isNotNull();
 		this.message = message;
 	}
 
@@ -39,7 +41,7 @@ public class MessageAssert implements AssertExtension {
 		return this;
 	}
 
-	public MessageAssert hasSeverity(Severity severity) {
+	public MessageAssert hasSeverity(ISeverity severity) {
 		assertEquals(severity, message.getSeverity());
 		return this;
 	}
@@ -49,8 +51,8 @@ public class MessageAssert implements AssertExtension {
 		return this;
 	}
 
-	public MessageAssert hasField(String parameter) {
-		assertEquals(parameter, message.getField());
+	public MessageAssert hasField(IField field) {
+		assertThat(field).isEqualTo(message.getField());
 		return this;
 	}
 }

@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,7 +34,7 @@ import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.Message;
-import com.openshift.client.Message.Severity;
+import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
@@ -112,9 +111,9 @@ public class OpenShiftExceptionTest {
 		} catch (OpenShiftEndpointException e) {
 			// verification
 			assertThat(e.getRestResponse()).isNotNull();
-			Map<String, Message> messageByField = e.getRestResponse().getMessages();
-			assertThat(messageByField).isNotEmpty();
-			Message firstMessage = messageByField.values().iterator().next(); 
+			Messages messages = e.getRestResponse().getMessages();
+			assertThat(messages.size()).isGreaterThan(0);
+			Message firstMessage = messages.getAll().iterator().next(); 
 			new MessageAssert(firstMessage)
 					.hasExitCode(128)
 					.hasSeverity(Severity.ERROR)

@@ -36,6 +36,7 @@ public enum Samples {
 	GET_DOMAINS_FOOBARZ_APPLICATONS_SPRINGEAP6_0ALIAS("get-domains-foobarz-applications-springeap6_0alias.json"), // 1.2
 	POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT("post-stop-domains-foobarz-applications-springeap6-events.json"), // 1.2
 	POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS("post-scalable-domains-foobarz-applications.json"), // 1.2
+	POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS("post-jekyll-domains-foobarz-applications.json"), // 1.2	
 	
 	// domain
 	DELETE_DOMAINS_FOOBAR_KO("delete-domains-foobar_ko.json"), // 1.2
@@ -47,7 +48,6 @@ public enum Samples {
 	GET_DOMAINS("get-domains.json"), // 1.2
 	GET_DOMAINS_EMPTY("get-domains_empty.json"), // 1.2
 	POST_FOOBAR_DOMAINS_KO_INUSE("post-foobar-domains_ko-inuse.json"), // 1.2	
-	POST_FOOBARZ_DOMAINS("post-foobarz-domains"), // 1.2
 	
 	// user
 	GET_API("get-api.json"), // 1.2 
