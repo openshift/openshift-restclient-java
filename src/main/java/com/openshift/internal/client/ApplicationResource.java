@@ -39,10 +39,12 @@ import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
 import com.openshift.client.IApplicationPortForwarding;
 import com.openshift.client.IDomain;
+import com.openshift.client.IField;
 import com.openshift.client.IGearGroup;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.Message;
+import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftSSHOperationException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
@@ -164,7 +166,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 *            the uuid
 	 * @param creationTime
 	 *            the creation time
-	 * @param creationLog
+	 * @param messages
 	 *            the creation log
 	 * @param applicationUrl
 	 *            the application url
@@ -181,12 +183,12 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * @throws DatatypeConfigurationException
 	 */
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
-			final Map<String, Message> creationLog, final String applicationUrl, final String gitUrl,
+			final Messages messages, final String applicationUrl, final String gitUrl,
 			final String initialGitUrl, final IGearProfile gearProfile, final List<IGearGroup> gearGroups,
 			final ApplicationScale scale, final IStandaloneCartridge cartridge, final List<String> aliases,
 			final Map<String, String> embeddedCartridgesInfos, final Map<String, Link> links,
 			final DomainResource domain) {
-		super(domain.getService(), links, creationLog);
+		super(domain.getService(), links, messages);
 		this.name = name;
 		this.uuid = uuid;
 		this.creationTime = RFC822DateUtils.safeGetDate(creationTime);

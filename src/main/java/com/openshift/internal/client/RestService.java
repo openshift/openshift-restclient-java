@@ -127,8 +127,8 @@ public class RestService implements IRestService {
 				return null;
 			}
 			StringBuilder builder = new StringBuilder();
-			for (Message message : restResponse.getMessages().values()) {
-				builder.append(message.getText()).append('\n');
+			for (Message message : restResponse.getMessages().getAll()) {
+				builder.append(message.getText()).append('\n');					
 			}
 			return builder.toString();
 		} catch (OpenShiftException e) {

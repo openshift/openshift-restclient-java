@@ -17,18 +17,19 @@ import static org.junit.Assert.fail;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
+import com.openshift.client.IField;
 import com.openshift.client.IGearProfile;
+import com.openshift.client.ISeverity;
 import com.openshift.client.IUser;
 import com.openshift.client.Message;
-import com.openshift.client.Message.Severity;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IStandaloneCartridge;
@@ -122,9 +123,10 @@ public class DomainResourceIntegrationTest {
 		} catch (OpenShiftEndpointException e) {
 			// verification
 			assertThat(e.getRestResponseMessages().size()).isEqualTo(1);
-			new MessageAssert(e.getRestResponseMessage(Message.FIELD_DEFAULT))
+			List<Message> messages = e.getRestResponseMessage(IField.DEFAULT);
+			new MessageAssert(messages.get(0))
 					.hasExitCode(128)
-					.hasSeverity(Severity.ERROR)
+					.hasSeverity(ISeverity.ERROR)
 					.hasText();
 		}
 	}
@@ -310,6 +312,23 @@ public class DomainResourceIntegrationTest {
 				.hasAlias();
 	}
 	
+	@Test
+	public void shouldHaveCredentialsInMessage() throws Exception {
+		// pre-conditions
+		ApplicationTestUtils.destroyAllApplications(domain);
+
+		// operation
+		String applicationName =
+				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jenkins = LatestVersionOf.jenkins().get(user);
+		IApplication application = domain.createApplication(
+				applicationName, jenkins );
+
+		// verification
+		assertThat(new ApplicationAssert(application))
+				.hasMessage(IField.DEFAULT, ISeverity.RESULT);
+	}
+
 	@Test(expected = OpenShiftException.class)
 	public void createDuplicateApplicationThrowsException() throws Exception {
 		// pre-condition

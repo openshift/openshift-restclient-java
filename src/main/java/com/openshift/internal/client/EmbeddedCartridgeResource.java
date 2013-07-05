@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import com.openshift.client.IApplication;
 import com.openshift.client.Message;
+import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
@@ -47,7 +48,7 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	}
 
 	protected EmbeddedCartridgeResource(final String name, final String displayName, final String description, final CartridgeType type, String info, final Map<String, Link> links,
-			final Map<String, Message> messages, final ApplicationResource application) {
+			final Messages messages, final ApplicationResource application) {
 		super(application.getService(), links, messages);
 		this.name = name;
 		this.displayName = displayName;
@@ -55,7 +56,7 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		this.type = type;
 		// TODO: fix this workaround once
 		// https://bugzilla.redhat.com/show_bug.cgi?id=812046 is fixed
-		this.url = extractUrl(info, messages);
+		this.url = extractUrl(info, getMessages());
 		this.application = application;
 	}
 	
@@ -79,7 +80,7 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		return application;
 	}
 
-	private String extractUrl(String info, Map<String, Message> messages) {
+	private String extractUrl(String info, Messages messages) {
 		if (info != null) {
 			return extractUrl(info);
 		} else {
@@ -100,11 +101,11 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		return matcher.group(1);
 	}
 	
-	private String extractUrl(Map<String, Message> messages) {
+	private String extractUrl(Messages messages) {
 		if (messages == null) {
 			return null;
 		}
-		for (Message message : messages.values()) {
+		for (Message message : messages.getAll()) {
 			String url = extractUrl(message.getText());
 			if (url != null) {
 				return url;

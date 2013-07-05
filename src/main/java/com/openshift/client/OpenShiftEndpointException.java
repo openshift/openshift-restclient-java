@@ -10,7 +10,7 @@
  ******************************************************************************/
 package com.openshift.client;
 
-import java.util.Map;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class OpenShiftEndpointException extends OpenShiftException {
 	/**
 	 * @return the server response messages after converting the response into a {@link RestResponse}. If the unmarshalling fails, the returned list is <code>null</code>.
 	 */
-	public Map<String, Message> getRestResponseMessages() {
+	public Messages getRestResponseMessages() {
 		if (response == null) {
 			return null;
 		}
@@ -76,12 +76,12 @@ public class OpenShiftEndpointException extends OpenShiftException {
 	 * @see Message#FIELD_APPINFO
 	 * @see Message#FIELD_RESULT
 	 */
-	public Message getRestResponseMessage(String field) {
-		Map<String, Message> messages = getRestResponseMessages();
+	public List<Message> getRestResponseMessage(IField field) {
+		Messages messages = getRestResponseMessages();
 		if (messages == null) {
 			return null;
 		}
-		return messages.get(field);
+		return messages.getBy(field);
 	}
 
 	protected String getUrl() {

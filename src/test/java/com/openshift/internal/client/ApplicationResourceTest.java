@@ -42,10 +42,10 @@ import org.mockito.Mockito;
 import com.openshift.client.IApplication;
 import com.openshift.client.IApplicationPortForwarding;
 import com.openshift.client.IDomain;
+import com.openshift.client.IField;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
-import com.openshift.client.Message;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftTimeoutException;
@@ -353,10 +353,10 @@ public class ApplicationResourceTest {
 				.hasDescription()
 				.hasName(mySql51Name);
 
-		new MessageAssert(mySqlCartridge.getMessage(Message.FIELD_DEFAULT))
+		new MessageAssert(mySqlCartridge.getMessages().getFirstBy(IField.DEFAULT))
 				.hasExitCode(-1)
 				.hasText("Added mysql-5.1 to application springeap6");
-		new MessageAssert(mySqlCartridge.getMessage(Message.FIELD_RESULT))
+		new MessageAssert(mySqlCartridge.getMessages().getFirstBy(IField.RESULT))
 				.hasExitCode(0)
 				.hasText(
 						"\nMySQL 5.1 database added.  Please make note of these credentials:\n\n"
@@ -364,7 +364,7 @@ public class ApplicationResourceTest {
 								+ "Connection URL: mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/\n\n"
 								+ "You can manage your new MySQL database by also embedding phpmyadmin-3.4.\n"
 								+ "The phpmyadmin username and password will be the same as the MySQL credentials above.\n");
-		new MessageAssert(mySqlCartridge.getMessage(Message.FIELD_APPINFO))
+		new MessageAssert(mySqlCartridge.getMessages().getFirstBy(IField.APPINFO))
 				.hasExitCode(0)
 				.hasText("Connection URL: mysql://127.13.125.1:3306/\n");
 

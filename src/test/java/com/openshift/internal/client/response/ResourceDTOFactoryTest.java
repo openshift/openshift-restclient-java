@@ -15,7 +15,6 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,8 +24,10 @@ import org.junit.Test;
 
 import com.openshift.client.GearState;
 import com.openshift.client.HttpMethod;
+import com.openshift.client.IField;
 import com.openshift.client.IGear;
 import com.openshift.client.Message;
+import com.openshift.client.Messages;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.CartridgeType;
@@ -186,7 +187,7 @@ public class ResourceDTOFactoryTest {
 		RestResponse response = ResourceDTOFactory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isNull();
-		assertThat(response.getMessages()).hasSize(1);
+		assertThat(response.getMessages().size()).isEqualTo(1);
 	}
 
 	@Test
@@ -240,15 +241,18 @@ public class ResourceDTOFactoryTest {
 		RestResponse response = ResourceDTOFactory.get(content);
 
 		// verifications
-		Collection<Message> messages = response.getMessages().values();
-		assertThat(messages).hasSize(3);
-		Iterator<Message> it = messages.iterator();
-		new MessageAssert(it.next())
-				.hasField(Message.FIELD_DEFAULT)
+		Messages messages = response.getMessages();
+		assertThat(messages.size()).isEqualTo(3);
+		Collection <Message> defaultMessages = messages.getBy(IField.DEFAULT);
+		assertThat(defaultMessages).isNotEmpty();
+		new MessageAssert(defaultMessages.iterator().next())
+				.hasField(IField.DEFAULT)
 				.hasExitCode(-1)
 				.hasText("Added mysql-5.1 to application springeap6");
-		new MessageAssert(it.next())
-				.hasField(Message.FIELD_RESULT)
+		Collection <Message> resultMessages = messages.getBy(IField.RESULT);
+		assertThat(resultMessages).isNotEmpty();
+		new MessageAssert(resultMessages.iterator().next())
+				.hasField(IField.RESULT)
 				.hasExitCode(0)
 				.hasText(
 						"\nMySQL 5.1 database added.  Please make note of these credentials:\n\n"
@@ -256,8 +260,10 @@ public class ResourceDTOFactoryTest {
 								+ "Connection URL: mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/\n\n"
 								+ "You can manage your new MySQL database by also embedding phpmyadmin-3.4.\n"
 								+ "The phpmyadmin username and password will be the same as the MySQL credentials above.\n");
-		new MessageAssert(it.next())
-				.hasField(Message.FIELD_APPINFO)
+		Collection <Message> appInfoMessages = messages.getBy(IField.APPINFO);
+		assertThat(appInfoMessages).isNotEmpty();
+		new MessageAssert(appInfoMessages.iterator().next())
+				.hasField(IField.APPINFO)
 				.hasExitCode(0)
 				.hasText("Connection URL: mysql://127.13.125.1:3306/\n");
 
@@ -282,7 +288,7 @@ public class ResourceDTOFactoryTest {
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
 		// verifications
-		assertThat(response.getMessages()).hasSize(0);
+		assertThat(response.getMessages().size()).isEqualTo(0);
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridges);
 		final List<CartridgeResourceDTO> cartridges = response.getData();
 		assertThat(cartridges).hasSize(3); // mysql, mongo, jbosseap
@@ -302,7 +308,7 @@ public class ResourceDTOFactoryTest {
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
 		// verifications
-		assertThat(response.getMessages()).hasSize(0);
+		assertThat(response.getMessages().size()).isEqualTo(0);
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridges);
 		final List<CartridgeResourceDTO> cartridges = response.getData();
 		assertThat(cartridges).hasSize(3);

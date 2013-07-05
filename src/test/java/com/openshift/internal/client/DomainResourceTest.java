@@ -17,6 +17,7 @@ import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS;
+import static com.openshift.client.utils.Samples.POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS;
 import static com.openshift.client.utils.Samples.POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS;
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
@@ -48,14 +49,19 @@ import org.mockito.ArgumentCaptor;
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
+import com.openshift.client.IField;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
+import com.openshift.client.ISeverity;
 import com.openshift.client.IUser;
 import com.openshift.client.InvalidCredentialsOpenShiftException;
+import com.openshift.client.Message;
+import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
@@ -69,6 +75,8 @@ import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 public class DomainResourceTest {
 
 	private static final StandaloneCartridge CARTRIDGE_JBOSSAS_7 = new StandaloneCartridge("jbossas-7");
+	private static final StandaloneCartridge CARTRIDGE_JENKINS_14 = new StandaloneCartridge("jenkins-1.4");
+
 	private IUser user;
 	private IDomain domain;
 	private IHttpClient mockClient;
@@ -321,6 +329,41 @@ public class DomainResourceTest {
 		assertThat(app.getDomain()).isEqualTo(domain);
 		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(18);
 		assertThat(domain.getApplications()).hasSize(1).contains(app);
+	}
+
+	@Test
+	public void shouldHaveMessagesWhenCreating() throws Throwable {
+		// pre-conditions
+		when(mockClient.get(urlEndsWith("/domains/foobarz/applications")))
+			.thenReturn(
+				GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS.getContentAsString());
+		when(mockClient.post(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz/applications"))).thenReturn(
+				POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString());
+		// operation
+		final IApplication app = domain.createApplication("jekyll", CARTRIDGE_JENKINS_14);
+		// verifications
+		Messages messages = app.getMessages();
+		assertThat(messages).isNotNull();
+		assertThat(messages.getAll()).hasSize(3);
+		List<Message> defaultMessages = messages.getBy(IField.DEFAULT);
+		assertThat(defaultMessages).hasSize(3);
+		List<Message> infoSeverityMessages = messages.getBy(IField.DEFAULT, ISeverity.INFO);
+		assertThat(infoSeverityMessages).hasSize(1);
+		new MessageAssert(infoSeverityMessages.get(0))
+			.hasExitCode(0)
+			.hasText("Application jekyll was created.");
+		List<Message> debugSeverityMessages = app.getMessages().getBy(IField.DEFAULT, ISeverity.DEBUG);
+		assertThat(debugSeverityMessages).hasSize(1);
+		new MessageAssert(debugSeverityMessages.get(0))
+			.hasExitCode(0)
+			.hasText("The cartridge jenkins deployed a template application");
+		List<Message> resultSeverityMessages = messages.getBy(IField.DEFAULT, ISeverity.RESULT);
+		assertThat(resultSeverityMessages).hasSize(1);
+		new MessageAssert(resultSeverityMessages.get(0))
+				.hasExitCode(0)
+				.hasText("Jenkins created successfully.  "
+						+ "Please make note of these credentials:\n   User: admin\n   Password: wLwSzJPh6dqN\n"
+						+ "Note:  You can change your password at: https://jekyll-foobarz.rhcloud.com/me/configure\n");
 	}
 
 	@Test

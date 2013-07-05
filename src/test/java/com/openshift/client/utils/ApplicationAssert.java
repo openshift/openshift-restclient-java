@@ -18,7 +18,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +28,10 @@ import org.fest.assertions.AssertExtension;
 
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
+import com.openshift.client.IField;
+import com.openshift.client.ISeverity;
+import com.openshift.client.Message;
+import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
@@ -49,6 +52,7 @@ public class ApplicationAssert implements AssertExtension {
 	private IApplication application;
 
 	public ApplicationAssert(IApplication application) {
+		assertThat(application).isNotNull();
 		this.application = application;
 	}
 
@@ -240,4 +244,13 @@ public class ApplicationAssert implements AssertExtension {
 		assertThat(content).contains(contains);
 		return this;
 	}
+
+	public ApplicationAssert hasMessage(IField field, ISeverity severity) throws IOException {
+		Messages messages = application.getMessages();
+		assertThat(messages).isNotNull();
+		List<Message> matchingMessages = messages.getBy(field, severity);
+		assertThat(matchingMessages).isNotEmpty();
+		return this;
+	}
+
 }
