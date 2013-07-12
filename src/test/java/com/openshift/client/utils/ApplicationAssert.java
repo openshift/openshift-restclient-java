@@ -253,4 +253,25 @@ public class ApplicationAssert implements AssertExtension {
 		return this;
 	}
 
+	public ApplicationAssert hasMessage(IField field) throws IOException {
+		Messages messages = application.getMessages();
+		assertThat(messages).isNotNull();
+		List<Message> matchingMessages = messages.getBy(field);
+		assertThat(matchingMessages).isNotEmpty();
+		return this;
+	}
+
+	public ApplicationAssert hasResultFieldOrResultSeverityMessage() throws IOException {
+		Messages messages = application.getMessages();
+		assertThat(messages).isNotNull();
+		List<Message> matchingMessages = messages.getBy(IField.RESULT);
+		if (matchingMessages == null
+				|| matchingMessages.isEmpty()) {
+			matchingMessages = messages.getBy(IField.DEFAULT, ISeverity.RESULT);
+			assertThat(matchingMessages).isNotEmpty();
+		}
+		return this;
+	}
+	
+
 }

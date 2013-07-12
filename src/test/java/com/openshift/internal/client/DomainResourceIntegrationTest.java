@@ -325,8 +325,8 @@ public class DomainResourceIntegrationTest {
 				applicationName, jenkins );
 
 		// verification
-		assertThat(new ApplicationAssert(application))
-				.hasMessage(IField.DEFAULT, ISeverity.RESULT);
+		new ApplicationAssert(application)
+				.hasResultFieldOrResultSeverityMessage();
 	}
 
 	@Test(expected = OpenShiftException.class)
