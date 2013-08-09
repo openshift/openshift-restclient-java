@@ -13,8 +13,8 @@ package com.openshift.client;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.Map;
 
+import com.openshift.internal.client.RequestParameter;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
 /**
@@ -45,6 +45,7 @@ public interface IHttpClient {
 
 	public static final char SPACE = ' ';
 	public static final char COLON = ':';
+	public static final char COMMA = ',';
 	public static final char SEMICOLON = ';';
 	public static final char AMPERSAND = '&';
 	public static final char EQUALS = '=';
@@ -67,20 +68,20 @@ public interface IHttpClient {
 
     public String get(URL url, int timeout) throws HttpClientException, SocketTimeoutException;
 
-	public String post(Map<String, Object> parameters, URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+	public String post(URL url, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 
-    public String post(Map<String, Object> parameters, URL url, int timeout) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+    public String post(URL url, int timeout, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 
-	public String put(Map<String, Object> parameters, URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+	public String put(URL url, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 
-    public String put(Map<String, Object> parameters, URL url, int timeout) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+    public String put(URL url, int timeout, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 
-	public String delete(Map<String, Object> parameters, URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+    public String delete(URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 
-    public String delete(Map<String, Object> parameters, URL url, int timeout) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+    public String delete(URL url, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
 
-	public String delete(URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
-	
+    public String delete(URL url, int timeout, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+
 	public void setAcceptedMediaType(String acceptedMediaType);
 	
 	public String getAcceptedMediaType();

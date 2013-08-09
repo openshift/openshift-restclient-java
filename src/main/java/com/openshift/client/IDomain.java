@@ -12,6 +12,7 @@ package com.openshift.client;
 
 import java.util.List;
 
+import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 
 /**
@@ -61,7 +62,7 @@ public interface IDomain extends IOpenShiftResource {
 	 * @param force
 	 * @throws OpenShiftException
 	 */
-	public void destroy(final boolean force) throws OpenShiftException;
+	public void destroy(boolean force) throws OpenShiftException;
 
 	/**
 	 * Waits for the domain to become accessible. A domain is considered as accessible as soon as at least 1 application
@@ -72,28 +73,22 @@ public interface IDomain extends IOpenShiftResource {
 	 */
 	public boolean waitForAccessible(long timeout) throws OpenShiftException;
 
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge)
+	public IApplication createApplication(String name, IStandaloneCartridge cartridge)
 			throws OpenShiftException;
 
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, String initialGitUrl)
+	public IApplication createApplication(String name, IStandaloneCartridge cartridge, String initialGitUrl)
 			throws OpenShiftException;
 
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
-			final ApplicationScale scale)
+	public IApplication createApplication(String name, IStandaloneCartridge cartridge, ApplicationScale scale)
 			throws OpenShiftException;
 
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
-			final IGearProfile gearProfile)
+	public IApplication createApplication(String name, IStandaloneCartridge cartridge, IGearProfile gearProfile)
 			throws OpenShiftException;
 
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
-			final ApplicationScale scale, final IGearProfile gearProfile)
+	public IApplication createApplication(String name, IStandaloneCartridge cartridge, ApplicationScale scale,
+			IGearProfile gearProfile)
 			throws OpenShiftException;
 
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
-			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl, int timeout)
-			throws OpenShiftException;
-	
 	/**
 	 * Creates a new application with the given name and the given
 	 * cartridge/framework. Optionally, adds scalability and a specific gear
@@ -114,37 +109,41 @@ public interface IDomain extends IOpenShiftResource {
 	 * @return
 	 * @throws OpenShiftException
 	 */
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, 
-			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl)
+	public IApplication createApplication(String name, IStandaloneCartridge cartridge, ApplicationScale scale,
+			IGearProfile gearProfile, String initialGitUrl)
 			throws OpenShiftException;
 
     /**
-     * Creates a new application with the given name and the given
-     * cartridge/framework. Optionally, adds scalability, a specific gear
-     * profile, a git url to use for the initial template and the timeout value.
-     *
-     * @param name
-     *            the name of the application
-     * @param cartridge
-     *            the cartridge (the application type, ex. jbossas-7,
-     *            jbossews-2, php.5.2, etc.
-     * @param scale
-     *            or null (will use default on openshift, ie, false)
-     * @param gearProfile
-     *            ("small", "micro", "medium", "large", "exlarge", "jumbo") or
-     *            null (will use default on openshift, ie, 'small')
-     * @param initialGitUrl
-     *            the git url for the initial template app to be used
-     * @param timeout
-     *             the timeout value in milliseconds
-     * @return IApplication created
-     * @throws OpenShiftException
-     */
-    public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
-            final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl,
-            final long timeout)
-            throws OpenShiftException;
-
+	 * Creates a new application with the given name and the given
+	 * cartridge/framework. Optionally, adds scalability, a specific gear
+	 * profile, a git url to use for the initial template, the timeout value and
+	 * the embeddable (add-on) cartridges for it.
+	 * 
+	 * @param name
+	 *            the name of the application
+	 * @param cartridge
+	 *            the cartridge (the application type, ex. jbossas-7,
+	 *            jbossews-2, php.5.2, etc.
+	 * @param scale
+	 *            or null (will use default on openshift, ie, false)
+	 * @param gearProfile
+	 *            ("small", "micro", "medium", "large", "exlarge", "jumbo") or
+	 *            null (will use default on openshift, ie, 'small')
+	 * @param initialGitUrl
+	 *            the git url for the initial template app to be used
+	 * @param timeout
+	 *            the timeout value in milliseconds
+	 * @param cartridges
+	 *            the embeddable cartridges that shall get added to the new
+	 *            application (the add-on cartridges mysql, mongodb, postgresql,
+	 *            etc.)
+	 * 
+	 * @return IApplication created
+	 * @throws OpenShiftException
+	 */
+	public IApplication createApplication(String name, IStandaloneCartridge cartridge, ApplicationScale scale,
+			IGearProfile gearProfile, String initialGitUrl, int timeout, IEmbeddableCartridge... cartridges)
+			throws OpenShiftException;
 	public List<IApplication> getApplications() throws OpenShiftException;
 	
 	/**

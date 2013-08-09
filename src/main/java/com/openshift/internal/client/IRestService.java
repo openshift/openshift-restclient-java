@@ -10,9 +10,6 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import java.net.SocketTimeoutException;
-import java.util.Map;
-
 import com.openshift.client.HttpMethod;
 import com.openshift.client.OpenShiftException;
 import com.openshift.internal.client.response.Link;
@@ -25,29 +22,20 @@ public interface IRestService {
 
 	public static final String SERVICE_VERSION = "1.2";
 
-	public abstract RestResponse request(Link link)
-			throws OpenShiftException, SocketTimeoutException;
-
-	public RestResponse request(Link link, ServiceParameter... serviceParameters)
+	public RestResponse request(Link link, RequestParameter... serviceParameters)
 			throws OpenShiftException;
 	
-	public RestResponse request(Link link, int timeout, ServiceParameter... serviceParameters)
+	public RestResponse request(Link link, int timeout, RequestParameter... serviceParameters)
 			throws OpenShiftException;
 
-	public abstract RestResponse request(Link link, Map<String, Object> parameters)
+	public String request(String url, HttpMethod httpMethod, RequestParameter... serviceParameters)
 			throws OpenShiftException;
 
-	public abstract RestResponse request(Link link, int timeout, Map<String, Object> parameters)
+	public String request(String url, HttpMethod httpMethod, int timeout, RequestParameter... serviceParameters)
 			throws OpenShiftException;
 
-	public abstract String request(String url, HttpMethod httpMethod, Map<String, Object> parameters)
-			throws OpenShiftException;
+	public String getServiceUrl();
 
-	public abstract String request(String url, HttpMethod httpMethod, int timeout, Map<String, Object> parameters)
-			throws OpenShiftException;
-
-	public abstract String getServiceUrl();
-
-	public abstract String getPlatformUrl();
+	public String getPlatformUrl();
 
 }

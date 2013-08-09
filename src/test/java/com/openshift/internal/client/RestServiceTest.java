@@ -23,7 +23,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -76,14 +75,14 @@ public class RestServiceTest {
 		LinkParameter parameter =
 				new LinkParameter("required string parameter", LinkParameterType.STRING, null, null, null);
 		Link link = new Link("1 required parameter", "/dummy", HttpMethod.GET, Arrays.asList(parameter), null);
-		service.request(link, new HashMap<String, Object>());
+		service.request(link);
 	}
 
 	@Test
 	public void shouldNotThrowIfNoReqiredParameter() throws OpenShiftException, SocketTimeoutException {
 		// operation
 		Link link = new Link("0 required parameter", "/dummy", HttpMethod.GET, null, null);
-		service.request(link, new HashMap<String, Object>());
+		service.request(link);
 	}
 
 	@Test

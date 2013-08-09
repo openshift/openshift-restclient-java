@@ -23,8 +23,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -34,9 +32,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.fakes.HttpClientFake;
+import com.openshift.client.fakes.PayLoadReturningHttpClientFake;
 import com.openshift.client.fakes.HttpServerFake;
 import com.openshift.client.fakes.WaitingHttpServerFake;
 import com.openshift.client.utils.Base64Coder;
@@ -80,7 +79,7 @@ public class HttpClientTest {
 	@Test
 	public void canPost() throws SocketTimeoutException, HttpClientException, MalformedURLException,
 			UnsupportedEncodingException {
-		String response = httpClient.post(new HashMap<String, Object>(), serverFake.getUrl());
+		String response = httpClient.post(serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.startsWith("POST"));
 	}
@@ -88,7 +87,7 @@ public class HttpClientTest {
 	@Test
 	public void canPut() throws SocketTimeoutException, HttpClientException, MalformedURLException,
 			UnsupportedEncodingException {
-		String response = httpClient.put(new HashMap<String, Object>(), serverFake.getUrl());
+		String response = httpClient.put(serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.startsWith("PUT"));
 	}
@@ -96,7 +95,7 @@ public class HttpClientTest {
 	@Test
 	public void canDelete() throws SocketTimeoutException, HttpClientException, MalformedURLException,
 			UnsupportedEncodingException {
-		String response = httpClient.delete(new HashMap<String, Object>(), serverFake.getUrl());
+		String response = httpClient.delete(serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.startsWith("DELETE"));
 	}
@@ -151,29 +150,23 @@ public class HttpClientTest {
 	public void shouldEncodeParametersCorrectly() throws HttpClientException, FileNotFoundException, IOException,
 			OpenShiftException {
 		// pre-conditions
-		HashMap<String, Object> parameters = new HashMap<String, Object>();
-		String key1 = "adietish";
-		String value1 = "redhat";
-		parameters.put(key1, value1);
-		String key2 = "xcoulon";
-		String value2 = "redhat";
-		parameters.put(key2, value2);
-
-		IHttpClient httpClient = new HttpClientFake(IHttpClient.MEDIATYPE_APPLICATION_JSON, "1.0");
+		IHttpClient httpClient = new PayLoadReturningHttpClientFake(IHttpClient.MEDIATYPE_APPLICATION_JSON, "1.0");
 		// operation
-		String response = httpClient.post(parameters, serverFake.getUrl());
+		String response = httpClient.post(serverFake.getUrl(), 
+				new RequestParameter("adietish", "redhat"), 
+				new RequestParameter("xcoulon", "redhat"));
 
 		// verification
 		String[] entries = response.split(String.valueOf(IHttpClient.AMPERSAND));
 		assertEquals(2, entries.length);
 		String[] keyValuePair = entries[0].split(String.valueOf(IHttpClient.EQUALS));
 		assertEquals(2, keyValuePair.length);
-		assertEquals(key1, keyValuePair[0]);
-		assertEquals(value1, keyValuePair[1]);
+		assertEquals("adietish", keyValuePair[0]);
+		assertEquals("redhat", keyValuePair[1]);
 		keyValuePair = entries[1].split(String.valueOf(IHttpClient.EQUALS));
 		assertEquals(2, keyValuePair.length);
-		assertEquals(key2, keyValuePair[0]);
-		assertEquals(value2, keyValuePair[1]);
+		assertEquals("xcoulon", keyValuePair[0]);
+		assertEquals("redhat", keyValuePair[1]);
 	}
 
 	@Test
@@ -183,10 +176,10 @@ public class HttpClientTest {
 		final AtomicReference<Boolean> verified = new AtomicReference<Boolean>();
 		verified.set(false);
 		final String version = "4.0";
-		IHttpClient httpClient = new HttpClientFake(IHttpClient.MEDIATYPE_APPLICATION_JSON, version) {
+		IHttpClient httpClient = new PayLoadReturningHttpClientFake(IHttpClient.MEDIATYPE_APPLICATION_JSON, version) {
 
 			@Override
-			protected String write(String data, String requestMethod, URL url, int timeout)
+			protected String request(HttpMethod httpMethod, URL url, int timeout, RequestParameter... parameters)
 					throws SocketTimeoutException, HttpClientException {
 				try {
 					HttpURLConnection connection = createConnection("dummyUser", "dummyPassword", "dummyUserAgent", url);
@@ -194,7 +187,7 @@ public class HttpClientTest {
 					String accept = connection.getRequestProperty(IHttpClient.PROPERTY_ACCEPT);
 					assertThat(accept).endsWith("; version=" + version);
 					verified.set(true);
-					return data;
+					return null;
 				} catch (IOException e) {
 					fail("could not create HttpURLConnection");
 					return null;
@@ -278,7 +271,7 @@ public class HttpClientTest {
 		long startTime = System.currentTimeMillis();
 		// operations
 		try {
-			httpClient.post(Collections.<String, Object>emptyMap(), serverFake.getUrl(), timeout);
+			httpClient.post(serverFake.getUrl(), timeout);
 			fail("Timeout expected.");
 		} catch (SocketTimeoutException e) {
 			// assert
@@ -300,7 +293,7 @@ public class HttpClientTest {
 		long startTime = System.currentTimeMillis();
 		// operations
 		try {
-			httpClient.delete(Collections.<String, Object>emptyMap(), serverFake.getUrl(), timeout);
+			httpClient.delete(serverFake.getUrl(), timeout);
 			fail("Timeout expected.");
 		} catch (SocketTimeoutException e) {
 			// assert
@@ -322,7 +315,7 @@ public class HttpClientTest {
 		long startTime = System.currentTimeMillis();
 		// operations
 		try {
-			httpClient.put(Collections.<String, Object>emptyMap(), serverFake.getUrl(), timeout);
+			httpClient.put(serverFake.getUrl(), timeout);
 			fail("Timeout expected.");
 		} catch (SocketTimeoutException e) {
 			// assert

@@ -92,8 +92,8 @@ public class SSHKeyResource extends AbstractOpenShiftResource implements IOpenSh
 		
 		private KeyResourceDTO execute(SSHKeyType type, String publicKey) throws OpenShiftException {
 			return execute(
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_CONTENT, publicKey), 
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_TYPE, type.getTypeId()));
+					new RequestParameter(IOpenShiftJsonConstants.PROPERTY_CONTENT, publicKey), 
+					new RequestParameter(IOpenShiftJsonConstants.PROPERTY_TYPE, type.getTypeId()));
 		}
 	}
 

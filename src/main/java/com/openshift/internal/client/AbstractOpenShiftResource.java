@@ -10,16 +10,24 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import com.openshift.client.ApplicationScale;
+import com.openshift.client.IGearProfile;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftResource;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
+import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.utils.OpenShiftResourceUtils;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.RestResponse;
+import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
 /**
  * The Class AbstractOpenShiftResource.
@@ -43,7 +51,7 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 	 * @param service
 	 *            the service
 	 */
-	public AbstractOpenShiftResource(final IRestService service) {
+	protected AbstractOpenShiftResource(final IRestService service) {
 		this(service, null, null);
 	}
 
@@ -55,7 +63,7 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 	 * @param links
 	 *            the links
 	 */
-	public AbstractOpenShiftResource(final IRestService service, final Map<String, Link> links, final Messages messages) {
+	protected AbstractOpenShiftResource(final IRestService service, final Map<String, Link> links, final Messages messages) {
 		this.service = service;
 		this.links = links;
 		this.messages = messages;
@@ -71,29 +79,26 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 		return links;
 	}
 
-	void setLinks(final Map<String, Link> links) {
-		this.links = links;
-	}
-
 	/**
 	 * Gets the service.
 	 * 
 	 * @return the service
 	 */
-	protected final IRestService getService() {
+	IRestService getService() {
 		return service;
 	}
 
-	// made protected for testing purpose, but not part of the public interface,
-	// though
 	/**
-	 * Gets the link.
+	 * Gets the link for the given name. Throws OpenShiftRequestException if no
+	 * link with this name exists within this resource.
+	 * <p>
+	 * This method is protected for testing purposes only.
 	 * 
 	 * @param linkName
-	 *            the link name
-	 * @return the link
+	 *            the name of the link that shall get retrieved
+	 * @return the link with the given name
 	 * @throws OpenShiftException
-	 *             the open shift exception
+	 *             thrown if no link with the given name exists
 	 */
 	protected Link getLink(String linkName) throws OpenShiftException {
 		Link link = null;
@@ -107,7 +112,7 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 		return link;
 	}
 
-	protected boolean areLinksLoaded() {
+	boolean areLinksLoaded() {
 		return links != null;
 	}
 
@@ -115,15 +120,19 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 
 		private String linkName;
 
-		protected ServiceRequest(String linkName) {
+		protected ServiceRequest(final String linkName) {
 			this.linkName = linkName;
 		}
-
-		protected <DTO> DTO execute(ServiceParameter... parameters) throws OpenShiftException {
+		
+		protected <DTO> DTO execute(final RequestParameter... parameters) throws OpenShiftException {
 			return execute(IHttpClient.NO_TIMEOUT, parameters);
 		}
 		
-		protected <DTO> DTO execute(int timeout, ServiceParameter... parameters) throws OpenShiftException {
+		protected <DTO> DTO execute(final int timeout, final List<RequestParameter> parameters) throws OpenShiftException {
+			return execute(timeout, parameters.toArray(new RequestParameter[parameters.size()]));
+		}
+
+		protected <DTO> DTO execute(final int timeout, final RequestParameter... parameters) throws OpenShiftException {
 			Link link = getLink(linkName);
 			RestResponse response = getService().request(link, timeout, parameters);
 			
@@ -134,6 +143,57 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 			}
 						
 			return response.getData();
+		}
+	}
+
+	protected class RequestParameters {
+		
+		private ArrayList<RequestParameter> parameters = new ArrayList<RequestParameter>();
+
+		protected RequestParameters addCartridge(IStandaloneCartridge cartridge) {
+			if (cartridge == null) {
+				return this;
+			}
+			return add(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, cartridge.getName());
+		}
+		
+		protected RequestParameters addScale(ApplicationScale scale) {
+			if (scale == null) {
+				return this;
+			}
+			return add(IOpenShiftJsonConstants.PROPERTY_SCALE, scale.getValue());
+		}
+
+		protected RequestParameters addGearProfile(IGearProfile gearProfile) {
+			if (gearProfile == null) {
+				return this;
+			}
+			return add(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, gearProfile.getName());
+		}
+
+		protected RequestParameters addEmbeddableCartridges(IEmbeddableCartridge[] cartridges) {
+			if (cartridges == null
+					|| cartridges.length == 0) {
+				return this;
+			}
+			parameters.add(new ArrayRequestParameter(
+							IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, 
+							OpenShiftResourceUtils.toNames(cartridges)));
+			return this;
+		}
+
+		protected RequestParameters add(String name, Object value) {
+			
+			if (value == null) {
+				return this;
+			}
+			
+			parameters.add(new RequestParameter(name, value));
+			return this;
+		}
+		
+		protected RequestParameter[] toArray() {
+			return parameters.toArray(new RequestParameter[parameters.size()]);
 		}
 	}
 
