@@ -11,7 +11,9 @@
 package com.openshift.internal.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +25,9 @@ import com.openshift.client.IHttpClient;
 import com.openshift.client.IUser;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.internal.client.httpclient.JsonMediaType;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.DomainResourceDTO;
 import com.openshift.internal.client.response.Link;
@@ -43,6 +47,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	private static final String LINK_ADD_APPLICATION = "ADD_APPLICATION";
 	private static final String LINK_UPDATE = "UPDATE";
 	private static final String LINK_DELETE = "DELETE";
+    private static final String URL_REGEX="(https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 	private String id;
 	private String suffix;
 	/** root node in the business domain. */
@@ -317,16 +322,26 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 			addScaleParameter(scale, parameters);
 			addGearProfileParameter(gearProfile, parameters);
 			addStringParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl, parameters);
-			
-			return super.execute(timeout, (ServiceParameter[]) parameters.toArray(new ServiceParameter[parameters.size()]));
+
+			if (isDownloadableCartridge(cartridge)) {
+                return super.execute(timeout, new JsonMediaType(), (ServiceParameter[]) parameters.toArray(new ServiceParameter[parameters.size()]));
+            } else {
+                return super.execute(timeout, (ServiceParameter[]) parameters.toArray(new ServiceParameter[parameters.size()]));
+            }
 		}
 
 		private List<ServiceParameter> addCartridgeParameter(IStandaloneCartridge cartridge, List<ServiceParameter> parameters) {
 			if (cartridge == null) {
 				return parameters;
 			}
-			parameters.add(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, cartridge.getName()));
-			return parameters;
+            if (isDownloadableCartridge(cartridge)) {
+                Map<String,String> props = new HashMap<String, String>();
+                props.put(IOpenShiftJsonConstants.PROPERTY_URL, cartridge.getName());
+                parameters.add(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, Arrays.asList(props)));
+            } else {
+                parameters.add(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, cartridge.getName()));
+            }
+            return parameters;
 		}
 		
 		private List<ServiceParameter> addScaleParameter(ApplicationScale scale, List<ServiceParameter> parameters) {
@@ -352,6 +367,10 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 			parameters.add(new ServiceParameter(parameterName, value));
 			return parameters;
 		}
+
+        private boolean isDownloadableCartridge(ICartridge cartridge) {
+            return cartridge.getName().matches(URL_REGEX);
+        }
 
 	}
 

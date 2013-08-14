@@ -19,6 +19,7 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.internal.client.httpclient.FormUrlEncodedMediaType;
 import com.openshift.internal.client.httpclient.HttpClientException;
+import com.openshift.internal.client.httpclient.IMediaType;
 import com.openshift.internal.client.httpclient.UrlConnectionHttpClient;
 
 /**
@@ -32,7 +33,7 @@ public class HttpClientFake extends UrlConnectionHttpClient {
 	}
 	
 	@Override
-	protected String write(String data, String requestMethod, URL url, int timeout)
+	protected String write(String data, String requestMethod, URL url, int timeout, IMediaType mediaType)
 			throws SocketTimeoutException, HttpClientException {
 		return data;
 	}

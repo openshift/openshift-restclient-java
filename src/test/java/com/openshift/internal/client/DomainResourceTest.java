@@ -22,14 +22,24 @@ import static com.openshift.client.utils.Samples.POST_SCALABLE_DOMAINS_FOOBARZ_A
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyMapOf;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.openshift.internal.client.httpclient.FormUrlEncodedMediaType;
+import com.openshift.internal.client.httpclient.IMediaType;
+import com.openshift.internal.client.httpclient.JsonMediaType;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -81,7 +91,7 @@ public class DomainResourceTest {
 	@Before
 	public void setup() throws Throwable {
 		this.mockDirector = new HttpClientMockDirector();
-		this.clientMock = mockDirector.mockGetDomains(GET_DOMAINS).client();
+		this.clientMock = mockDirector.mockGetDomains(GET_DOMAINS).mockMediaType(new FormUrlEncodedMediaType()).client();
 		this.user = new TestConnectionFactory().getConnection(clientMock).getUser();
 		this.domain = user.getDomain("foobarz");
 	}
@@ -150,7 +160,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldNotDestroyDomainWithApp() throws Throwable {
 		// pre-conditions
-		when(clientMock.delete(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz"), anyInt()))
+		when(clientMock.delete(anyMapOf(String.class, Object.class), urlEndsWith("/domains/foobarz"), anyInt(), any(IMediaType.class)))
 			.thenThrow(new BadRequestException(
 					"Domain contains applications. Delete applications first or set force to true.", null));
 		// operation
@@ -313,6 +323,29 @@ public class DomainResourceTest {
 		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(18);
 		assertThat(domain.getApplications()).hasSize(1).contains(app);
 	}
+
+    @Test
+    public void shouldCreateApplicationWithDownloadableCartridge() throws Throwable {
+        int timeout = 42 * 1000;
+        String manifestUrl = "https://some.url/manifest.yml";
+        // pre-conditions
+        mockDirector
+                .mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+                .mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
+
+        // operation
+        final IApplication app = domain.createApplication("scalable", new StandaloneCartridge(manifestUrl), null, null, null, timeout);
+        // verifications
+        assertThat(app.getName()).isEqualTo("scalable");
+        assertThat(app.getGearProfile().getName()).isEqualTo("small");
+        assertThat(app.getCreationTime()).isNotNull();
+        assertThat(app.getUUID()).isNotNull();
+        assertThat(app.getDomain()).isEqualTo(domain);
+        assertThat(domain.getApplications()).hasSize(1).contains(app);
+        mockDirector.verifyCreateApplication("foobarz", timeout, JsonMediaType.class,
+                new Pair("name", "scalable"),
+                new Pair("cartridges", "[{url="+manifestUrl+"}]"));
+    }
 
 	@Test
 	public void shouldHaveMessagesWhenCreating() throws Throwable {

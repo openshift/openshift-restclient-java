@@ -18,7 +18,6 @@ import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -30,6 +29,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.openshift.internal.client.httpclient.EncodingException;
+import com.openshift.internal.client.httpclient.IMediaType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,7 +80,7 @@ public class HttpClientTest {
 
 	@Test
 	public void canPost() throws SocketTimeoutException, HttpClientException, MalformedURLException,
-			UnsupportedEncodingException {
+            EncodingException {
 		String response = httpClient.post(new HashMap<String, Object>(), serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.startsWith("POST"));
@@ -87,7 +88,7 @@ public class HttpClientTest {
 
 	@Test
 	public void canPut() throws SocketTimeoutException, HttpClientException, MalformedURLException,
-			UnsupportedEncodingException {
+            EncodingException {
 		String response = httpClient.put(new HashMap<String, Object>(), serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.startsWith("PUT"));
@@ -95,7 +96,7 @@ public class HttpClientTest {
 
 	@Test
 	public void canDelete() throws SocketTimeoutException, HttpClientException, MalformedURLException,
-			UnsupportedEncodingException {
+            EncodingException {
 		String response = httpClient.delete(new HashMap<String, Object>(), serverFake.getUrl());
 		assertNotNull(response);
 		assertTrue(response.startsWith("DELETE"));
@@ -186,7 +187,7 @@ public class HttpClientTest {
 		IHttpClient httpClient = new HttpClientFake(IHttpClient.MEDIATYPE_APPLICATION_JSON, version) {
 
 			@Override
-			protected String write(String data, String requestMethod, URL url, int timeout)
+			protected String write(String data, String requestMethod, URL url, int timeout, IMediaType mediaType)
 					throws SocketTimeoutException, HttpClientException {
 				try {
 					HttpURLConnection connection = createConnection("dummyUser", "dummyPassword", "dummyUserAgent", url);

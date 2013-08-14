@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
 
+import com.openshift.internal.client.httpclient.EncodingException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -96,7 +97,7 @@ public class RestServiceTest {
 
 	@Test
 	public void shouldPostIfPostHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
-			UnsupportedEncodingException {
+            EncodingException {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.POST, null, null));
 		// verifications
@@ -105,7 +106,7 @@ public class RestServiceTest {
 
 	@Test
 	public void shouldPutIfPutHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
-			UnsupportedEncodingException {
+            EncodingException {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.PUT, null, null));
 		// verifications
@@ -114,7 +115,7 @@ public class RestServiceTest {
 
 	@Test
 	public void shouldDeleteIfDeleteHttpMethod() throws OpenShiftException, SocketTimeoutException,
-			HttpClientException, UnsupportedEncodingException {
+			HttpClientException, EncodingException {
 		// operation
 		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.DELETE, null, null));
 		// verifications
@@ -249,7 +250,7 @@ public class RestServiceTest {
 
 	@Test
 	public void shouldDefaultTo12ProtocolVersion() 
-			throws OpenShiftException, SocketTimeoutException, HttpClientException, UnsupportedEncodingException {
+			throws OpenShiftException, SocketTimeoutException, HttpClientException, EncodingException {
 		// pre-condition
 		RestServiceProperties properties = new RestServiceProperties();
 		IHttpClient httpClientMock = mock(IHttpClient.class);

@@ -17,6 +17,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.openshift.internal.client.httpclient.EncodingException;
+import com.openshift.internal.client.httpclient.IMediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +95,12 @@ public class RestService implements IRestService {
 		return request(link, timeout, toMap(serviceParameters));
 	}
 
-	private Map<String, Object> toMap(ServiceParameter... serviceParameters) {
+    @Override
+    public RestResponse request(Link link, int timeout, IMediaType mediaType, ServiceParameter... serviceParameters) throws OpenShiftException {
+        return request(link, timeout, mediaType, toMap(serviceParameters));
+    }
+
+    private Map<String, Object> toMap(ServiceParameter... serviceParameters) {
 		Map<String, Object> parameterMap = new HashMap<String, Object>();
 		for (ServiceParameter serviceParameter : serviceParameters) {
 			parameterMap.put(serviceParameter.getKey(), serviceParameter.getValue());
@@ -106,37 +113,47 @@ public class RestService implements IRestService {
 	}
 	
 	public RestResponse request(Link link, int timeout, Map<String, Object> parameters) throws OpenShiftException {
-		validateParameters(parameters, link);
-		HttpMethod httpMethod = link.getHttpMethod();
-		String response = request(link.getHref(), httpMethod, timeout, parameters);
-		return ResourceDTOFactory.get(response);
+		return request(link, timeout, client.getRequestMediaType(), parameters);
 	}
 
-	public String request(String href, HttpMethod httpMethod, Map<String, Object> parameters) throws OpenShiftException {
+    @Override
+    public RestResponse request(Link link, int timeout, IMediaType mediaType, Map<String, Object> parameters) throws OpenShiftException {
+        validateParameters(parameters, link);
+        HttpMethod httpMethod = link.getHttpMethod();
+        String response = request(link.getHref(), httpMethod, timeout, mediaType, parameters);
+        return ResourceDTOFactory.get(response);
+    }
+
+    public String request(String href, HttpMethod httpMethod, Map<String, Object> parameters) throws OpenShiftException {
 		return request(href, httpMethod, IHttpClient.NO_TIMEOUT, parameters);
 	}
-	
+
 	public String request(String href, HttpMethod httpMethod, int timeout, Map<String, Object> parameters) throws OpenShiftException {
-		URL url = getUrl(href);
-		try {
-			return request(url, httpMethod, timeout, parameters);
-		} catch (UnsupportedEncodingException e) {
-			throw new OpenShiftException(e, e.getMessage());
-		} catch (UnauthorizedException e) {
-			throw new InvalidCredentialsOpenShiftException(url.toString(), e);
-		} catch (NotFoundException e) {
-			throw new NotFoundOpenShiftException(url.toString(), e);
-		} catch (HttpClientException e) {
-			throw new OpenShiftEndpointException(
-					url.toString(), e, e.getMessage(),
-					"Could not request {0}: {1}", url.toString(), getResponseMessage(e));
-		} catch (SocketTimeoutException e) {
-			throw new OpenShiftTimeoutException(url.toString(), e, e.getMessage(),
-					"Could not request url {0}, connection timed out", url.toString());
-		}
+		return request(href, httpMethod, timeout, client.getRequestMediaType(), parameters);
 	}
 
-	private String getResponseMessage(HttpClientException clientException) {
+    @Override
+    public String request(String href, HttpMethod httpMethod, int timeout, IMediaType mediaType, Map<String, Object> parameters) throws OpenShiftException {
+        URL url = getUrl(href);
+        try {
+            return request(url, httpMethod, timeout, mediaType, parameters);
+        } catch (EncodingException e) {
+            throw new OpenShiftException(e, e.getMessage());
+        } catch (UnauthorizedException e) {
+            throw new InvalidCredentialsOpenShiftException(url.toString(), e);
+        } catch (NotFoundException e) {
+            throw new NotFoundOpenShiftException(url.toString(), e);
+        } catch (HttpClientException e) {
+            throw new OpenShiftEndpointException(
+                    url.toString(), e, e.getMessage(),
+                    "Could not request {0}: {1}", url.toString(), getResponseMessage(e));
+        } catch (SocketTimeoutException e) {
+            throw new OpenShiftTimeoutException(url.toString(), e, e.getMessage(),
+                    "Could not request url {0}, connection timed out", url.toString());
+        }
+    }
+
+    private String getResponseMessage(HttpClientException clientException) {
 		try {
 			RestResponse restResponse = ResourceDTOFactory.get(clientException.getMessage());
 			if (restResponse == null) {
@@ -157,8 +174,8 @@ public class RestService implements IRestService {
 		}
 	}
 
-	private String request(URL url, HttpMethod httpMethod, int timeout, Map<String, Object> parameters)
-			throws HttpClientException, SocketTimeoutException, OpenShiftException, UnsupportedEncodingException {
+	private String request(URL url, HttpMethod httpMethod, int timeout, IMediaType mediaType, Map<String, Object> parameters)
+			throws HttpClientException, SocketTimeoutException, OpenShiftException, EncodingException {
 		LOGGER.info("Requesting {} with protocol {} on {}",
 				new Object[] { httpMethod.name(), client.getAcceptVersion(), url });
 		
@@ -166,11 +183,11 @@ public class RestService implements IRestService {
 		case GET:
 			return client.get(url, timeout);
 		case POST:
-			return client.post(parameters, url, timeout);
+			return client.post(parameters, url, timeout, mediaType);
 		case PUT:
-			return client.put(parameters, url, timeout);
+			return client.put(parameters, url, timeout, mediaType);
 		case DELETE:
-			return client.delete(parameters, url, timeout);
+			return client.delete(parameters, url, timeout, mediaType);
 		default:
 			throw new OpenShiftException("Unexpected HTTP method {0}", httpMethod.toString());
 		}

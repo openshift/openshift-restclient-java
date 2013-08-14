@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.openshift.internal.client.httpclient;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -20,6 +19,6 @@ public interface IMediaType {
 
 	public String getType();
 	
-	public String encodeParameters(Map<String, Object> parameters) throws UnsupportedEncodingException;
+	public String encodeParameters(Map<String, Object> parameters) throws EncodingException;
 	
 }

@@ -18,6 +18,7 @@ import com.openshift.client.Message;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
+import com.openshift.internal.client.httpclient.IMediaType;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.RestResponse;
 
@@ -122,10 +123,22 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 		protected <DTO> DTO execute(ServiceParameter... parameters) throws OpenShiftException {
 			return execute(IHttpClient.NO_TIMEOUT, parameters);
 		}
-		
-		protected <DTO> DTO execute(int timeout, ServiceParameter... parameters) throws OpenShiftException {
+        protected <DTO> DTO execute(int timeout, ServiceParameter... parameters) throws OpenShiftException {
+            Link link = getLink(linkName);
+            RestResponse response = getService().request(link, timeout, parameters);
+
+            // in some cases, there is not response body, just a return code to
+            // indicate that the operation was successful (e.g.: delete domain)
+            if (response == null) {
+                return null;
+            }
+
+            return response.getData();
+        }
+
+		protected <DTO> DTO execute(int timeout, IMediaType mediaType, ServiceParameter... parameters) throws OpenShiftException {
 			Link link = getLink(linkName);
-			RestResponse response = getService().request(link, timeout, parameters);
+			RestResponse response = getService().request(link, timeout, mediaType, parameters);
 			
 			// in some cases, there is not response body, just a return code to
 			// indicate that the operation was successful (e.g.: delete domain)

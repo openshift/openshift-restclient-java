@@ -28,9 +28,13 @@ public class FormUrlEncodedMediaType implements IMediaType {
 		return IHttpClient.MEDIATYPE_APPLICATION_FORMURLENCODED;
 	}
 
-	public String encodeParameters(Map<String, Object> parameters) throws UnsupportedEncodingException {
-		return toUrlEncoded(parameters);
-	}
+	public String encodeParameters(Map<String, Object> parameters) throws EncodingException {
+        try {
+            return toUrlEncoded(parameters);
+        } catch (UnsupportedEncodingException e) {
+            throw new EncodingException(e);
+        }
+    }
 
 	private String toUrlEncoded(Map<String, Object> parameters) throws UnsupportedEncodingException {
 		if (parameters == null
