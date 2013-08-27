@@ -218,7 +218,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		}
 
 		public DomainResourceDTO execute(String namespace) throws OpenShiftException {
-			return execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_ID, namespace));
+			return execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_ID, namespace));
 		}
 	}
 

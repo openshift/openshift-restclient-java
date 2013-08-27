@@ -21,7 +21,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -38,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.utils.Base64Coder;
+import com.openshift.internal.client.RequestParameter;
 import com.openshift.internal.client.utils.StreamUtils;
 import com.openshift.internal.client.utils.StringUtils;
 
@@ -95,110 +95,102 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		return userAgent;
 	}
 
+	@Override
 	public void setAcceptedMediaType(String acceptedMediaType) {
 		this.acceptedMediaType = acceptedMediaType;
 	}
 
+	@Override
 	public String getAcceptedMediaType() {
 		return acceptedMediaType;
 	}
 
+	@Override
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
+	}
+
+	@Override
+	public String getUserAgent() {
+		return userAgent;
+	}
+
+	@Override
+	public void setAcceptVersion(String version) {
+		this.acceptVersion = version;
+	}
+
+	@Override
+	public String getAcceptVersion() {
+		return acceptVersion;
+	}
+
+	@Override
 	public String get(URL url) throws HttpClientException, SocketTimeoutException {
 		return get(url, NO_TIMEOUT);
 	}
 
 	@Override
 	public String get(URL url, int timeout) throws HttpClientException, SocketTimeoutException {
-
-		HttpURLConnection connection = null;
-		try {
-			return write(null, HttpMethod.GET.toString(), url, timeout);
-		} catch (SocketTimeoutException e) {
-			throw e;
-		/* TODO: cleanup exception handling */
-		} catch (IOException e) {
-			throw createException(e, connection);
-		} finally {
-			disconnect(connection);
-		}
-	}
-
-	public void setUserAgent(String userAgent) {
-		this.userAgent = userAgent;
-	}
-
-	public String getUserAgent() {
-		return userAgent;
-	}
-
-	public void setAcceptVersion(String version) {
-		this.acceptVersion = version;
-	}
-
-	public String getAcceptVersion() {
-		return acceptVersion;
-	}
-
-	public String put(Map<String, Object> parameters, URL url)
-			throws SocketTimeoutException, UnsupportedEncodingException, HttpClientException {
-		return put(requestMediaType.encodeParameters(parameters), url);
+		return request(HttpMethod.GET, url, timeout);
 	}
 
 	@Override
-	public String put(Map<String, Object> parameters, URL url, int timeout) 
-			throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException {
-		return write(requestMediaType.encodeParameters(parameters), HttpMethod.PUT.toString(), url, timeout);
-	}
-
-	protected String put(String data, URL url) throws HttpClientException, SocketTimeoutException {
-		return write(data, HttpMethod.PUT.toString(), url, NO_TIMEOUT);
-	}
-
-	public String post(Map<String, Object> parameters, URL url)
+	public String put(URL url, RequestParameter... parameters)
 			throws SocketTimeoutException, UnsupportedEncodingException, HttpClientException {
-		return post(requestMediaType.encodeParameters(parameters), url);
-	}
-
-	protected String post(String data, URL url) throws HttpClientException, SocketTimeoutException {
-		return write(data, HttpMethod.POST.toString(), url, NO_TIMEOUT);
-	}
-
-	public String post(Map<String, Object> data, URL url, int timeout) 
-			throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException {
-		return write(requestMediaType.encodeParameters(data), HttpMethod.POST.toString(), url, timeout);
-	}
-
-	public String delete(Map<String, Object> parameters, URL url)
-			throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException {
-		return delete(requestMediaType.encodeParameters(parameters), url);
+		return put(url, NO_TIMEOUT, parameters);
 	}
 
 	@Override
-	public String delete(Map<String, Object> parameters, URL url, int timeout) throws HttpClientException,
-			SocketTimeoutException,
-			UnsupportedEncodingException {
-		return write(requestMediaType.encodeParameters(parameters), HttpMethod.DELETE.toString(), url, timeout);
+	public String put(URL url, int timeout, RequestParameter... parameters)
+			throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException {
+		return request(HttpMethod.PUT, url, timeout, parameters);
 	}
 
+	protected String put(String data, URL url, RequestParameter... parameters) throws HttpClientException,
+			SocketTimeoutException {
+		return request(HttpMethod.PUT, url, NO_TIMEOUT, parameters);
+	}
+
+	@Override
+	public String post(URL url, RequestParameter... parameters)
+			throws SocketTimeoutException, UnsupportedEncodingException, HttpClientException {
+		return request(HttpMethod.POST, url, NO_TIMEOUT, parameters);
+	}
+
+	@Override
+	public String post(URL url, int timeout, RequestParameter... parameters)
+			throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException {
+		return request(HttpMethod.POST, url, timeout, parameters);
+	}
+
+	@Override
+	public String delete(URL url, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException {
+		return request(HttpMethod.DELETE, url, NO_TIMEOUT, parameters);
+	}
+
+	@Override
+	public String delete(URL url, int timeout, RequestParameter... parameters)
+			throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException {
+		return request(HttpMethod.DELETE, url, timeout, parameters);
+	}
+
+	@Override
 	public String delete(URL url)
 			throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException {
-		return delete((String) null, url);
+		return delete(url, NO_TIMEOUT);
 	}
 
-	protected String delete(String data, URL url) throws HttpClientException, SocketTimeoutException {
-		return write(data, HttpMethod.DELETE.toString(), url, NO_TIMEOUT);
-	}
-
-	protected String write(String data, String requestMethod, URL url, int timeout)
+	protected String request(HttpMethod httpMethod, URL url, int timeout, RequestParameter... parameters)
 			throws SocketTimeoutException, HttpClientException {
 		HttpURLConnection connection = null;
 		try {
 			connection = createConnection(username, password, authKey, authIV, userAgent, url, timeout);
-			connection.setRequestMethod(requestMethod);
-			connection.setDoOutput(true);
-			if (data != null) {
-				LOGGER.trace("Sending \"{}\" to {}", data, url);
-				StreamUtils.writeTo(data.getBytes(), connection.getOutputStream());
+			connection.setRequestMethod(httpMethod.toString());
+			if (parameters != null
+					&& parameters.length > 0) {
+				connection.setDoOutput(true);
+				requestMediaType.write(parameters, connection.getOutputStream());
 			}
 			return StreamUtils.readToString(connection.getInputStream());
 		} catch (SocketTimeoutException e) {
@@ -208,7 +200,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		} finally {
 			disconnect(connection);
 		}
-
 	}
 
 	private void disconnect(HttpURLConnection connection) {
@@ -378,6 +369,10 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		return timeout;
 	}
 
+	protected IMediaType getMediaType() {
+		return requestMediaType;
+	}
+	
 	private int getSystemPropertyInteger(String key) {
 		try {
 			return Integer.parseInt(System.getProperty(key));

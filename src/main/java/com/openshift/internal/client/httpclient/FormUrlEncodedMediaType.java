@@ -10,12 +10,14 @@
  ******************************************************************************/
 package com.openshift.internal.client.httpclient;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 import com.openshift.client.IHttpClient;
+import com.openshift.internal.client.RequestParameter;
+import com.openshift.internal.client.utils.StringUtils;
 
 /**
  * @author Andre Dietisheim
@@ -24,33 +26,43 @@ public class FormUrlEncodedMediaType implements IMediaType {
 
 	private static final String UTF8 = "UTF-8";
 
+	@Override
 	public String getType() {
 		return IHttpClient.MEDIATYPE_APPLICATION_FORMURLENCODED;
 	}
 
-	public String encodeParameters(Map<String, Object> parameters) throws UnsupportedEncodingException {
-		return toUrlEncoded(parameters);
-	}
-
-	private String toUrlEncoded(Map<String, Object> parameters) throws UnsupportedEncodingException {
+	@Override
+	public void write(RequestParameter[] parameters, OutputStream out) throws IOException {
 		if (parameters == null
-				|| parameters.isEmpty()) {
-			return null;
+				|| parameters.length == 0) {
+			return;
 		}
-		StringBuilder builder = new StringBuilder();
-		for (Entry<String, Object> entry : parameters.entrySet()) {
-			append(entry.getKey(), URLEncoder.encode(String.valueOf(entry.getValue()), UTF8), builder);
+		for (RequestParameter parameter : parameters) {
+			parameter.writeTo(out, this);
+			out.write(IHttpClient.AMPERSAND);
 		}
-		return builder.toString();
 	}
 
-	private void append(String name, Object value, StringBuilder builder) {
-		if (builder.length() > 0) {
-			builder.append(IHttpClient.AMPERSAND);
-		}
-		builder.append(name)
-				.append(IHttpClient.EQUALS)
-				.append(value.toString());
+	@Override
+	public void write(String name, String value, OutputStream out) throws IOException {
+		out.write(name.getBytes());
+		out.write(IHttpClient.EQUALS);
+		out.write(URLEncoder.encode(value, UTF8).getBytes());
 	}
 
+	@Override
+	public void write(String name, List<String> values, OutputStream out) throws IOException {
+		out.write(name.getBytes());
+		out.write(IHttpClient.EQUALS);
+		boolean firstValueWritten = false;
+		for (String value : values) {
+			if (!StringUtils.isEmpty(value)) {
+				if (firstValueWritten) {
+					out.write(IHttpClient.COMMA);
+				}
+				out.write(URLEncoder.encode(value, UTF8).getBytes());
+				firstValueWritten = true;
+			}
+		}
+	}
 }

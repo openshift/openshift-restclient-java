@@ -750,7 +750,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 
 		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
 					IOpenShiftJsonConstants.VALUE_START));
 		}
 	}
@@ -762,7 +762,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 
 		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
 					IOpenShiftJsonConstants.VALUE_STOP));
 		}
 	}
@@ -774,7 +774,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 
 		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
 					IOpenShiftJsonConstants.VALUE_FORCESTOP));
 		}
 	}
@@ -786,7 +786,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 
 		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
 					IOpenShiftJsonConstants.VALUE_RESTART));
 		}
 	}
@@ -798,7 +798,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 
 		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
 					IOpenShiftJsonConstants.VALUE_SCALE_UP));
 		}
 	}
@@ -810,7 +810,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 
 		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
 					IOpenShiftJsonConstants.VALUE_SCALE_DOWN));
 		}
 	}
@@ -822,8 +822,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 
 		public <DTO> DTO execute(String alias) throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
-					IOpenShiftJsonConstants.VALUE_ADD_ALIAS), new ServiceParameter(
+			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+					IOpenShiftJsonConstants.VALUE_ADD_ALIAS), new RequestParameter(
 					IOpenShiftJsonConstants.PROPERTY_ALIAS, alias));
 		}
 	}
@@ -835,8 +835,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 
 		public <DTO> DTO execute(String alias) throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
-					IOpenShiftJsonConstants.VALUE_REMOVE_ALIAS), new ServiceParameter(
+			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+					IOpenShiftJsonConstants.VALUE_REMOVE_ALIAS), new RequestParameter(
 					IOpenShiftJsonConstants.PROPERTY_ALIAS, alias));
 		}
 	}
@@ -849,7 +849,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 		public <DTO> DTO execute(String embeddedCartridgeName) throws OpenShiftException {
 			return super
-					.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_NAME, embeddedCartridgeName));
+					.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, embeddedCartridgeName));
 		}
 	}
 

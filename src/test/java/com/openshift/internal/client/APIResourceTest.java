@@ -20,7 +20,6 @@ import org.junit.Test;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.utils.Samples;
 import com.openshift.client.utils.TestConnectionFactory;
 
 /**

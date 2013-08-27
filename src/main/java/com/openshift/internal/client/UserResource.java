@@ -253,8 +253,8 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		}
 
 		public KeyResourceDTO execute(SSHKeyType type, String name, String content) throws OpenShiftException {
-			return super.execute(new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_TYPE, type.getTypeId()),
-					new ServiceParameter(IOpenShiftJsonConstants.PROPERTY_NAME, name), new ServiceParameter(
+			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_TYPE, type.getTypeId()),
+					new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, name), new RequestParameter(
 							IOpenShiftJsonConstants.PROPERTY_CONTENT, content));
 		}
 	}

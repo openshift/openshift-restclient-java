@@ -37,7 +37,6 @@ import com.openshift.client.utils.SSHKeyTestUtils;
 import com.openshift.client.utils.SSHKeyTestUtils.SSHPublicKeyAssertion;
 import com.openshift.client.utils.Samples;
 import com.openshift.client.utils.TestConnectionFactory;
-import com.openshift.internal.client.HttpClientMockDirector.Pair;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
 /**
@@ -240,8 +239,8 @@ public class SSHKeyTest {
 		assertThat(key.getPublicKey()).isEqualTo(newPublicKeyContent);
 		mockDirector.verifyUpdateKey(
 				keyName,
-				new Pair("type", SSHKeyTestUtils.SSH_DSA),
-				new Pair("content", key.getPublicKey()));
+				new RequestParameter("type", SSHKeyTestUtils.SSH_DSA),
+				new RequestParameter("content", key.getPublicKey()));
 	}
 
 	@Test
@@ -268,8 +267,8 @@ public class SSHKeyTest {
 		parameterMap.put("type", SSHKeyTestUtils.SSH_RSA);
 		mockDirector.verifyUpdateKey(
 				keyName,
-				new Pair("type", SSHKeyTestUtils.SSH_RSA),
-				new Pair("content", key.getPublicKey()));
+				new RequestParameter("type", SSHKeyTestUtils.SSH_RSA),
+				new RequestParameter("content", key.getPublicKey()));
 	}
 
 	@Test(expected = OpenShiftSSHKeyException.class)
