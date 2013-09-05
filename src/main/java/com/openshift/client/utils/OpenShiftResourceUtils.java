@@ -20,8 +20,11 @@ import com.openshift.client.cartridge.ICartridge;
  */
 public class OpenShiftResourceUtils {
 
-	public static List<String> toNames(ICartridge[] cartridges) {
+	public static List<String> toNames(ICartridge... cartridges) {
 		List<String> cartridgeNames = new ArrayList<String>();
+		if (cartridges == null) {
+			return cartridgeNames;
+		}
 		for (ICartridge cartridge : cartridges) {
 			if (cartridge == null) {
 				continue;

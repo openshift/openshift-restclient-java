@@ -355,7 +355,7 @@ public class DomainResourceTest {
 		// verification
 		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"), 
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName())); 
+				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, CARTRIDGE_JBOSSAS_7.getName())); 
 	}
 
 	@Test
@@ -370,7 +370,7 @@ public class DomainResourceTest {
 		// verification
 		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
+				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, CARTRIDGE_JBOSSAS_7.getName()),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()));
 	}
 
@@ -386,7 +386,7 @@ public class DomainResourceTest {
 		// verification
 		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
+				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, CARTRIDGE_JBOSSAS_7.getName()),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.JUMBO.getName())
 		);
@@ -408,7 +408,7 @@ public class DomainResourceTest {
 		// verification
 		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
+				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, CARTRIDGE_JBOSSAS_7.getName()),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.JUMBO.getName()),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, "git://github.com/adietish/openshift-java-client.git")
@@ -437,12 +437,11 @@ public class DomainResourceTest {
 				"foobarz",
 				42001,
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "jekyll"),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JENKINS_14.getName()),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.LARGE.getName()),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, "git://github.com/adietish/openshift-java-client.git"),
 				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, 
-						EMBEDDABLE_CARTRIDGE_MONGODB_22.getName(), EMBEDDABLE_CARTRIDGE_MYSQL_51.getName())
+						CARTRIDGE_JENKINS_14.getName(), EMBEDDABLE_CARTRIDGE_MONGODB_22.getName(), EMBEDDABLE_CARTRIDGE_MYSQL_51.getName())
 		);
 	}
 
@@ -542,7 +541,7 @@ public class DomainResourceTest {
 		mockDirector.verifyCreateApplication("foobarz", timeout, 
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, String.valueOf(Boolean.FALSE)),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.SMALL.getName()),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, CARTRIDGE_JBOSSAS_7.getName()),
+				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, CARTRIDGE_JBOSSAS_7.getName()),
 				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "scalable"));
 	}
 }
