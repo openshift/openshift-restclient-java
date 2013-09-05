@@ -11,6 +11,7 @@
 package com.openshift.internal.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -149,14 +150,21 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 	protected class RequestParameters {
 		
 		private ArrayList<RequestParameter> parameters = new ArrayList<RequestParameter>();
-
-		protected RequestParameters addCartridge(IStandaloneCartridge cartridge) {
-			if (cartridge == null) {
+		
+		protected RequestParameters addCartridges(
+				IStandaloneCartridge standaloneCartridge, IEmbeddableCartridge[] embeddableCartridges) {
+			if (standaloneCartridge == null) {
 				return this;
 			}
-			return add(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, cartridge.getName());
+
+			List<String> cartridges = OpenShiftResourceUtils.toNames(standaloneCartridge);
+			if (embeddableCartridges != null
+					&& embeddableCartridges.length > 0) {
+				cartridges.addAll(OpenShiftResourceUtils.toNames(embeddableCartridges));
+			}
+			return add(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, cartridges);
 		}
-		
+
 		protected RequestParameters addScale(ApplicationScale scale) {
 			if (scale == null) {
 				return this;
@@ -171,17 +179,16 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 			return add(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, gearProfile.getName());
 		}
 
-		protected RequestParameters addEmbeddableCartridges(IEmbeddableCartridge[] cartridges) {
-			if (cartridges == null
-					|| cartridges.length == 0) {
+		protected RequestParameters add(String name, Collection<String> values) {
+			if (values == null
+					|| values.size() == 0) {
 				return this;
 			}
-			parameters.add(new ArrayRequestParameter(
-							IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, 
-							OpenShiftResourceUtils.toNames(cartridges)));
+			
+			parameters.add(new ArrayRequestParameter(name, values.toArray(new String[values.size()])));
 			return this;
 		}
-
+		
 		protected RequestParameters add(String name, Object value) {
 			
 			if (value == null) {
@@ -191,7 +198,7 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 			parameters.add(new RequestParameter(name, value));
 			return this;
 		}
-		
+				
 		protected RequestParameter[] toArray() {
 			return parameters.toArray(new RequestParameter[parameters.size()]);
 		}

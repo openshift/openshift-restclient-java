@@ -300,7 +300,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 			super(LINK_ADD_APPLICATION);
 		}
 
-		public ApplicationResourceDTO execute(final String name, final IStandaloneCartridge cartridge,
+		public ApplicationResourceDTO execute(final String name, IStandaloneCartridge cartridge,
 				final ApplicationScale scale, final IGearProfile gearProfile, final String initialGitUrl,
 				final int timeout, final IEmbeddableCartridge... embeddableCartridges)
 				throws OpenShiftException {
@@ -310,11 +310,10 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 			
 			RequestParameters parameters = new RequestParameters()
 					.add(IOpenShiftJsonConstants.PROPERTY_NAME, name)
-					.addCartridge(cartridge)
+					.addCartridges(cartridge, embeddableCartridges)
 					.addScale(scale)
 					.addGearProfile(gearProfile)
-					.add(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl)
-					.addEmbeddableCartridges(embeddableCartridges);
+					.add(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl);
 			return super.execute(timeout, parameters.toArray());
 		}
 	}

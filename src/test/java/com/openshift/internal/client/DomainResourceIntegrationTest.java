@@ -32,6 +32,7 @@ import com.openshift.client.IUser;
 import com.openshift.client.Message;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.selector.LatestVersionOf;
 import com.openshift.client.utils.ApplicationAssert;
@@ -238,7 +239,7 @@ public class DomainResourceIntegrationTest {
 	@Test
 	public void shouldCreateNonScalableApplicationWithSmallGearAndGitUrl() throws Exception {
 		// pre-conditions
-		
+
 		ApplicationTestUtils.destroyIfMoreThan(2, domain);
 
 		// operation
@@ -259,17 +260,42 @@ public class DomainResourceIntegrationTest {
 				.hasEmbeddableCartridges()
 				.hasAlias()
 				.hasContent(REVEALJS_INDEX, "Reveal.js");
-			}
+	}
 	
+	@Test
+	public void shouldCreateNonScalableApplicationWithEmbeddedCartridge() throws Exception {
+		// pre-conditions
+		ApplicationTestUtils.destroyIfMoreThan(2, domain);
+		String applicationName =
+				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge php = LatestVersionOf.php().get(user);
+		IEmbeddableCartridge mySql = LatestVersionOf.mySQL().get(domain.getUser());
+		int timeout = 5 * 60 * 1000;
+		
+		// operation
+		IApplication application = domain.createApplication(
+				applicationName, php, ApplicationScale.NO_SCALE, GearProfile.SMALL, null, timeout, mySql);
+
+		// verification
+		new ApplicationAssert(application)
+				.hasName(applicationName)
+				.hasUUID()
+				.hasCreationTime()
+				.hasCartridge(php)
+				.hasValidApplicationUrl()
+				.hasEmbeddableCartridges(mySql.getName())
+				.hasAlias();
+	}
+
 	@Test
 	public void shouldCreateScalableApplication() throws Exception {
 		// pre-conditions
 		ApplicationTestUtils.destroyAllApplications(domain);
-
-		// operation
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
 		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
+
+		// operation
 		IApplication application = domain.createApplication(
 				applicationName, jbossas, ApplicationScale.SCALE, GearProfile.SMALL);
 
@@ -291,11 +317,11 @@ public class DomainResourceIntegrationTest {
 	public void shouldCreateJenkinsApplication() throws Exception {
 		// pre-conditions
 		ApplicationTestUtils.destroyAllApplications(domain);
-
-		// operation
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
 		IStandaloneCartridge jenkins = LatestVersionOf.jenkins().get(user);
+
+		// operation
 		IApplication application = domain.createApplication(
 				applicationName, jenkins );
 
@@ -316,11 +342,11 @@ public class DomainResourceIntegrationTest {
 	public void shouldHaveCredentialsInMessage() throws Exception {
 		// pre-conditions
 		ApplicationTestUtils.destroyAllApplications(domain);
-
-		// operation
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
 		IStandaloneCartridge jenkins = LatestVersionOf.jenkins().get(user);
+
+		// operation
 		IApplication application = domain.createApplication(
 				applicationName, jenkins );
 
