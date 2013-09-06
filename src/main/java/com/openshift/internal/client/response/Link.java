@@ -40,7 +40,7 @@ public class Link {
 		this(rel, href, httpMethod, null, null);
 	}
 
-	public Link(final String rel, final String href, final String httpMethod,
+	protected Link(final String rel, final String href, final String httpMethod,
 			final List<LinkParameter> requiredParams, final List<LinkParameter> optionalParams) {
 		this(rel, href, HttpMethod.valueOf(httpMethod), requiredParams, optionalParams);
 	}
@@ -59,7 +59,7 @@ public class Link {
 	 * @param optionalParams
 	 *            the optional params
 	 */
-	public Link(final String rel, final String href, final HttpMethod httpMethod,
+	protected Link(final String rel, final String href, final HttpMethod httpMethod,
 			final List<LinkParameter> requiredParams, final List<LinkParameter> optionalParams) {
 		this.rel = rel;
 		this.href = href;

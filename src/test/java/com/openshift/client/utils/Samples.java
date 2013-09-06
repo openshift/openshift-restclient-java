@@ -58,7 +58,10 @@ public enum Samples {
 	PUT_BBCC_DSA_USER_KEYS_SOMEKEY("put-bbcc-dsa-user-keys-somekey.json"), // 1.2
 
 	// cartridges
-	GET_CARTRIDGES("get-cartridges.json"); // 1.2
+	GET_CARTRIDGES("get-cartridges.json"), // 1.2
+	
+	// links
+	LINKS_UNKNOWN_LINKPARAMETERTYPE("links-unknown-linkparametertype.json"); // 1.2
 	
 	private static final String SAMPLES_FOLDER = "/samples/";
 

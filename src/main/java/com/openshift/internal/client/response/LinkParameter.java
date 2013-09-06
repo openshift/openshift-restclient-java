@@ -27,12 +27,12 @@ public class LinkParameter {
 	protected final String defaultValue;
 	protected final List<String> validOptions;
 
-	public LinkParameter(final String name, final String type, final String defaultValue, final String description,
+	protected LinkParameter(final String name, final String type, final String defaultValue, final String description,
 			final List<String> validOptions) throws OpenShiftRequestException {
-		this(name, LinkParameterType.valueOfIgnoreCase(type), defaultValue, description, validOptions);
+		this(name, new LinkParameterType(type), defaultValue, description, validOptions);
 	}
 
-	public LinkParameter(final String name, final LinkParameterType type, final String defaultValue, final String description,
+	protected LinkParameter(final String name, final LinkParameterType type, final String defaultValue, final String description,
 			final List<String> validOptions) throws OpenShiftRequestException {
 		this.name = name;
 		this.type = type;
