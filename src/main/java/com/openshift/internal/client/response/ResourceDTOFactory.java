@@ -288,18 +288,22 @@ public class ResourceDTOFactory {
 				final String linkName = linkNode.asProperty().getName();
 				final ModelNode valueNode = linkNode.asProperty().getValue();
 				if (valueNode.isDefined()) {
-					final String rel = valueNode.get(PROPERTY_REL).asString();
-					final String href = valueNode.get(PROPERTY_HREF).asString();
-					final String method = valueNode.get(PROPERTY_METHOD).asString();
-					final List<LinkParameter> requiredParams = createLinkParameters(valueNode
-							.get(PROPERTY_REQUIRED_PARAMS));
-					final List<LinkParameter> optionalParams = createLinkParameters(valueNode
-							.get(PROPERTY_OPTIONAL_PARAMS));
-					links.put(linkName, new Link(rel, href, method, requiredParams, optionalParams));
+					links.put(linkName, createLink(valueNode));
 				}
 			}
 		}
 		return links;
+	}
+
+	private static Link createLink(final ModelNode valueNode) {
+		final String rel = valueNode.get(PROPERTY_REL).asString();
+		final String href = valueNode.get(PROPERTY_HREF).asString();
+		final String method = valueNode.get(PROPERTY_METHOD).asString();
+		final List<LinkParameter> requiredParams = 
+				createLinkParameters(valueNode.get(PROPERTY_REQUIRED_PARAMS));
+		final List<LinkParameter> optionalParams = 
+				createLinkParameters(valueNode.get(PROPERTY_OPTIONAL_PARAMS));
+		return new Link(rel, href, method, requiredParams, optionalParams);
 	}
 
 	/**

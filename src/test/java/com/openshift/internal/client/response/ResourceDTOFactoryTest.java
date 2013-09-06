@@ -362,4 +362,27 @@ public class ResourceDTOFactoryTest {
 		assertThat(link.getRequiredParams().get(0).getValidOptions()).contains("ssh-rsa", "ssh-dss");
 	}
 
+	@Test
+	public void shouldUnmarshallLinksUnknwonLinkParameterType() throws Throwable {
+		// pre-conditions
+		String content = Samples.LINKS_UNKNOWN_LINKPARAMETERTYPE.getContentAsString();
+		assertNotNull(content);
+		// operation
+		RestResponse response = ResourceDTOFactory.get(content);
+		// verifications
+		final Map<String, Link> links = response.getData();
+		assertThat(links.size()).isEqualTo(1);
+		final Link link = links.get("POST1");
+		assertThat(link).isNotNull();
+		assertThat(link.getHref()).isEqualTo("https://openshift.redhat.com/broker/rest/post1");
+		assertThat(link.getHttpMethod()).isEqualTo(HttpMethod.POST);
+		assertThat(link.getOptionalParams().size()).isEqualTo(0);
+		assertThat(link.getRequiredParams().size()).isEqualTo(1);
+		LinkParameter linkParameter = link.getRequiredParams().get(0);
+		assertThat(linkParameter).isNotNull();
+		assertThat(linkParameter.getName()).isEqualTo("post1Required1Name");
+		assertThat(linkParameter.getDescription()).isEqualTo("post1Required1Description");
+		assertThat(linkParameter.getType()).isNotNull().isEqualTo(new LinkParameterType("unknown"));
+	}
+
 }

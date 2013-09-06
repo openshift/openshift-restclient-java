@@ -1,0 +1,26 @@
+{
+	"data":{
+		"POST1":{
+			"href":"https://openshift.redhat.com/broker/rest/post1",
+			"method":"POST",
+			"optional_params":[
+	
+			],
+			"rel":"Post1",
+			"required_params":[
+		            {
+		            	"description":"post1Required1Description",
+		                "invalid_options":[
+	
+		                ],
+		                "name":"post1Required1Name",
+		                "type":"unknown",
+		                "valid_options":[
+		                ]
+		            }
+		    ]
+		}
+	},
+   "type":"links",
+   "version":"1.2"
+}

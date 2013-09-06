@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -33,6 +33,7 @@ import com.openshift.client.IHttpClient;
 import com.openshift.client.Message;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.OpenShiftRequestException;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.client.utils.Samples;
@@ -69,26 +70,17 @@ public class RestServiceTest {
 		this.service = new RestService(configuration.getStagingServer(), configuration.getClientId(), clientMock);
 	}
 
-	@Test(expected = OpenShiftException.class)
-	public void throwsIfRequiredParameterMissing() throws OpenShiftException, SocketTimeoutException {
-		// operation
-		LinkParameter parameter =
-				new LinkParameter("required string parameter", LinkParameterType.STRING, null, null, null);
-		Link link = new Link("1 required parameter", "/dummy", HttpMethod.GET, Arrays.asList(parameter), null);
-		service.request(link);
-	}
-
 	@Test
 	public void shouldNotThrowIfNoReqiredParameter() throws OpenShiftException, SocketTimeoutException {
 		// operation
-		Link link = new Link("0 required parameter", "/dummy", HttpMethod.GET, null, null);
+		Link link = new TestLink("0 required parameter", "/dummy", HttpMethod.GET, null, null);
 		service.request(link);
 	}
 
 	@Test
 	public void shouldGetIfGetHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException {
 		// operation
-		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.GET, null, null));
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.GET, null, null));
 		// verifications
 		mockDirector.verifyGetAny(1);
 	}
@@ -97,7 +89,7 @@ public class RestServiceTest {
 	public void shouldPostIfPostHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
 			UnsupportedEncodingException {
 		// operation
-		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.POST, null, null));
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.POST, null, null));
 		// verifications
 		mockDirector.verifyPostAny(1);
 	}
@@ -106,7 +98,7 @@ public class RestServiceTest {
 	public void shouldPutIfPutHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
 			UnsupportedEncodingException {
 		// operation
-		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.PUT, null, null));
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.PUT, null, null));
 		// verifications
 		mockDirector.verifyPutAny(1);
 	}
@@ -115,7 +107,7 @@ public class RestServiceTest {
 	public void shouldDeleteIfDeleteHttpMethod() throws OpenShiftException, SocketTimeoutException,
 			HttpClientException, UnsupportedEncodingException {
 		// operation
-		service.request(new Link("0 required parameter", "http://www.redhat.com", HttpMethod.DELETE, null, null));
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.DELETE, null, null));
 		// verifications
 		mockDirector.verifyDeleteAny(1);
 	}
@@ -125,7 +117,7 @@ public class RestServiceTest {
 			MalformedURLException {
 		// operation
 		String url = "http://www.redhat.com";
-		service.request(new Link("0 required parameter", url, HttpMethod.GET, null, null));
+		service.request(new TestLink("0 required parameter", url, HttpMethod.GET, null, null));
 		// verifications
 		mockDirector.verifyGet(url, 1);
 	}
@@ -135,7 +127,7 @@ public class RestServiceTest {
 			MalformedURLException {
 		// operation
 		String url = "/adietisheim-redhat";
-		service.request(new Link("0 require parameter", url, HttpMethod.GET, null, null));
+		service.request(new TestLink("0 require parameter", url, HttpMethod.GET, null, null));
 		// verifications
 		String targetUrl = service.getServiceUrl() + url.substring(1, url.length());
 		mockDirector.verifyGet(targetUrl, 1);
@@ -146,7 +138,7 @@ public class RestServiceTest {
 			HttpClientException, MalformedURLException {
 		// operation
 		String url = "/broker/rest/adietisheim-redhat";
-		service.request(new Link("0 require parameter", url, HttpMethod.GET, null, null));
+		service.request(new TestLink("0 require parameter", url, HttpMethod.GET, null, null));
 		// verifications
 		String targetUrl = service.getPlatformUrl() + url;
 		mockDirector.verifyGet(targetUrl, 1);
@@ -158,7 +150,7 @@ public class RestServiceTest {
 			// pre-conditions
 			mockDirector.mockGetAny(new NotFoundException(Samples.GET_DOMAINS_FOOBAR_KO_NOTFOUND.getContentAsString()));
 			// operation
-			service.request(new Link("0 require parameter", "/broker/rest/adietisheim", HttpMethod.GET, null, null));
+			service.request(new TestLink("0 require parameter", "/broker/rest/adietisheim", HttpMethod.GET, null, null));
 			// verifications
 			fail("OpenShiftEndPointException expected, did not occurr");
 		} catch (OpenShiftEndpointException e) {
@@ -172,7 +164,7 @@ public class RestServiceTest {
 			// pre-conditions
 			mockDirector.mockPostAny(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
 			// operation
-			service.request(new Link("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));
+			service.request(new TestLink("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));
 			// verifications
 			fail("OpenShiftEndPointException expected, did not occurr");
 		} catch (OpenShiftEndpointException e) {
@@ -194,7 +186,7 @@ public class RestServiceTest {
 			// pre-conditions
 			mockDirector.mockPostAny(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
 			// operation
-			service.request(new Link("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));
+			service.request(new TestLink("0 require parameter", "/broker/rest/domains", HttpMethod.POST, null, null));
 			// verifications
 			fail("OpenShiftEndPointException expected, did not occurr");
 		} catch (OpenShiftEndpointException e) {
@@ -274,4 +266,35 @@ public class RestServiceTest {
 		// verifications
 		verify(httpClientMock, times(1)).setAcceptVersion("5.2");
 	}
+
+	public class TestLink extends Link {
+
+		public TestLink(String rel, String href, HttpMethod httpMethod, List<LinkParameter> requiredParams,
+				List<LinkParameter> optionalParams) {
+			super(rel, href, httpMethod, requiredParams, optionalParams);
+		}
+
+		public TestLink(String rel, String href, HttpMethod httpMethod) {
+			super(rel, href, httpMethod);
+		}
+
+		public TestLink(String rel, String href, String httpMethod, List<LinkParameter> requiredParams,
+				List<LinkParameter> optionalParams) {
+			super(rel, href, httpMethod, requiredParams, optionalParams);
+		}
+	}
+
+	public class TestLinkParameter extends LinkParameter {
+
+		public TestLinkParameter(String name, LinkParameterType type, String defaultValue, String description,
+				List<String> validOptions) throws OpenShiftRequestException {
+			super(name, type, defaultValue, description, validOptions);
+		}
+
+		public TestLinkParameter(String name, String type, String defaultValue, String description,
+				List<String> validOptions) throws OpenShiftRequestException {
+			super(name, type, defaultValue, description, validOptions);
+		}
+	}
+
 }
