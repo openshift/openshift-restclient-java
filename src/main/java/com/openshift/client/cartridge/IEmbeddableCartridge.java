@@ -18,14 +18,15 @@ package com.openshift.client.cartridge;
  */
 public interface IEmbeddableCartridge extends ICartridge {
 	
-	public static final String NAME_MYSQL = "mysql";
-	public static final String NAME_PHPMYADMIN = "phpmyadmin";
-	public static final String NAME_POSTGRESQL = "postgresql";
-	public static final String NAME_MONGODB = "mongodb";
-	public static final String NAME_ROCKMONGO = "rockmongo";
 	public static final String NAME_10GEN_MMS_AGENT = "10gen-mms-agent";
+	public static final String NAME_CRON = "cron";
+	public static final String NAME_HAPROXY = "haproxy";
 	public static final String NAME_JENKINS_CLIENT = "jenkins-client";
 	public static final String NAME_METRICS = "metrics";
-	public static final String NAME_HAPROXY = "haproxy";
-	
+	public static final String NAME_MONGODB = "mongodb";
+	public static final String NAME_PHPMYADMIN = "phpmyadmin";
+	public static final String NAME_POSTGRESQL = "postgresql";
+	public static final String NAME_MYSQL = "mysql";
+	public static final String NAME_ROCKMONGO = "rockmongo";
+	public static final String NAME_SWITCHYARD = "switchyard";
 }
