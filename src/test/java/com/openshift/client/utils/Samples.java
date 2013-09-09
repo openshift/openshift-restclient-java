@@ -25,13 +25,17 @@ public enum Samples {
 	// cartridges
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED("get-domains-foobarz-applications-springeap6-cartridges_1embedded.json"), // 1.2
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED("get-domains-foobarz-applications-springeap6-cartridges_2embedded.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_3EMBEDDED("get-domains-foobarz-applications-springeap6-cartridges_3embedded.json"), // 1.2
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_MYSQL("get-domains-foobarz-applications-springeap6-cartridges-mysql.json"), //1.2
 	POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES("post-mysql-domains-foobarz-applications-springeap6-cartridges.json"), // 1.2
 	
 	// application
-	GET_DOMAINS_FOOBARZ_APPLICATIONS("get-domains-foobarz-applications.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED("get-domains-foobarz-applications_1embedded.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED("get-domains-foobarz-applications_2embedded.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_3EMBEDDED("get-domains-foobarz-applications_3embedded.json"), // 1.2
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS("get-domains-foobarz-applications_noapps.json"), // 1.2
-	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6("get-domains-foobarz-applications-springeap6.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED("get-domains-foobarz-applications-springeap6_1embedded.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2EMBEDDED("get-domains-foobarz-applications-springeap6_2embedded.json"), // 1.2
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2ALIAS("get-domains-foobarz-applications-springeap6_2alias.json"), // 1.2
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_0ALIAS("get-domains-foobarz-applications-springeap6_0alias.json"), // 1.2
 	POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT("post-stop-domains-foobarz-applications-springeap6-events.json"), // 1.2

@@ -162,8 +162,8 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	}
 
 	private void retrieveCartridges() throws OpenShiftException {
-		final List<CartridgeResourceDTO> cartridgeDTOs = new GetCartridgesRequest().execute();
-		for (CartridgeResourceDTO cartridgeDTO : cartridgeDTOs) {
+		final Map<String, CartridgeResourceDTO> cartridgeDTOsByName = new GetCartridgesRequest().execute();
+		for (CartridgeResourceDTO cartridgeDTO : cartridgeDTOsByName.values()) {
 			// TODO replace by enum (standalone, embedded)
 			switch (cartridgeDTO.getType()) {
 			case STANDALONE:
@@ -250,7 +250,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 			super("LIST_CARTRIDGES");
 		}
 
-		public List<CartridgeResourceDTO> execute() throws OpenShiftException {
+		public Map<String, CartridgeResourceDTO> execute() throws OpenShiftException {
 			return super.execute();
 		}
 	}

@@ -11,8 +11,8 @@
 package com.openshift.internal.client;
 
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS;
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -42,8 +42,8 @@ public class GearGroupsResourceTest {
 	public void setup() throws Throwable {
 		IHttpClient client = new HttpClientMockDirector()
 			.mockGetDomains(GET_DOMAINS)
-			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS)
-			.mockGetApplication("foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6)
+			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED)
+			.mockGetApplication("foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED)
 			.mockGetGearGroups("foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS)
 			.client();
 		IUser user = new TestConnectionFactory().getConnection(client).getUser();

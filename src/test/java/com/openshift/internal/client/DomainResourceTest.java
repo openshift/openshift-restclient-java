@@ -15,7 +15,7 @@ import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_EMPTY;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS;
 import static com.openshift.client.utils.Samples.POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS;
 import static com.openshift.client.utils.Samples.POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS;
@@ -197,7 +197,7 @@ public class DomainResourceTest {
 		// pre-conditions
 		mockDirector
 			.mockGetDomain("foobarz", GET_DOMAINS_FOOBARZ)
-			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
+			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		
 		final IDomain domain = user.getDomain("foobarz");
 		assertThat(domain).isNotNull();
@@ -215,7 +215,7 @@ public class DomainResourceTest {
 		// pre-conditions
 		mockDirector
 			.mockGetDomain("foobarz", GET_DOMAINS_FOOBARZ)
-			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
+			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		final IDomain domain = user.getDomain("foobarz");
 		assertThat(domain).isNotNull();
 		// operation
@@ -245,7 +245,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldLoadListOfApplicationsWith2Elements() throws Throwable {
 		// pre-conditions
-		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		// operation
 		final List<IApplication> apps = domain.getApplications();
 		// verifications
@@ -261,7 +261,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldNotLoadApplicationTwice() throws Throwable {
 		// pre-conditions
-		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		// operation
 		List<IApplication> apps = domain.getApplications();
 		assertThat(apps).hasSize(2);
@@ -448,7 +448,7 @@ public class DomainResourceTest {
 	@Test(expected = OpenShiftException.class)
 	public void shouldNotCreateApplicationWithMissingName() throws Throwable {
 		// pre-conditions
-		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		// operation
 		domain.createApplication(null, CARTRIDGE_JBOSSAS_7, null, null);
 		// verifications
@@ -468,7 +468,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldNotRecreateExistingApplication() throws Throwable {
 		// pre-conditions
-		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		// operation
 		try {
 			domain.createApplication("springeap6", CARTRIDGE_JBOSSAS_7, null, null);
@@ -484,7 +484,7 @@ public class DomainResourceTest {
 	@Test
 	public void shouldGetApplicationByNameCaseInsensitive() throws Throwable {
 		// pre-conditions
-		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS);
+		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		// operation
 		IApplication lowerCaseQueryResult = domain.getApplicationByName("springeap6");
 		IApplication upperCaseQueryResult = domain.getApplicationByName("SPRINGEAP6");

@@ -20,7 +20,7 @@ public class UserResourceDTO extends BaseResourceDTO {
 	private final int maxGears;
 	private final int consumedGears;
 	
-	public UserResourceDTO(final String rhLogin, final int maxGears, final int consumedGears, final Map<String, Link> links) {
+	UserResourceDTO(final String rhLogin, final int maxGears, final int consumedGears, final Map<String, Link> links) {
 		super(links, null);
 		this.rhLogin = rhLogin;
 		this.maxGears = maxGears;

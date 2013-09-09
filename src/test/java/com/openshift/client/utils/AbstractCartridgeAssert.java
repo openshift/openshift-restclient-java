@@ -69,7 +69,7 @@ public abstract class AbstractCartridgeAssert<C extends ICartridge> implements A
 		assertThat(cartridge.equals(otherCartridge));
 		return this;
 	}
-
+	
 	protected C getCartridge() {
 		return cartridge;
 	}

@@ -44,9 +44,10 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	private static final String LINK_ADD_APPLICATION = "ADD_APPLICATION";
 	private static final String LINK_UPDATE = "UPDATE";
 	private static final String LINK_DELETE = "DELETE";
+
 	private String id;
 	private String suffix;
-	/** root node in the business domain. */
+
 	private final APIResource connectionResource;
 	/** Applications for the domain. */
 	// TODO: replace by a map indexed by application names ?
@@ -280,7 +281,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		}
 
 		protected DomainResourceDTO execute() throws OpenShiftException {
-			return (DomainResourceDTO)(super.execute());
+			return (DomainResourceDTO) super.execute();
 		}
 		
 		

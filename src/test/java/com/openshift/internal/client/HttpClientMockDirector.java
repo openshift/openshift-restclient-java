@@ -230,6 +230,16 @@ public class HttpClientMockDirector {
 		return this;
 	}
 
+	public HttpClientMockDirector mockGetApplicationCartridges(String domainId, String applicationName,
+			Samples cartridgesResourceResponse)
+			throws SocketTimeoutException, HttpClientException {
+		when(client.get(
+				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/cartridges"),
+				anyInt()))
+				.thenReturn(cartridgesResourceResponse.getContentAsString());
+		return this;
+	}
+
 	public HttpClientMockDirector mockGetGearGroups(String domainId, String applicationName,
 			Samples gearGroupsResourceResponse)
 			throws SocketTimeoutException, HttpClientException {
@@ -247,16 +257,6 @@ public class HttpClientMockDirector {
 				anyInt(),
 				Matchers.<RequestParameter[]>anyVararg()))
 				.thenThrow(exception);
-		return this;
-	}
-
-	public HttpClientMockDirector mockGetEmbeddableCartridges(String domainId, String applicationName,
-			Samples cartridgesResourcesResponse)
-			throws SocketTimeoutException, HttpClientException {
-		when(client.get(
-				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/cartridges"),
-				anyInt()))
-				.thenReturn(cartridgesResourcesResponse.getContentAsString());
 		return this;
 	}
 
@@ -304,18 +304,18 @@ public class HttpClientMockDirector {
 		return this;
 	}
 
-	public HttpClientMockDirector verifyReloadEmbeddableCartridges(String domainId, String applicationName)
+	public HttpClientMockDirector verifyListEmbeddableCartridges(int times, String domainId, String applicationName)
 			throws SocketTimeoutException, HttpClientException {
-		verify(client, times(2)).get(
+		verify(client, times(times)).get(
 				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/cartridges"),
 				anyInt());
 		return this;
 
 	}
 
-	public HttpClientMockDirector verifyGetEmbeddableCartridges(String domainId, String applicationName)
+	public HttpClientMockDirector verifyGetApplicationCartridges(int times, String domainId, String applicationName)
 			throws SocketTimeoutException, HttpClientException {
-		verify(client, times(1)).get(
+		verify(client, times(times)).get(
 				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/cartridges"),
 				anyInt());
 		return this;

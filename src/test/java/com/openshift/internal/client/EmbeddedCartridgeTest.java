@@ -11,17 +11,18 @@
 package com.openshift.internal.client;
 
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_3EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_3EMBEDDED;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.SocketTimeoutException;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,37 +30,40 @@ import org.mockito.Mockito;
 
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
-import com.openshift.client.IField;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IUser;
-import com.openshift.client.Message;
-import com.openshift.client.Messages;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
+import com.openshift.client.utils.ResourcePropertyAssert;
+import com.openshift.client.utils.Samples;
 import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.HttpClientException;
-import com.openshift.internal.client.response.Link;
+import com.openshift.internal.client.response.CartridgeResourceDTO;
+import com.openshift.internal.client.response.ResourceProperties;
 
 /**
  * @author Andre Dietisheim
  */
 public class EmbeddedCartridgeTest {
 
-	private IUser user;
-	private IDomain domain;
 	private IApplication application;
+	private HttpClientMockDirector mockDirector;
 
 	@Before
 	public void setUp() throws SocketTimeoutException, HttpClientException, Throwable {
 		// pre-conditions
-		IHttpClient client = new HttpClientMockDirector()
-				.mockGetDomains(GET_DOMAINS)
-				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS)
-				.mockGetEmbeddableCartridges("foobarz", "springeap6",
-						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED)
-				.client();
-		this.user = new TestConnectionFactory().getConnection(client).getUser();
-		this.domain = user.getDomain("foobarz");
+		this.mockDirector = new HttpClientMockDirector();
+		IHttpClient client =
+				mockDirector
+						.mockGetDomains(GET_DOMAINS)
+						.mockGetApplications(
+								"foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED)
+						.mockGetApplicationCartridges(
+								"foobarz", "springeap6",
+								GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED)
+						.client();
+		IUser user = new TestConnectionFactory().getConnection(client).getUser();
+		IDomain domain = user.getDomain("foobarz");
 		this.application = domain.getApplicationByName("springeap6");
 	}
 
@@ -117,7 +121,7 @@ public class EmbeddedCartridgeTest {
 
 		// verifications
 		assertThat(mongo.getUrl()).isEqualTo("mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/");
-		assertThat(mysql.getUrl()).isNull();
+		assertThat(mysql.getUrl()).isEqualTo("mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/");
 	}
 
 	@Test
@@ -130,16 +134,117 @@ public class EmbeddedCartridgeTest {
 		assertThat(mysql.getDisplayName()).isEqualTo("MySQL Database 5.1");
 	}
 
+	@Test
+	public void shouldHaveDescription() throws Throwable {
+		// pre-conditions
+		// operation
+		IEmbeddedCartridge mysql = application.getEmbeddedCartridge("mysql-5.1");
+
+		// verifications
+		assertThat(mysql.getDescription())
+				.isEqualTo(
+						"MySQL is a multi-user, multi-threaded SQL database server.");
+	}
+
+	@Test
+	public void shouldBeLoadedAfterRefresh() throws Throwable {
+		// pre-conditions
+		EmbeddedCartridgeResource mysql =
+				(EmbeddedCartridgeResource) application.getEmbeddedCartridge("mysql-5.1");
+		assertThat(mysql.isResourceLoaded()).isFalse();
+		// operation
+		mysql.refresh();
+
+		// verifications
+		assertThat(mysql.isResourceLoaded()).isTrue();
+	}
+
+	@Test
+	public void shouldLoadCartridgeOnDescription() throws Throwable {
+		// pre-conditions
+		EmbeddedCartridgeResource mysql =
+				(EmbeddedCartridgeResource) application.getEmbeddedCartridge("mysql-5.1");
+		assertThat(mysql.isResourceLoaded()).isFalse();
+
+		// operation
+		mysql.getDescription();
+
+		// verifications
+		assertThat(mysql.isResourceLoaded()).isTrue();
+	}
+
+	@Test
+	public void shouldNotLoadCartridgeTwice() throws Throwable {
+		// pre-conditions
+		IEmbeddedCartridge mysql = application.getEmbeddedCartridge("mysql-5.1");
+
+		// operation
+		mysql.getDescription(); // triggers application to load all cartridge
+								// resource(s)
+		mysql.getDisplayName(); // should not trigger a 2nd time
+
+		// verifications
+		mockDirector.verifyGetApplicationCartridges(1, application.getDomain().getId(), application.getName());
+	}
+
+	@Test
+	public void shouldUpdatePropertiesWhenRefreshed() throws Throwable {
+		// pre-conditions
+		HttpClientMockDirector mockDirector = new HttpClientMockDirector();
+		IHttpClient client = mockDirector
+				.mockGetDomains(GET_DOMAINS)
+				.mockGetApplications(
+						"foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_3EMBEDDED)
+				.mockGetApplicationCartridges(
+						"foobarz", "springeap6",
+						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_3EMBEDDED)
+				.client();
+		IUser user = new TestConnectionFactory().getConnection(client).getUser();
+		IDomain domain = user.getDomain("foobarz");
+		IApplication application = domain.getApplicationByName("springeap6");
+		assertThat(application.getEmbeddedCartridges()).onProperty("name").contains("switchyard-0");
+
+		// operation
+		IEmbeddedCartridge switchyard = application.getEmbeddedCartridge("switchyard-0");
+		// no properties in embedded block (within application)
+		assertThat(switchyard.getProperties().size()).isEqualTo(0); 
+		switchyard.refresh();
+
+		// verification
+		mockDirector.verifyGetApplicationCartridges(1, "foobarz", "springeap6");
+		ResourceProperties properties = switchyard.getProperties();
+		// 1 property in embedded block in cartridges
+		assertThat(properties.size()).isEqualTo(1); 
+		new ResourcePropertyAssert(properties.getAll().iterator().next())
+				.hasName("module_path")
+				.hasDescription("Module Path")
+				.hasType("cart_data");
+	}
+
+	@Test
+	public void shouldRemoveRemovedCartridge() throws Throwable {
+		// pre-conditions
+		// contains mongo and mysql
+		assertThat(application.getEmbeddedCartridges().size()).isEqualTo(2);
+		assertThat(application.getEmbeddedCartridge("mysql-5.1")).isNotNull();
+		mockDirector.mockGetCartridges(Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED);
+		
+		// operation
+		// triggers app to load updated list without mysql, only mongo
+		application.refresh();
+
+		// verifications
+		mockDirector.verifyGetApplicationCartridges(1, application.getDomain().getId(), application.getName());
+		// mysql missing now
+		assertThat(application.getEmbeddedCartridges().size()).isEqualTo(1);
+		assertThat(application.getEmbeddedCartridge("mysql-5.1")).isNull();
+	}
+
+	
 	private IEmbeddedCartridge createEmbeddedCartridgeMock(String name) {
 		ApplicationResource applicationResourceMock = Mockito.mock(ApplicationResource.class);
-		return new EmbeddedCartridgeResource(
-				name,
-				"displayName",
-				"description",
-				CartridgeType.EMBEDDED,
-				"embedded-info",
-				Collections.<String, Link> emptyMap(),
-				new Messages(Collections.<IField, List<Message>> emptyMap()),
-				applicationResourceMock);
+		CartridgeResourceDTO cartridgeDTO = new CartridgeResourceDTO(name, null, null) {
+		};
+		return new EmbeddedCartridgeResource(cartridgeDTO, applicationResourceMock);
 	}
 }

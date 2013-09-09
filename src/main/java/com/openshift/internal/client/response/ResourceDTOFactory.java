@@ -27,7 +27,6 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GIT_URL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_HREF;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_ID;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_INFO;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_LINKS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_LOGIN;
@@ -35,6 +34,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_METHOD;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_NAME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_OPTIONAL_PARAMS;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROPERTIES;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REQUIRED_PARAMS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SCALABLE;
@@ -52,7 +52,6 @@ import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
-import org.jboss.dmr.Property;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +64,7 @@ import com.openshift.client.Message;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
+import com.openshift.internal.client.CartridgeType;
 import com.openshift.internal.client.Gear;
 import com.openshift.internal.client.GearProfile;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
@@ -296,7 +296,7 @@ public class ResourceDTOFactory {
 	}
 
 	private static Link createLink(final ModelNode valueNode) {
-		final String rel = valueNode.get(PROPERTY_REL).asString();
+		final String rel = getAsString(valueNode, PROPERTY_REL);
 		final String href = valueNode.get(PROPERTY_HREF).asString();
 		final String method = valueNode.get(PROPERTY_METHOD).asString();
 		final List<LinkParameter> requiredParams = 
@@ -406,7 +406,7 @@ public class ResourceDTOFactory {
 		final String domainId = getAsString(appNode, PROPERTY_DOMAIN_ID);
 		final Map<String, Link> links = createLinks(appNode.get(PROPERTY_LINKS));
 		final List<String> aliases = createAliases(appNode.get(PROPERTY_ALIASES));
-		final Map<String, String> embeddedCartridgesInfos = createEmbeddedCartridgesInfos(appNode.get(PROPERTY_EMBEDDED));
+		final List<CartridgeResourceDTO> embeddedCartridges = createEmbeddedCartridges(appNode.get(PROPERTY_EMBEDDED));
 		
 		return new ApplicationResourceDTO(
 				framework, 
@@ -420,7 +420,7 @@ public class ResourceDTOFactory {
 				gitUrl, 
 				initialGitUrl,
 				aliases, 
-				embeddedCartridgesInfos, 
+				embeddedCartridges, 
 				links, 
 				messages);
 	}
@@ -431,30 +431,6 @@ public class ResourceDTOFactory {
 			return null;
 		}
 		return new GearProfile(gearProfileName);
-	}
-
-	/**
-	 * TODO: fix this workaround once
-	 * https://bugzilla.redhat.com/show_bug.cgi?id=812046 is fixed
-	 */
-	private static Map<String, String> createEmbeddedCartridgesInfos(ModelNode embeddedNode) {
-		HashMap<String, String> infos = new HashMap<String, String>();
-		for (Property embeddedCartridgeProperty : embeddedNode.asPropertyList()) {
-			String embeddedCartridgeInfo = getEmbeddedCartridgeInfo(embeddedCartridgeProperty.getValue());
-			if (embeddedCartridgeInfo != null) {
-				infos.put(embeddedCartridgeProperty.getName(), embeddedCartridgeInfo);
-			}
-		}
-		return infos;
-	}
-
-	private static String getEmbeddedCartridgeInfo(ModelNode embeddedCartridgeNode) {
-		if (embeddedCartridgeNode == null
-				|| !embeddedCartridgeNode.has(PROPERTY_INFO)
-				|| !embeddedCartridgeNode.get(PROPERTY_INFO).isDefined()) {
-			return null;
-		}
-		return embeddedCartridgeNode.get(PROPERTY_INFO).asString();
 	}
 
 	private static Collection<GearGroupResourceDTO> createGearGroups(ModelNode dataNode) {
@@ -485,25 +461,78 @@ public class ResourceDTOFactory {
 	}
 	
 	/**
-	 * Creates a new ResourceDTO object.
+	 * Creates a new CartridgeResourceDTO for a given root node.
 	 * 
 	 * @param rootNode
 	 *            the root node
 	 * @return the list< cartridge resource dt o>
 	 * @throws OpenShiftException
 	 */
-	private static List<CartridgeResourceDTO> createCartridges(ModelNode rootNode) throws OpenShiftException {
-		final List<CartridgeResourceDTO> cartridges = new ArrayList<CartridgeResourceDTO>();
+	private static Map<String, CartridgeResourceDTO> createCartridges(ModelNode rootNode) throws OpenShiftException {
+		final Map<String, CartridgeResourceDTO> cartridgesByName = new LinkedHashMap<String, CartridgeResourceDTO>();
 		if (rootNode.has(PROPERTY_DATA)) {
 			for (ModelNode cartridgeNode : rootNode.get(PROPERTY_DATA).asList()) {
-				cartridges.add(createCartridge(cartridgeNode, null));
+				CartridgeResourceDTO cartridgeResourceDTO = createCartridge(cartridgeNode, null);
+				cartridgesByName.put(cartridgeResourceDTO.getName(), cartridgeResourceDTO);
 			}
 		}
-		return cartridges;
+		return cartridgesByName;
+	}
+
+	/** 
+	 * Creates a map of cartridge resource dtos for a given embedded node (within an application)
+	 * 
+	 * @param embeddedNode the "embedded" node in the application response
+	 * @return the map of cartridges (by name) for the given node
+	 * @throws OpenShiftException
+	 */
+	private static List<CartridgeResourceDTO> createEmbeddedCartridges(ModelNode embeddedNode)
+			throws OpenShiftException {
+		List<CartridgeResourceDTO> embeddedCartridges = new ArrayList<CartridgeResourceDTO>();
+		for (String name : embeddedNode.keys()) {
+			ModelNode cartridgeNode = embeddedNode.get(name);
+			CartridgeResourceDTO cartridgeDTO = createEmbeddedCartridge(name, cartridgeNode);
+			embeddedCartridges.add(cartridgeDTO);
+		}
+		return embeddedCartridges;
+	}
+
+	private static CartridgeResourceDTO createEmbeddedCartridge(String name, ModelNode embeddedCartridgeNode) {
+		ResourceProperties properties = createEmbeddedProperties(embeddedCartridgeNode);
+		return new CartridgeResourceDTO(name, CartridgeType.EMBEDDED, properties);
 	}
 
 	/**
-	 * Creates a new ResourceDTO object.
+	 * Creates ResourceProperties for a given embedded cartridge node
+	 * <p>
+	 * ex.
+	 * 
+	 * <pre>
+	 * "embedded":{
+	 *       "metrics-0.1":{
+	 *          "connection_url":"https://eap6-foobarz.rhcloud.com/metrics/",
+	 *          "info":"Connection URL: https://eap6-foobarz.rhcloud.com/metrics/"
+	 *       }
+	 * </pre>
+	 * 
+	 * @param embeddedCartridgeNode
+	 * @return
+	 */
+	private static ResourceProperties createEmbeddedProperties(ModelNode embeddedCartridgeNode) {
+		ResourceProperties properties = new ResourceProperties();
+		if (embeddedCartridgeNode == null
+				|| !embeddedCartridgeNode.isDefined()) {
+ 			return properties;
+		}
+		for(String propertyName : embeddedCartridgeNode.keys()) {
+			String value = getAsString(embeddedCartridgeNode, propertyName);
+			properties.add(propertyName, new ResourceProperty(propertyName, value));
+		}
+		return properties;
+	}
+
+	/**
+	 * Creates a new CartridgeResourceDTO object for a given cartridge node and messages.
 	 * 
 	 * @param cartridgeNode
 	 *            the cartridge node
@@ -521,8 +550,9 @@ public class ResourceDTOFactory {
 		final String displayName = getAsString(cartridgeNode, PROPERTY_DISPLAY_NAME);
 		final String description = getAsString(cartridgeNode, PROPERTY_DESCRIPTION);
 		final String type = getAsString(cartridgeNode, PROPERTY_TYPE);
+		final ResourceProperties properties = createProperties(cartridgeNode.get(PROPERTY_PROPERTIES));
 		final Map<String, Link> links = createLinks(cartridgeNode.get(PROPERTY_LINKS));
-		return new CartridgeResourceDTO(name, displayName, description, type, links, messages);
+		return new CartridgeResourceDTO(name, displayName, description, type, properties, links, messages);
 	}
 
 	/**
@@ -623,6 +653,50 @@ public class ResourceDTOFactory {
 	private static String getAsString(final ModelNode node, String propertyName) {
 		final ModelNode propertyNode = node.get(propertyName);
 		return propertyNode.isDefined() ? propertyNode.asString() : null;
+	}
+	
+	/**
+	 * Creates ResourceProperties for a given propertiesNode
+	 * <p>
+	 * ex.
+	 * 
+	 * <pre>
+	 * "properties":[
+	 *       {
+	 *          "name":"connection_url",
+	 *          "type":"cart_data",
+	 *          "description":"Application metrics URL",
+	 *          "value":"https://eap6-foobarz.rhcloud.com/metrics/"
+	 *       },
+	 * </pre>
+	 * 
+	 * @param propertiesNode
+	 * @return
+	 */
+	private static ResourceProperties createProperties(ModelNode propertiesNode) {
+		if (propertiesNode == null
+				|| !propertiesNode.isDefined()) {
+			return null;
+		}
+		
+		ResourceProperties properties = new ResourceProperties();
+		for(ModelNode propertyNode : propertiesNode.asList()) {
+			ResourceProperty property = createProperty(propertyNode);
+			String name = property.getName();
+			if (StringUtils.isEmpty(name)) {
+				continue;
+			}
+			properties.add(name, property);
+		}
+		return properties;
+	}
+
+	private static ResourceProperty createProperty(ModelNode propertyNode) {
+		String name = getAsString(propertyNode, IOpenShiftJsonConstants.PROPERTY_NAME);
+		String description = getAsString(propertyNode, IOpenShiftJsonConstants.PROPERTY_DESCRIPTION);
+		String type = getAsString(propertyNode, IOpenShiftJsonConstants.PROPERTY_TYPE);
+		String value = getAsString(propertyNode, IOpenShiftJsonConstants.PROPERTY_VALUE);
+		return new ResourceProperty(name, type, description, value);
 	}
 	
 	/**

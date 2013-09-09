@@ -39,7 +39,7 @@ public class GearGroupResourceDTO extends BaseResourceDTO {
 	 * @param gitUrl
 	 *            the git url
 	 */
-	public GearGroupResourceDTO(final String uuid, final String name, Collection<IGear> gears) {
+	GearGroupResourceDTO(final String uuid, final String name, Collection<IGear> gears) {
 		super();
 		this.uuid = uuid;
 		this.name = name;

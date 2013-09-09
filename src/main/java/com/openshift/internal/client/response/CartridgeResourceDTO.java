@@ -26,14 +26,43 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 	private final CartridgeType type;
 	private String displayName;
 	private String description;
+	private ResourceProperties properties;
+
+	/**
+	 * Constructor used when a cartridge is constructed form the embedded
+	 * property within the application.
+	 * <p>
+	 * ex.
+	 * 
+	 * <pre>
+	 * "embedded":{
+	 *            "switchyard-0":{
+	 * 
+	 *           },
+	 * </pre>
+	 */
+	protected CartridgeResourceDTO(final String name, final CartridgeType type, final ResourceProperties properties) {
+		this(name, null, null, type, properties, null, null);
+	}
+
+	/**
+	 * Constructor used when a cartridge is constructed from the cartridges
+	 * ("<application>/cartridges") resource.
+	 */
+	protected CartridgeResourceDTO(final String name, final String displayName, final String description,
+			final String type, ResourceProperties properties, final Map<String, Link> links, final Messages messages) {
+		this(name, displayName, description, CartridgeType.safeValueOf(type), properties, links, messages);
+	}
 
 	CartridgeResourceDTO(final String name, final String displayName, final String description,
-			final String type, final Map<String, Link> links, final Messages messages) {
+			final CartridgeType type, ResourceProperties properties, final Map<String, Link> links,
+			final Messages messages) {
 		super(links, messages);
 		this.name = name;
 		this.displayName = displayName;
 		this.description = description;
-		this.type = CartridgeType.safeValueOf(type);
+		this.type = type;
+		this.properties = properties;
 	}
 
 	public String getName() {
@@ -43,19 +72,25 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 	public String getDisplayName() {
 		return displayName;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
-	
+
 	public CartridgeType getType() {
 		return type;
+	}
+
+	public ResourceProperties getProperties() {
+		return properties;
 	}
 
 	@Override
 	public String toString() {
 		return "CartridgeResourceDTO ["
-				+ "name=" + name
+				+ " name=" + name
+				+ ", description=" + description
+				+ ", displayName=" + displayName
 				+ ", type=" + type
 				+ "]";
 	}

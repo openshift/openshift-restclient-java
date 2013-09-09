@@ -12,7 +12,7 @@ package com.openshift.internal.client;
 
 import static com.openshift.client.utils.Samples.DELETE_DOMAINS_FOOBARZ_KO_EXISTINGAPPS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -59,7 +59,7 @@ public class OpenShiftExceptionTest {
 		this.mockDirector = new HttpClientMockDirector();
 		this.clientMock = mockDirector
 				.mockGetDomains(GET_DOMAINS)
-				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS)
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED)
 				.client();
 		this.user = new TestConnectionFactory().getConnection(clientMock).getUser();
 	}

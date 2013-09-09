@@ -69,6 +69,10 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 		this.links = links;
 		this.messages = messages;
 	}
+	
+	protected void setLinks(Map<String, Link> links) {
+		this.links = links;
+	}
 
 	/**
 	 * Gets the links.

@@ -11,10 +11,12 @@
 package com.openshift.internal.client;
 
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_0ALIAS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2ALIAS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED;
 import static com.openshift.client.utils.Samples.POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES;
@@ -42,6 +44,7 @@ import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftTimeoutException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.utils.EmbeddedCartridgeAssert;
 import com.openshift.client.utils.MessageAssert;
@@ -56,6 +59,8 @@ import com.openshift.internal.client.httpclient.InternalServerErrorException;
  */
 public class ApplicationResourceTest {
 
+	private static final IEmbeddableCartridge EMBEDDABLE_CARTRIDGE_MYSQL = new EmbeddableCartridge("mysql-5.1");
+
 	private IDomain domain;
 	private IHttpClient mockClient;
 	private HttpClientMockDirector mockDirector;
@@ -65,9 +70,10 @@ public class ApplicationResourceTest {
 		this.mockDirector = new HttpClientMockDirector();
 		this.mockClient = mockDirector
 				.mockGetDomains(GET_DOMAINS)
-				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS)
-				.mockGetApplication("foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6)
-				.mockGetEmbeddableCartridges("foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED)
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED)
+				.mockGetApplication("foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED)
+				.mockGetApplicationCartridges("foobarz", "springeap6",
+						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED)
 				.client();
 		IUser user = new TestConnectionFactory().getConnection(mockClient).getUser();
 		this.domain = user.getDomain("foobarz");
@@ -79,8 +85,10 @@ public class ApplicationResourceTest {
 		assertThat(domain).isNotNull();
 		final IApplication app = domain.getApplicationByName("springeap6");
 		assertThat(app).isNotNull();
+
 		// operation
 		app.destroy();
+
 		// verifications
 		assertThat(domain.getApplications()).hasSize(1).excludes(app);
 	}
@@ -89,10 +97,12 @@ public class ApplicationResourceTest {
 	public void shouldStopApplication() throws Throwable {
 		// pre-conditions
 		mockDirector.mockPostApplicationEvent(
-						"foobarz", "springeap6", POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT);
+				"foobarz", "springeap6", POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT);
 		final IApplication app = domain.getApplicationByName("springeap6");
+
 		// operation
 		app.stop();
+
 		// verifications
 		mockDirector.verifyPostApplicationEvent("foobarz", "springeap6");
 	}
@@ -104,8 +114,10 @@ public class ApplicationResourceTest {
 				.mockPostApplicationEvent(
 						"honkabonka2", "springeap6", POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT);
 		final IApplication app = domain.getApplicationByName("springeap6");
+
 		// operation
 		app.stop(true);
+
 		// verifications
 		mockDirector.verifyPostApplicationEvent("foobarz", "springeap6");
 	}
@@ -117,8 +129,10 @@ public class ApplicationResourceTest {
 				.mockPostApplicationEvent(
 						"honkabonka2", "springeap6", POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT);
 		final IApplication app = domain.getApplicationByName("springeap6");
+
 		// operation
 		app.start();
+
 		// verifications
 		mockDirector.verifyPostApplicationEvent("foobarz", "springeap6");
 	}
@@ -130,8 +144,10 @@ public class ApplicationResourceTest {
 				.mockPostApplicationEvent(
 						"honkabonka2", "springeap6", POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT);
 		final IApplication app = domain.getApplicationByName("springeap6");
+
 		// operation
 		app.restart();
+
 		// verifications
 		mockDirector.verifyPostApplicationEvent("foobarz", "springeap6");
 	}
@@ -144,18 +160,24 @@ public class ApplicationResourceTest {
 	@Test
 	public void shouldNotScaleDownApplication() throws Throwable {
 		// pre-conditions
-		mockDirector.mockPostApplicationEvent("foobarz", "springeap6",
+		mockDirector
+				.mockPostApplicationEvent(
+						"foobarz",
+						"springeap6",
 						new InternalServerErrorException(
 								"Failed to add event scale-down to application springeap6 due to: Cannot scale a non-scalable application"));
 		final IApplication app = domain.getApplicationByName("springeap6");
+
 		// operation
 		try {
 			app.scaleDown();
 			fail("Expected an exception here..");
 		} catch (OpenShiftEndpointException e) {
+
+		// verifications
 			assertThat(e.getCause()).isInstanceOf(InternalServerErrorException.class);
 		}
-		// verifications
+
 		mockDirector.verifyPostApplicationEvent("foobarz", "springeap6");
 	}
 
@@ -167,20 +189,26 @@ public class ApplicationResourceTest {
 	@Test
 	public void shouldNotScaleUpApplication() throws Throwable {
 		// pre-conditions
-		mockDirector.mockPostApplicationEvent(
+		mockDirector
+				.mockPostApplicationEvent(
 						"foobarz", "springeap6", POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT)
-		.mockPostApplicationEvent("foobarz","springeap6",
-				new InternalServerErrorException(
+				.mockPostApplicationEvent(
+						"foobarz",
+						"springeap6",
+						new InternalServerErrorException(
 								"Failed to add event scale-up to application springeap6 due to: Cannot scale a non-scalable application"));
 		final IApplication app = domain.getApplicationByName("springeap6");
+
 		// operation
 		try {
 			app.scaleUp();
 			fail("Expected an exception here..");
 		} catch (OpenShiftEndpointException e) {
+
+		// verifications
 			assertThat(e.getCause()).isInstanceOf(InternalServerErrorException.class);
 		}
-		// verifications
+
 		mockDirector.verifyPostApplicationEvent("foobarz", "springeap6");
 	}
 
@@ -188,11 +216,13 @@ public class ApplicationResourceTest {
 	public void shouldAddAliasToApplication() throws Throwable {
 		// pre-conditions
 		mockDirector.mockPostApplicationEvent(
-						"foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2ALIAS);
+				"foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2ALIAS);
 		final IApplication app = domain.getApplicationByName("springeap6");
 		assertThat(app.getAliases()).hasSize(1).contains("jbosstools.org");
+
 		// operation
 		app.addAlias("redhat.com");
+
 		// verifications
 		mockDirector.verifyPostApplicationEvent("foobarz", "springeap6");
 		assertThat(app.getAliases()).hasSize(2).contains("jbosstools.org", "redhat.com");
@@ -201,19 +231,24 @@ public class ApplicationResourceTest {
 	@Test
 	public void shouldNotAddExistingAliasToApplication() throws Throwable {
 		// pre-conditions
-		mockDirector.mockPostApplicationEvent("foobarz","springeap6",
+		mockDirector
+				.mockPostApplicationEvent(
+						"foobarz",
+						"springeap6",
 						new InternalServerErrorException(
 								"Failed to add event add-alias to application springeap6 due to: Alias 'jbosstools.org' already exists for 'springeap6'"));
 		final IApplication app = domain.getApplicationByName("springeap6");
 		assertThat(app.getAliases()).hasSize(1).contains("jbosstools.org");
+
 		// operation
 		try {
 			app.addAlias("jbosstools.org");
 			fail("Expected an exception..");
 		} catch (OpenShiftEndpointException e) {
+
+		// verifications
 			assertThat(e.getCause()).isInstanceOf(InternalServerErrorException.class);
 		}
-		// verifications
 		assertThat(app.getAliases()).hasSize(1).contains("jbosstools.org");
 		mockDirector.verifyPostApplicationEvent("foobarz", "springeap6");
 	}
@@ -226,8 +261,10 @@ public class ApplicationResourceTest {
 						"foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_0ALIAS);
 		final IApplication app = domain.getApplicationByName("springeap6");
 		assertThat(app.getAliases()).hasSize(1).contains("jbosstools.org");
+
 		// operation
 		app.removeAlias("jbosstools.org");
+
 		// verifications
 		mockDirector.verifyPostApplicationEvent("foobarz", "springeap6");
 		assertThat(app.getAliases()).hasSize(0);
@@ -237,7 +274,9 @@ public class ApplicationResourceTest {
 	public void shouldNotRemoveAliasFromApplication() throws Throwable {
 		// pre-conditions
 		mockDirector
-				.mockPostApplicationEvent("foobarz","springeap6",
+				.mockPostApplicationEvent(
+						"foobarz",
+						"springeap6",
 						new InternalServerErrorException(
 								"Failed to add event remove-alias to application springeap6 due to: Alias 'openshift-origin.org' does not exist for 'springeap6'"));
 		final IApplication app = domain.getApplicationByName("springeap6");
@@ -248,9 +287,10 @@ public class ApplicationResourceTest {
 			app.removeAlias("openshift-origin.org");
 			fail("Expected an exception..");
 		} catch (OpenShiftEndpointException e) {
+
+		// verifications
 			assertThat(e.getCause()).isInstanceOf(InternalServerErrorException.class);
 		}
-		// verifications
 		assertThat(app.getAliases()).hasSize(1).contains("jbosstools.org");
 		mockDirector.verifyPostApplicationEvent("foobarz", "springeap6");
 	}
@@ -259,11 +299,18 @@ public class ApplicationResourceTest {
 	public void shouldListExistingCartridges() throws Throwable {
 		// pre-conditions
 		mockDirector
-				.mockGetEmbeddableCartridges("foobarz", "springeap6",
+				.mockGetApplications("foobarz",
+						GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED)
+				.mockGetApplication("foobarz", "springeap6",
+						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2EMBEDDED)
+				.mockGetApplicationCartridges("foobarz", "springeap6",
 						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED);
+
 		final IApplication app = domain.getApplicationByName("springeap6");
+
 		// operation
 		final List<IEmbeddedCartridge> embeddedCartridges = app.getEmbeddedCartridges();
+
 		// verifications
 		assertThat(embeddedCartridges).hasSize(2);
 	}
@@ -275,33 +322,37 @@ public class ApplicationResourceTest {
 		assertThat(app.getEmbeddedCartridges()).hasSize(1);
 		// simulate new content on openshift, that should be grabbed while doing
 		// a refresh()
-		mockDirector.mockGetEmbeddableCartridges("foobarz", "springeap6",
+		mockDirector.mockGetApplicationCartridges("foobarz", "springeap6",
 				GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED);
+
 		// operation
 		app.refresh();
+
+		// verify
+		// get app resource wont load embedded cartridges, only refresh does (thus should occur 1x)
+		mockDirector.verifyListEmbeddableCartridges(1, "foobarz", "springeap6");
 		assertThat(app.getEmbeddedCartridges()).hasSize(2);
-		mockDirector.verifyReloadEmbeddableCartridges("foobarz", "springeap6");
 	}
 
 	@Test
 	public void shouldAddCartridgeToApplication() throws Throwable {
 		// pre-conditions
 		mockDirector.mockAddEmbeddableCartridge("foobarz", "springeap6",
-						POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES);
+				POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES);
 		final IApplication app = domain.getApplicationByName("springeap6");
-		String mySql51Name = "mysql-5.1";
 		assertThat(app.getEmbeddedCartridges()).hasSize(1);
-		
+
 		// operation
-		app.addEmbeddableCartridge(new EmbeddableCartridge(mySql51Name));
-		
+		app.addEmbeddableCartridge(EMBEDDABLE_CARTRIDGE_MYSQL);
+
 		// verifications
 		mockDirector.verifyAddEmbeddableCartridge("foobarz", "springeap6");
 		assertThat(app.getEmbeddedCartridges()).hasSize(2);
-		IEmbeddedCartridge mySqlCartridge = app.getEmbeddedCartridge(mySql51Name);
+		IEmbeddedCartridge mySqlCartridge = app.getEmbeddedCartridge(EMBEDDABLE_CARTRIDGE_MYSQL.getName());
 		new EmbeddedCartridgeAssert(mySqlCartridge)
+				.hasMessages()
 				.hasDescription()
-				.hasName(mySql51Name);
+				.hasName(EMBEDDABLE_CARTRIDGE_MYSQL.getName());
 
 		new MessageAssert(mySqlCartridge.getMessages().getFirstBy(IField.DEFAULT))
 				.hasExitCode(-1)
@@ -324,10 +375,11 @@ public class ApplicationResourceTest {
 	public void shouldNotAddCartridgeToApplication() throws Throwable {
 		// pre-conditions
 		mockDirector
-			.mockGetEmbeddableCartridges("foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED)
-			.mockAddEmbeddableCartridge("foobarz", "springeap6", new SocketTimeoutException("mock..."));
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED)
+				.mockAddEmbeddableCartridge("foobarz", "springeap6", new SocketTimeoutException("mock..."));
 		final IApplication app = domain.getApplicationByName("springeap6");
 		assertThat(app.getEmbeddedCartridges()).hasSize(2);
+
 		// operation
 		try {
 			app.addEmbeddableCartridge(new EmbeddableCartridge("postgresql-8.4"));
@@ -335,6 +387,7 @@ public class ApplicationResourceTest {
 		} catch (OpenShiftTimeoutException e) {
 			// ok
 		}
+		
 		// verifications
 		mockDirector.verifyAddEmbeddableCartridge("foobarz", "springeap6");
 		assertThat(app.getEmbeddedCartridge("postgresql-8.4")).isNull();
@@ -344,12 +397,19 @@ public class ApplicationResourceTest {
 	@Test
 	public void shouldRemoveCartridgeFromApplication() throws Throwable {
 		// pre-conditions
-		mockDirector.mockGetEmbeddableCartridges(
-				"foobarz", "springeap6",GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED);
+		mockDirector
+				.mockGetApplications(
+						"foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED)
+				.mockGetApplication(
+						"foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2EMBEDDED)
+				.mockGetApplicationCartridges(
+						"foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED);
 		final IApplication application = domain.getApplicationByName("springeap6");
 		assertThat(application.getEmbeddedCartridges()).hasSize(2);
+
 		// operation
 		application.getEmbeddedCartridge("mysql-5.1").destroy();
+
 		// verifications
 		mockDirector.verifyDeleteEmbeddableCartridge("foobarz", "springeap6", "mysql-5.1");
 		assertThat(application.getEmbeddedCartridge("mysql-5.1")).isNull();
@@ -359,11 +419,16 @@ public class ApplicationResourceTest {
 	@Test
 	public void shouldNotRemoveCartridgeFromApplication() throws Throwable {
 		// pre-conditions
-		mockDirector.mockGetEmbeddableCartridges(
-				"foobarz", "springeap6",GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED)
-				.mockRemoveEmbeddableCartridge("foobarz", "springeap6", "mysql-5.1", new SocketTimeoutException("mock..."));
+		mockDirector
+				.mockGetApplications(
+						"foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED)
+				.mockGetApplicationCartridges(
+						"foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED)
+				.mockRemoveEmbeddableCartridge("foobarz", "springeap6", "mysql-5.1",
+						new SocketTimeoutException("mock..."));
 		final IApplication application = domain.getApplicationByName("springeap6");
 		assertThat(application.getEmbeddedCartridges()).hasSize(2);
+
 		// operation
 		final IEmbeddedCartridge mysql = application.getEmbeddedCartridge("mysql-5.1");
 		try {
@@ -372,6 +437,7 @@ public class ApplicationResourceTest {
 		} catch (OpenShiftTimeoutException e) {
 			// ok
 		}
+		
 		// verifications
 		mockDirector.verifyDeleteEmbeddableCartridge("foobarz", "springeap6", "mysql-5.1");
 		assertThat(application.getEmbeddedCartridges()).hasSize(2).contains(mysql);
@@ -390,6 +456,7 @@ public class ApplicationResourceTest {
 		// operation
 		boolean successfull = spy.waitForAccessible(timeout);
 
+		// verification
 		assertFalse(successfull);
 		assertTrue(System.currentTimeMillis() >= (startTime + timeout));
 	}
@@ -403,10 +470,11 @@ public class ApplicationResourceTest {
 		assertThat(app).isNotNull().isInstanceOf(ApplicationResource.class);
 		ApplicationResource spy = Mockito.spy(((ApplicationResource) app));
 		Mockito.doReturn(true).when(spy).canResolv(Mockito.anyString());
-		
+
 		// operation
 		boolean successfull = spy.waitForAccessible(timeout);
 
+		// verification
 		assertTrue(successfull);
 		assertTrue(System.currentTimeMillis() < (startTime + timeout));
 	}
@@ -416,7 +484,7 @@ public class ApplicationResourceTest {
 		// pre-conditions
 		final IApplication app = domain.getApplicationByName("springeap6");
 		assertThat(app).isNotNull().isInstanceOf(ApplicationResource.class);
-		String[] rhcListPortsOutput = new String[] { 
+		String[] rhcListPortsOutput = new String[] {
 				"haproxy -> 127.7.233.2:8080",
 				" haproxy -> 127.7.233.3:8080",
 				" java -> 127.7.233.1:3528",
@@ -428,20 +496,23 @@ public class ApplicationResourceTest {
 				" java -> 127.7.233.1:9999",
 				" mysql -> 5190d701500446506a0000e4-foobarz.rhcloud.com:56756" };
 		ApplicationResource spy = Mockito.spy(((ApplicationResource) app));
-		Mockito.doReturn(Arrays.asList(rhcListPortsOutput)).when(spy).sshExecCmd(Mockito.anyString(), (ApplicationResource.SshStreams) Mockito.any());
+		Mockito.doReturn(Arrays.asList(rhcListPortsOutput)).when(spy)
+				.sshExecCmd(Mockito.anyString(), (ApplicationResource.SshStreams) Mockito.any());
 
 		// operation
 		List<IApplicationPortForwarding> forwardablePorts = spy.getForwardablePorts();
-		
+
 		// verification
 		assertThat(forwardablePorts).isNotEmpty().hasSize(10);
 		assertThat(forwardablePorts)
-			.onProperty("name").containsExactly("haproxy", "haproxy", "java", "java", "java", "java", "java", "java", "java", "mysql");
+				.onProperty("name").containsExactly("haproxy", "haproxy", "java", "java", "java", "java", "java",
+						"java", "java", "mysql");
 		assertThat(forwardablePorts)
-			.onProperty("remoteAddress").containsExactly("127.7.233.2", "127.7.233.3", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "5190d701500446506a0000e4-foobarz.rhcloud.com");
+				.onProperty("remoteAddress").containsExactly("127.7.233.2", "127.7.233.3", "127.7.233.1",
+						"127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1", "127.7.233.1",
+						"5190d701500446506a0000e4-foobarz.rhcloud.com");
 		assertThat(forwardablePorts)
-			.onProperty("remotePort").containsExactly(8080, 8080, 3528, 4447, 5445, 5455, 8080, 9990, 9999, 56756);
+				.onProperty("remotePort").containsExactly(8080, 8080, 3528, 4447, 5445, 5455, 8080, 9990, 9999, 56756);
 	}
-    
 
 }

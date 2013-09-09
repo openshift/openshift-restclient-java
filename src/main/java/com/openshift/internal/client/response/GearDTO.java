@@ -29,7 +29,7 @@ public class GearDTO extends BaseResourceDTO {
 	String uuid;
 	String state;
 	
-	public GearDTO(String uuid, String state, Messages messages) {
+	GearDTO(String uuid, String state, Messages messages) {
 		super(new HashMap<String, Link>(), messages);
 		this.uuid = uuid;
 		this.state = state;
