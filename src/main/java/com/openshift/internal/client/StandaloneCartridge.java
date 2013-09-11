@@ -12,7 +12,6 @@ package com.openshift.internal.client;
 
 import com.openshift.client.cartridge.IStandaloneCartridge;
 
-
 /**
  * A cartridge that is available on the openshift server. This class is no enum
  * since we dont know all available types and they may change at any time.
@@ -20,7 +19,7 @@ import com.openshift.client.cartridge.IStandaloneCartridge;
  * @author André Dietisheim
  */
 public class StandaloneCartridge implements IStandaloneCartridge {
-	
+
 	private final String name;
 	private String displayName;
 	private String description;
@@ -32,17 +31,17 @@ public class StandaloneCartridge implements IStandaloneCartridge {
 	public StandaloneCartridge(String name, String version) {
 		this(name + NAME_VERSION_DELIMITER + version, null, null);
 	}
-	
+
 	public StandaloneCartridge(String name, String displayName, String description) {
 		this.name = name;
 		this.displayName = displayName;
 		this.description = description;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -75,6 +74,8 @@ public class StandaloneCartridge implements IStandaloneCartridge {
 	}
 
 	public String toString() {
-		return "StandaloneCartridge [name=" + name + "]";
+		return "StandaloneCartridge [ "
+				+ "name=" + name
+				+ " ]";
 	}
 }

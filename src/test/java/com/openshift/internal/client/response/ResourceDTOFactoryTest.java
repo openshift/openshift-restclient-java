@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
-import static com.openshift.internal.client.response.ILinkNames.ADD_APPLICATION;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 
@@ -22,17 +21,22 @@ import java.util.Map.Entry;
 import org.fest.assertions.Condition;
 import org.junit.Test;
 
+import com.openshift.client.ApplicationScale;
 import com.openshift.client.GearState;
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IField;
 import com.openshift.client.IGear;
+import com.openshift.client.IGearProfile;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
 import com.openshift.client.utils.MessageAssert;
+import com.openshift.client.utils.ResourcePropertyAssert;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.CartridgeType;
 
 public class ResourceDTOFactoryTest {
+
+	private static final String LINK_ADD_APPLICATION = "ADD_APPLICATION";
 
 	private static final class ValidLinkCondition extends Condition<Map<?, ?>> {
 		@Override
@@ -141,7 +145,7 @@ public class ResourceDTOFactoryTest {
 		final DomainResourceDTO domainDTO = domainDTOs.get(0);
 		assertThat(domainDTO.getId()).isEqualTo("foobarz");
 		assertThat(domainDTO.getLinks()).hasSize(5);
-		final Link link = domainDTO.getLink(ADD_APPLICATION);
+		final Link link = domainDTO.getLink(LINK_ADD_APPLICATION);
 		assertThat(link).isNotNull();
 		assertThat(link.getHref()).isEqualTo("https://openshift.redhat.com/broker/rest/domains/foobarz/applications");
 		assertThat(link.getRel()).isEqualTo("Create new application");
@@ -193,7 +197,7 @@ public class ResourceDTOFactoryTest {
 	@Test
 	public void shouldUnmarshallGetApplicationsWith2AppsResponseBody() throws Throwable {
 		// pre-conditions
-		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS.getContentAsString();
+		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED.getContentAsString();
 		assertNotNull(content);
 		// operation
 		RestResponse response = ResourceDTOFactory.get(content);
@@ -201,6 +205,29 @@ public class ResourceDTOFactoryTest {
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.applications);
 		final List<ApplicationResourceDTO> applications = response.getData();
 		assertThat(applications).hasSize(2);
+		ApplicationResourceDTO applicationDTO = applications.get(0);
+		assertThat(applicationDTO.getDomainId()).isEqualTo("foobarz");
+		assertThat(applicationDTO.getCreationTime()).isEqualTo("2013-04-30T17:00:41Z");
+		assertThat(applicationDTO.getApplicationUrl()).isEqualTo("http://springeap6-foobarz.rhcloud.com/");
+		assertThat(applicationDTO.getFramework()).isEqualTo("jbosseap-6.0");
+		assertThat(applicationDTO.getName()).isEqualTo("springeap6");
+		assertThat(applicationDTO.getApplicationScale()).isEqualTo(ApplicationScale.NO_SCALE);
+		assertThat(applicationDTO.getGitUrl()).isEqualTo("ssh://517ff8b9500446729b00008e@springeap6-foobarz.rhcloud.com/~/git/springeap6.git/");
+		assertThat(applicationDTO.getInitialGitUrl()).isEqualTo("git://github.com/openshift/spring-eap6-quickstart.git");
+		assertThat(applicationDTO.getUuid()).isEqualTo("517ff8b9500446729b00008e");
+		assertThat(applicationDTO.getGearProfile()).isEqualTo(IGearProfile.SMALL);
+		assertThat(applicationDTO.getAliases()).containsExactly("jbosstools.org");
+		assertThat(applicationDTO.getUuid()).isEqualTo("517ff8b9500446729b00008e");
+		assertThat(applicationDTO.getEmbeddedCartridges()).onProperty("name").containsExactly("mongodb-2.2", "mysql-5.1");
+		CartridgeResourceDTO cartridgeResourceDTO = applicationDTO.getEmbeddedCartridges().get(0);
+		assertThat(cartridgeResourceDTO.getType()).isEqualTo(CartridgeType.EMBEDDED);
+		assertThat(cartridgeResourceDTO.getName()).isEqualTo("mongodb-2.2");
+		assertThat(cartridgeResourceDTO.getDescription()).isNull(); // not present in embedded node in application response (only in cartridges response)
+		assertThat(cartridgeResourceDTO.getDisplayName()).isNull(); // dito
+		assertThat(cartridgeResourceDTO.getMessages()).isNull(); // dito
+		assertThat(cartridgeResourceDTO.getLinks()).isNull(); // dito
+		List<ResourceProperty> properties = cartridgeResourceDTO.getProperties().getAll();
+		assertThat(properties).onProperty("name").containsExactly("connection_url", "username", "password", "database_name", "info");
 	}
 
 	/**
@@ -229,7 +256,8 @@ public class ResourceDTOFactoryTest {
 
 	/**
 	 * Should unmarshall get application response body.
-	 * @throws Throwable 
+	 * 
+	 * @throws Throwable
 	 */
 	@Test
 	public void shouldUnmarshallAddApplicationEmbeddedCartridgeResponseBody() throws Throwable {
@@ -243,13 +271,13 @@ public class ResourceDTOFactoryTest {
 		// verifications
 		Messages messages = response.getMessages();
 		assertThat(messages.size()).isEqualTo(3);
-		Collection <Message> defaultMessages = messages.getBy(IField.DEFAULT);
+		Collection<Message> defaultMessages = messages.getBy(IField.DEFAULT);
 		assertThat(defaultMessages).isNotEmpty();
 		new MessageAssert(defaultMessages.iterator().next())
 				.hasField(IField.DEFAULT)
 				.hasExitCode(-1)
 				.hasText("Added mysql-5.1 to application springeap6");
-		Collection <Message> resultMessages = messages.getBy(IField.RESULT);
+		Collection<Message> resultMessages = messages.getBy(IField.RESULT);
 		assertThat(resultMessages).isNotEmpty();
 		new MessageAssert(resultMessages.iterator().next())
 				.hasField(IField.RESULT)
@@ -260,7 +288,7 @@ public class ResourceDTOFactoryTest {
 								+ "Connection URL: mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/\n\n"
 								+ "You can manage your new MySQL database by also embedding phpmyadmin-3.4.\n"
 								+ "The phpmyadmin username and password will be the same as the MySQL credentials above.\n");
-		Collection <Message> appInfoMessages = messages.getBy(IField.APPINFO);
+		Collection<Message> appInfoMessages = messages.getBy(IField.APPINFO);
 		assertThat(appInfoMessages).isNotEmpty();
 		new MessageAssert(appInfoMessages.iterator().next())
 				.hasField(IField.APPINFO)
@@ -270,7 +298,32 @@ public class ResourceDTOFactoryTest {
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridge);
 		final CartridgeResourceDTO cartridge = response.getData();
 		assertThat(cartridge.getName()).isEqualTo("mysql-5.1");
+		assertThat(cartridge.getDisplayName()).isEqualTo("MySQL Database 5.1");
+		assertThat(cartridge.getDescription()).isEqualTo("MySQL is a multi-user, multi-threaded SQL database server.");
 		assertThat(cartridge.getType()).isEqualTo(CartridgeType.EMBEDDED);
+		ResourceProperties properties = cartridge.getProperties();
+		assertThat(properties).isNotNull();
+		assertThat(properties.size()).isEqualTo(4);
+		new ResourcePropertyAssert(properties.getAll().get(0))
+				.hasName("username")
+				.hasDescription("Root user on mysql database")
+				.hasType("cart_data")
+				.hasValue("adminnFC22YQ");
+		new ResourcePropertyAssert(properties.getAll().get(1))
+				.hasName("password")
+				.hasDescription("Password for root user on mysql database")
+				.hasType("cart_data")
+				.hasValue("U1IX8AIlrEcl");
+		new ResourcePropertyAssert(properties.getAll().get(2))
+				.hasName("database_name")
+				.hasDescription("MySQL DB name")
+				.hasType("cart_data")
+				.hasValue("springeap6");
+		new ResourcePropertyAssert(properties.getAll().get(3))
+				.hasName("connection_url")
+				.hasDescription("MySQL DB connection URL")
+				.hasType("cart_data")
+				.hasValue("mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/");
 		assertThat(cartridge.getLinks()).hasSize(7);
 
 	}
@@ -290,16 +343,11 @@ public class ResourceDTOFactoryTest {
 		// verifications
 		assertThat(response.getMessages().size()).isEqualTo(0);
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridges);
-		final List<CartridgeResourceDTO> cartridges = response.getData();
+		final Map<String, CartridgeResourceDTO> cartridges = response.getData();
 		assertThat(cartridges).hasSize(3); // mysql, mongo, jbosseap
-		assertThat(cartridges).onProperty("name").contains("mongodb-2.2", "mysql-5.1", "jbosseap-6.0");
+		assertThat(cartridges.values()).onProperty("name").contains("mongodb-2.2", "mysql-5.1", "jbosseap-6.0");
 	}
 
-	/**
-	 * Should unmarshall get application response body.
-	 * 
-	 * @throws Throwable
-	 */
 	@Test
 	public void shouldUnmarshallGetApplicationCartridgesWith3ElementsResponseBody() throws Throwable {
 		// pre-conditions
@@ -310,9 +358,9 @@ public class ResourceDTOFactoryTest {
 		// verifications
 		assertThat(response.getMessages().size()).isEqualTo(0);
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridges);
-		final List<CartridgeResourceDTO> cartridges = response.getData();
+		Map<String, CartridgeResourceDTO> cartridges = response.getData();
 		assertThat(cartridges).hasSize(3);
-		assertThat(cartridges).onProperty("name").contains("mongodb-2.2", "mysql-5.1", "jbosseap-6.0");
+		assertThat(cartridges.values()).onProperty("name").contains("mongodb-2.2", "mysql-5.1", "jbosseap-6.0");
 	}
 
 	@Test

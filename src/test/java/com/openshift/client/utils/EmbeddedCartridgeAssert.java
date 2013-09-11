@@ -33,4 +33,10 @@ public class EmbeddedCartridgeAssert extends AbstractCartridgeAssert<IEmbeddedCa
 		new URI(cartridge.getUrl());
 		return this;
 	}
+	
+	public EmbeddedCartridgeAssert hasMessages() {
+		assertThat(getCartridge().getMessages()).isNotNull();
+		assertThat(getCartridge().getMessages().getAll()).isNotEmpty();
+		return this;
+	}
 }

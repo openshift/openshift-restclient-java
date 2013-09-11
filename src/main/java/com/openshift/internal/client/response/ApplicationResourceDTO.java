@@ -58,9 +58,9 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	/** the url for the git repo with the initial code for this application. */
 	private final String initialGitUrl;
 
-	private Map<String, String> embeddedCartridgeInfos;
-	
 	private List<IGearGroup> gearGroups;
+
+	private List<CartridgeResourceDTO> embeddedCartridges;
 
 	/**
 	 * Instantiates a new application dto.
@@ -72,10 +72,10 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	 * @param uuid the uuid
 	 * @param links the links
 	 */
-	public ApplicationResourceDTO(final String framework, final String domainId, final String creationTime,
+	ApplicationResourceDTO(final String framework, final String domainId, final String creationTime,
 			final String name, final IGearProfile gearProfile, final ApplicationScale scale, final String uuid,
 			final String applicationUrl, final String gitUrl, final String initialGitUrl, final List<String> aliases,
-			final Map<String, String> embeddedCartridgeInfos, final Map<String, Link> links, Messages messages) {
+			final List<CartridgeResourceDTO> embeddedCartridges, final Map<String, Link> links, Messages messages) {
 	super(links, messages);
 		this.framework = framework;
 		this.domainId = domainId;
@@ -88,7 +88,7 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 		this.gitUrl = gitUrl;
 		this.initialGitUrl = initialGitUrl;
 		this.aliases = aliases;
-		this.embeddedCartridgeInfos = embeddedCartridgeInfos;
+		this.embeddedCartridges = embeddedCartridges;
 	}
 
 	/**
@@ -140,10 +140,6 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	public final IGearProfile getGearProfile() {
 		return gearProfile;
 	}
-	
-	public final List<IGearGroup> getGearGroups() {
-		return gearGroups;
-	}
 
 	/**
 	 * Gets the uuid.
@@ -182,13 +178,16 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 		return aliases;
 	}
 
-	public Map<String, String> getEmbeddedCartridgeInfos() {
-		return embeddedCartridgeInfos;
+	public List<CartridgeResourceDTO> getEmbeddedCartridges() {
+		return embeddedCartridges;
 	}
 	
 	@Override
 	public String toString() {
-		return "ApplicationResourceDTO [name=" + name + ", framework=" + framework + "]";
+		return "ApplicationResourceDTO ["
+				+ "	name=" + name
+				+ ", framework=" + framework
+				+ "]";
 	}
 
 }

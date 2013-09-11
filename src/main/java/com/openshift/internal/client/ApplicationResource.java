@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -56,7 +57,6 @@ import com.openshift.internal.client.response.GearGroupResourceDTO;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.ssh.ApplicationPortForwarding;
 import com.openshift.internal.client.utils.Assert;
-import com.openshift.internal.client.utils.CollectionUtils;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
 /**
@@ -70,7 +70,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	private static final long APPLICATION_WAIT_RETRY_DELAY = 2 * 1024;
 
-	private static final String LINK_GET_APPLICATION = "GET";
 	private static final String LINK_DELETE_APPLICATION = "DELETE";
 	private static final String LINK_START_APPLICATION = "START";
 	private static final String LINK_STOP_APPLICATION = "STOP";
@@ -120,11 +119,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private final List<String> aliases;
 
 	/**
-	 * List of configured embedded cartridges. <code>null</code> means list if
-	 * not loaded yet.
+	 * List of configured embedded cartridges. 
 	 */
-	// TODO: replace by a map indexed by cartridge names ?
-	private List<IEmbeddedCartridge> embeddedCartridges = null;
+	private Map<String, EmbeddedCartridgeResource> embeddedCartridgesByName = new LinkedHashMap<String, EmbeddedCartridgeResource>();
 
 	/**
 	 * SSH Fowardable ports for the current application.
@@ -136,23 +133,13 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * operations.
 	 */
 	private Session session;
-
-	private Map<String, String> embeddedCartridgesInfos;
 	
 	private Collection<IGearGroup> gearGroups;
 
-	/**
-	 * Constructor...
-	 * 
-	 * @param dto
-	 * @param cartridge
-	 * @param domain
-	 */
 	protected ApplicationResource(ApplicationResourceDTO dto, IStandaloneCartridge cartridge, DomainResource domain) {
 		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getMessages(), dto.getApplicationUrl(),
-				dto.getGitUrl(), dto.getInitialGitUrl(), dto.getGearProfile(), dto.getGearGroups(),
-				dto.getApplicationScale(), cartridge, dto.getAliases(), dto.getEmbeddedCartridgeInfos(),
-				dto.getLinks(), domain);
+				dto.getGitUrl(), dto.getInitialGitUrl(), dto.getGearProfile(), dto.getApplicationScale(), cartridge,
+				dto.getAliases(), dto.getEmbeddedCartridges(), dto.getLinks(), domain);
 	}
 
 	/**
@@ -182,9 +169,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 */
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
 			final Messages messages, final String applicationUrl, final String gitUrl,
-			final String initialGitUrl, final IGearProfile gearProfile, final List<IGearGroup> gearGroups,
-			final ApplicationScale scale, final IStandaloneCartridge cartridge, final List<String> aliases,
-			final Map<String, String> embeddedCartridgesInfos, final Map<String, Link> links,
+			final String initialGitUrl, final IGearProfile gearProfile, final ApplicationScale scale,
+			final IStandaloneCartridge cartridge, final List<String> aliases,
+			final List<CartridgeResourceDTO> embeddedCartridges, final Map<String, Link> links,
 			final DomainResource domain) {
 		super(domain.getService(), links, messages);
 		this.name = name;
@@ -192,18 +179,22 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.creationTime = RFC822DateUtils.safeGetDate(creationTime);
 		this.scale = scale;
 		this.gearProfile = gearProfile;
-		this.gearGroups = gearGroups;
 		this.cartridge = cartridge;
 		this.applicationUrl = applicationUrl;
 		this.gitUrl = gitUrl;
 		this.initialGitUrl = initialGitUrl;
 		this.domain = domain;
 		this.aliases = aliases;
-		// TODO: fix this workaround once
-		// https://bugzilla.redhat.com/show_bug.cgi?id=812046 is fixed
-		this.embeddedCartridgesInfos = embeddedCartridgesInfos;
+		createEmbeddedCartridges(embeddedCartridges);
 	}
 	
+	protected void createEmbeddedCartridges(List<CartridgeResourceDTO> cartridges) {
+		for (CartridgeResourceDTO cartridgeDTO : cartridges) {
+			EmbeddedCartridgeResource embeddedCartridgeResource = new EmbeddedCartridgeResource(cartridgeDTO, this);
+			embeddedCartridgesByName.put(cartridgeDTO.getName(), embeddedCartridgeResource);
+		}
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -326,16 +317,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	public IEmbeddedCartridge addEmbeddableCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
 		Assert.notNull(cartridge);
 
-		if (this.embeddedCartridges == null) {
-			loadEmbeddedCartridges();
-		}
 		final CartridgeResourceDTO embeddedCartridgeDTO =
 				new AddEmbeddedCartridgeRequest().execute(cartridge.getName());
-		final EmbeddedCartridgeResource embeddedCartridge =
-				new EmbeddedCartridgeResource(
-						embeddedCartridgesInfos.get(embeddedCartridgeDTO.getName()),
-						embeddedCartridgeDTO, this);
-		this.embeddedCartridges.add(embeddedCartridge);
+		final EmbeddedCartridgeResource embeddedCartridge = new EmbeddedCartridgeResource(embeddedCartridgeDTO, this);
+		this.embeddedCartridgesByName.put(embeddedCartridge.getName(), embeddedCartridge);
 		return embeddedCartridge;
 	}
 
@@ -361,31 +346,49 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	protected void removeEmbeddedCartridge(IEmbeddedCartridge embeddedCartridge) throws OpenShiftException {
 		Assert.notNull(embeddedCartridge);
 
-		this.embeddedCartridges.remove(embeddedCartridge);
+		this.embeddedCartridgesByName.remove(embeddedCartridge.getName());
 	}
 
-	private List<IEmbeddedCartridge> loadEmbeddedCartridges() throws OpenShiftException {
+	/**
+	 * Queries the backend to list the embedded cartridges and adds the new ones
+	 * & update the ones that are already present
+	 * 
+	 * @throws OpenShiftException
+	 */
+	protected void refreshEmbeddedCartridges() throws OpenShiftException {
 		// load collection if necessary
-		this.embeddedCartridges = new ArrayList<IEmbeddedCartridge>();
-		List<CartridgeResourceDTO> cartridgeDTOs = new ListEmbeddableCartridgesRequest().execute();
-		for (CartridgeResourceDTO cartridgeDTO : cartridgeDTOs) {
+		Map<String, CartridgeResourceDTO> cartridgeDTOByName = new ListCartridgesRequest().execute();
+		updateAndAddCartridges(cartridgeDTOByName);
+		removeCartridges(cartridgeDTOByName);
+	}
+
+	private void updateAndAddCartridges(Map<String, CartridgeResourceDTO> cartridgeDTOByName) {
+		for (CartridgeResourceDTO cartridgeDTO : cartridgeDTOByName.values()) {
 			if (cartridgeDTO.getType() != CartridgeType.EMBEDDED) {
 				continue;
 			}
-			IEmbeddedCartridge embeddableCartridge =
-					new EmbeddedCartridgeResource(
-							embeddedCartridgesInfos.get(cartridgeDTO.getName()),
-							cartridgeDTO, this);
-			embeddedCartridges.add(embeddableCartridge);
+			String name = cartridgeDTO.getName();
+			EmbeddedCartridgeResource embeddedCartridge = embeddedCartridgesByName.get(name);
+			if (embeddedCartridge != null) {
+				embeddedCartridge.update(cartridgeDTO);
+			} else {
+				embeddedCartridgesByName.put(name, new EmbeddedCartridgeResource(cartridgeDTO, this));
+			}
 		}
-		return embeddedCartridges;
 	}
 
-	public List<IEmbeddedCartridge> getEmbeddedCartridges() throws OpenShiftException {
-		if (this.embeddedCartridges == null) {
-			this.embeddedCartridges = loadEmbeddedCartridges();
+	private void removeCartridges(Map<String, CartridgeResourceDTO> cartridgeDTOsByName) {
+		for (EmbeddedCartridgeResource cartridge : embeddedCartridgesByName.values()) {
+			String name = cartridge.getName();
+			if (!cartridgeDTOsByName.containsKey(name)) {
+				// not present in updated collection
+				embeddedCartridgesByName.remove(name);
+			}
 		}
-		return CollectionUtils.toUnmodifiableCopy(this.embeddedCartridges);
+	}
+	
+	public List<IEmbeddedCartridge> getEmbeddedCartridges() throws OpenShiftException {
+		return Collections.unmodifiableList(new ArrayList<IEmbeddedCartridge>(this.embeddedCartridgesByName.values()));
 	}
 
 	public boolean hasEmbeddedCartridge(String cartridgeName) throws OpenShiftException {
@@ -495,10 +498,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return !(System.currentTimeMillis() < (startTime + timeout));
 	}
 
+	@Override
 	public void refresh() throws OpenShiftException {
-		if (this.embeddedCartridges != null) {
-			this.embeddedCartridges = loadEmbeddedCartridges();
-		}
+		refreshEmbeddedCartridges();
 		if (this.gearGroups != null) {
 			this.gearGroups = loadGearGroups();
 		}
@@ -697,9 +699,23 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return true;
 	}
 
+
 	@Override
 	public String toString() {
-		return name;
+		return "ApplicationResource ["
+				+ "uuid=" + uuid
+				+ ", name=" + name
+				+ ", creationTime=" + creationTime
+				+ ", cartridge=" + cartridge
+				+ ", scale=" + scale
+				+ ", gearProfile=" + gearProfile
+				+ ", domain=" + domain
+				+ ", applicationUrl=" + applicationUrl
+				+ ", gitUrl=" + gitUrl
+				+ ", initialGitUrl=" + initialGitUrl
+				+ ", aliases=" + aliases
+				+ ", gearGroups=" + gearGroups
+				+ "]";
 	}
 
 	protected enum SshStreams {
@@ -729,13 +745,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	}
 	
-	private class RefreshApplicationRequest extends ServiceRequest {
-
-		protected RefreshApplicationRequest() {
-			super(LINK_GET_APPLICATION);
-		}
-	}
-
 	private class DeleteApplicationRequest extends ServiceRequest {
 
 		protected DeleteApplicationRequest() {
@@ -853,10 +862,14 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
-	private class ListEmbeddableCartridgesRequest extends ServiceRequest {
+	private class ListCartridgesRequest extends ServiceRequest {
 
-		protected ListEmbeddableCartridgesRequest() {
+		protected ListCartridgesRequest() {
 			super(LINK_LIST_CARTRIDGES);
+		}
+
+		public Map<String, CartridgeResourceDTO> execute() throws OpenShiftException {
+			return super.execute();
 		}
 	}
 	

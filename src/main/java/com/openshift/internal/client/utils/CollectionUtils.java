@@ -11,6 +11,7 @@
 package com.openshift.internal.client.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,8 +20,8 @@ import java.util.List;
  */
 public class CollectionUtils {
 
-	public static <T> List<T> toUnmodifiableCopy(List<T> list) {
-		return Collections.unmodifiableList(new ArrayList<T>(list));
+	public static <T> List<T> toUnmodifiableCopy(Collection<T> collection) {
+		return Collections.unmodifiableList(new ArrayList<T>(collection));
 	}
-	
+
 }

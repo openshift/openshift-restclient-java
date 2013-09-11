@@ -12,11 +12,18 @@
       "embedded":{
          "mongodb-2.2":{
             "connection_url":"mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/",
-            "username":"admin",
+            "username":"adietish",
             "password":"NNxXMT1z8dVj",
             "database_name":"springeap6",
             "info":"Connection URL: mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/"
-         }
+         },
+         "mysql-5.1":{
+             "connection_url":"mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/",
+             "username":"admin",
+             "password":"adminnlqrBcW",
+             "database_name":"springeap6",
+             "info":"Connection URL: mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/"
+          }
       },
       "framework":"jbosseap-6.0",
       "gear_count":1,

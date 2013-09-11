@@ -13,6 +13,7 @@ package com.openshift.client.cartridge;
 import com.openshift.client.IApplication;
 import com.openshift.client.IOpenShiftResource;
 import com.openshift.client.OpenShiftException;
+import com.openshift.internal.client.response.ResourceProperties;
 
 /**
  * Interface to designate a cartridge that has been added and configured
@@ -42,4 +43,11 @@ public interface IEmbeddedCartridge extends IOpenShiftResource, IEmbeddableCartr
 	 * @return application this is embedded into
 	 */
 	public IApplication getApplication();
+
+	/**
+	 * Returns the properties for this embedded cartridge
+	 * 
+	 * @return the resource properties
+	 */
+	public ResourceProperties getProperties();
 }

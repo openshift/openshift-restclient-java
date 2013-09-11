@@ -10,121 +10,120 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.openshift.client.IApplication;
-import com.openshift.client.Message;
-import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
-import com.openshift.internal.client.response.Link;
+import com.openshift.internal.client.response.ResourceProperties;
+import com.openshift.internal.client.response.ResourceProperty;
 
 /**
- * A cartridge that may be embedded into an application. This class is no enum
- * since we dont know all available types and they may change at any time.
+ * A cartridge that is embedded into an application. The cartridge is added when
+ * the application resource is loaded. The cartridge resource is only loaded
+ * from backend when detail informations are needed (see #getDisplayName,
+ * {@link #getDescription()}.
  * 
  * @author André Dietisheim
  */
 public class EmbeddedCartridgeResource extends AbstractOpenShiftResource implements IEmbeddedCartridge {
 
-	private static final Pattern INFO_URL_PATTERN = Pattern.compile("URL: (.+)\\n*");
-
+	private static final Pattern NAME_URL_PATTERN = Pattern.compile("url", Pattern.CASE_INSENSITIVE);
+	
 	private static final String LINK_DELETE_CARTRIDGE = "DELETE";
 
 	private final String name;
-	private final String displayName;
-	private final String description;
+	private String displayName;
+	private String description;
 	private final CartridgeType type;
-	private String url;
 	private final ApplicationResource application;
+	private ResourceProperties properties;
 
-	protected EmbeddedCartridgeResource(String info, final CartridgeResourceDTO dto, final ApplicationResource application) {
-		this(dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getType(), info, dto.getLinks(), dto.getMessages(), application);
-	}
-
-	protected EmbeddedCartridgeResource(final String name, final String displayName, final String description, final CartridgeType type, String info, final Map<String, Link> links,
-			final Messages messages, final ApplicationResource application) {
-		super(application.getService(), links, messages);
-		this.name = name;
-		this.displayName = displayName;
-		this.description = description;
-		this.type = type;
-		// TODO: fix this workaround once
-		// https://bugzilla.redhat.com/show_bug.cgi?id=812046 is fixed
-		this.url = extractUrl(info, getMessages());
+	protected EmbeddedCartridgeResource(final CartridgeResourceDTO dto, final ApplicationResource application) {
+		super(application.getService(), dto.getLinks(), dto.getMessages());
+		this.name = dto.getName();
+		this.type = CartridgeType.EMBEDDED;
+		this.displayName = dto.getDisplayName();
+		this.description = dto.getDescription();
+		this.properties = dto.getProperties();
 		this.application = application;
 	}
-	
+
+	protected void update(CartridgeResourceDTO dto) {
+		this.description = dto.getDescription();
+		this.displayName = dto.getDisplayName();
+		this.properties = dto.getProperties();
+		setLinks(dto.getLinks());
+	}
+
 	public String getName() {
 		return name;
 	}
 
 	public String getDisplayName() {
+		// only available in resource, not in embedded block within application
+		if (!isResourceLoaded()) {
+			refresh();
+		}
 		return displayName;
 	}
-	
+
 	public String getDescription() {
+		// only available in resource, not in embedded block within application
+		if (!isResourceLoaded()) {
+			refresh();
+		}
 		return description;
 	}
-	
+
 	protected CartridgeType getType() {
 		return type;
+	}
+
+	public String getUrl() throws OpenShiftException {
+		for (ResourceProperty property : properties.getAll()) {
+			if (NAME_URL_PATTERN.matcher(property.getName()).find()) {
+				return property.getValue();
+			}
+		}
+		return null;
 	}
 
 	public IApplication getApplication() {
 		return application;
 	}
 
-	private String extractUrl(String info, Messages messages) {
-		if (info != null) {
-			return extractUrl(info);
-		} else {
-			return extractUrl(messages);
-		}
-	}
-	
-	private String extractUrl(String string) {
-		if (string == null) {
-			return null;
-		}
-		Matcher matcher = INFO_URL_PATTERN.matcher(string);
-		if (!matcher.find()
-				|| matcher.groupCount() < 1) {
-			return null;
-		}
-		
-		return matcher.group(1);
-	}
-	
-	private String extractUrl(Messages messages) {
-		if (messages == null) {
-			return null;
-		}
-		for (Message message : messages.getAll()) {
-			String url = extractUrl(message.getText());
-			if (url != null) {
-				return url;
-			}
-		}
-		return null;
+	/**
+	 * Refreshes the content of this embedded cartridge. Causes all embedded
+	 * cartridges of the same application to get updated.
+	 * 
+	 * @see #update(CartridgeResourceDTO)
+	 * @see ApplicationResource#refreshEmbeddedCartridges()
+	 */
+	@Override
+	public void refresh() throws OpenShiftException {
+		// tell application to refresh all embedded cartridges
+		application.refreshEmbeddedCartridges(); 
 	}
 
-	public String getUrl() throws OpenShiftException {
-		return url;
+	public void destroy() throws OpenShiftException {
+		if (!isResourceLoaded()) {
+			application.refreshEmbeddedCartridges();
+		}
+		new DeleteCartridgeRequest().execute();
+		application.removeEmbeddedCartridge(this);
+	}
+
+	protected boolean isResourceLoaded() {
+		return areLinksLoaded();
 	}
 
 	@Override
-	public void refresh() throws OpenShiftException {
-	}
-	
-	public void destroy() throws OpenShiftException {
-		new DeleteCartridgeRequest().execute();
-		application.removeEmbeddedCartridge(this);
+	public ResourceProperties getProperties() {
+		return properties;
 	}
 
 	private class DeleteCartridgeRequest extends ServiceRequest {
@@ -167,10 +166,9 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	@Override
 	public String toString() {
 		return "EmbeddedCartridgeResource [" +
-				"name=" + name  
-				+ ", url=" + url 
-				+ ", type=" + type + ", url=" + url
-				+ ", application=" + application 
+				"name=" + name
+				+ ", type=" + type
+				+ ", application=" + application.getName()
 				+ "]";
 	}
 
