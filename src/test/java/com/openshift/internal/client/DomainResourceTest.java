@@ -49,7 +49,9 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.MessageAssert;
+import com.openshift.client.utils.Samples;
 import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
@@ -294,18 +296,55 @@ public class DomainResourceTest {
 
 		// operation
 		final IApplication app = domain.createApplication("scalable", CARTRIDGE_JBOSSAS_7, ApplicationScale.NO_SCALE, null);
+
 		// verifications
-		assertThat(app.getName()).isEqualTo("scalable");
-		assertThat(app.getGearProfile().getName()).isEqualTo("small");
-		assertThat(app.getApplicationScale()).isEqualTo(ApplicationScale.NO_SCALE);
-		assertThat(app.getApplicationUrl()).isEqualTo("http://scalable-foobarz.rhcloud.com/");
-		assertThat(app.getCreationTime()).isNotNull();
-		assertThat(app.getGitUrl()).isNotNull().startsWith("ssh://")
-				.endsWith("@scalable-foobarz.rhcloud.com/~/git/scalable.git/");
-		assertThat(app.getInitialGitUrl()).isNotNull().isEqualTo("git://github.com/openshift/openshift-java-client.git");
-		assertThat(app.getCartridge()).isEqualTo(CARTRIDGE_JBOSSAS_7);
-		assertThat(app.getUUID()).isNotNull();
-		assertThat(app.getDomain()).isEqualTo(domain);
+		new ApplicationAssert(app)
+			.hasName("scalable")
+			.hasGearProfile(IGearProfile.SMALL)
+			.hasApplicationScale(ApplicationScale.NO_SCALE)
+			.hasApplicationUrl("http://scalable-foobarz.rhcloud.com/")
+			.hasCreationTime()
+			.hasGitUrl("ssh://5183b49f4382ec9a0e000001@scalable-foobarz.rhcloud.com/~/git/scalable.git/")
+			.hasInitialGitUrl("git://github.com/openshift/openshift-java-client.git")
+			.hasCartridge(CARTRIDGE_JBOSSAS_7)
+			.hasUUID("5183b49f4382ec9a0e000001")
+			.hasDomain(domain);
+		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(18);
+		assertThat(domain.getApplications()).hasSize(1).contains(app);
+	}
+
+	@Test
+	public void shouldCreateApplicationWithEmbeddedCartridges() throws Throwable {
+		// pre-conditions
+		mockDirector
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+				.mockCreateApplication("foobarz", Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2EMBEDDED);
+
+		// operation
+		final IApplication app = domain.createApplication(
+				"scalable", 
+				CARTRIDGE_JBOSSAS_7, 
+				ApplicationScale.NO_SCALE, 
+				IGearProfile.SMALL, 
+				null, 
+				IHttpClient.NO_TIMEOUT, 
+				EMBEDDABLE_CARTRIDGE_MONGODB_22, 
+				EMBEDDABLE_CARTRIDGE_MYSQL_51);
+
+		// verifications
+		new ApplicationAssert(app)
+			.hasName("springeap6")
+			.hasGearProfile(IGearProfile.SMALL)
+			.hasApplicationScale(ApplicationScale.NO_SCALE)
+			.hasApplicationUrl("http://springeap6-foobarz.rhcloud.com/")
+			.hasCreationTime("2013-04-30T17:00:41Z")
+			.hasGitUrl("ssh://517ff8b9500446729b00008e@springeap6-foobarz.rhcloud.com/~/git/springeap6.git/")
+			.hasInitialGitUrl("git://github.com/openshift/spring-eap6-quickstart.git")
+			.hasCartridge(CARTRIDGE_JBOSSAS_7)
+			.hasUUID("517ff8b9500446729b00008e")
+			.hasDomain(domain)
+			.hasEmbeddableCartridges(2)
+			.hasEmbeddableCartridges(EMBEDDABLE_CARTRIDGE_MONGODB_22.getName(), EMBEDDABLE_CARTRIDGE_MYSQL_51.getName());
 		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(18);
 		assertThat(domain.getApplications()).hasSize(1).contains(app);
 	}

@@ -24,11 +24,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+
 import org.fest.assertions.AssertExtension;
 
+import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IField;
+import com.openshift.client.IGearProfile;
 import com.openshift.client.ISeverity;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
@@ -76,8 +80,8 @@ public class ApplicationAssert implements AssertExtension {
 		return this;
 	}
 
-	public ApplicationAssert hasCreationTime(String creationTime) {
-		assertEquals(creationTime, application.getCreationTime());
+	public ApplicationAssert hasCreationTime(String creationTime) throws DatatypeConfigurationException {
+		assertEquals(RFC822DateUtils.getDate(creationTime), application.getCreationTime());
 		return this;
 	}
 
@@ -138,6 +142,16 @@ public class ApplicationAssert implements AssertExtension {
 		IDomain domain = application.getDomain();
 		assertEquals(domain.getId(), matcher.group(2));
 		assertEquals(domain.getSuffix(), matcher.group(3));
+	}
+	
+	public ApplicationAssert hasGearProfile(IGearProfile gearProfile) {
+		assertThat(application.getGearProfile()).isEqualTo(gearProfile);
+		return this;
+	}
+	
+	public ApplicationAssert hasApplicationScale(ApplicationScale applicationScale) {
+		assertThat(application.getApplicationScale()).isEqualTo(applicationScale);
+		return this;
 	}
 	
 	public ApplicationAssert hasEmbeddedCartridges(LatestEmbeddableCartridge... selectors)
@@ -202,22 +216,25 @@ public class ApplicationAssert implements AssertExtension {
 		return this;
 	}
 
-	public void hasNotEmbeddableCartridge(LatestEmbeddableCartridge constraint) {
+	public ApplicationAssert hasNotEmbeddableCartridge(LatestEmbeddableCartridge constraint) {
 		hasNotEmbeddableCartridge(constraint.get(application));
+		return this;
 	}
 
-	public void hasNotEmbeddableCartridge(IEmbeddableCartridge cartridge) {
+	public ApplicationAssert hasNotEmbeddableCartridge(IEmbeddableCartridge cartridge) {
 		hasNotEmbeddableCartridge(cartridge.getName());
+		return this;
 	}
 
 	public void hasNotEmbeddableCartridge(String name) {
 		assertNull(getEmbeddableCartridge(name));
 	}
 
-	public void assertThatDoesntContainCartridges(Collection<IEmbeddableCartridge> shouldNotBeContained, List<IEmbeddedCartridge> cartridges) {
+	public ApplicationAssert assertThatDoesntContainCartridges(Collection<IEmbeddableCartridge> shouldNotBeContained, List<IEmbeddedCartridge> cartridges) {
 		for(IEmbeddableCartridge shouldNot : shouldNotBeContained) {
 			assertFalse(cartridges.contains(shouldNot));
 		}
+		return this;
 	}
 
 	private IEmbeddedCartridge getEmbeddableCartridge(String name) {
@@ -231,10 +248,16 @@ public class ApplicationAssert implements AssertExtension {
 		return matchingCartridge;
 	}
 
-	public void assertThatContainsCartridges(Collection<IEmbeddableCartridge> shouldBeContained, List<IEmbeddedCartridge> cartridgesToCheck) {
+	public ApplicationAssert assertThatContainsCartridges(Collection<IEmbeddableCartridge> shouldBeContained, List<IEmbeddedCartridge> cartridgesToCheck) {
 		for (IEmbeddableCartridge cartridge : shouldBeContained) {
 			assertTrue(cartridgesToCheck.contains(cartridge));
 		}
+		return this;
+	}
+	
+	public ApplicationAssert hasDomain(IDomain domain) {
+		assertThat(application.getDomain()).isEqualTo(domain);
+		return this;
 	}
 	
 	public ApplicationAssert hasContent(String page, String contains) throws IOException {
