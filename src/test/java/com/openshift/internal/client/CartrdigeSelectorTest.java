@@ -18,21 +18,25 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
 
 import com.openshift.client.cartridge.EmbeddableCartridge;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.selector.LatestEmbeddableCartridge;
-import com.openshift.client.cartridge.selector.LatestVersionSelector;
+import com.openshift.client.cartridge.selector.LatestVersionQuery;
+import com.openshift.client.cartridge.selector.StringPropertyQuery;
+import com.openshift.client.utils.Cartridges;
 
 /**
  * @author Andre Dietisheim
  */
-public class LatestVersionSelectorTest {
+public class CartrdigeSelectorTest {
 
 	@Test
 	public void shouldEqualsOtherCartridgeConstraint() {
@@ -40,22 +44,22 @@ public class LatestVersionSelectorTest {
 		// operation
 		// verification
 		assertEquals(
-				new LatestVersionSelector("redhat"),
-				new LatestVersionSelector("redhat"));
+				new LatestVersionQuery("redhat"),
+				new LatestVersionQuery("redhat"));
 		assertFalse(
-				new LatestVersionSelector("redhat").equals(
-				new LatestVersionSelector("jboss")));
+				new LatestVersionQuery("redhat").equals(
+				new LatestVersionQuery("jboss")));
 	}
 
 	@Test
 	public void shouldMatchEmbeddableCartridge() {
 		// pre-coniditions
-		LatestVersionSelector redhatSelector = new LatestVersionSelector("redhat");
-		LatestVersionSelector jbossSelector = new LatestVersionSelector("jboss");
-		IEmbeddableCartridge redhat10 = new EmbeddableCartridge("redhat", "1.0");
-		IEmbeddableCartridge redhat30 = new EmbeddableCartridge("redhat", "3.0");
-		IEmbeddableCartridge jboss10 = new EmbeddableCartridge("jboss", "1.0");
-		LatestVersionSelector closedSourceSelector = new LatestVersionSelector("closedsource");
+		LatestVersionQuery redhatSelector = new LatestVersionQuery("redhat");
+		LatestVersionQuery jbossSelector = new LatestVersionQuery("jboss");
+		IEmbeddableCartridge redhat10 = new EmbeddableCartridge("redhat-1.0");
+		IEmbeddableCartridge redhat30 = new EmbeddableCartridge("redhat-3.0");
+		IEmbeddableCartridge jboss10 = new EmbeddableCartridge("jboss-1.0");
+		LatestVersionQuery closedSourceSelector = new LatestVersionQuery("closedsource");
 		// operation
 		// verification
 		assertTrue(redhatSelector.matches(redhat10));
@@ -70,7 +74,7 @@ public class LatestVersionSelectorTest {
 		// pre-coniditions
 		List<IEmbeddedCartridge> embeddedCartridges = Collections.emptyList();
 		
-		LatestVersionSelector selector = new LatestVersionSelector("mysql");
+		LatestVersionQuery selector = new LatestVersionQuery("mysql");
 
 		// operation
 		IEmbeddedCartridge matchingCartridge = selector.get(embeddedCartridges);
@@ -87,7 +91,7 @@ public class LatestVersionSelectorTest {
 				createEmbeddedCartridgeMock("community")
 		);
 		
-		LatestVersionSelector selector = new LatestVersionSelector("fun");
+		LatestVersionQuery selector = new LatestVersionQuery("fun");
 
 		// operation
 		IEmbeddedCartridge matchingCartridge = selector.get(embeddedCartridges);
@@ -99,35 +103,34 @@ public class LatestVersionSelectorTest {
 	@Test
 	public void shouldMatchMysql() {
 		// pre-coniditions
-		String mysqlCartridgeName = "mysql-5.1";
-		List<IEmbeddedCartridge> embeddedCartridges = Arrays.asList(createEmbeddedCartridgeMock(mysqlCartridgeName));
-		LatestVersionSelector cartridgeConstraint = new LatestVersionSelector("mysql");
+		List<IEmbeddedCartridge> embeddedCartridges =
+				Arrays.asList(createEmbeddedCartridgeMock(Cartridges.MYSQL_51_NAME));
+		LatestVersionQuery cartridgeConstraint = new LatestVersionQuery("mysql");
 
 		// operation
 		IEmbeddedCartridge matchingCartridge = cartridgeConstraint.get(embeddedCartridges);
 
 		// verification
 		assertThat(matchingCartridge).isNotNull();
-		assertThat(matchingCartridge.getName()).isEqualTo(mysqlCartridgeName);
+		assertThat(matchingCartridge.getName()).isEqualTo(Cartridges.MYSQL_51_NAME);
 	}
 
 	@Test
 	public void shouldMatchLatestMysql() {
 		// pre-coniditions
-		String mysql51Name = "mysql-5.1";
 		List<IEmbeddedCartridge> embeddedCartridges = Arrays.asList(
-				createEmbeddedCartridgeMock(mysql51Name),
+				createEmbeddedCartridgeMock(Cartridges.MYSQL_51_NAME),
 				createEmbeddedCartridgeMock("mysql-5.0")
 		);
 
-		LatestVersionSelector cartridgeSelector = new LatestVersionSelector("mysql");
+		LatestVersionQuery cartridgeSelector = new LatestVersionQuery("mysql");
 
 		// operation
 		IEmbeddedCartridge latestMysql = cartridgeSelector.get(embeddedCartridges);
 
 		// verification
 		assertThat(latestMysql).isNotNull();
-		assertThat(latestMysql.getName()).isEqualTo(mysql51Name);
+		assertThat(latestMysql.getName()).isEqualTo(Cartridges.MYSQL_51_NAME);
 	}
 
 	@Test
@@ -157,7 +160,7 @@ public class LatestVersionSelectorTest {
 				createEmbeddedCartridgeMock("mysql-5.0")
 		);
 
-		LatestVersionSelector cartridgeSelector = new LatestVersionSelector("mysql");
+		LatestVersionQuery cartridgeSelector = new LatestVersionQuery("mysql");
 
 		// operation
 		IEmbeddedCartridge latestMysql = cartridgeSelector.get(embeddedCartridges);
@@ -175,7 +178,7 @@ public class LatestVersionSelectorTest {
 				createEmbeddedCartridgeMock(cartridgeName),
 				createEmbeddedCartridgeMock("mysql-5.0")
 		);
-		LatestVersionSelector constraint = new LatestVersionSelector("somecartridge");
+		LatestVersionQuery constraint = new LatestVersionQuery("somecartridge");
 
 		// operation
 		IEmbeddedCartridge cartridge = constraint.get(embeddedCartridges);
@@ -193,7 +196,7 @@ public class LatestVersionSelectorTest {
 				createEmbeddedCartridgeMock(jenkins2),
 				createEmbeddedCartridgeMock("jenkins-client-1.4")
 		);
-		LatestVersionSelector constraint = new LatestVersionSelector("jenkins-client");
+		LatestVersionQuery constraint = new LatestVersionQuery("jenkins-client");
 
 		// operation
 		IEmbeddedCartridge cartridge = constraint.get(embeddedCartridges);
@@ -201,6 +204,33 @@ public class LatestVersionSelectorTest {
 		// verification
 		assertThat(cartridge).isNotNull();
 		assertThat(cartridge.getName()).isEqualTo(jenkins2);
+	}
+
+	@Test
+	public void shouldMatchingCartridgeName() {
+		// pre-coniditions
+		List<IEmbeddedCartridge> embeddedCartridges = Arrays.asList(
+				createEmbeddedCartridgeMock("Timberlake"),
+				createEmbeddedCartridgeMock("TimAndStrupi")
+		);
+		
+		StringPropertyQuery selector = new StringPropertyQuery("Tim.*") {
+
+			@Override
+			protected <C extends ICartridge> String getProperty(C cartridge) {
+				return cartridge.getName();
+			}
+			
+		};
+
+		// operation
+		IEmbeddedCartridge matchingCartridge = selector.get(embeddedCartridges);
+		Collection<IEmbeddedCartridge> matchingCartridges = selector.getAll(embeddedCartridges);
+
+		// verification
+		assertThat(matchingCartridge).isNotNull();
+		assertThat(matchingCartridge.getName()).isEqualTo("Timberlake");
+		assertThat(matchingCartridges).onProperty("name").containsOnly("Timberlake", "TimAndStrupi");
 	}
 
 	private IEmbeddedCartridge createEmbeddedCartridgeMock(String name) {

@@ -14,7 +14,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import com.openshift.internal.client.httpclient.HttpClientTest;
-import com.openshift.internal.client.response.ResourceDTOFactoryTest;
+import com.openshift.internal.client.httpclient.request.FormUrlEncodedMediaTypeTest;
+import com.openshift.internal.client.httpclient.request.JsonMediaTypeTest;
+import com.openshift.internal.client.response.OpenShiftJsonDTOFactoryTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -22,18 +24,22 @@ import com.openshift.internal.client.response.ResourceDTOFactoryTest;
 	HttpClientTest.class,
 	RestServicePropertiesTest.class,
 	RestServiceTest.class,
-	ResourceDTOFactoryTest.class,
+	OpenShiftJsonDTOFactoryTest.class,
 	DomainResourceTest.class,
 	ApplicationResourceTest.class,
 	APIResourceTest.class,
-	EmbeddedCartridgeTest.class,
-	LatestVersionSelectorTest.class,
+	StandaloneCartridgeTest.class,
+	EmbeddableCartridgeTest.class,
+	EmbeddedCartridgeResourceTest.class,
+	CartrdigeSelectorTest.class,
 	UserTest.class,
 	SSHKeyTest.class,
 	GearGroupsResourceTest.class,
 	GearTest.class,
 	GearTest.class,
-	OpenShiftExceptionTest.class
+	OpenShiftExceptionTest.class,
+	FormUrlEncodedMediaTypeTest.class,
+	JsonMediaTypeTest.class
 })
 
 /**

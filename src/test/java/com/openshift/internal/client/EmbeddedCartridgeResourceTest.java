@@ -10,17 +10,20 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
+import static com.openshift.client.utils.Cartridges.FOREMAN_DOWNLOAD_URL;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_3EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_DOWNLOADABLECART;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_3EMBEDDED;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.util.HashSet;
 
 import org.junit.Before;
@@ -32,84 +35,78 @@ import com.openshift.client.IDomain;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IUser;
 import com.openshift.client.cartridge.EmbeddableCartridge;
-import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
+import com.openshift.client.cartridge.selector.UrlPropertyQuery;
+import com.openshift.client.utils.CartridgeAssert;
+import com.openshift.client.utils.Cartridges;
+import com.openshift.client.utils.EmbeddedCartridgeAssert;
 import com.openshift.client.utils.ResourcePropertyAssert;
 import com.openshift.client.utils.Samples;
 import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
-import com.openshift.internal.client.response.ResourceProperties;
+import com.openshift.internal.client.response.CartridgeResourceProperties;
+import com.openshift.internal.client.response.CartridgeResourceProperty;
 
 /**
  * @author Andre Dietisheim
  */
-public class EmbeddedCartridgeTest {
-
-	private static final String GO_CARTRIDGE_DOWNLOAD_URL = "http://cartreflect-claytondev.rhcloud.com/reflect?github=smarterclayton/openshift-go-cart";
-	private static final String REDIS_CARTRIDGE_DOWNLOAD_URL = "http://cartreflect-claytondev.rhcloud.com/reflect?github=smarterclayton/openshift-redis-cart.git";
+public class EmbeddedCartridgeResourceTest {
 
 	private IApplication application;
 	private HttpClientMockDirector mockDirector;
 
-	private ICartridge goCartridge = new StandaloneCartridge(GO_CARTRIDGE_DOWNLOAD_URL);
-	private IEmbeddableCartridge redisCartridge = new EmbeddableCartridge(REDIS_CARTRIDGE_DOWNLOAD_URL);
-
 	@Before
 	public void setUp() throws SocketTimeoutException, HttpClientException, Throwable {
 		// pre-conditions
-		this.mockDirector = new HttpClientMockDirector();
-		IHttpClient client =
-				mockDirector
+		this.mockDirector = new HttpClientMockDirector()
 						.mockGetDomains(GET_DOMAINS)
 						.mockGetApplications(
 								"foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED)
 						.mockGetApplicationCartridges(
 								"foobarz", "springeap6",
-								GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED)
-						.client();
-		IUser user = new TestConnectionFactory().getConnection(client).getUser();
-		IDomain domain = user.getDomain("foobarz");
+								GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED);
+		IDomain domain = mockDirector.getDomain("foobarz");
 		this.application = domain.getApplicationByName("springeap6");
 	}
 
 	@Test
-	public void shouldEqualsOtherCartridge() {
+	public void shouldEmbeddedCartridgeEqualsEmbeddableCartridge() {
 		// pre-coniditions
-		// operation
-		// verification
-		assertEquals(new EmbeddableCartridge("redhat"), new EmbeddableCartridge("redhat"));
-		assertFalse(new EmbeddableCartridge("redhat").equals(new EmbeddableCartridge("jboss")));
-	}
-
-	@Test
-	public void shouldEqualsEmbeddableCartridge() {
-		// pre-coniditions
-		IEmbeddedCartridge embeddedCartridgeMock = createEmbeddedCartridgeMock("redhat");
+		IEmbeddedCartridge embeddedCartridgeFake = createEmbeddedCartridgeFake("redhat");
 
 		// operation
 		// verification
-		assertEquals(new EmbeddableCartridge("redhat"), embeddedCartridgeMock);
-		assertEquals(embeddedCartridgeMock, new EmbeddableCartridge("redhat"));
-		assertFalse(new EmbeddableCartridge("redhat").equals(new EmbeddableCartridge("jboss")));
+		assertThat(new EmbeddableCartridge("redhat")).isEqualTo(embeddedCartridgeFake);
+		assertThat(embeddedCartridgeFake).isEqualTo(new EmbeddableCartridge("redhat"));
+		assertThat(new EmbeddableCartridge("redhat")).isNotEqualTo(new EmbeddableCartridge("jboss"));
 	}
 
 	@Test
 	public void shouldHaveSameHashCode() {
 		// pre-coniditions
-		IEmbeddedCartridge embeddedCartridgeMock = createEmbeddedCartridgeMock("redhat");
+		IEmbeddedCartridge embeddedCartridgeFake = createEmbeddedCartridgeFake("redhat");
 		// operation
 		// verification
-		assertEquals(embeddedCartridgeMock.hashCode(), new EmbeddableCartridge("redhat").hashCode());
+		assertThat(embeddedCartridgeFake.hashCode()).isEqualTo(new EmbeddableCartridge("redhat").hashCode());
+	}
+	
+	@Test
+	public void shouldEmbeddableCartridgeWithNameEqualsEmbeddedCartridgeWithoutName() throws MalformedURLException {
+		// pre-coniditions
+		// operation
+		// verification
+		assertEquals(new EmbeddableCartridge(null, new URL(Cartridges.FOREMAN_DOWNLOAD_URL)),
+				new EmbeddableCartridge("redhat", new URL(Cartridges.FOREMAN_DOWNLOAD_URL)));
 	}
 
 	@Test
 	public void shouldRemoveEmbeddedCartridgeInASetByEmbeddableCartridge() {
 		// pre-coniditions
-		IEmbeddedCartridge embeddedCartridgeMock = createEmbeddedCartridgeMock("redhat");
+		IEmbeddedCartridge embeddedCartridgeMock = createEmbeddedCartridgeFake("redhat");
 		HashSet<IEmbeddedCartridge> cartridges = new HashSet<IEmbeddedCartridge>();
 		cartridges.add(embeddedCartridgeMock);
 		assertEquals(cartridges.size(), 1);
@@ -122,15 +119,64 @@ public class EmbeddedCartridgeTest {
 	}
 
 	@Test
-	public void shouldHaveUrl() throws Throwable {
+	public void shouldHaveUrlProperty() throws Throwable {
 		// pre-conditions
 		// operation
-		IEmbeddedCartridge mongo = application.getEmbeddedCartridge("mongodb-2.2");
-		IEmbeddedCartridge mysql = application.getEmbeddedCartridge("mysql-5.1");
+		IEmbeddedCartridge mongo = application.getEmbeddedCartridge(Cartridges.MONGODB_22_NAME);
+		IEmbeddedCartridge mysql = application.getEmbeddedCartridge(Cartridges.MYSQL_51_NAME);
 
 		// verifications
-		assertThat(mongo.getUrl()).isEqualTo("mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/");
-		assertThat(mysql.getUrl()).isEqualTo("mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/");
+		UrlPropertyQuery selector = new UrlPropertyQuery();
+		CartridgeResourceProperty property = selector.getMatchingProperty(mysql);
+		assertThat(property).isNotNull();
+		assertThat(property.getValue()).isEqualTo("mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/");
+		property = selector.getMatchingProperty(mongo);
+		assertThat(property).isNotNull();
+		assertThat(property.getValue()).isEqualTo("mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/");
+	}
+
+	@Test
+	public void shouldNotHaveUrlInNonDownloadableCartridge() throws Throwable {
+		// pre-conditions
+		IEmbeddableCartridge mysql = new EmbeddableCartridge(Cartridges.MYSQL_51_NAME);
+		assertThat(mysql.getUrl()).isNull();
+
+		// operation
+		IEmbeddedCartridge embeddedMysql = application.getEmbeddedCartridge(mysql);
+		// verifications
+		new EmbeddedCartridgeAssert(embeddedMysql)
+				.hasNoUrl();
+	}
+
+	@Test
+	public void shouldHaveNameDescriptionDisplayNameUrlInDownloadableCartridge() throws Throwable {
+		// pre-conditions
+		mockDirector
+				.mockGetApplications("foobarz",
+						Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP_SCALABLE_DOWNLOADABLECART)
+				.mockGetApplication("foobarz", "downloadablecart",
+						GET_DOMAINS_FOOBARZ_APPLICATIONS_DOWNLOADABLECART);
+		
+		IDomain domain = mockDirector.getDomain("foobarz");
+		IApplication downloadablecartApp = domain.getApplicationByName("downloadablecart");
+		assertThat(downloadablecartApp).isNotNull();
+
+		IEmbeddableCartridge foreman = new EmbeddableCartridge(new URL(FOREMAN_DOWNLOAD_URL));
+		new CartridgeAssert<IEmbeddableCartridge>(foreman)
+				.hasUrl(Cartridges.FOREMAN_DOWNLOAD_URL)
+				.hasName(null)
+				.hasDescription(null)
+				.hasDisplayName(null);
+
+		// operation
+		IEmbeddedCartridge embeddedForeman = downloadablecartApp.getEmbeddedCartridge(foreman);
+		// verifications
+		// embedded cartridge should get updated with name, description and display name
+		new EmbeddedCartridgeAssert(embeddedForeman)
+				.hasUrl(Cartridges.FOREMAN_DOWNLOAD_URL)
+				.hasName("andygoldstein-foreman-0.63.0")
+				.hasDescription("Foreman TODO")
+				.hasDisplayName("Foreman");
 	}
 
 	@Test
@@ -153,47 +199,6 @@ public class EmbeddedCartridgeTest {
 		assertThat(mysql.getDescription())
 				.isEqualTo(
 						"MySQL is a multi-user, multi-threaded SQL database server.");
-	}
-
-	@Test
-	public void shouldBeLoadedAfterRefresh() throws Throwable {
-		// pre-conditions
-		EmbeddedCartridgeResource mysql =
-				(EmbeddedCartridgeResource) application.getEmbeddedCartridge("mysql-5.1");
-		assertThat(mysql.isResourceLoaded()).isFalse();
-		// operation
-		mysql.refresh();
-
-		// verifications
-		assertThat(mysql.isResourceLoaded()).isTrue();
-	}
-
-	@Test
-	public void shouldLoadCartridgeOnDescription() throws Throwable {
-		// pre-conditions
-		EmbeddedCartridgeResource mysql =
-				(EmbeddedCartridgeResource) application.getEmbeddedCartridge("mysql-5.1");
-		assertThat(mysql.isResourceLoaded()).isFalse();
-
-		// operation
-		mysql.getDescription();
-
-		// verifications
-		assertThat(mysql.isResourceLoaded()).isTrue();
-	}
-
-	@Test
-	public void shouldNotLoadCartridgeTwice() throws Throwable {
-		// pre-conditions
-		IEmbeddedCartridge mysql = application.getEmbeddedCartridge("mysql-5.1");
-
-		// operation
-		mysql.getDescription(); // triggers application to load all cartridge
-								// resource(s)
-		mysql.getDisplayName(); // should not trigger a 2nd time
-
-		// verifications
-		mockDirector.verifyGetApplicationCartridges(1, application.getDomain().getId(), application.getName());
 	}
 
 	@Test
@@ -221,7 +226,7 @@ public class EmbeddedCartridgeTest {
 
 		// verification
 		mockDirector.verifyGetApplicationCartridges(1, "foobarz", "springeap6");
-		ResourceProperties properties = switchyard.getProperties();
+		CartridgeResourceProperties properties = switchyard.getProperties();
 		// 1 property in embedded block in cartridges
 		assertThat(properties.size()).isEqualTo(1);
 		new ResourcePropertyAssert(properties.getAll().iterator().next())
@@ -254,16 +259,14 @@ public class EmbeddedCartridgeTest {
 		// pre-conditions
 		// operation
 		// verifications
-		assertThat(goCartridge.isDownloadable()).isTrue();
-		assertThat(goCartridge.getUrl()).isEqualTo(GO_CARTRIDGE_DOWNLOAD_URL);
-		assertThat(redisCartridge.isDownloadable()).isTrue();
-		assertThat(redisCartridge.getUrl()).isEqualTo(REDIS_CARTRIDGE_DOWNLOAD_URL);
+		assertThat(Cartridges.go11().isDownloadable()).isTrue();
+		assertThat(Cartridges.foreman063().isDownloadable()).isTrue();
 	}
 
 	@Test
 	public void shouldNotBeDownloadableCartridge() throws Throwable {
 		// pre-conditions
-		IStandaloneCartridge jbossAsCartridge = new StandaloneCartridge("jboss", "7");
+		IStandaloneCartridge jbossAsCartridge = new StandaloneCartridge("jboss-7");
 		IStandaloneCartridge jbossEapCartridge = new StandaloneCartridge("jbosseap-6");
 
 		// operation
@@ -274,7 +277,7 @@ public class EmbeddedCartridgeTest {
 		assertThat(jbossEapCartridge.getUrl()).isNull();
 	}
 
-	private IEmbeddedCartridge createEmbeddedCartridgeMock(String name) {
+	private IEmbeddedCartridge createEmbeddedCartridgeFake(String name) {
 		ApplicationResource applicationResourceMock = Mockito.mock(ApplicationResource.class);
 		CartridgeResourceDTO cartridgeDTO = new CartridgeResourceDTO(name, null, null) {
 		};

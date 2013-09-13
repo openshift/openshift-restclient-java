@@ -17,7 +17,7 @@ import java.util.Arrays;
 import org.mockito.ArgumentMatcher;
 import org.mockito.internal.matchers.VarargMatcher;
 
-import com.openshift.internal.client.RequestParameter;
+import com.openshift.internal.client.httpclient.request.Parameter;
 
 /**
  * Custom Mockito Matcher that verifies that the given RequestParameters matches
@@ -26,27 +26,27 @@ import com.openshift.internal.client.RequestParameter;
  * @author Andre Dietisheim
  * 
  */
-public class RequestParametersMatcher extends ArgumentMatcher<RequestParameter[]> implements VarargMatcher {
+public class ParametersMatcher extends ArgumentMatcher<Parameter[]> implements VarargMatcher {
 
 	private static final long serialVersionUID = 1L;
 
-	private final RequestParameter[] expected;
+	private final Parameter[] expected;
 
-	private RequestParametersMatcher(final RequestParameter... expected) {
+	private ParametersMatcher(final Parameter... expected) {
 		this.expected = expected;
 	}
 
 	@Override
 	public boolean matches(Object argument) {
-		if (!(argument instanceof RequestParameter[])) {
+		if (!(argument instanceof Parameter[])) {
 			return false;
 		}
-		RequestParameter[] parameters = (RequestParameter[]) argument;
+		Parameter[] parameters = (Parameter[]) argument;
 		if (expected.length != parameters.length) {
 			return false;
 		}
 
-		for (RequestParameter parameter : parameters) {
+		for (Parameter parameter : parameters) {
 			if (!isExpected(parameter)) {
 				return false;
 			}
@@ -54,8 +54,8 @@ public class RequestParametersMatcher extends ArgumentMatcher<RequestParameter[]
 		return true;
 	}
 
-	private boolean isExpected(RequestParameter parameter) {
-		for (RequestParameter expectedParameter : expected) {
+	private boolean isExpected(Parameter parameter) {
+		for (Parameter expectedParameter : expected) {
 			if (expectedParameter.equals(parameter)) {
 				return true;
 			}
@@ -63,8 +63,8 @@ public class RequestParametersMatcher extends ArgumentMatcher<RequestParameter[]
 		return false;
 	}
 
-	public static RequestParameter[] eq(RequestParameter[] expected) {
-		return argThat(new RequestParametersMatcher(expected));
+	public static Parameter[] eq(Parameter[] expected) {
+		return argThat(new ParametersMatcher(expected));
 	}
 
 	@Override

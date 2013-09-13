@@ -25,8 +25,7 @@ import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.cartridge.StandaloneCartridge;
-import com.openshift.internal.client.httpclient.FormUrlEncodedMediaType;
+import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.DomainResourceDTO;
 import com.openshift.internal.client.response.Link;
@@ -34,6 +33,7 @@ import com.openshift.internal.client.response.LinkParameter;
 import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
+import com.openshift.internal.client.utils.IOpenShiftParameterConstants;
 
 /**
  * @author André Dietisheim
@@ -151,7 +151,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 
 		ApplicationResourceDTO applicationDTO =
 				new CreateApplicationRequest().execute(name, cartridge, scale, gearProfile, initialGitUrl, timeout, cartridges);
-		IApplication application = new ApplicationResource(applicationDTO, cartridge, this);
+		IApplication application = new ApplicationResource(applicationDTO, this);
 
 		getOrLoadApplications().add(application);
 		return application;
@@ -220,9 +220,8 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		List<IApplication> apps = new ArrayList<IApplication>();
 		List<ApplicationResourceDTO> applicationDTOs = new ListApplicationsRequest().execute();
 		for (ApplicationResourceDTO applicationDTO : applicationDTOs) {
-			final IStandaloneCartridge cartridge = new StandaloneCartridge(applicationDTO.getFramework());
 			final IApplication application =
-					new ApplicationResource(applicationDTO, cartridge, this);
+					new ApplicationResource(applicationDTO, this);
 			apps.add(application);
 		}
 		return apps;
@@ -278,7 +277,8 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	}
 
 	private class GetDomainRequest extends ServiceRequest {
-		public GetDomainRequest() throws OpenShiftException {
+
+		private GetDomainRequest() throws OpenShiftException {
 			super(LINK_GET);
 		}
 
@@ -291,19 +291,26 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	
 	private class ListApplicationsRequest extends ServiceRequest {
 
-		public ListApplicationsRequest() throws OpenShiftException {
+		private ListApplicationsRequest() throws OpenShiftException {
 			super(LINK_LIST_APPLICATIONS);
 		}
 
+		protected <DTO> DTO execute() throws OpenShiftException {
+			// ?include=cartridges
+			Parameters urlParameters = new Parameters()
+					.include(IOpenShiftParameterConstants.PARAMETER_CARTRIDGES);
+
+			return super.execute(urlParameters.toList());
+		}
 	}
 
 	private class CreateApplicationRequest extends ServiceRequest {
 
-		public CreateApplicationRequest() throws OpenShiftException {
+		private CreateApplicationRequest() throws OpenShiftException {
 			super(LINK_ADD_APPLICATION);
 		}
 
-		public ApplicationResourceDTO execute(final String name, IStandaloneCartridge cartridge,
+		protected ApplicationResourceDTO execute(final String name, IStandaloneCartridge cartridge,
 				final ApplicationScale scale, final IGearProfile gearProfile, final String initialGitUrl,
 				final int timeout, final IEmbeddableCartridge... embeddableCartridges)
 				throws OpenShiftException {
@@ -311,35 +318,40 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 				throw new OpenShiftException("Application cartridge is mandatory but was not given.");
 			} 
 			
-			RequestParameters parameters = new RequestParameters()
+			Parameters parameters = new Parameters()
 					.add(IOpenShiftJsonConstants.PROPERTY_NAME, name)
 					.addCartridges(cartridge, embeddableCartridges)
-					.addScale(scale)
-					.addGearProfile(gearProfile)
+					.scale(scale)
+					.gearProfile(gearProfile)
 					.add(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl);
-			return super.execute(new FormUrlEncodedMediaType(), timeout, parameters.toArray());
 			
+			// ?include=cartridges
+			Parameters urlParameters = new Parameters()
+					.include(IOpenShiftParameterConstants.PARAMETER_CARTRIDGES);
+					
+			return execute(timeout, urlParameters.toList(), parameters.toArray());
 		}
 	}
 
 	private class UpdateDomainRequest extends ServiceRequest {
 
-		public UpdateDomainRequest() throws OpenShiftException {
+		private UpdateDomainRequest() throws OpenShiftException {
 			super(LINK_UPDATE);
 		}
 
-		public DomainResourceDTO execute(String namespace) throws OpenShiftException {
-			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_ID, namespace));
+		protected DomainResourceDTO execute(String namespace) throws OpenShiftException {
+			return super.execute(new StringParameter(IOpenShiftJsonConstants.PROPERTY_ID, namespace));
 		}
 	}
 
 	private class DeleteDomainRequest extends ServiceRequest {
-		public DeleteDomainRequest() throws OpenShiftException {
+
+		private DeleteDomainRequest() throws OpenShiftException {
 			super(LINK_DELETE);
 		}
 
-		public void execute(boolean force) throws OpenShiftException {
-			super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_FORCE, force));
+		protected void execute(boolean force) throws OpenShiftException {
+			super.execute(new StringParameter(IOpenShiftJsonConstants.PROPERTY_FORCE, String.valueOf(force)));
 		}
 	}
 }

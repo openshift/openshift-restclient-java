@@ -10,9 +10,21 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import com.openshift.client.HttpMethod;
+import com.openshift.client.IHttpClient;
+import com.openshift.client.OpenShiftException;
+import com.openshift.client.OpenShiftRequestException;
+import com.openshift.internal.client.httpclient.EncodingException;
+import com.openshift.internal.client.httpclient.request.FormUrlEncodedMediaType;
+import com.openshift.internal.client.httpclient.request.Parameter;
+import com.openshift.internal.client.httpclient.request.ParameterValueMap;
+import com.openshift.internal.client.utils.StringUtils;
+import com.openshift.internal.client.utils.UrlUtils;
 
 /**
  * The Class Link.
@@ -35,6 +47,10 @@ public class Link {
 
 	/** The optional params of this link. */
 	private final List<LinkParameter> optionalParams;
+
+	public Link(final String href, final HttpMethod httpMethod) {
+		this(null, href, httpMethod);
+	}
 
 	public Link(final String rel, final String href, final HttpMethod httpMethod) {
 		this(rel, href, httpMethod, null, null);
@@ -86,6 +102,14 @@ public class Link {
 		return href;
 	}
 
+	public final String getHref(String server, String servicePath, Parameter... urlParameters) {
+		return addParameters(ensureAbsoluteUrl(href, server, servicePath), urlParameters);
+	}
+
+	public final String getHref(String server, String servicePath, List<Parameter> urlParameters) {
+		return addParameters(ensureAbsoluteUrl(href, server, servicePath), urlParameters);
+	}
+
 	/**
 	 * Gets the http method this link operates on.
 	 * 
@@ -111,6 +135,108 @@ public class Link {
 	 */
 	public final List<LinkParameter> getOptionalParams() {
 		return optionalParams;
+	}
+
+	public void validateParameters(Parameter[] parameters)
+			throws OpenShiftRequestException {
+		if (getRequiredParams() != null) {
+			for (LinkParameter requiredParameter : getRequiredParams()) {
+				validateRequiredParameter(requiredParameter, parameters);
+			}
+		}
+		if (getOptionalParams() != null) {
+			for (LinkParameter optionalParameter : getOptionalParams()) {
+				validateOptionalParameters(optionalParameter);
+			}
+		}
+	}
+
+	private void validateRequiredParameter(LinkParameter linkParameter, Parameter[] parameters)
+			throws OpenShiftRequestException {
+		Parameter parameter = getParameter(linkParameter.getName(), parameters);
+		if (parameter == null) {
+			throw new OpenShiftRequestException(
+					"Requesting {0}: required request parameter \"{1}\" is missing", getHref(),
+					linkParameter.getName());
+		}
+
+		if (isEmptyString(linkParameter, parameter.getValue())) {
+			throw new OpenShiftRequestException("Requesting {0}: required request parameter \"{1}\" is empty",
+					getHref(), linkParameter.getName());
+		}
+		// TODO: check valid options (still reported in a very incosistent way)
+	}
+
+	private Parameter getParameter(String name, Parameter[] parameters) {
+		if (StringUtils.isEmpty(name)) {
+			return null;
+		}
+		for (Parameter parameter : parameters) {
+			if (name.equals(parameter.getName())) {
+				return parameter;
+			}
+		}
+		return null;
+	}
+	
+	private void validateOptionalParameters(LinkParameter optionalParameter) {
+		// TODO: implement
+	}
+
+	private boolean isEmptyString(LinkParameter parameter, Object parameterValue) {
+		return parameter.getType() == LinkParameterType.STRING
+				&& parameterValue instanceof String
+				&& StringUtils.isEmpty((String) parameterValue);
+	}
+
+	/**
+	 * 
+	 * @param href
+	 * @param server
+	 * @param servicePath
+	 * @return
+	 */
+	private String ensureAbsoluteUrl(String href, String server, String servicePath) {
+		if (StringUtils.isEmpty(href)
+				|| href.startsWith(IHttpClient.HTTP)) {
+			return href;
+		}
+
+		if (StringUtils.isEmpty(servicePath)
+				|| href.startsWith(servicePath)) {
+			return StringUtils.prependIfNonEmpty(server, href);
+		}
+		
+		if(!href.startsWith(servicePath)) {
+			href = UrlUtils.appendPath(servicePath, href);
+		}
+		return StringUtils.prependIfNonEmpty(server, href);
+	}
+	
+	private String addParameters(String url, Parameter... urlParameters) {
+		if (urlParameters == null
+				|| urlParameters.length == 0) {
+			return url;
+		}
+		return addParameters(url, Arrays.asList(urlParameters));
+	}
+
+	private String addParameters(String url, List<Parameter> urlParameters) {
+		if (urlParameters == null
+				|| urlParameters.size() == 0) {
+			return url;
+		}
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			out.write(url.getBytes());
+			out.write(IHttpClient.QUESTION_MARK);
+			new FormUrlEncodedMediaType().writeTo(new ParameterValueMap(urlParameters), out);
+			return out.toString();
+		} catch (IOException e) {
+			throw new OpenShiftException(e, "Could not add paramters {0} to url {1}", urlParameters, url);
+		} catch (EncodingException e) {
+			throw new OpenShiftException(e, "Could not add paramters {0} to url {1}", urlParameters, url);
+		}
 	}
 
 	public String toString() {

@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.openshift.client.cartridge;
 
+import java.net.URL;
+
+import com.openshift.internal.client.cartridge.BaseCartridge;
+
 
 /**
  * A cartridge that is available on the openshift server. This class is no enum
@@ -23,17 +27,19 @@ public class StandaloneCartridge extends BaseCartridge implements IStandaloneCar
 		super(name);
 	}
 
-	public StandaloneCartridge(String name, String version) {
-		super(name, version);
+	public StandaloneCartridge(URL url) {
+		super(url);
+	}
+
+	public StandaloneCartridge(String name, URL url) {
+		super(name, url);
 	}
 
 	public StandaloneCartridge(String name, String displayName, String description) {
-		super(name, displayName, description);
+		super(name, null, displayName, description);
 	}
 
-	public String toString() {
-		return "StandaloneCartridge [ "
-				+ "name=" + getName()
-				+ " ]";
+	public StandaloneCartridge(String name, URL url, String displayName, String description) {
+		super(name, url, displayName, description);
 	}
 }

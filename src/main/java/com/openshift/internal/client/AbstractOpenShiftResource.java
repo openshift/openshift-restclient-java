@@ -11,14 +11,11 @@
 package com.openshift.internal.client;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IGearProfile;
-import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftResource;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
@@ -27,10 +24,17 @@ import com.openshift.client.OpenShiftRequestException;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.internal.client.httpclient.IMediaType;
+import com.openshift.internal.client.httpclient.request.IMediaType;
+import com.openshift.internal.client.httpclient.request.Parameter;
+import com.openshift.internal.client.httpclient.request.ParameterValueArray;
+import com.openshift.internal.client.httpclient.request.ParameterValueMap;
+import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.RestResponse;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
+import com.openshift.internal.client.utils.IOpenShiftParameterConstants;
+import com.openshift.internal.client.utils.StringUtils;
+import com.openshift.internal.client.utils.UrlUtils;
 
 /**
  * The Class AbstractOpenShiftResource.
@@ -125,132 +129,145 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 
 	protected class ServiceRequest {
 
-		private String linkName;
-
+		protected final String linkName;
+		
 		protected ServiceRequest(final String linkName) {
 			this.linkName = linkName;
 		}
-		
-		protected <DTO> DTO execute(final RequestParameter... parameters) throws OpenShiftException {
-			return execute(IHttpClient.NO_TIMEOUT, parameters);
+
+		protected <DTO> DTO execute(final Parameter... parameters) throws OpenShiftException {
+			return getData(getService().request(getLink(linkName), parameters));
 		}
 		
-		protected <DTO> DTO execute(final int timeout, final List<RequestParameter> parameters) throws OpenShiftException {
-			return execute(timeout, parameters.toArray(new RequestParameter[parameters.size()]));
+		protected <DTO> DTO execute(final int timeout, final Parameter... parameters) throws OpenShiftException {
+			return getData(getService().request(getLink(linkName), timeout, parameters));
+		}
+		
+		protected <DTO> DTO execute(final int timeout, final IMediaType mediaType, final Parameter... parameters)
+				throws OpenShiftException {
+			return getData(getService().request(getLink(linkName), timeout, mediaType, parameters));
 		}
 
-		protected <DTO> DTO execute(final int timeout, final RequestParameter... parameters) throws OpenShiftException {
-			return execute(null, timeout, parameters);
+		protected <DTO> DTO execute(final List<Parameter> urlParameter, final Parameter... parameters) throws OpenShiftException {
+			return getData(getService().request(getLink(linkName), urlParameter, parameters));
 		}
-		
-		protected <DTO> DTO execute(final IMediaType mediaType, final int timeout, final RequestParameter... parameters) throws OpenShiftException {
-			Link link = getLink(linkName);
-			RestResponse response = getService().request(link, mediaType, timeout,  parameters);
-			
+
+		protected <DTO> DTO execute(final int timeout, List<Parameter> urlParameter, final Parameter... parameters) throws OpenShiftException {
+			return getData(getService().request(getLink(linkName), timeout, urlParameter, parameters));
+		}
+
+		protected <DTO> DTO execute(final int timeout, List<Parameter> urlParameter, final IMediaType mediaType, final Parameter... parameters) throws OpenShiftException {
+			return getData(getService().request(getLink(linkName), timeout, urlParameter, mediaType,  parameters));
+		}
+
+		protected <DTO> DTO getData(RestResponse response) {
 			// in some cases, there is not response body, just a return code to
 			// indicate that the operation was successful (e.g.: delete domain)
 			if (response == null) {
 				return null;
 			}
 						
-			return response.getData();
+			return response.getData();			
 		}
+
 	}
 
-	protected class RequestParameters {
+	protected static class Parameters {
+				
+		private List<Parameter> parameters = new ArrayList<Parameter>();
 		
-		private final String PROPERTY_NAME = "name";
-		private final String PROPERTY_URL = "url";
-		
-		private ArrayList<RequestParameter> parameters = new ArrayList<RequestParameter>();
-		
-		protected RequestParameters addCartridges(
-				IStandaloneCartridge standaloneCartridge, IEmbeddableCartridge[] embeddableCartridges) {
-			if (standaloneCartridge == null) {
-				return this;
-			}
-
-			if (embeddableCartridges == null
-					|| embeddableCartridges.length == 0) {
-				return this;
-			}
-			
-			return add(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
-					createCartridgesMap(standaloneCartridge, embeddableCartridges));
+		protected Parameters addCartridge(IEmbeddableCartridge embeddable) {
+			ParameterValueMap parameter = createCartridgeParameter(embeddable);
+			return add(new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, parameter));
 		}
 
-		private Map<String, String> createCartridgesMap(IStandaloneCartridge standaloneCartridge,
-				IEmbeddableCartridge[] embeddableCartridges) {
-			Map<String, String> cartridges = new LinkedHashMap<String, String>();
-			addCartridgeTo(standaloneCartridge, cartridges);
-			for (IEmbeddableCartridge embeddableCartridge : embeddableCartridges) {
-				addCartridgeTo(embeddableCartridge, cartridges);
+		protected Parameters addCartridges(IStandaloneCartridge standalone, IEmbeddableCartridge[] embeddables) {
+			ParameterValueArray parameters = new ParameterValueArray();
+			if (standalone != null) {
+				parameters.add(createCartridgeParameter(standalone));
 			}
-			return cartridges;
+			if (embeddables != null
+					&& embeddables.length > 0) {
+				parameters.addAll(createCartridgeParameters(embeddables));
+			}
+
+			return add(new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, parameters));
 		}
 
 		/**
-		 * Adds the given cartridge to the given cartridge map. A downloadble
-		 * cartridge is added with the "url" key, a non-downloadable one is
-		 * added with the "name" key.
-		 * 
-		 * @param cartridge the cartridge that shall get added
-		 * @param cartridges the catridges that it shall get added to
+		 * Returns a map parameter for a given cartridge. 
+		 * @param cartridge the cartridge that a request parameter shall get created for
+		 * @return the parameter 
 		 */
-		private void addCartridgeTo(ICartridge cartridge, Map<String, String> cartridges) {
+		private ParameterValueMap createCartridgeParameter(ICartridge cartridge) {
 			if (cartridge.isDownloadable()) {
-				cartridges.put(PROPERTY_URL, cartridge.getName());
+				return new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_URL, UrlUtils.toString(cartridge.getUrl()));
 			} else {
-				cartridges.put(PROPERTY_NAME, cartridge.getName());
+				return new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, cartridge.getName());
 			}
 		}
 
-		protected RequestParameters addScale(ApplicationScale scale) {
+		private List<ParameterValueMap> createCartridgeParameters(ICartridge[] cartridges) {
+			List<ParameterValueMap> parameters = new ArrayList<ParameterValueMap>();
+			if (cartridges == null
+					|| cartridges.length == 0) {
+				return parameters;
+			}
+			
+			for (ICartridge cartridge : cartridges) {
+				ParameterValueMap parameter = createCartridgeParameter(cartridge);
+				if (parameter != null) {
+					parameters.add(parameter);
+				}
+			}
+			
+			return parameters;
+		}
+
+		protected Parameters scale(ApplicationScale scale) {
 			if (scale == null) {
 				return this;
 			}
-			return add(IOpenShiftJsonConstants.PROPERTY_SCALE, scale.getValue());
+			return add(new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, scale.getValue()));
 		}
 
-		protected RequestParameters addGearProfile(IGearProfile gearProfile) {
+		protected Parameters gearProfile(IGearProfile gearProfile) {
 			if (gearProfile == null) {
 				return this;
 			}
-			return add(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, gearProfile.getName());
+			return add(new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, gearProfile.getName()));
 		}
 
-		protected RequestParameters add(String name, Collection<String> values) {
-			if (values == null
-					|| values.size() == 0) {
-				return this;
-			}
-			
-			parameters.add(new ArrayRequestParameter(name, values.toArray(new String[values.size()])));
+		protected Parameters include(String includedResource) {
+			add(IOpenShiftParameterConstants.PARAMETER_INCLUDE, includedResource);
 			return this;
 		}
 		
-		protected RequestParameters add(String name, Map<String, String> values) {
-			if (values == null
-					|| values.size() == 0) {
+		protected Parameters add(String name, String value) {
+			if (StringUtils.isEmpty(value)) {
+				return this;
+			}
+			return add(new StringParameter(name, value));
+		}
+		
+		protected Parameters add(Parameter parameter) {
+			if (parameter == null
+					|| StringUtils.isEmpty(parameter.getName()) 
+					|| parameter.getValue() == null
+					|| parameter.getValue().getValue() == null) {
 				return this;
 			}
 			
-			parameters.add(new MapRequestParameter(name, values));
+			parameters.add(parameter);
 			return this;
 		}
 
-		protected RequestParameters add(String name, Object value) {
-			
-			if (value == null) {
-				return this;
-			}
-			
-			parameters.add(new RequestParameter(name, value));
-			return this;
+		protected Parameter[] toArray() {
+			return parameters.toArray(new Parameter[parameters.size()]);
 		}
-				
-		protected RequestParameter[] toArray() {
-			return parameters.toArray(new RequestParameter[parameters.size()]);
+
+		protected List<Parameter> toList() {
+			return parameters;
 		}
 	}
 

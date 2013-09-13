@@ -15,7 +15,7 @@ import com.openshift.client.cartridge.IStandaloneCartridge;
 /**
  * @author André Dietisheim
  */
-public class StandaloneCartridgeAssert extends AbstractCartridgeAssert<IStandaloneCartridge> {
+public class StandaloneCartridgeAssert extends CartridgeAssert<IStandaloneCartridge> {
 
 	public StandaloneCartridgeAssert(IStandaloneCartridge cartridge) {
 		super(cartridge);

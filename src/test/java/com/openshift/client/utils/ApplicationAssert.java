@@ -29,6 +29,7 @@ import org.fest.assertions.AssertExtension;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IField;
+import com.openshift.client.IGearProfile;
 import com.openshift.client.ISeverity;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
@@ -140,6 +141,11 @@ public class ApplicationAssert implements AssertExtension {
 		assertEquals(domain.getSuffix(), matcher.group(3));
 	}
 	
+	public ApplicationAssert hasGearProfile(IGearProfile gearProfile) {
+		assertThat(application.getGearProfile()).isEqualTo(gearProfile);
+		return this;
+	}
+
 	public ApplicationAssert hasEmbeddedCartridges(LatestEmbeddableCartridge... selectors)
 			throws OpenShiftException {
 		for (LatestEmbeddableCartridge selector : selectors) {
@@ -150,13 +156,27 @@ public class ApplicationAssert implements AssertExtension {
 
 	public ApplicationAssert hasEmbeddedCartridge(LatestEmbeddableCartridge selector)
 			throws OpenShiftException {
-		IEmbeddableCartridge embeddableCartridge = selector.get(application);
-		assertTrue(application.hasEmbeddedCartridge(embeddableCartridge));
+		hasEmbeddedCartridge(selector.get(application));
+		return this;
+	}
+
+	public ApplicationAssert hasEmbeddedCartridge(IEmbeddableCartridge... cartridges)
+			throws OpenShiftException {
+		for (IEmbeddableCartridge cartridge : cartridges) {
+			hasEmbeddedCartridge(cartridge);
+		}
+		
+		return this;
+	}
+
+	public ApplicationAssert hasEmbeddedCartridge(IEmbeddableCartridge cartridge)
+			throws OpenShiftException {
+		assertTrue(application.hasEmbeddedCartridge(cartridge));
 
 		return this;
 	}
 
-	public ApplicationAssert hasEmbeddableCartridges(String... embeddableCartridgeNames) throws OpenShiftException {
+	public ApplicationAssert hasEmbeddedCartridgeNames(String... embeddableCartridgeNames) throws OpenShiftException {
 		if (embeddableCartridgeNames.length == 0) {
 			assertEquals(0, application.getEmbeddedCartridges().size());
 		}
@@ -174,7 +194,7 @@ public class ApplicationAssert implements AssertExtension {
 		return this;
 	}
 	
-	public ApplicationAssert hasNotEmbeddableCartridges(String... embeddableCartridgeNames) throws OpenShiftException {		
+	public ApplicationAssert hasNotEmbeddableCartridgeNames(String... embeddableCartridgeNames) throws OpenShiftException {		
 		for (String cartridgeName : embeddableCartridgeNames) {
 			assertFalse(application.hasEmbeddedCartridge(cartridgeName));
 		}
@@ -272,4 +292,10 @@ public class ApplicationAssert implements AssertExtension {
 		}
 		return this;
 	}
+
+	public ApplicationAssert hasDomain(IDomain domain) {
+		assertThat(application.getDomain()).isEqualTo(domain);
+		return this;
+	}
+
 }

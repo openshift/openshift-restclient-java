@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
+import static com.openshift.client.utils.Cartridges.MYSQL_51_NAME;
+import static com.openshift.client.utils.Cartridges.FOREMAN_DOWNLOAD_URL;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED;
@@ -27,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,16 +42,16 @@ import com.openshift.client.IApplication;
 import com.openshift.client.IApplicationPortForwarding;
 import com.openshift.client.IDomain;
 import com.openshift.client.IField;
-import com.openshift.client.IHttpClient;
-import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftTimeoutException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
+import com.openshift.client.utils.CartridgeAssert;
+import com.openshift.client.utils.Cartridges;
 import com.openshift.client.utils.EmbeddedCartridgeAssert;
 import com.openshift.client.utils.MessageAssert;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.InternalServerErrorException;
 
@@ -59,24 +62,19 @@ import com.openshift.internal.client.httpclient.InternalServerErrorException;
  */
 public class ApplicationResourceTest {
 
-	private static final IEmbeddableCartridge EMBEDDABLE_CARTRIDGE_MYSQL = new EmbeddableCartridge("mysql-5.1");
-
 	private IDomain domain;
-	private IHttpClient mockClient;
 	private HttpClientMockDirector mockDirector;
 
 	@Before
 	public void setup() throws Throwable {
-		this.mockDirector = new HttpClientMockDirector();
-		this.mockClient = mockDirector
+		this.mockDirector = new HttpClientMockDirector()
 				.mockGetDomains(GET_DOMAINS)
 				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED)
 				.mockGetApplication("foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED)
 				.mockGetApplicationCartridges("foobarz", "springeap6",
-						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED)
-				.client();
-		IUser user = new TestConnectionFactory().getConnection(mockClient).getUser();
-		this.domain = user.getDomain("foobarz");
+						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED);
+		this.domain = mockDirector.getDomain("foobarz");
+		assertThat(domain).isNotNull();
 	}
 
 	@Test
@@ -174,7 +172,7 @@ public class ApplicationResourceTest {
 			fail("Expected an exception here..");
 		} catch (OpenShiftEndpointException e) {
 
-		// verifications
+			// verifications
 			assertThat(e.getCause()).isInstanceOf(InternalServerErrorException.class);
 		}
 
@@ -205,7 +203,7 @@ public class ApplicationResourceTest {
 			fail("Expected an exception here..");
 		} catch (OpenShiftEndpointException e) {
 
-		// verifications
+			// verifications
 			assertThat(e.getCause()).isInstanceOf(InternalServerErrorException.class);
 		}
 
@@ -246,7 +244,7 @@ public class ApplicationResourceTest {
 			fail("Expected an exception..");
 		} catch (OpenShiftEndpointException e) {
 
-		// verifications
+			// verifications
 			assertThat(e.getCause()).isInstanceOf(InternalServerErrorException.class);
 		}
 		assertThat(app.getAliases()).hasSize(1).contains("jbosstools.org");
@@ -288,7 +286,7 @@ public class ApplicationResourceTest {
 			fail("Expected an exception..");
 		} catch (OpenShiftEndpointException e) {
 
-		// verifications
+			// verifications
 			assertThat(e.getCause()).isInstanceOf(InternalServerErrorException.class);
 		}
 		assertThat(app.getAliases()).hasSize(1).contains("jbosstools.org");
@@ -301,8 +299,6 @@ public class ApplicationResourceTest {
 		mockDirector
 				.mockGetApplications("foobarz",
 						GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED)
-				.mockGetApplication("foobarz", "springeap6",
-						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2EMBEDDED)
 				.mockGetApplicationCartridges("foobarz", "springeap6",
 						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED);
 
@@ -313,6 +309,45 @@ public class ApplicationResourceTest {
 
 		// verifications
 		assertThat(embeddedCartridges).hasSize(2);
+	}
+
+	@Test
+	public void shouldGetEmbeddableCartridgeByCartridge() throws Throwable {
+		// pre-conditions
+		// operation
+		final IApplication app = domain.getApplicationByName("springeap6");
+		IEmbeddedCartridge mongo = app.getEmbeddedCartridge(Cartridges.mongodb22());
+		// verifications
+		// embedded cartridge should get updated with name, description and
+		// display name
+		new EmbeddedCartridgeAssert(mongo);
+	}
+
+	@Test
+	public void shouldGetDownloadableEmbeddableCartridgeByCartridge() throws Throwable {
+		// pre-conditions
+		mockDirector
+				.mockGetApplications("foobarz",
+						Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP_SCALABLE_DOWNLOADABLECART);
+
+		IDomain domain = mockDirector.getDomain("foobarz");
+		IApplication application = domain.getApplicationByName("downloadablecart");
+		assertThat(application).isNotNull();
+
+		IEmbeddableCartridge foreman = new EmbeddableCartridge(null, new URL(FOREMAN_DOWNLOAD_URL));
+		new CartridgeAssert<IEmbeddableCartridge>(foreman)
+				.hasUrl(Cartridges.FOREMAN_DOWNLOAD_URL)
+				.hasName(null)
+				.hasDescription(null)
+				.hasDisplayName(null);
+
+		// operation
+		IEmbeddedCartridge embeddedForeman = application.getEmbeddedCartridge(foreman);
+		// verifications
+		// embedded cartridge should get updated with name, description and
+		// display name
+		new EmbeddedCartridgeAssert(embeddedForeman)
+				.hasUrl(Cartridges.FOREMAN_DOWNLOAD_URL);
 	}
 
 	@Test
@@ -329,7 +364,8 @@ public class ApplicationResourceTest {
 		app.refresh();
 
 		// verify
-		// get app resource wont load embedded cartridges, only refresh does (thus should occur 1x)
+		// get app resource wont load embedded cartridges, only refresh does
+		// (thus should occur 1x)
 		mockDirector.verifyListEmbeddableCartridges(1, "foobarz", "springeap6");
 		assertThat(app.getEmbeddedCartridges()).hasSize(2);
 	}
@@ -343,16 +379,16 @@ public class ApplicationResourceTest {
 		assertThat(app.getEmbeddedCartridges()).hasSize(1);
 
 		// operation
-		app.addEmbeddableCartridge(EMBEDDABLE_CARTRIDGE_MYSQL);
+		app.addEmbeddableCartridge(Cartridges.mysql51());
 
 		// verifications
 		mockDirector.verifyAddEmbeddableCartridge("foobarz", "springeap6");
 		assertThat(app.getEmbeddedCartridges()).hasSize(2);
-		IEmbeddedCartridge mySqlCartridge = app.getEmbeddedCartridge(EMBEDDABLE_CARTRIDGE_MYSQL.getName());
+		IEmbeddedCartridge mySqlCartridge = app.getEmbeddedCartridge(MYSQL_51_NAME);
 		new EmbeddedCartridgeAssert(mySqlCartridge)
 				.hasMessages()
 				.hasDescription()
-				.hasName(EMBEDDABLE_CARTRIDGE_MYSQL.getName());
+				.hasName(MYSQL_51_NAME);
 
 		new MessageAssert(mySqlCartridge.getMessages().getFirstBy(IField.DEFAULT))
 				.hasExitCode(-1)
@@ -382,15 +418,15 @@ public class ApplicationResourceTest {
 
 		// operation
 		try {
-			app.addEmbeddableCartridge(new EmbeddableCartridge("postgresql-8.4"));
+			app.addEmbeddableCartridge(new EmbeddableCartridge(Cartridges.POSTGRESQL_84_NAME));
 			fail("Expected an exception here...");
 		} catch (OpenShiftTimeoutException e) {
 			// ok
 		}
-		
+
 		// verifications
 		mockDirector.verifyAddEmbeddableCartridge("foobarz", "springeap6");
-		assertThat(app.getEmbeddedCartridge("postgresql-8.4")).isNull();
+		assertThat(app.getEmbeddedCartridge(Cartridges.POSTGRESQL_84_NAME)).isNull();
 		assertThat(app.getEmbeddedCartridges()).hasSize(2);
 	}
 
@@ -437,7 +473,7 @@ public class ApplicationResourceTest {
 		} catch (OpenShiftTimeoutException e) {
 			// ok
 		}
-		
+
 		// verifications
 		mockDirector.verifyDeleteEmbeddableCartridge("foobarz", "springeap6", "mysql-5.1");
 		assertThat(application.getEmbeddedCartridges()).hasSize(2).contains(mysql);

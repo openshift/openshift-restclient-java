@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.openshift.client.ApplicationScale;
-import com.openshift.client.IGearGroup;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.Messages;
 
@@ -58,9 +57,7 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	/** the url for the git repo with the initial code for this application. */
 	private final String initialGitUrl;
 
-	private List<IGearGroup> gearGroups;
-
-	private List<CartridgeResourceDTO> embeddedCartridges;
+	private Map<String, CartridgeResourceDTO> cartridgesByName;
 
 	/**
 	 * Instantiates a new application dto.
@@ -75,7 +72,7 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	ApplicationResourceDTO(final String framework, final String domainId, final String creationTime,
 			final String name, final IGearProfile gearProfile, final ApplicationScale scale, final String uuid,
 			final String applicationUrl, final String gitUrl, final String initialGitUrl, final List<String> aliases,
-			final List<CartridgeResourceDTO> embeddedCartridges, final Map<String, Link> links, Messages messages) {
+			final Map<String, CartridgeResourceDTO> cartridgeByName, final Map<String, Link> links, Messages messages) {
 	super(links, messages);
 		this.framework = framework;
 		this.domainId = domainId;
@@ -88,7 +85,7 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 		this.gitUrl = gitUrl;
 		this.initialGitUrl = initialGitUrl;
 		this.aliases = aliases;
-		this.embeddedCartridges = embeddedCartridges;
+		this.cartridgesByName = cartridgeByName;
 	}
 
 	/**
@@ -178,14 +175,14 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 		return aliases;
 	}
 
-	public List<CartridgeResourceDTO> getEmbeddedCartridges() {
-		return embeddedCartridges;
+	public Map<String, CartridgeResourceDTO> getCartridges() {
+		return cartridgesByName;
 	}
 	
 	@Override
 	public String toString() {
 		return "ApplicationResourceDTO ["
-				+ "	name=" + name
+				+ "name=" + name
 				+ ", framework=" + framework
 				+ "]";
 	}

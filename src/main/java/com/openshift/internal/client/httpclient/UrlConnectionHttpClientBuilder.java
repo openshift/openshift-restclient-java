@@ -23,7 +23,6 @@ public class UrlConnectionHttpClientBuilder {
 	private String password;
 	private String authKey;
 	private String authIV;
-	private IMediaType requestedMediaType;
 	private String acceptedMediaType;
 	private String version;
 
@@ -54,11 +53,6 @@ public class UrlConnectionHttpClientBuilder {
 		return this;
 	}
 
-	public UrlConnectionHttpClientBuilder setRequestedMediaType(IMediaType mediaType) {
-		this.requestedMediaType = mediaType;
-		return this;
-	}
-
 	public UrlConnectionHttpClientBuilder setVersion(String version) {
 		this.version = version;
 		return this;
@@ -66,6 +60,6 @@ public class UrlConnectionHttpClientBuilder {
 
 	public IHttpClient client() {
 		return new UrlConnectionHttpClient(
-				username, password, userAgent, sslChecks, requestedMediaType, acceptedMediaType, version, authKey, authIV);
+				username, password, userAgent, sslChecks, acceptedMediaType, version, authKey, authIV);
 	}
 }

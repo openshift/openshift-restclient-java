@@ -3,7 +3,7 @@
       "additional_gear_storage":0,
       "base_gear_storage":1,
       "collocated_with":[
-         "jbosseap-6.0",
+         "jbosseap-6",
          "mongodb-2.2"
       ],
       "current_scale":1,

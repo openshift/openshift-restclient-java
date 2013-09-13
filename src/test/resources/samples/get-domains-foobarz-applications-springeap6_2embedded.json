@@ -1,34 +1,693 @@
 {
+   "api_version":1.2,
    "data":{
       "aliases":[
-         "jbosstools.org"
+
       ],
       "app_url":"http://springeap6-foobarz.rhcloud.com/",
       "build_job_url":null,
       "building_app":null,
       "building_with":null,
-      "creation_time":"2013-04-30T17:00:41Z",
+      "cartridges":[
+         {
+            "additional_gear_storage":0,
+            "base_gear_storage":1,
+            "collocated_with":[
+               "mongodb-2.2",
+               "mysql-5.1"
+            ],
+            "current_scale":1,
+            "description":"Market-leading open source enterprise platform for next-generation, highly transactional enterprise Java applications. Build and deploy enterprise Java in the cloud.",
+            "display_name":"JBoss Enterprise Application Platform 6.1.0",
+            "gear_profile":"small",
+            "help_topics":{
+               "Building with MySQL":"http://docs.redhat.com/docs/en-US/OpenShift/2.0/html/User_Guide/sect-User_Guide-Working_With_Database_Cartridges.html"
+            },
+            "license":"LGPL",
+            "license_url":"http://www.gnu.org/copyleft/lesser.txt",
+            "links":{
+               "GET":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6",
+                  "method":"GET",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Get cartridge",
+                  "required_params":[
+
+                  ]
+               },
+               "UPDATE":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6",
+                  "method":"PUT",
+                  "optional_params":[
+                     {
+                        "default_value":null,
+                        "description":"Additional filesystem storage in gigabytes on each gear having cartridge jbosseap-6",
+                        "name":"additional_gear_storage",
+                        "type":"integer",
+                        "valid_options":[
+
+                        ]
+                     },
+                     {
+                        "default_value":null,
+                        "description":"Minimum number of gears having cartridge jbosseap-6",
+                        "name":"scales_from",
+                        "type":"integer",
+                        "valid_options":[
+
+                        ]
+                     },
+                     {
+                        "default_value":null,
+                        "description":"Maximum number of gears having cartridge jbosseap-6",
+                        "name":"scales_to",
+                        "type":"integer",
+                        "valid_options":[
+
+                        ]
+                     }
+                  ],
+                  "rel":"Update cartridge configuration",
+                  "required_params":[
+
+                  ]
+               },
+               "START":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Start embedded cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "start"
+                        ]
+                     }
+                  ]
+               },
+               "STOP":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Stop cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "stop"
+                        ]
+                     }
+                  ]
+               },
+               "RESTART":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Restart cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "restart"
+                        ]
+                     }
+                  ]
+               },
+               "RELOAD":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Reload cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "reload"
+                        ]
+                     }
+                  ]
+               },
+               "DELETE":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6",
+                  "method":"DELETE",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Delete cartridge",
+                  "required_params":[
+
+                  ]
+               }
+            },
+            "name":"jbosseap-6",
+            "properties":[
+               {
+                  "name":"OPENSHIFT_JBOSSEAP_LOG_DIR",
+                  "type":"environment",
+                  "description":"Directory to store application log files."
+               },
+               {
+                  "name":"OPENSHIFT_TMP_DIR",
+                  "type":"environment",
+                  "description":"Directory to store application temporary files."
+               },
+               {
+                  "name":"OPENSHIFT_REPO_DIR",
+                  "type":"environment",
+                  "description":"Application root directory where application files reside. This directory is reset every time you do a git-push"
+               },
+               {
+                  "name":"OPENSHIFT_JBOSSEAP_HTTP_PORT",
+                  "type":"environment",
+                  "description":"Internal port to which the web-framework binds to."
+               },
+               {
+                  "name":"OPENSHIFT_JBOSSEAP_IP",
+                  "type":"environment",
+                  "description":"Internal IP to which the web-framework binds to."
+               },
+               {
+                  "name":"OPENSHIFT_APP_DNS",
+                  "type":"environment",
+                  "description":"Fully qualified domain name for the application."
+               },
+               {
+                  "name":"OPENSHIFT_APP_NAME",
+                  "type":"environment",
+                  "description":"Application name"
+               },
+               {
+                  "name":"OPENSHIFT_DATA_DIR",
+                  "type":"environment",
+                  "description":"Directory to store application data files. Preserved across git-pushes. Not shared across gears."
+               },
+               {
+                  "name":"OPENSHIFT_APP_UUID",
+                  "type":"environment",
+                  "description":"Unique ID which identified the application. Does not change between gears."
+               },
+               {
+                  "name":"OPENSHIFT_GEAR_UUID",
+                  "type":"environment",
+                  "description":"Unique ID which identified the gear. This value changes between gears."
+               }
+            ],
+            "scales_from":1,
+            "scales_to":1,
+            "scales_with":null,
+            "status_messages":null,
+            "supported_scales_from":1,
+            "supported_scales_to":1,
+            "tags":[
+               "service",
+               "web_framework",
+               "java",
+               "jboss",
+               "jee_full_profile"
+            ],
+            "type":"standalone",
+            "url":null,
+            "usage_rates":[
+               {
+                  "plan_id":"silver",
+                  "usd":0.03,
+                  "cad":0.03,
+                  "eur":0.02,
+                  "duration":"hour"
+               }
+            ],
+            "version":"6",
+            "website":"http://www.redhat.com/products/jbossenterprisemiddleware/application-platform/"
+         },
+         {
+            "additional_gear_storage":0,
+            "base_gear_storage":1,
+            "collocated_with":[
+               "jbosseap-6",
+               "mysql-5.1"
+            ],
+            "current_scale":1,
+            "description":"MongoDB is a scalable, high-performance, open source NoSQL database.",
+            "display_name":"MongoDB NoSQL Database 2.2",
+            "gear_profile":"small",
+            "help_topics":{
+               "Building with MySQL":"http://docs.redhat.com/docs/en-US/OpenShift/2.0/html/User_Guide/sect-User_Guide-Working_With_Database_Cartridges.html"
+            },
+            "license":"ASL 2.0",
+            "license_url":"",
+            "links":{
+               "GET":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mongodb-2.2",
+                  "method":"GET",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Get cartridge",
+                  "required_params":[
+
+                  ]
+               },
+               "UPDATE":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mongodb-2.2",
+                  "method":"PUT",
+                  "optional_params":[
+                     {
+                        "default_value":null,
+                        "description":"Additional filesystem storage in gigabytes on each gear having cartridge mongodb-2.2",
+                        "name":"additional_gear_storage",
+                        "type":"integer",
+                        "valid_options":[
+
+                        ]
+                     },
+                     {
+                        "default_value":null,
+                        "description":"Minimum number of gears having cartridge mongodb-2.2",
+                        "name":"scales_from",
+                        "type":"integer",
+                        "valid_options":[
+
+                        ]
+                     },
+                     {
+                        "default_value":null,
+                        "description":"Maximum number of gears having cartridge mongodb-2.2",
+                        "name":"scales_to",
+                        "type":"integer",
+                        "valid_options":[
+
+                        ]
+                     }
+                  ],
+                  "rel":"Update cartridge configuration",
+                  "required_params":[
+
+                  ]
+               },
+               "START":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mongodb-2.2/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Start embedded cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "start"
+                        ]
+                     }
+                  ]
+               },
+               "STOP":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mongodb-2.2/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Stop cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "stop"
+                        ]
+                     }
+                  ]
+               },
+               "RESTART":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mongodb-2.2/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Restart cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "restart"
+                        ]
+                     }
+                  ]
+               },
+               "RELOAD":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mongodb-2.2/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Reload cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "reload"
+                        ]
+                     }
+                  ]
+               },
+               "DELETE":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mongodb-2.2",
+                  "method":"DELETE",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Delete cartridge",
+                  "required_params":[
+
+                  ]
+               }
+            },
+            "name":"mongodb-2.2",
+            "properties":[
+               {
+                  "name":"username",
+                  "type":"cart_data",
+                  "description":"Root user on mongo database",
+                  "value":"admin"
+               },
+               {
+                  "name":"password",
+                  "type":"cart_data",
+                  "description":"Password for root user on mongo database",
+                  "value":"VwFPWQEs1PEl"
+               },
+               {
+                  "name":"database_name",
+                  "type":"cart_data",
+                  "description":"Mongo DB name",
+                  "value":"springeap6"
+               },
+               {
+                  "name":"connection_url",
+                  "type":"cart_data",
+                  "description":"Mongo DB connection URL",
+                  "value":"mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/"
+               }
+            ],
+            "scales_from":1,
+            "scales_to":1,
+            "scales_with":null,
+            "status_messages":null,
+            "supported_scales_from":1,
+            "supported_scales_to":1,
+            "tags":[
+               "service",
+               "database",
+               "nosql",
+               "embedded"
+            ],
+            "type":"embedded",
+            "url":null,
+            "usage_rates":[
+
+            ],
+            "version":"2.2",
+            "website":"http://www.10gen.com"
+         },
+         {
+            "additional_gear_storage":0,
+            "base_gear_storage":1,
+            "collocated_with":[
+               "jbosseap-6",
+               "mongodb-2.2"
+            ],
+            "current_scale":1,
+            "description":"MySQL is a multi-user, multi-threaded SQL database server.",
+            "display_name":"MySQL Database 5.1",
+            "gear_profile":"small",
+            "help_topics":{
+               "Building with MySQL":"http://docs.redhat.com/docs/en-US/OpenShift/2.0/html/User_Guide/sect-User_Guide-Working_With_Database_Cartridges.html"
+            },
+            "license":"GPL",
+            "license_url":"",
+            "links":{
+               "GET":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mysql-5.1",
+                  "method":"GET",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Get cartridge",
+                  "required_params":[
+
+                  ]
+               },
+               "UPDATE":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mysql-5.1",
+                  "method":"PUT",
+                  "optional_params":[
+                     {
+                        "default_value":null,
+                        "description":"Additional filesystem storage in gigabytes on each gear having cartridge mysql-5.1",
+                        "name":"additional_gear_storage",
+                        "type":"integer",
+                        "valid_options":[
+
+                        ]
+                     },
+                     {
+                        "default_value":null,
+                        "description":"Minimum number of gears having cartridge mysql-5.1",
+                        "name":"scales_from",
+                        "type":"integer",
+                        "valid_options":[
+
+                        ]
+                     },
+                     {
+                        "default_value":null,
+                        "description":"Maximum number of gears having cartridge mysql-5.1",
+                        "name":"scales_to",
+                        "type":"integer",
+                        "valid_options":[
+
+                        ]
+                     }
+                  ],
+                  "rel":"Update cartridge configuration",
+                  "required_params":[
+
+                  ]
+               },
+               "START":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mysql-5.1/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Start embedded cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "start"
+                        ]
+                     }
+                  ]
+               },
+               "STOP":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mysql-5.1/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Stop cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "stop"
+                        ]
+                     }
+                  ]
+               },
+               "RESTART":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mysql-5.1/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Restart cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "restart"
+                        ]
+                     }
+                  ]
+               },
+               "RELOAD":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mysql-5.1/events",
+                  "method":"POST",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Reload cartridge",
+                  "required_params":[
+                     {
+                        "description":"event",
+                        "invalid_options":[
+
+                        ],
+                        "name":"event",
+                        "type":"string",
+                        "valid_options":[
+                           "reload"
+                        ]
+                     }
+                  ]
+               },
+               "DELETE":{
+                  "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/mysql-5.1",
+                  "method":"DELETE",
+                  "optional_params":[
+
+                  ],
+                  "rel":"Delete cartridge",
+                  "required_params":[
+
+                  ]
+               }
+            },
+            "name":"mysql-5.1",
+            "properties":[
+               {
+                  "name":"username",
+                  "type":"cart_data",
+                  "description":"Root user on mysql database",
+                  "value":"adminBFyZLQZ"
+               },
+               {
+                  "name":"password",
+                  "type":"cart_data",
+                  "description":"Password for root user on mysql database",
+                  "value":"pkMImy_mwUvL"
+               },
+               {
+                  "name":"database_name",
+                  "type":"cart_data",
+                  "description":"MySQL DB name",
+                  "value":"springeap6"
+               },
+               {
+                  "name":"connection_url",
+                  "type":"cart_data",
+                  "description":"MySQL DB connection URL",
+                  "value":"mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/"
+               }
+            ],
+            "scales_from":1,
+            "scales_to":1,
+            "scales_with":null,
+            "status_messages":null,
+            "supported_scales_from":1,
+            "supported_scales_to":1,
+            "tags":[
+               "service",
+               "database",
+               "embedded"
+            ],
+            "type":"embedded",
+            "url":null,
+            "usage_rates":[
+
+            ],
+            "version":"5.1",
+            "website":"http://www.mysql.com"
+         }
+      ],
+      "creation_time":"2013-09-20T21:28:53Z",
       "domain_id":"foobarz",
       "embedded":{
          "mongodb-2.2":{
             "connection_url":"mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/",
-            "username":"adietish",
-            "password":"NNxXMT1z8dVj",
+            "username":"admin",
+            "password":"VwFPWQEs1PEl",
             "database_name":"springeap6",
             "info":"Connection URL: mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/"
          },
          "mysql-5.1":{
-             "connection_url":"mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/",
-             "username":"admin",
-             "password":"adminnlqrBcW",
-             "database_name":"springeap6",
-             "info":"Connection URL: mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/"
-          }
+            "connection_url":"mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/",
+            "username":"adminBFyZLQZ",
+            "password":"pkMImy_mwUvL",
+            "database_name":"springeap6",
+            "info":"Connection URL: mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/"
+         }
       },
-      "framework":"jbosseap-6.0",
+      "framework":"jbosseap-6",
       "gear_count":1,
       "gear_profile":"small",
-      "git_url":"ssh://517ff8b9500446729b00008e@springeap6-foobarz.rhcloud.com/~/git/springeap6.git/",
+      "git_url":"ssh://523cbe15e0b8cd0a520001b6@springeap6-foobarz.rhcloud.com/~/git/springeap6.git/",
       "health_check_path":"health",
       "initial_git_url":"git://github.com/openshift/spring-eap6-quickstart.git",
       "links":{
@@ -208,7 +867,7 @@
                   "name":"alias",
                   "type":"string",
                   "valid_options":[
-                     "jbosstools.org"
+
                   ]
                }
             ]
@@ -339,8 +998,9 @@
                   "name":"colocate_with",
                   "type":"string",
                   "valid_options":[
-                     "jbosseap-6.0",
-                     "mongodb-2.2"
+                     "jbosseap-6",
+                     "mongodb-2.2",
+                     "mysql-5.1"
                   ]
                },
                {
@@ -369,29 +1029,39 @@
                   "valid_options":[
 
                   ]
+               },
+               {
+                  "default_value":null,
+                  "description":"Add or Update application environment variables, e.g.:[{'name':'FOO', 'value':'123'}, {'name':'BAR', 'value':'abc'}]",
+                  "name":"environment_variables",
+                  "type":"array",
+                  "valid_options":[
+
+                  ]
                }
             ],
             "rel":"Add embedded cartridge",
             "required_params":[
                {
-                  "description":"framework-type, e.g.: mongodb-2.0",
+                  "description":"framework-type, e.g.: mongodb-2.2",
                   "invalid_options":[
 
                   ],
                   "name":"name",
                   "type":"string",
                   "valid_options":[
-                     "mongodb-2.2",
-                     "switchyard-0.6",
                      "cron-1.4",
-                     "mysql-5.1",
-                     "postgresql-8.4",
-                     "haproxy-1.4",
-                     "10gen-mms-agent-0.1",
-                     "phpmyadmin-3.4",
-                     "metrics-0.1",
+                     "phpmyadmin-4",
                      "rockmongo-1.1",
-                     "jenkins-client-1.4"
+                     "switchyard-0",
+                     "metrics-0.1",
+                     "10gen-mms-agent-0.1",
+                     "mysql-5.1",
+                     "haproxy-1.4",
+                     "postgresql-9.2",
+                     "postgresql-8.4",
+                     "mongodb-2.2",
+                     "jenkins-client-1"
                   ]
                }
             ]
@@ -417,15 +1087,68 @@
             "required_params":[
 
             ]
+         },
+         "SET_UNSET_ENVIRONMENT_VARIABLES":{
+            "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/environment-variables",
+            "method":"POST",
+            "optional_params":[
+               {
+                  "default_value":null,
+                  "description":"Name of the environment variable to add/update",
+                  "name":"name",
+                  "type":"string",
+                  "valid_options":[
+
+                  ]
+               },
+               {
+                  "default_value":null,
+                  "description":"Value of the environment variable",
+                  "name":"value",
+                  "type":"string",
+                  "valid_options":[
+
+                  ]
+               },
+               {
+                  "default_value":null,
+                  "description":"Add/Update/Delete application environment variables, e.g. Add/Update: [{'name':'FOO', 'value':'123'}, {'name':'BAR', 'value':'abc'}], Delete: [{'name':'FOO'}, {'name':'BAR'}]",
+                  "name":"environment_variables",
+                  "type":"array",
+                  "valid_options":[
+
+                  ]
+               }
+            ],
+            "rel":"Add/Update/Delete one or more environment variables",
+            "required_params":[
+
+            ]
+         },
+         "LIST_ENVIRONMENT_VARIABLES":{
+            "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/environment-variables",
+            "method":"GET",
+            "optional_params":[
+
+            ],
+            "rel":"List all environment variables",
+            "required_params":[
+
+            ]
          }
       },
       "name":"springeap6",
       "scalable":false,
-      "ssh_url":"ssh://517ff8b9500446729b00008e@springeap6-foobarz.rhcloud.com",
-      "uuid":"517ff8b9500446729b00008e"
+      "ssh_url":"ssh://523cbe15e0b8cd0a520001b6@springeap6-foobarz.rhcloud.com",
+      "uuid":"523cbe15e0b8cd0a520001b6"
    },
    "messages":[
-
+      {
+         "exit_code":0,
+         "field":null,
+         "severity":"info",
+         "text":"Application 'springeap6' found"
+      }
    ],
    "status":"ok",
    "supported_api_versions":[
@@ -433,7 +1156,9 @@
       1.1,
       1.2,
       1.3,
-      1.4
+      1.4,
+      1.5,
+      1.6
    ],
    "type":"application",
    "version":"1.2"

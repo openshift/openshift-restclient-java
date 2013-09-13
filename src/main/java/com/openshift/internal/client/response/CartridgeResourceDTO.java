@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
+import java.net.URL;
 import java.util.Map;
 
 import com.openshift.client.Messages;
@@ -26,37 +27,20 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 	private String displayName;
 	private String description;
 	private final CartridgeType type;
-	private String url;
-	private ResourceProperties properties;
+	private URL url;
+	private CartridgeResourceProperties properties;
 
-	/**
-	 * Constructor used when a cartridge is constructed form the embedded
-	 * property within the application.
-	 * <p>
-	 * ex.
-	 * 
-	 * <pre>
-	 * "embedded":{
-	 *            "switchyard-0":{
-	 * 
-	 *           },
-	 * </pre>
-	 */
-	protected CartridgeResourceDTO(final String name, final CartridgeType type, final ResourceProperties properties) {
+	protected CartridgeResourceDTO(final String name, final CartridgeType type, final CartridgeResourceProperties properties) {
 		this(name, null, null, type, null, properties, null, null);
 	}
 
-	/**
-	 * Constructor used when a cartridge is constructed from the cartridges
-	 * ("<application>/cartridges") resource.
-	 */
 	protected CartridgeResourceDTO(final String name, final String displayName, final String description,
-			final String type, String url, ResourceProperties properties, final Map<String, Link> links, final Messages messages) {
+			final String type, URL url, CartridgeResourceProperties properties, final Map<String, Link> links, final Messages messages) {
 		this(name, displayName, description, CartridgeType.safeValueOf(type), url, properties, links, messages);
 	}
 
 	CartridgeResourceDTO(final String name, final String displayName, final String description,
-			final CartridgeType type, String url, ResourceProperties properties, final Map<String, Link> links,
+			final CartridgeType type, URL url, CartridgeResourceProperties properties, final Map<String, Link> links,
 			final Messages messages) {
 		super(links, messages);
 		this.name = name;
@@ -83,11 +67,11 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 		return type;
 	}
 
-	public String getUrl() {
+	public URL getUrl() {
 		return url;
 	}
 
-	public ResourceProperties getProperties() {
+	public CartridgeResourceProperties getProperties() {
 		return properties;
 	}
 

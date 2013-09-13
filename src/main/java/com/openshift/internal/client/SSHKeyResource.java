@@ -14,6 +14,7 @@ import com.openshift.client.IOpenShiftSSHKey;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftUnknonwSSHKeyTypeException;
 import com.openshift.client.SSHKeyType;
+import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.KeyResourceDTO;
 import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
@@ -90,10 +91,10 @@ public class SSHKeyResource extends AbstractOpenShiftResource implements IOpenSh
 			super("UPDATE");
 		}
 		
-		private KeyResourceDTO execute(SSHKeyType type, String publicKey) throws OpenShiftException {
+		protected KeyResourceDTO execute(SSHKeyType type, String publicKey) throws OpenShiftException {
 			return execute(
-					new RequestParameter(IOpenShiftJsonConstants.PROPERTY_CONTENT, publicKey), 
-					new RequestParameter(IOpenShiftJsonConstants.PROPERTY_TYPE, type.getTypeId()));
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_CONTENT, publicKey), 
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_TYPE, type.getTypeId()));
 		}
 	}
 
@@ -112,7 +113,7 @@ public class SSHKeyResource extends AbstractOpenShiftResource implements IOpenSh
 			super("DELETE");
 		}
 		
-		private void execute() throws OpenShiftException {
+		protected void execute() throws OpenShiftException {
 			super.execute();
 		}
 	}

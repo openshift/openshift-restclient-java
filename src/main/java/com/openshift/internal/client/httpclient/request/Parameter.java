@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2013 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -8,41 +8,30 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client;
-
-import java.io.IOException;
-import java.io.OutputStream;
-
-import com.openshift.internal.client.httpclient.IMediaType;
+package com.openshift.internal.client.httpclient.request;
 
 /**
  * A parameter wrapper to pass param key/values to the service when executing a
  * remote operation from a link.
  * 
- * @author Xavier Coulon
  * @author Andre Dietisheim
  * 
  */
-public class RequestParameter {
+public class Parameter extends ParameterValue<ParameterValue<?>> {
 
 	private final String name;
-	private final Object value;
 
-	public RequestParameter(final String name, final Object value) {
+	public Parameter(final String name, final String value) {
+		this(name, new StringValue(value));
+	}
+	
+	public Parameter(final String name, final ParameterValue<?> value) {
+		super(value);
 		this.name = name;
-		this.value = value;
 	}
 
 	public String getName() {
 		return name;
-	}
-
-	public Object getValue() {
-		return value;
-	}
-	
-	public void writeTo(OutputStream out, IMediaType mediaType) throws IOException {
-		mediaType.write(name, String.valueOf(value), out);
 	}
 
 	@Override
@@ -50,7 +39,7 @@ public class RequestParameter {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		result = prime * result + ((getValue() == null) ? 0 : getValue().hashCode());
 		return result;
 	}
 
@@ -62,26 +51,25 @@ public class RequestParameter {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		RequestParameter other = (RequestParameter) obj;
+		Parameter other = (Parameter) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (value == null) {
-			if (other.value != null)
+		if (getValue() == null) {
+			if (other.getValue() != null)
 				return false;
-		} else if (!value.equals(other.value))
+		} else if (!getValue().equals(other.getValue()))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "RequestParameter ["
-				+ "name=" + name 
-				+ ", value=" + value 
+		return "Parameter ["
+				+ "name=" + name
+				+ ", value=" + String.valueOf(getValue())
 				+ "]";
 	}
-
 }

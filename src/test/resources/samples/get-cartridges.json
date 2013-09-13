@@ -533,7 +533,7 @@
          },
          "license":"ASL 2.0",
          "license_url":"",
-         "name":"jbosseap-6.0",
+         "name":"jbosseap-6",
          "scales_from":1,
          "scales_to":-1,
          "scales_with":"haproxy-1.4",

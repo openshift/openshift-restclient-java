@@ -10,16 +10,15 @@
  ******************************************************************************/
 package com.openshift.internal.client.httpclient;
 
-import com.openshift.client.OpenShiftException;
 
 /**
  * @author Ioannis Canellos
  */
-public class EncodingException extends OpenShiftException {
+public class EncodingException extends HttpClientException {
 
 	private static final long serialVersionUID = 1L;
 
-	public EncodingException(String message, Object... arguments) {
-		super(message, arguments);
+	public EncodingException(String message, Throwable t) {
+		super(message, t);
 	}
 }

@@ -19,11 +19,11 @@ import java.net.URL;
 import com.openshift.client.HttpMethod;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
-import com.openshift.internal.client.RequestParameter;
-import com.openshift.internal.client.httpclient.FormUrlEncodedMediaType;
 import com.openshift.internal.client.httpclient.HttpClientException;
-import com.openshift.internal.client.httpclient.IMediaType;
 import com.openshift.internal.client.httpclient.UrlConnectionHttpClient;
+import com.openshift.internal.client.httpclient.request.IMediaType;
+import com.openshift.internal.client.httpclient.request.Parameter;
+import com.openshift.internal.client.httpclient.request.ParameterValueMap;
 
 /**
  * @author Andre Dietisheim
@@ -35,31 +35,26 @@ public class PayLoadReturningHttpClientFake extends UrlConnectionHttpClient {
 			OpenShiftException {
 		this(new OpenShiftTestConfiguration(), mediaType, version);
 	}
-	
+
 	protected PayLoadReturningHttpClientFake(OpenShiftTestConfiguration configuration, String mediaType, String version) {
 		super(configuration.getRhlogin(),
 				configuration.getPassword(),
 				configuration.getClientId(),
 				false,
-				new FormUrlEncodedMediaType(),
 				mediaType,
 				version);
 	}
 
 	@Override
-	protected String request(HttpMethod httpMethod, URL url, IMediaType mediaType, int timeout, RequestParameter... parameters)
+	protected String request(HttpMethod httpMethod, URL url, IMediaType mediaType, int timeout, Parameter... parameters)
 			throws SocketTimeoutException, HttpClientException {
-		try {
-			if (parameters == null
-					|| parameters.length == 0) {
-				return null;
-			}
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			getMediaType().write(parameters, out);
-			return out.toString();
-		} catch (IOException e) {
-			throw new HttpClientException(e);
+		if (parameters == null
+				|| parameters.length == 0) {
+			return null;
 		}
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		mediaType.writeTo(new ParameterValueMap(parameters), out);
+		return out.toString();
 	}
 
 }

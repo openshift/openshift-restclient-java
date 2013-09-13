@@ -20,7 +20,7 @@
          "license_url":"",
          "links":{
             "GET":{
-               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6.0",
+               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6",
                "method":"GET",
                "optional_params":[
 
@@ -31,12 +31,12 @@
                ]
             },
             "UPDATE":{
-               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6.0",
+               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6",
                "method":"PUT",
                "optional_params":[
                   {
                      "default_value":null,
-                     "description":"Additional filesystem storage in gigabytes on each gear having cartridge jbosseap-6.0",
+                     "description":"Additional filesystem storage in gigabytes on each gear having cartridge jbosseap-6",
                      "name":"additional_gear_storage",
                      "type":"integer",
                      "valid_options":[
@@ -45,7 +45,7 @@
                   },
                   {
                      "default_value":null,
-                     "description":"Minimum number of gears having cartridge jbosseap-6.0",
+                     "description":"Minimum number of gears having cartridge jbosseap-6",
                      "name":"scales_from",
                      "type":"integer",
                      "valid_options":[
@@ -54,7 +54,7 @@
                   },
                   {
                      "default_value":null,
-                     "description":"Maximum number of gears having cartridge jbosseap-6.0",
+                     "description":"Maximum number of gears having cartridge jbosseap-6",
                      "name":"scales_to",
                      "type":"integer",
                      "valid_options":[
@@ -68,7 +68,7 @@
                ]
             },
             "START":{
-               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6.0/events",
+               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6/events",
                "method":"POST",
                "optional_params":[
 
@@ -89,7 +89,7 @@
                ]
             },
             "STOP":{
-               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6.0/events",
+               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6/events",
                "method":"POST",
                "optional_params":[
 
@@ -110,7 +110,7 @@
                ]
             },
             "RESTART":{
-               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6.0/events",
+               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6/events",
                "method":"POST",
                "optional_params":[
 
@@ -131,7 +131,7 @@
                ]
             },
             "RELOAD":{
-               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6.0/events",
+               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6/events",
                "method":"POST",
                "optional_params":[
 
@@ -152,7 +152,7 @@
                ]
             },
             "DELETE":{
-               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6.0",
+               "href":"https://openshift.redhat.com/broker/rest/domains/foobarz/applications/springeap6/cartridges/jbosseap-6",
                "method":"DELETE",
                "optional_params":[
 
@@ -163,7 +163,7 @@
                ]
             }
          },
-         "name":"jbosseap-6.0",
+         "name":"jbosseap-6",
          "properties":[
             {
                "name":"OPENSHIFT_JBOSSEAP_LOG_DIR",
@@ -246,7 +246,7 @@
          "additional_gear_storage":0,
          "base_gear_storage":1,
          "collocated_with":[
-            "jbosseap-6.0",
+            "jbosseap-6",
             "mysql-5.1"
          ],
          "current_scale":1,
@@ -455,7 +455,7 @@
          "additional_gear_storage":0,
          "base_gear_storage":1,
          "collocated_with":[
-            "jbosseap-6.0",
+            "jbosseap-6",
             "mongodb-2.2"
          ],
          "current_scale":1,

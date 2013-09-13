@@ -10,6 +10,11 @@
  ******************************************************************************/
 package com.openshift.client.cartridge;
 
+import java.net.URL;
+
+import com.openshift.internal.client.APIResource;
+import com.openshift.internal.client.cartridge.BaseCartridge;
+
 /**
  * An cartridge that may be embedded (added) into an application. Add-on
  * cartridge is an equivalent name for embedded cartridge.
@@ -25,19 +30,23 @@ public class EmbeddableCartridge extends BaseCartridge implements IEmbeddableCar
 		super(name);
 	}
 
-	public EmbeddableCartridge(final String name, String version) {
-		super(name, version);
+	public EmbeddableCartridge(final URL url) {
+		super(null, url);
 	}
 
+	public EmbeddableCartridge(final String name, final URL url) {
+		super(name, url);
+	}
+
+	/**
+	 * Constructor used when available cartridges are loaded from OpenShift
+	 * 
+	 * @see APIResource#getEmbeddableCartridges()
+	 */
 	public EmbeddableCartridge(final String name, String displayName, String description) {
 		super(name, displayName, description);
 	}
 
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object) equals support comparison
-	 *      between EmbeddedCartridges and EmbeddableCartridges (ie, removed
-	 *      'class' comparison from generated equals() implementation)
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -50,6 +59,16 @@ public class EmbeddableCartridge extends BaseCartridge implements IEmbeddableCar
 			return false;
 		}
 		IEmbeddableCartridge other = (IEmbeddableCartridge) obj;
+		// shortcut: downloadable cartridges get their name only when
+		// they're deployed thus should equal on url only
+		if (isDownloadable()) {
+			if (other.isDownloadable()) {
+				if (getUrl() == null) {
+					return other.getUrl() == null;
+				}
+				return getUrl().equals(other.getUrl());
+			}
+		}
 		if (getName() == null) {
 			if (other.getName() != null) {
 				return false;
@@ -58,13 +77,6 @@ public class EmbeddableCartridge extends BaseCartridge implements IEmbeddableCar
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "EmbeddableCartridge [" +
-				"name=" + getName() +
-				"]";
 	}
 
 }

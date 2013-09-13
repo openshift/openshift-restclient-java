@@ -10,10 +10,12 @@
  ******************************************************************************/
 package com.openshift.client.cartridge;
 
+import java.net.URL;
+
 import com.openshift.client.IApplication;
 import com.openshift.client.IOpenShiftResource;
 import com.openshift.client.OpenShiftException;
-import com.openshift.internal.client.response.ResourceProperties;
+import com.openshift.internal.client.response.CartridgeResourceProperties;
 
 /**
  * Interface to designate a cartridge that has been added and configured
@@ -27,7 +29,7 @@ public interface IEmbeddedCartridge extends IOpenShiftResource, IEmbeddableCartr
 	 * @return the url for this cartridge
 	 * @throws OpenShiftException
 	 */
-	public String getUrl() throws OpenShiftException;
+	public URL getUrl() throws OpenShiftException;
 	
 	/**
 	 * Destroys this cartridge (and removes it from the list of existing cartridges)
@@ -49,5 +51,5 @@ public interface IEmbeddedCartridge extends IOpenShiftResource, IEmbeddableCartr
 	 * 
 	 * @return the resource properties
 	 */
-	public ResourceProperties getProperties();
+	public CartridgeResourceProperties getProperties();
 }

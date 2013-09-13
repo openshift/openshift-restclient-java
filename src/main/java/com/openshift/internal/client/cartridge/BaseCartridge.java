@@ -8,68 +8,77 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.client.cartridge;
+package com.openshift.internal.client.cartridge;
 
-import java.util.regex.Pattern;
+import java.net.URL;
+
+import com.openshift.client.cartridge.EmbeddableCartridge;
+import com.openshift.client.cartridge.ICartridge;
+import com.openshift.client.cartridge.StandaloneCartridge;
 
 /**
- * A (base) cartridge for an OpenShift application. 
+ * A (base) cartridge for an OpenShift application.
  * 
  * @author Andre Dietisheim
  * 
- * @see EmbeddableCartridge 
+ * @see EmbeddableCartridge
  * @see StandaloneCartridge
  */
 public abstract class BaseCartridge implements ICartridge {
 
-	private static final Pattern CARTRIDGE_URL_PATTERN = Pattern.compile("https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
-
 	private final String name;
 	private String displayName;
 	private String description;
-	private String url;
+	private URL url;
 
 	protected BaseCartridge(final String name) {
-		this(name, null, null);
+		this(name, null, null, null);
 	}
 
-	protected BaseCartridge(final String name, String version) {
-		this(name + NAME_VERSION_DELIMITER + version, null, null);
+	protected BaseCartridge(final URL url) {
+		this(null, url, null, null);
+	}
+
+	protected BaseCartridge(final String name, URL url) {
+		this(name, url, null, null);
 	}
 
 	protected BaseCartridge(final String name, String displayName, String description) {
+		this(name, null, description, displayName);
+	}
+
+	protected BaseCartridge(final String name, URL url, String displayName, String description) {
 		this.name = name;
-		if (isUrl(name)) {
-			this.url = name;
-		}
+		this.url = url;
 		this.displayName = displayName;
 		this.description = description;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public String getDisplayName() {
 		return displayName;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public boolean isDownloadable() {
 		return url != null;
 	}
-	
-	public String getUrl() {
+
+	@Override
+	public URL getUrl() {
 		return url;
 	}
-	
-	private boolean isUrl(String url) {
-		return CARTRIDGE_URL_PATTERN.matcher(url).matches();
-	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -80,25 +89,44 @@ public abstract class BaseCartridge implements ICartridge {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (!(obj instanceof BaseCartridge)) {
 			return false;
+		}
+
 		BaseCartridge other = (BaseCartridge) obj;
-		if (name == null) {
-			if (other.name != null)
+		// shortcut: downloadable cartridges get their name only when
+		// they're deployed thus should equal on url only
+		if (isDownloadable()) {
+			if (other.isDownloadable()) {
+				if (getUrl() == null) {
+					return other.getUrl() == null;
+				}
+				return getUrl().equals(other.getUrl());
+			}
+		}
+		if (getName() == null) {
+			if (other.getName() != null) {
 				return false;
-		} else if (!name.equals(other.name))
+			}
+		} else if (!getName().equals(other.getName())) {
 			return false;
+		}
 		return true;
 	}
 
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "[ "
-				+ "name=" + name  
+				+ "name=" + name
+				+ ", url=" + url
+				+ ", displayName = " + displayName
+				+ ", description=" + description
 				+ " ]";
 	}
 

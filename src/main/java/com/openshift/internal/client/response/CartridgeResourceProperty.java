@@ -14,7 +14,7 @@ package com.openshift.internal.client.response;
 /**
  * @author Andre Dietisheim
  */
-public class ResourceProperty {
+public class CartridgeResourceProperty {
 
 	private String name;
 	private String type;
@@ -34,7 +34,7 @@ public class ResourceProperty {
 	 * 
 	 * <pre>
 	 */
-	protected ResourceProperty(String name, String value) {
+	protected CartridgeResourceProperty(String name, String value) {
 		this(name, null, null, value);
 	}
 	
@@ -54,7 +54,7 @@ public class ResourceProperty {
 	 * }
 	 * <pre>
 	 */
-	protected ResourceProperty(String name, String type, String description, String value) {
+	protected CartridgeResourceProperty(String name, String type, String description, String value) {
 		this.name = name;
 		this.type = type;
 		this.description = description;

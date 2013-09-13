@@ -10,7 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.RequestParametersMatcher.eq;
+import static com.openshift.client.utils.ParametersMatcher.eq;
 import static com.openshift.client.utils.UrlEndsWithMatcher.urlEndsWith;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -19,6 +19,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -26,11 +28,16 @@ import java.net.URL;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
+import com.openshift.client.IDomain;
 import com.openshift.client.IHttpClient;
+import com.openshift.client.IUser;
+import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.Samples;
+import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.EncodingException;
 import com.openshift.internal.client.httpclient.HttpClientException;
-import com.openshift.internal.client.httpclient.IMediaType;
+import com.openshift.internal.client.httpclient.request.IMediaType;
+import com.openshift.internal.client.httpclient.request.Parameter;
 
 /**
  * @author Andre Dietisheim
@@ -46,16 +53,6 @@ public class HttpClientMockDirector {
 				.mockGetUser(Samples.GET_USER);
 	}
 	
-//	public HttpClientMockDirector mockUserAgent(String userAgent) throws SocketTimeoutException, HttpClientException {
-//		when(client.getUserAgent()).thenReturn(userAgent);
-//		return this;
-//	}
-
-//    public HttpClientMockDirector mockMediaType(IMediaType mediaType) throws SocketTimeoutException, HttpClientException {
-//        when(client.getRequestMediaType()).thenReturn(mediaType);
-//        return this;
-//    }
-
 	public HttpClientMockDirector mockGetAny(String response) throws SocketTimeoutException, HttpClientException {
 		when(client.get(any(URL.class), anyInt())).thenReturn(response);
 		return this;
@@ -73,28 +70,28 @@ public class HttpClientMockDirector {
 
 	public HttpClientMockDirector mockPostAny(String jsonResponse)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		when(client.post(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg()))
+		when(client.post(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(jsonResponse);
 		return this;
 	}
 
 	public HttpClientMockDirector mockPostAny(Exception exception)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		when(client.post(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg()))
+		when(client.post(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
 				.thenThrow(exception);
 		return this;
 	}
 
 	public HttpClientMockDirector mockPutAny(String jsonResponse)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		when(client.put(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg()))
+		when(client.put(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(jsonResponse);
 		return this;
 	}
 
 	public HttpClientMockDirector mockDeleteAny(String jsonResponse)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		when(client.delete(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg()))
+		when(client.delete(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(jsonResponse);
 		return this;
 	}
@@ -137,17 +134,17 @@ public class HttpClientMockDirector {
 		when(client.post(
 				urlEndsWith("/user/keys"),
 				any(IMediaType.class), anyInt(),
-				Matchers.<RequestParameter[]>anyVararg()))
+				Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(createKeyRequestResponse.getContentAsString());
 		return this;
 	}
 
-	public HttpClientMockDirector mockUpdateKey(String keyName, Samples updateKeyRequestResponse, RequestParameter... parameters) 
+	public HttpClientMockDirector mockUpdateKey(String keyName, Samples updateKeyRequestResponse, Parameter... parameters) 
 			throws SocketTimeoutException, HttpClientException, EncodingException {
 		when(client.put(
 				urlEndsWith("/user/keys/" + keyName),
 				any(IMediaType.class), anyInt(),
-				Matchers.<RequestParameter[]>anyVararg()))
+				Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(updateKeyRequestResponse.getContentAsString());
 		return this;
 	}
@@ -161,28 +158,28 @@ public class HttpClientMockDirector {
 
 	public HttpClientMockDirector mockCreateDomain(Samples domainResourceResponse)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		when(client.post(urlEndsWith("/domains"), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg()))
+		when(client.post(urlEndsWith("/domains"), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(domainResourceResponse.getContentAsString());
 		return this;
 	}
 
 	public HttpClientMockDirector mockDeleteDomain(String domainId, Samples deleteDomainResourceResponse)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		when(client.delete(urlEndsWith("/domains/" + domainId), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg()))
+		when(client.delete(urlEndsWith("/domains/" + domainId), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(deleteDomainResourceResponse.getContentAsString());
 		return this;
 	}
 
 	public HttpClientMockDirector mockDeleteDomain(String domainId, Exception exception)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		when(client.delete(urlEndsWith("/domains/" + domainId), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg()))
+		when(client.delete(urlEndsWith("/domains/" + domainId), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
 				.thenThrow(exception);
 		return this;
 	}
 
 	public HttpClientMockDirector mockRenameDomain(String domainId, Samples getDomainsResourceResponse)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		when(client.put(urlEndsWith("/domains/" + domainId), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg()))
+		when(client.put(urlEndsWith("/domains/" + domainId), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(getDomainsResourceResponse.getContentAsString());
 		return this;
 	}
@@ -197,14 +194,14 @@ public class HttpClientMockDirector {
 
 	public HttpClientMockDirector mockGetApplications(String domainId, Samples applicationsResourceResponse)
 			throws SocketTimeoutException, HttpClientException {
-		when(client.get(urlEndsWith("/domains/" + domainId + "/applications"), anyInt()))
+		when(client.get(urlEndsWith("/domains/" + domainId + "/applications?include=cartridges"), anyInt()))
 				.thenReturn(applicationsResourceResponse.getContentAsString());
 		return this;
 	}
 
 	public HttpClientMockDirector mockGetApplications(String domainId, Exception exception)
 			throws SocketTimeoutException, HttpClientException {
-		when(client.get(urlEndsWith("/domains/" + domainId + "/applications"), anyInt()))
+		when(client.get(urlEndsWith("/domains/" + domainId + "/applications?include=cartridges"), anyInt()))
 				.thenThrow(exception);
 		return this;
 	}
@@ -212,7 +209,7 @@ public class HttpClientMockDirector {
 	public HttpClientMockDirector mockCreateApplication(String domainId, Samples postDomainsResourceResponse)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
 		when(client.post(
-				urlEndsWith("/domains/" + domainId + "/applications"), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg()))
+				urlEndsWith("/domains/" + domainId + "/applications?include=cartridges"), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(postDomainsResourceResponse.getContentAsString());
 		return this;
 	}
@@ -223,7 +220,7 @@ public class HttpClientMockDirector {
 		when(client.post(
 				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/events"),
 				any(IMediaType.class), anyInt(),
-				Matchers.<RequestParameter[]>anyVararg()))
+				Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(postApplicationEvent.getContentAsString());
 		return this;
 	}
@@ -261,7 +258,7 @@ public class HttpClientMockDirector {
 		when(client.post(
 				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/events"),
 				any(IMediaType.class), anyInt(),
-				Matchers.<RequestParameter[]>anyVararg()))
+				Matchers.<Parameter[]>anyVararg()))
 				.thenThrow(exception);
 		return this;
 	}
@@ -272,7 +269,7 @@ public class HttpClientMockDirector {
 		when(client.post(
 				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/cartridges"),
 				any(IMediaType.class), anyInt(),
-				Matchers.<RequestParameter[]>anyVararg()))
+				Matchers.<Parameter[]>anyVararg()))
 				.thenReturn(addEmbeddedCartridgeResponse.getContentAsString());
 		return this;
 	}
@@ -283,7 +280,7 @@ public class HttpClientMockDirector {
 		when(client.post(
 				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/cartridges"),
 				any(IMediaType.class), anyInt(), 
-				Matchers.<RequestParameter[]>anyVararg()))
+				Matchers.<Parameter[]>anyVararg()))
 				.thenThrow(exception);
 		return this;
 	}
@@ -296,7 +293,7 @@ public class HttpClientMockDirector {
 				urlEndsWith(
 				"/domains/" + domainId + "/applications/" + applicationName + "/cartridges/" + cartridgeName),
 				any(IMediaType.class), anyInt(),
-				Matchers.<RequestParameter[]>anyVararg()))
+				Matchers.<Parameter[]>anyVararg()))
 				.thenThrow(exception);
 		return this;
 	}
@@ -306,7 +303,7 @@ public class HttpClientMockDirector {
 		verify(client, times(1)).post(
 				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/events"),
 				any(IMediaType.class), anyInt(),
-				Matchers.<RequestParameter[]>anyVararg());
+				Matchers.<Parameter[]>anyVararg());
 		return this;
 	}
 
@@ -332,7 +329,7 @@ public class HttpClientMockDirector {
 		verify(client, times(1)).post(
 				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/cartridges"),
 				any(IMediaType.class), anyInt(),
-				Matchers.<RequestParameter[]>anyVararg());
+				Matchers.<Parameter[]>anyVararg());
 		return this;
 	}
 
@@ -343,7 +340,7 @@ public class HttpClientMockDirector {
 				urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/cartridges/"
 						+ cartridgeName),
 				any(IMediaType.class), anyInt(),
-				Matchers.<RequestParameter[]>anyVararg());
+				Matchers.<Parameter[]>anyVararg());
 		return this;
 	}
 
@@ -360,11 +357,11 @@ public class HttpClientMockDirector {
 
 	public HttpClientMockDirector verifyPostAny(int times)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		verify(client, times(times)).post(any(URL.class), any(IMediaType.class), anyInt(),Matchers.<RequestParameter[]>anyVararg());
+		verify(client, times(times)).post(any(URL.class), any(IMediaType.class), anyInt(),Matchers.<Parameter[]>anyVararg());
 		return this;
 	}
 
-	public HttpClientMockDirector verifyPost(RequestParameter... parameters)
+	public HttpClientMockDirector verifyPost(Parameter... parameters)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
 		verify(client).post(any(URL.class), any(IMediaType.class), anyInt(), eq(parameters));
 		return this;
@@ -372,31 +369,31 @@ public class HttpClientMockDirector {
 
 	public HttpClientMockDirector verifyPost(String url, int times)
 			throws SocketTimeoutException, HttpClientException, EncodingException, MalformedURLException {
-		verify(client, times(times)).post(new URL(url), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg());
+		verify(client, times(times)).post(new URL(url), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg());
 		return this;
 	}
 
 	public HttpClientMockDirector verifyPutAny(int times)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		verify(client, times(times)).put(any(URL.class), any(IMediaType.class), anyInt(),Matchers.<RequestParameter[]>anyVararg());
+		verify(client, times(times)).put(any(URL.class), any(IMediaType.class), anyInt(),Matchers.<Parameter[]>anyVararg());
 		return this;
 	}
 
 	public HttpClientMockDirector verifyPut(String url, int times)
 			throws SocketTimeoutException, HttpClientException, EncodingException, MalformedURLException {
-		verify(client, times(times)).put(new URL(url), any(IMediaType.class), anyInt(),Matchers.<RequestParameter[]>anyVararg());
+		verify(client, times(times)).put(new URL(url), any(IMediaType.class), anyInt(),Matchers.<Parameter[]>anyVararg());
 		return this;
 	}
 
 	public HttpClientMockDirector verifyDeleteAny(int times)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		verify(client, times(times)).delete(any(URL.class), any(IMediaType.class), anyInt(),Matchers.<RequestParameter[]>anyVararg());
+		verify(client, times(times)).delete(any(URL.class), any(IMediaType.class), anyInt(),Matchers.<Parameter[]>anyVararg());
 		return this;
 	}
 
 	public HttpClientMockDirector verifyDelete(String url, int times)
 			throws SocketTimeoutException, HttpClientException, EncodingException, MalformedURLException {
-		verify(client, times(times)).delete(new URL(url), any(IMediaType.class), anyInt(), Matchers.<RequestParameter[]>anyVararg());
+		verify(client, times(times)).delete(new URL(url), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg());
 		return this;
 	}
 
@@ -407,7 +404,7 @@ public class HttpClientMockDirector {
 
 	public HttpClientMockDirector verifyRenameDomain(String domainId)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
-		verify(client, times(1)).put(urlEndsWith(domainId), any(IMediaType.class), anyInt(),Matchers.<RequestParameter[]>anyVararg());
+		verify(client, times(1)).put(urlEndsWith(domainId), any(IMediaType.class), anyInt(),Matchers.<Parameter[]>anyVararg());
 		return this;
 	}
 
@@ -418,7 +415,7 @@ public class HttpClientMockDirector {
 
 	public HttpClientMockDirector verifyGetApplications(String domainId, int times)
 			throws SocketTimeoutException, HttpClientException {
-		verify(client, times(times)).get(urlEndsWith("/domains/" + domainId + "/applications"), anyInt());
+		verify(client, times(times)).get(urlEndsWith("/domains/" + domainId + "/applications?include=cartridges"), anyInt());
 		return this;
 	}
 
@@ -432,28 +429,33 @@ public class HttpClientMockDirector {
 		return this;
 	}
 
-	public HttpClientMockDirector verifyCreateKey(RequestParameter... parameters)
+	public HttpClientMockDirector verifyCreateKey(Parameter... parameters)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
 		verify(client).post(
 				urlEndsWith("/user/keys"), any(IMediaType.class), anyInt(), eq(parameters));
 		return this;
 	}
 
-	public HttpClientMockDirector verifyUpdateKey(String keyName, RequestParameter... parameters)
+	public HttpClientMockDirector verifyUpdateKey(String keyName, Parameter... parameters)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
 		verify(client).put(
 				urlEndsWith("/user/keys/" + keyName), any(IMediaType.class), anyInt(), eq(parameters));
 		return this;
 	}
 
-	public HttpClientMockDirector verifyCreateApplication(String domainId, int timeout, RequestParameter... parameters)
+	public HttpClientMockDirector verifyCreateApplication(String domainId, int timeout, Parameter... parameters)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
 		verify(client).post(
-				urlEndsWith("/domains/" + domainId + "/applications"), any(IMediaType.class), eq(timeout), eq(parameters));
+				urlEndsWith("/domains/" + domainId + "/applications?include=cartridges"), any(IMediaType.class), eq(timeout), eq(parameters));
 		return this;
 	}
 
 	public IHttpClient client() {
 		return client;
+	}
+
+	public IDomain getDomain(String string) throws OpenShiftException, FileNotFoundException, IOException {
+		IUser user = new TestConnectionFactory().getConnection(client).getUser();
+		return user.getDomain("foobarz");
 	}
 }

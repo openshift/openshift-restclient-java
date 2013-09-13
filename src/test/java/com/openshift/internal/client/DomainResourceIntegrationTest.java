@@ -37,6 +37,7 @@ import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.selector.LatestVersionOf;
 import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
+import com.openshift.client.utils.Cartridges;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.StringUtils;
@@ -49,7 +50,9 @@ public class DomainResourceIntegrationTest {
 
 	private static final String QUICKSTART_REVEALJS_GITURL = "git://github.com/openshift-quickstart/reveal.js-openshift-quickstart.git";
 	private static final String REVEALJS_INDEX = "revealjs.html";
-	
+
+	private static final int CREATE_TIMEOUT = 5 * 60 * 1000;
+
 	private IUser user;
 	private IDomain domain;
 
@@ -208,7 +211,7 @@ public class DomainResourceIntegrationTest {
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
 				.hasNoInitialGitUrl()
-				.hasEmbeddableCartridges()
+				.hasEmbeddedCartridges()
 				.hasAlias();
 	}
 	
@@ -232,7 +235,7 @@ public class DomainResourceIntegrationTest {
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
 				.hasNoInitialGitUrl()
-				.hasEmbeddableCartridges()
+				.hasEmbeddedCartridges()
 				.hasAlias();
 	}
 
@@ -257,7 +260,7 @@ public class DomainResourceIntegrationTest {
 				.hasCartridge(php)
 				.hasValidApplicationUrl()
 				.hasInitialGitUrl(QUICKSTART_REVEALJS_GITURL)
-				.hasEmbeddableCartridges()
+				.hasEmbeddedCartridges()
 				.hasAlias()
 				.hasContent(REVEALJS_INDEX, "Reveal.js");
 	}
@@ -283,7 +286,7 @@ public class DomainResourceIntegrationTest {
 				.hasCreationTime()
 				.hasCartridge(php)
 				.hasValidApplicationUrl()
-				.hasEmbeddableCartridges(mySql.getName())
+				.hasEmbeddedCartridgeNames(mySql.getName())
 				.hasAlias();
 	}
 
@@ -334,9 +337,58 @@ public class DomainResourceIntegrationTest {
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
 				.hasNoInitialGitUrl()
-				.hasEmbeddableCartridges()
+				.hasEmbeddedCartridges()
 				.hasAlias();
 	}
+	
+    @Test
+    public void shouldCreateApplicationWithDownloadableCartridge() throws Throwable {    	
+        // pre-conditions
+		ApplicationTestUtils.destroyAllApplications(domain);
+		String applicationName =
+				ApplicationTestUtils.createRandomApplicationName();
+
+        // operation
+		final IApplication app = domain.createApplication(
+				applicationName, Cartridges.go11(), ApplicationScale.NO_SCALE, IGearProfile.SMALL, null, CREATE_TIMEOUT);
+
+        // verifications
+        new ApplicationAssert(app)
+        	.hasName(applicationName)
+        	.hasGearProfile(IGearProfile.SMALL)
+        	.hasCreationTime()
+        	.hasUUID()
+			.hasValidApplicationUrl()
+			.hasValidGitUrl()
+        	.hasCartridge(Cartridges.go11())
+        	.hasEmbeddableCartridges(0);
+    }
+
+    @Test
+    public void shouldCreateApplicationWithJBossAsAndDownloadableCartridge() throws Throwable {    	
+        // pre-conditions
+		ApplicationTestUtils.destroyAllApplications(domain);
+		String applicationName =
+				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jbossAs = LatestVersionOf.jbossAs().get(user);
+
+        // operation
+ 		final IApplication app = domain.createApplication(
+				applicationName, jbossAs, ApplicationScale.NO_SCALE, IGearProfile.SMALL, null, CREATE_TIMEOUT, 
+				Cartridges.foreman063());
+
+        // verifications
+        new ApplicationAssert(app)
+        	.hasName(applicationName)
+        	.hasGearProfile(IGearProfile.SMALL)
+        	.hasCreationTime()
+        	.hasUUID()
+			.hasValidApplicationUrl()
+			.hasValidGitUrl()
+        	.hasCartridge(jbossAs)
+        	.hasEmbeddedCartridge(Cartridges.foreman063());
+    }
+
 	
 	@Test
 	public void shouldHaveCredentialsInMessage() throws Exception {

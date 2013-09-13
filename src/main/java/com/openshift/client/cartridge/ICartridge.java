@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.client.cartridge;
 
+import java.net.URL;
+
 /**
  * @author André Dietisheim
  */
@@ -64,7 +66,7 @@ public interface ICartridge {
 	 * 
 	 * @see #isDownloadable()
 	 */
-	public String getUrl();
+	public URL getUrl();
 
 
 }

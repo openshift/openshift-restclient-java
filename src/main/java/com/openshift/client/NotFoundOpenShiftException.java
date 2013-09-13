@@ -11,6 +11,7 @@
 package com.openshift.client;
 
 import com.openshift.internal.client.httpclient.HttpClientException;
+import com.openshift.internal.client.response.RestResponse;
 
 /**
  * @author André Dietisheim
@@ -19,7 +20,7 @@ public class NotFoundOpenShiftException extends OpenShiftEndpointException {
 
 	private static final long serialVersionUID = 1L;
 
-	public  NotFoundOpenShiftException(String url, HttpClientException e) throws OpenShiftException {
-		super(url, e, e.getMessage(), "Could not find any OpenShift resource at \"{0}\"", url);
+	public  NotFoundOpenShiftException(String url, HttpClientException e, RestResponse restResponse) throws OpenShiftException {
+		super(url, e, restResponse, "Could not find any OpenShift resource at \"{0}\"", url);
 	}
 }

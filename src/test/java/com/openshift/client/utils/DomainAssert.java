@@ -10,10 +10,12 @@
  ******************************************************************************/
 package com.openshift.client.utils;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import org.fest.assertions.AssertExtension;
 
+import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.OpenShiftException;
 
@@ -38,4 +40,13 @@ public class DomainAssert implements AssertExtension {
 		return this;
 	}
 
+	public DomainAssert hasApplications(int size) {
+		assertThat(domain.getApplications()).hasSize(size);
+		return this;
+	}
+	
+	public DomainAssert hasApplications(IApplication... applications) {
+		assertThat(domain.getApplications()).contains(applications);
+		return this;
+	}
 }
