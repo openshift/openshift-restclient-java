@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2013 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -8,32 +8,40 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client;
+package com.openshift.client.cartridge;
 
-import com.openshift.client.cartridge.IStandaloneCartridge;
+import java.util.regex.Pattern;
 
 /**
- * A cartridge that is available on the openshift server. This class is no enum
- * since we dont know all available types and they may change at any time.
+ * A (base) cartridge for an OpenShift application. 
  * 
- * @author André Dietisheim
+ * @author Andre Dietisheim
+ * 
+ * @see EmbeddableCartridge 
+ * @see StandaloneCartridge
  */
-public class StandaloneCartridge implements IStandaloneCartridge {
+public abstract class BaseCartridge implements ICartridge {
+
+	private static final Pattern CARTRIDGE_URL_PATTERN = Pattern.compile("https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 
 	private final String name;
 	private String displayName;
 	private String description;
+	private String url;
 
-	public StandaloneCartridge(String name) {
+	protected BaseCartridge(final String name) {
 		this(name, null, null);
 	}
 
-	public StandaloneCartridge(String name, String version) {
+	protected BaseCartridge(final String name, String version) {
 		this(name + NAME_VERSION_DELIMITER + version, null, null);
 	}
 
-	public StandaloneCartridge(String name, String displayName, String description) {
+	protected BaseCartridge(final String name, String displayName, String description) {
 		this.name = name;
+		if (isUrl(name)) {
+			this.url = name;
+		}
 		this.displayName = displayName;
 		this.description = description;
 	}
@@ -50,6 +58,19 @@ public class StandaloneCartridge implements IStandaloneCartridge {
 		return description;
 	}
 
+	public boolean isDownloadable() {
+		return url != null;
+	}
+	
+	public String getUrl() {
+		return url;
+	}
+	
+	private boolean isUrl(String url) {
+		return CARTRIDGE_URL_PATTERN.matcher(url).matches();
+	}
+	
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -57,6 +78,7 @@ public class StandaloneCartridge implements IStandaloneCartridge {
 		return result;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -64,7 +86,7 @@ public class StandaloneCartridge implements IStandaloneCartridge {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		StandaloneCartridge other = (StandaloneCartridge) obj;
+		BaseCartridge other = (BaseCartridge) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;
@@ -73,9 +95,11 @@ public class StandaloneCartridge implements IStandaloneCartridge {
 		return true;
 	}
 
+	@Override
 	public String toString() {
-		return "StandaloneCartridge [ "
-				+ "name=" + name
+		return getClass().getSimpleName() + "[ "
+				+ "name=" + name  
 				+ " ]";
 	}
+
 }

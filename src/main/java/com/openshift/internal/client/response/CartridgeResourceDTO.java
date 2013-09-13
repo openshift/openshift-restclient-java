@@ -23,9 +23,10 @@ import com.openshift.internal.client.CartridgeType;
 public class CartridgeResourceDTO extends BaseResourceDTO {
 
 	private final String name;
-	private final CartridgeType type;
 	private String displayName;
 	private String description;
+	private final CartridgeType type;
+	private String url;
 	private ResourceProperties properties;
 
 	/**
@@ -42,7 +43,7 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 	 * </pre>
 	 */
 	protected CartridgeResourceDTO(final String name, final CartridgeType type, final ResourceProperties properties) {
-		this(name, null, null, type, properties, null, null);
+		this(name, null, null, type, null, properties, null, null);
 	}
 
 	/**
@@ -50,18 +51,19 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 	 * ("<application>/cartridges") resource.
 	 */
 	protected CartridgeResourceDTO(final String name, final String displayName, final String description,
-			final String type, ResourceProperties properties, final Map<String, Link> links, final Messages messages) {
-		this(name, displayName, description, CartridgeType.safeValueOf(type), properties, links, messages);
+			final String type, String url, ResourceProperties properties, final Map<String, Link> links, final Messages messages) {
+		this(name, displayName, description, CartridgeType.safeValueOf(type), url, properties, links, messages);
 	}
 
 	CartridgeResourceDTO(final String name, final String displayName, final String description,
-			final CartridgeType type, ResourceProperties properties, final Map<String, Link> links,
+			final CartridgeType type, String url, ResourceProperties properties, final Map<String, Link> links,
 			final Messages messages) {
 		super(links, messages);
 		this.name = name;
 		this.displayName = displayName;
 		this.description = description;
 		this.type = type;
+		this.url = url;
 		this.properties = properties;
 	}
 
@@ -81,6 +83,10 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 		return type;
 	}
 
+	public String getUrl() {
+		return url;
+	}
+
 	public ResourceProperties getProperties() {
 		return properties;
 	}
@@ -92,6 +98,7 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 				+ ", description=" + description
 				+ ", displayName=" + displayName
 				+ ", type=" + type
+				+ ", url=" + url
 				+ "]";
 	}
 

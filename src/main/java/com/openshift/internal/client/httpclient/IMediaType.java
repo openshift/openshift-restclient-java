@@ -13,6 +13,7 @@ package com.openshift.internal.client.httpclient;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import com.openshift.internal.client.RequestParameter;
 
@@ -28,4 +29,6 @@ public interface IMediaType {
 	public void write(String name, String value, OutputStream out) throws IOException;
 	
 	public void write(String name, List<String> values, OutputStream out) throws IOException;
+
+	public void write(String name, Map<String, String> values, OutputStream out) throws IOException;
 }

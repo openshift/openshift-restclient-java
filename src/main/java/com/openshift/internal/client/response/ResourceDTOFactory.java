@@ -40,6 +40,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SCALABLE;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SUFFIX;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_TYPE;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_URL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_UUID;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_VALID_OPTIONS;
 
@@ -550,9 +551,10 @@ public class ResourceDTOFactory {
 		final String displayName = getAsString(cartridgeNode, PROPERTY_DISPLAY_NAME);
 		final String description = getAsString(cartridgeNode, PROPERTY_DESCRIPTION);
 		final String type = getAsString(cartridgeNode, PROPERTY_TYPE);
+		final String url = getAsString(cartridgeNode, PROPERTY_URL);
 		final ResourceProperties properties = createProperties(cartridgeNode.get(PROPERTY_PROPERTIES));
 		final Map<String, Link> links = createLinks(cartridgeNode.get(PROPERTY_LINKS));
-		return new CartridgeResourceDTO(name, displayName, description, type, properties, links, messages);
+		return new CartridgeResourceDTO(name, displayName, description, type, url, properties, links, messages);
 	}
 
 	/**

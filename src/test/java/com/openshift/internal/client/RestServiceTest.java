@@ -15,11 +15,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.util.List;
@@ -37,6 +35,7 @@ import com.openshift.client.OpenShiftRequestException;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.client.utils.Samples;
+import com.openshift.internal.client.httpclient.EncodingException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.NotFoundException;
 import com.openshift.internal.client.response.Link;
@@ -64,7 +63,6 @@ public class RestServiceTest {
 				.mockPutAny(jsonResponse)
 				.mockDeleteAny(jsonResponse)
 				.client();
-		when(clientMock.getAcceptVersion()).thenReturn(IRestService.SERVICE_VERSION);
 		
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
 		this.service = new RestService(configuration.getStagingServer(), configuration.getClientId(), clientMock);
@@ -87,7 +85,7 @@ public class RestServiceTest {
 
 	@Test
 	public void shouldPostIfPostHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
-			UnsupportedEncodingException {
+            EncodingException {
 		// operation
 		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.POST, null, null));
 		// verifications
@@ -96,7 +94,7 @@ public class RestServiceTest {
 
 	@Test
 	public void shouldPutIfPutHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
-			UnsupportedEncodingException {
+            EncodingException {
 		// operation
 		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.PUT, null, null));
 		// verifications
@@ -105,7 +103,7 @@ public class RestServiceTest {
 
 	@Test
 	public void shouldDeleteIfDeleteHttpMethod() throws OpenShiftException, SocketTimeoutException,
-			HttpClientException, UnsupportedEncodingException {
+			HttpClientException, EncodingException {
 		// operation
 		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.DELETE, null, null));
 		// verifications
@@ -240,7 +238,7 @@ public class RestServiceTest {
 
 	@Test
 	public void shouldDefaultTo12ProtocolVersion() 
-			throws OpenShiftException, SocketTimeoutException, HttpClientException, UnsupportedEncodingException {
+			throws OpenShiftException, SocketTimeoutException, HttpClientException, EncodingException {
 		// pre-condition
 		RestServiceProperties properties = new RestServiceProperties();
 		IHttpClient httpClientMock = mock(IHttpClient.class);

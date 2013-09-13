@@ -13,7 +13,9 @@ package com.openshift.internal.client.httpclient;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 
 import com.openshift.client.IHttpClient;
 import com.openshift.internal.client.RequestParameter;
@@ -25,8 +27,6 @@ import com.openshift.internal.client.utils.StringUtils;
 public class FormUrlEncodedMediaType implements IMediaType {
 
 	private static final String UTF8 = "UTF-8";
-	private static final char ARRAY_START = '[';
-	private static final char ARRAY_STOP = ']';
 
 	@Override
 	public String getType() {
@@ -47,9 +47,13 @@ public class FormUrlEncodedMediaType implements IMediaType {
 
 	@Override
 	public void write(String name, String value, OutputStream out) throws IOException {
+		writeSimpleParameterName(name, out);
+		out.write(URLEncoder.encode(value, UTF8).getBytes());
+	}
+
+	private void writeSimpleParameterName(String name, OutputStream out) throws IOException {
 		out.write(name.getBytes());
 		out.write(IHttpClient.EQUALS);
-		out.write(URLEncoder.encode(value, UTF8).getBytes());
 	}
 
 	@Override
@@ -65,11 +69,32 @@ public class FormUrlEncodedMediaType implements IMediaType {
 			if (firstValueWritten) {
 				out.write(IHttpClient.AMPERSAND);
 			}
-			out.write(name.getBytes());
-			out.write(ARRAY_START);
-			out.write(ARRAY_STOP);
-			out.write(IHttpClient.EQUALS);
-			out.write(URLEncoder.encode(value, UTF8).getBytes());
+			out.write(
+					MessageFormat.format("{0}[]={1}",
+							name,
+							URLEncoder.encode(value, UTF8).getBytes())
+							.getBytes());
+			firstValueWritten = true;
+		}
+	}
+
+	@Override
+	public void write(String name, Map<String, String> values, OutputStream out) throws IOException {
+		/**
+		 * <name>[][<key>]=<value>&<name>[<key>]=<value>
+		 */
+		boolean firstValueWritten = false;
+		for (Map.Entry<String, String> entry: values.entrySet()) {
+			if (StringUtils.isEmpty(entry.getValue())) {
+				continue;
+			}
+			if (firstValueWritten) {
+				out.write(IHttpClient.AMPERSAND);
+			}
+			out.write(MessageFormat.format("{0}[][{1}]={2}",
+					name,
+					entry.getKey(),
+					URLEncoder.encode(entry.getValue(), UTF8).getBytes()).getBytes());
 			firstValueWritten = true;
 		}
 	}

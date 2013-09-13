@@ -49,8 +49,10 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.cartridge.StandaloneCartridge;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.internal.client.MapRequestParameter.NamedValue;
 import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.UnauthorizedException;
@@ -81,6 +83,7 @@ public class DomainResourceTest {
 	@Before
 	public void setup() throws Throwable {
 		this.mockDirector = new HttpClientMockDirector();
+//		this.clientMock = mockDirector.mockGetDomains(GET_DOMAINS).mockMediaType(new FormUrlEncodedMediaType()).client();
 		this.clientMock = mockDirector.mockGetDomains(GET_DOMAINS).client();
 		this.user = new TestConnectionFactory().getConnection(clientMock).getUser();
 		this.domain = user.getDomain("foobarz");
@@ -309,6 +312,29 @@ public class DomainResourceTest {
 		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(18);
 		assertThat(domain.getApplications()).hasSize(1).contains(app);
 	}
+
+    @Test
+    public void shouldCreateApplicationWithDownloadableCartridge() throws Throwable {
+        int timeout = 42 * 1000;
+        String manifestUrl = "https://some.url/";
+        // pre-conditions
+        mockDirector
+                .mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+                .mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
+
+        // operation
+        final IApplication app = domain.createApplication("scalable", new StandaloneCartridge(manifestUrl), null, null, null, timeout);
+        // verifications
+        assertThat(app.getName()).isEqualTo("scalable");
+        assertThat(app.getGearProfile().getName()).isEqualTo("small");
+        assertThat(app.getCreationTime()).isNotNull();
+        assertThat(app.getUUID()).isNotNull();
+        assertThat(app.getDomain()).isEqualTo(domain);
+        assertThat(domain.getApplications()).hasSize(1).contains(app);
+        mockDirector.verifyCreateApplication("foobarz", timeout,
+				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "scalable"),
+				new MapRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, new NamedValue("url", manifestUrl)));
+    }
 
 	@Test
 	public void shouldHaveMessagesWhenCreating() throws Throwable {

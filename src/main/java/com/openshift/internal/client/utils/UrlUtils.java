@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.internal.client.utils;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Andre Dietisheim
  */

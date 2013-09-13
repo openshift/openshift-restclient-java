@@ -22,6 +22,7 @@ import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.internal.client.RequestParameter;
 import com.openshift.internal.client.httpclient.FormUrlEncodedMediaType;
 import com.openshift.internal.client.httpclient.HttpClientException;
+import com.openshift.internal.client.httpclient.IMediaType;
 import com.openshift.internal.client.httpclient.UrlConnectionHttpClient;
 
 /**
@@ -34,7 +35,7 @@ public class PayLoadReturningHttpClientFake extends UrlConnectionHttpClient {
 			OpenShiftException {
 		this(new OpenShiftTestConfiguration(), mediaType, version);
 	}
-
+	
 	protected PayLoadReturningHttpClientFake(OpenShiftTestConfiguration configuration, String mediaType, String version) {
 		super(configuration.getRhlogin(),
 				configuration.getPassword(),
@@ -46,7 +47,7 @@ public class PayLoadReturningHttpClientFake extends UrlConnectionHttpClient {
 	}
 
 	@Override
-	protected String request(HttpMethod httpMethod, URL url, int timeout, RequestParameter... parameters)
+	protected String request(HttpMethod httpMethod, URL url, IMediaType mediaType, int timeout, RequestParameter... parameters)
 			throws SocketTimeoutException, HttpClientException {
 		try {
 			if (parameters == null

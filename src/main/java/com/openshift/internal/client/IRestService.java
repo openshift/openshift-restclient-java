@@ -10,8 +10,8 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import com.openshift.client.HttpMethod;
 import com.openshift.client.OpenShiftException;
+import com.openshift.internal.client.httpclient.IMediaType;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.RestResponse;
 
@@ -28,11 +28,8 @@ public interface IRestService {
 	public RestResponse request(Link link, int timeout, RequestParameter... serviceParameters)
 			throws OpenShiftException;
 
-	public String request(String url, HttpMethod httpMethod, RequestParameter... serviceParameters)
-			throws OpenShiftException;
-
-	public String request(String url, HttpMethod httpMethod, int timeout, RequestParameter... serviceParameters)
-			throws OpenShiftException;
+    public RestResponse request(Link link, IMediaType mediaType, int timeout, RequestParameter... requestParameters)
+            throws OpenShiftException;
 
 	public String getServiceUrl();
 

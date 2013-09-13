@@ -25,6 +25,8 @@ import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.cartridge.StandaloneCartridge;
+import com.openshift.internal.client.httpclient.FormUrlEncodedMediaType;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.DomainResourceDTO;
 import com.openshift.internal.client.response.Link;
@@ -315,7 +317,8 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 					.addScale(scale)
 					.addGearProfile(gearProfile)
 					.add(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl);
-			return super.execute(timeout, parameters.toArray());
+			return super.execute(new FormUrlEncodedMediaType(), timeout, parameters.toArray());
+			
 		}
 	}
 

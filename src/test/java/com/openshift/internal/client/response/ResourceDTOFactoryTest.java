@@ -301,6 +301,7 @@ public class ResourceDTOFactoryTest {
 		assertThat(cartridge.getDisplayName()).isEqualTo("MySQL Database 5.1");
 		assertThat(cartridge.getDescription()).isEqualTo("MySQL is a multi-user, multi-threaded SQL database server.");
 		assertThat(cartridge.getType()).isEqualTo(CartridgeType.EMBEDDED);
+		assertThat(cartridge.getUrl()).isNull();
 		ResourceProperties properties = cartridge.getProperties();
 		assertThat(properties).isNotNull();
 		assertThat(properties.size()).isEqualTo(4);

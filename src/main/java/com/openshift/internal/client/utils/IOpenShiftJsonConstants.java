@@ -24,7 +24,7 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_APP_URL = "app_url";
 	public static final String PROPERTY_CREATION_TIME = "creation_time";
 	public static final String PROPERTY_CARTRIDGE = "cartridge";
-	public static final String PROPERTY_CARTRIDGES = "cartridges";
+    public static final String PROPERTY_CARTRIDGES = "cartridges";
 	public static final String PROPERTY_CONSUMED_GEARS = "consumed_gears";
 	public static final String PROPERTY_CONTENT = "content";
 	public static final String PROPERTY_DATA = "data";
@@ -81,11 +81,11 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_STATUS = "status";
 	public static final String PROPERTY_TEXT = "text";
 	public static final String PROPERTY_TYPE = "type";
+    public static final String PROPERTY_URL = "url";
 	public static final String PROPERTY_USER_INFO = "user_info";
 	public static final String PROPERTY_UUID = "uuid";
 	public static final String PROPERTY_VALID_OPTIONS = "valid_options";
 	public static final String PROPERTY_VALUE = "value";
-	
 	public static final String VALUE_STATUS_OK = "ok";
 	public static final String VALUE_STATUS_CREATED = "created";
 	public static final Object VALUE_ADD_ALIAS = "add-alias";

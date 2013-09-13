@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client;
+package com.openshift.internal.client.httpclient;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -18,13 +18,11 @@ import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,16 +30,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.fakes.PayLoadReturningHttpClientFake;
 import com.openshift.client.fakes.HttpServerFake;
+import com.openshift.client.fakes.PayLoadReturningHttpClientFake;
 import com.openshift.client.fakes.WaitingHttpServerFake;
 import com.openshift.client.utils.Base64Coder;
-import com.openshift.internal.client.httpclient.HttpClientException;
-import com.openshift.internal.client.httpclient.NotFoundException;
-import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
+import com.openshift.internal.client.RequestParameter;
 
 /**
  * @author Andre Dietisheim
@@ -69,33 +64,47 @@ public class HttpClientTest {
 		serverFake.stop();
 	}
 
+	@Test(expected = HttpClientException.class)
+	public void shouldThrowIfNoRequestMediaType() throws SocketTimeoutException, HttpClientException,
+			MalformedURLException {
+		IHttpClient client = new UrlConnectionHttpClient("username", "password", "useragent", false,
+				new FormUrlEncodedMediaType(), null, "42.0");
+		client.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+	}
+
+	@Test(expected = HttpClientException.class)
+	public void shouldThrowIfNoAcceptedMediaType() throws SocketTimeoutException, HttpClientException,
+			MalformedURLException {
+		IHttpClient client = new UrlConnectionHttpClient("username", "password", "useragent", false, null,
+				IHttpClient.MEDIATYPE_APPLICATION_JSON, "42.0");
+		client.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+	}
+
 	@Test
-	public void canGet() throws SocketTimeoutException, HttpClientException, MalformedURLException {
-		String response = httpClient.get(serverFake.getUrl());
+	public void canGet() throws Throwable {
+		String response = httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
 		assertNotNull(response);
 		assertTrue(response.startsWith("GET"));
 	}
 
 	@Test
-	public void canPost() throws SocketTimeoutException, HttpClientException, MalformedURLException,
-			UnsupportedEncodingException {
-		String response = httpClient.post(serverFake.getUrl());
+	public void canPost() throws Throwable {
+		String response = httpClient.post(serverFake.getUrl(), new FormUrlEncodedMediaType(), IHttpClient.NO_TIMEOUT);
 		assertNotNull(response);
 		assertTrue(response.startsWith("POST"));
 	}
 
 	@Test
 	public void canPut() throws SocketTimeoutException, HttpClientException, MalformedURLException,
-			UnsupportedEncodingException {
-		String response = httpClient.put(serverFake.getUrl());
+			EncodingException {
+		String response = httpClient.put(serverFake.getUrl(), new FormUrlEncodedMediaType(), IHttpClient.NO_TIMEOUT);
 		assertNotNull(response);
 		assertTrue(response.startsWith("PUT"));
 	}
 
 	@Test
-	public void canDelete() throws SocketTimeoutException, HttpClientException, MalformedURLException,
-			UnsupportedEncodingException {
-		String response = httpClient.delete(serverFake.getUrl());
+	public void canDelete() throws Throwable {
+		String response = httpClient.delete(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
 		assertNotNull(response);
 		assertTrue(response.startsWith("DELETE"));
 	}
@@ -109,7 +118,7 @@ public class HttpClientTest {
 				.setCredentials(username, password)
 				.client();
 
-		String response = httpClient.get(serverFake.getUrl());
+		String response = httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
 		assertNotNull(response);
 		Matcher matcher = AUTHORIZATION_PATTERN.matcher(response);
 		assertTrue(matcher.find());
@@ -123,27 +132,29 @@ public class HttpClientTest {
 
 	@Test
 	public void shouldAcceptJsonByDefault() throws SocketTimeoutException, HttpClientException, MalformedURLException {
-		String response = httpClient.get(serverFake.getUrl());
+		String response = httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
 		assertNotNull(response);
 		assertTrue(response.indexOf(ACCEPT_APPLICATION_JSON) > 0);
 	}
 
 	@Test
-	public void hasProperAgentWhenUsingKeys() {
-		httpClient = new UrlConnectionHttpClientBuilder()
-				.setUserAgent("com.needskey").setCredentials("blah", "bluh", "authkey", "authiv")
-				.client();
-
-		assertEquals("OpenShift-com.needskey", httpClient.getUserAgent());
+	public void hasProperAgentWhenUsingKeys() throws IOException {
+		// pre-conditions
+		UrlConnectionHttpClientFake clientFake = new UrlConnectionHttpClientFake();
+		// operation
+		HttpURLConnection connection = clientFake.createConnectionForUserAgent("com.needskey");
+		// verification
+		assertThat(clientFake.getUserAgent(connection)).isEqualTo("OpenShift-com.needskey");
 	}
 
 	@Test
-	public void hasProperAgentWhenUsingKeysAndNoAgent() {
-		httpClient = new UrlConnectionHttpClientBuilder()
-				.setCredentials("blah", "bluh", "authkey", "authiv")
-				.client();
-
-		assertEquals("OpenShift", httpClient.getUserAgent());
+	public void hasProperAgentWhenUsingKeysAndNoAgent() throws IOException {
+		// pre-conditions
+		UrlConnectionHttpClientFake clientFake = new UrlConnectionHttpClientFake();
+		// operation
+		HttpURLConnection connection = clientFake.createConnectionForUserAgent(null);
+		// verification
+		assertThat(clientFake.getUserAgent(connection)).isEqualTo("OpenShift");
 	}
 
 	@Test
@@ -152,8 +163,10 @@ public class HttpClientTest {
 		// pre-conditions
 		IHttpClient httpClient = new PayLoadReturningHttpClientFake(IHttpClient.MEDIATYPE_APPLICATION_JSON, "1.0");
 		// operation
-		String response = httpClient.post(serverFake.getUrl(), 
-				new RequestParameter("adietish", "redhat"), 
+		String response = httpClient.post(serverFake.getUrl(),
+				new FormUrlEncodedMediaType(),
+				IHttpClient.NO_TIMEOUT,
+				new RequestParameter("adietish", "redhat"),
 				new RequestParameter("xcoulon", "redhat"));
 
 		// verification
@@ -173,33 +186,12 @@ public class HttpClientTest {
 	public void shouldAddServiceVersionToAcceptHeader() throws FileNotFoundException, IOException, OpenShiftException,
 			HttpClientException {
 		// pre-conditions
-		final AtomicReference<Boolean> verified = new AtomicReference<Boolean>();
-		verified.set(false);
-		final String version = "4.0";
-		IHttpClient httpClient = new PayLoadReturningHttpClientFake(IHttpClient.MEDIATYPE_APPLICATION_JSON, version) {
-
-			@Override
-			protected String request(HttpMethod httpMethod, URL url, int timeout, RequestParameter... parameters)
-					throws SocketTimeoutException, HttpClientException {
-				try {
-					HttpURLConnection connection = createConnection("dummyUser", "dummyPassword", "dummyUserAgent", url);
-					// verification
-					String accept = connection.getRequestProperty(IHttpClient.PROPERTY_ACCEPT);
-					assertThat(accept).endsWith("; version=" + version);
-					verified.set(true);
-					return null;
-				} catch (IOException e) {
-					fail("could not create HttpURLConnection");
-					return null;
-				}
-			}
-		};
-
+		UrlConnectionHttpClientFake clientFake = new UrlConnectionHttpClientFake();
+		String version = "42.0";
 		// operation
-		httpClient.get(serverFake.getUrl());
-
+		HttpURLConnection connection = clientFake.createConnectionForAcceptVersion(version);
 		// verification
-		assertThat(verified.get()).as("The protocol version sent by the client was not verified").isTrue();
+		assertThat(clientFake.getAcceptHeader(connection)).endsWith("; version=" + version);
 	}
 
 	@Test(expected = NotFoundException.class)
@@ -211,7 +203,7 @@ public class HttpClientTest {
 			server = startHttServerFake("HTTP/1.0 404 Not Found");
 
 			// operation
-			httpClient.get(server.getUrl());
+			httpClient.get(server.getUrl(), IHttpClient.NO_TIMEOUT);
 		} finally {
 			server.stop();
 		}
@@ -236,7 +228,7 @@ public class HttpClientTest {
 			server = startHttServerFake("HTTP/1.0 404 ");
 
 			// operation
-			httpClient.get(server.getUrl());
+			httpClient.get(server.getUrl(), IHttpClient.NO_TIMEOUT);
 		} finally {
 			server.stop();
 		}
@@ -252,7 +244,7 @@ public class HttpClientTest {
 			server = startHttServerFake("HTTP/1.0 404 Not Found");
 
 			// operation
-			httpClient.get(server.getUrl());
+			httpClient.get(server.getUrl(), IHttpClient.NO_TIMEOUT);
 			fail("Expected NotFoundException not thrown");
 		} catch (NotFoundException e) {
 			assertTrue(e.getMessage().contains(server.getUrl().toString()));
@@ -271,7 +263,7 @@ public class HttpClientTest {
 		long startTime = System.currentTimeMillis();
 		// operations
 		try {
-			httpClient.post(serverFake.getUrl(), timeout);
+			httpClient.post(serverFake.getUrl(), new FormUrlEncodedMediaType(), timeout);
 			fail("Timeout expected.");
 		} catch (SocketTimeoutException e) {
 			// assert
@@ -315,7 +307,7 @@ public class HttpClientTest {
 		long startTime = System.currentTimeMillis();
 		// operations
 		try {
-			httpClient.put(serverFake.getUrl(), timeout);
+			httpClient.put(serverFake.getUrl(), new FormUrlEncodedMediaType(), timeout);
 			fail("Timeout expected.");
 		} catch (SocketTimeoutException e) {
 			// assert
@@ -350,7 +342,7 @@ public class HttpClientTest {
 		}
 	}
 
-	protected HttpServerFake startHttServerFake(String statusLine) throws IOException {
+	private HttpServerFake startHttServerFake(String statusLine) throws IOException {
 		int port = new Random().nextInt(9 * 1024) + 1024;
 		HttpServerFake serverFake = null;
 		if (statusLine == null) {
@@ -362,9 +354,35 @@ public class HttpClientTest {
 		return serverFake;
 	}
 
-	protected WaitingHttpServerFake startWaitingHttpServerFake(int delay) throws IOException {
+	private WaitingHttpServerFake startWaitingHttpServerFake(int delay) throws IOException {
 		WaitingHttpServerFake serverFake = new WaitingHttpServerFake(delay);
 		serverFake.start();
 		return serverFake;
 	}
+
+	private class UrlConnectionHttpClientFake extends UrlConnectionHttpClient {
+		private UrlConnectionHttpClientFake() {
+			super(null, null, null, false, null, null, null, null, null);
+		}
+
+		public HttpURLConnection createConnectionForUserAgent(String userAgent) throws IOException {
+			return super.createConnection(new URL("http://localhost"), "username", "password", "authkey", "authiv",
+					userAgent, null, IHttpClient.MEDIATYPE_APPLICATION_JSON, NO_TIMEOUT);
+		}
+
+		public String getUserAgent(HttpURLConnection connection) {
+			return connection.getRequestProperty(PROPERTY_USER_AGENT);
+		}
+
+		public HttpURLConnection createConnectionForAcceptVersion(String acceptedVersion) throws IOException {
+			return super.createConnection(new URL("http://localhost"), "username", "password", "authkey", "authiv",
+					null, acceptedVersion, IHttpClient.MEDIATYPE_APPLICATION_JSON, NO_TIMEOUT);
+		}
+
+		public String getAcceptHeader(HttpURLConnection connection) {
+			return connection.getRequestProperty(PROPERTY_ACCEPT);
+		}
+
+	};
+
 }

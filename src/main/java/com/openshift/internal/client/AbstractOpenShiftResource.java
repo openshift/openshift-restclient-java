@@ -12,6 +12,7 @@ package com.openshift.internal.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,9 +24,10 @@ import com.openshift.client.Message;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.utils.OpenShiftResourceUtils;
+import com.openshift.internal.client.httpclient.IMediaType;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.RestResponse;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
@@ -138,8 +140,12 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 		}
 
 		protected <DTO> DTO execute(final int timeout, final RequestParameter... parameters) throws OpenShiftException {
+			return execute(null, timeout, parameters);
+		}
+		
+		protected <DTO> DTO execute(final IMediaType mediaType, final int timeout, final RequestParameter... parameters) throws OpenShiftException {
 			Link link = getLink(linkName);
-			RestResponse response = getService().request(link, timeout, parameters);
+			RestResponse response = getService().request(link, mediaType, timeout,  parameters);
 			
 			// in some cases, there is not response body, just a return code to
 			// indicate that the operation was successful (e.g.: delete domain)
@@ -153,6 +159,9 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 
 	protected class RequestParameters {
 		
+		private final String PROPERTY_NAME = "name";
+		private final String PROPERTY_URL = "url";
+		
 		private ArrayList<RequestParameter> parameters = new ArrayList<RequestParameter>();
 		
 		protected RequestParameters addCartridges(
@@ -161,12 +170,39 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 				return this;
 			}
 
-			List<String> cartridges = OpenShiftResourceUtils.toNames(standaloneCartridge);
-			if (embeddableCartridges != null
-					&& embeddableCartridges.length > 0) {
-				cartridges.addAll(OpenShiftResourceUtils.toNames(embeddableCartridges));
+			if (embeddableCartridges == null
+					|| embeddableCartridges.length == 0) {
+				return this;
 			}
-			return add(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, cartridges);
+			
+			return add(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
+					createCartridgesMap(standaloneCartridge, embeddableCartridges));
+		}
+
+		private Map<String, String> createCartridgesMap(IStandaloneCartridge standaloneCartridge,
+				IEmbeddableCartridge[] embeddableCartridges) {
+			Map<String, String> cartridges = new LinkedHashMap<String, String>();
+			addCartridgeTo(standaloneCartridge, cartridges);
+			for (IEmbeddableCartridge embeddableCartridge : embeddableCartridges) {
+				addCartridgeTo(embeddableCartridge, cartridges);
+			}
+			return cartridges;
+		}
+
+		/**
+		 * Adds the given cartridge to the given cartridge map. A downloadble
+		 * cartridge is added with the "url" key, a non-downloadable one is
+		 * added with the "name" key.
+		 * 
+		 * @param cartridge the cartridge that shall get added
+		 * @param cartridges the catridges that it shall get added to
+		 */
+		private void addCartridgeTo(ICartridge cartridge, Map<String, String> cartridges) {
+			if (cartridge.isDownloadable()) {
+				cartridges.put(PROPERTY_URL, cartridge.getName());
+			} else {
+				cartridges.put(PROPERTY_NAME, cartridge.getName());
+			}
 		}
 
 		protected RequestParameters addScale(ApplicationScale scale) {
@@ -193,6 +229,16 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 			return this;
 		}
 		
+		protected RequestParameters add(String name, Map<String, String> values) {
+			if (values == null
+					|| values.size() == 0) {
+				return this;
+			}
+			
+			parameters.add(new MapRequestParameter(name, values));
+			return this;
+		}
+
 		protected RequestParameters add(String name, Object value) {
 			
 			if (value == null) {

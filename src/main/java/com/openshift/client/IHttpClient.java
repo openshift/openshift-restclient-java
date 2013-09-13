@@ -10,12 +10,13 @@
  ******************************************************************************/
 package com.openshift.client;
 
-import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
 import com.openshift.internal.client.RequestParameter;
+import com.openshift.internal.client.httpclient.EncodingException;
 import com.openshift.internal.client.httpclient.HttpClientException;
+import com.openshift.internal.client.httpclient.IMediaType;
 
 /**
  * @author André Dietisheim
@@ -56,33 +57,18 @@ public interface IHttpClient {
     public static final int DEFAULT_READ_TIMEOUT = 2 * 60 * 1000;
 	public static final int NO_TIMEOUT = -1;
 
-	public void setUserAgent(String userAgent);
-	
-	public String getUserAgent();
-	
-	public void setAcceptVersion(String serviceVersion);
+	public String get(URL url, int timeout) throws HttpClientException, SocketTimeoutException;
 
-	public String getAcceptVersion();
-	
-	public String get(URL url) throws HttpClientException, SocketTimeoutException;
+	public String post(URL url, IMediaType mediaType, int timeout, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
 
-    public String get(URL url, int timeout) throws HttpClientException, SocketTimeoutException;
+    public String put(URL url, IMediaType mediaType, int timeout, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
 
-	public String post(URL url, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+    public String delete(URL url, IMediaType mediaType, int timeout, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
 
-    public String post(URL url, int timeout, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+    public String delete(URL url, int timeout) throws HttpClientException, SocketTimeoutException, EncodingException;
 
-	public String put(URL url, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+	void setUserAgent(String userAgent);
 
-    public String put(URL url, int timeout, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
+	void setAcceptVersion(String version);
 
-    public String delete(URL url) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
-
-    public String delete(URL url, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
-
-    public String delete(URL url, int timeout, RequestParameter... parameters) throws HttpClientException, SocketTimeoutException, UnsupportedEncodingException;
-
-	public void setAcceptedMediaType(String acceptedMediaType);
-	
-	public String getAcceptedMediaType();
 }

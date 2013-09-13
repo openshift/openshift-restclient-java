@@ -37,5 +37,34 @@ public interface ICartridge {
 	 * @return the description
 	 */
 	public String getDescription();
+	
+
+	/**
+	 * Returns <code>true</code> if this is a downloadable cartridge whose code
+	 * may be downloaded at the url returned by {@link #getUrl()} (cartridge
+	 * code will get downloaded upon creation).
+	 * Examples:
+	 * <ul>
+	 * <li>go standalone cartridge (https://github.com/smarterclayton/openshift-go-cart)</li>
+	 * <li>redis embedded cartridge (https://github.com/smarterclayton/openshift-redis-cart)</li>
+	 * <li>foreman embedded cartridge (https://github.com/ncdc/openshift-foreman-cartridge)</li>
+	 * </ul>
+	 * 
+	 * @return <code>true</code> if this is a downloadable cartridge
+	 * 
+	 * @see #getUrl()
+	 */
+	public boolean isDownloadable();
+	
+	/**
+	 * Returns the url at which the code for this cartridge may get downloaded.
+	 * Returns <code>null</null> if this is not a downloadable cartridge.
+	 * 
+	 * @return the url if downloadable cartridge or null
+	 * 
+	 * @see #isDownloadable()
+	 */
+	public String getUrl();
+
 
 }

@@ -13,6 +13,7 @@ package com.openshift.internal.client;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import com.openshift.internal.client.httpclient.HttpClientTest;
 import com.openshift.internal.client.response.ResourceDTOFactoryTest;
 
 @RunWith(Suite.class)

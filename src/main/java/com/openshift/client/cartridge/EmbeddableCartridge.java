@@ -10,55 +10,27 @@
  ******************************************************************************/
 package com.openshift.client.cartridge;
 
-
-
 /**
- * An interface that designate a cartridge that can be embedded into an
- * application.
+ * An cartridge that may be embedded (added) into an application. Add-on
+ * cartridge is an equivalent name for embedded cartridge.
  * 
  * @author Xavier Coulon
  * 
  * @see IEmbeddableCartridge for cartridges that have already been added and
  *      configured to an application.
  */
-public class EmbeddableCartridge implements IEmbeddableCartridge {
-
-	private final String name;
-	private String displayName;
-	private String description;
+public class EmbeddableCartridge extends BaseCartridge implements IEmbeddableCartridge {
 
 	public EmbeddableCartridge(final String name) {
-		this(name, null, null);
+		super(name);
 	}
 
 	public EmbeddableCartridge(final String name, String version) {
-		this(name + NAME_VERSION_DELIMITER + version, null, null);
+		super(name, version);
 	}
 
 	public EmbeddableCartridge(final String name, String displayName, String description) {
-		this.name = name;
-		this.displayName = displayName;
-		this.description = description;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
+		super(name, displayName, description);
 	}
 
 	/**
@@ -78,11 +50,11 @@ public class EmbeddableCartridge implements IEmbeddableCartridge {
 			return false;
 		}
 		IEmbeddableCartridge other = (IEmbeddableCartridge) obj;
-		if (name == null) {
+		if (getName() == null) {
 			if (other.getName() != null) {
 				return false;
 			}
-		} else if (!name.equals(other.getName())) {
+		} else if (!getName().equals(other.getName())) {
 			return false;
 		}
 		return true;
@@ -91,7 +63,7 @@ public class EmbeddableCartridge implements IEmbeddableCartridge {
 	@Override
 	public String toString() {
 		return "EmbeddableCartridge [" +
-				"name=" + name +
+				"name=" + getName() +
 				"]";
 	}
 
