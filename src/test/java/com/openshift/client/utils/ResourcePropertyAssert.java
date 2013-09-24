@@ -14,16 +14,16 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import org.fest.assertions.AssertExtension;
 
-import com.openshift.internal.client.response.ResourceProperty;
+import com.openshift.internal.client.response.CartridgeResourceProperty;
 
 /**
  * @author Andre Dietisheim
  */
 public class ResourcePropertyAssert implements AssertExtension {
 
-	private ResourceProperty property;
+	private CartridgeResourceProperty property;
 
-	public ResourcePropertyAssert(ResourceProperty property) {
+	public ResourcePropertyAssert(CartridgeResourceProperty property) {
 		assertThat(property).isNotNull();
 		this.property = property;
 	}

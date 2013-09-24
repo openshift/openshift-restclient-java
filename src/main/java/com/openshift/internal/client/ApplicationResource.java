@@ -49,8 +49,10 @@ import com.openshift.client.OpenShiftSSHOperationException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.cartridge.StandaloneCartridge;
 import com.openshift.client.utils.HostUtils;
 import com.openshift.client.utils.RFC822DateUtils;
+import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
 import com.openshift.internal.client.response.GearGroupResourceDTO;
@@ -95,7 +97,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private final Date creationTime;
 
 	/** The cartridge (application type/framework) of this application. */
-	private final IStandaloneCartridge cartridge;
+	private IStandaloneCartridge cartridge;
 
 	/** The scalability enablement. */
 	private final ApplicationScale scale;
@@ -119,7 +121,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private final List<String> aliases;
 
 	/**
-	 * List of configured embedded cartridges. 
+	 * Map of configured embedded cartridges. 
 	 */
 	private Map<String, EmbeddedCartridgeResource> embeddedCartridgesByName = new LinkedHashMap<String, EmbeddedCartridgeResource>();
 
@@ -136,10 +138,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	
 	private Collection<IGearGroup> gearGroups;
 
-	protected ApplicationResource(ApplicationResourceDTO dto, IStandaloneCartridge cartridge, DomainResource domain) {
+	protected ApplicationResource(ApplicationResourceDTO dto, DomainResource domain) {
 		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getMessages(), dto.getApplicationUrl(),
-				dto.getGitUrl(), dto.getInitialGitUrl(), dto.getGearProfile(), dto.getApplicationScale(), cartridge,
-				dto.getAliases(), dto.getEmbeddedCartridges(), dto.getLinks(), domain);
+				dto.getGitUrl(), dto.getInitialGitUrl(), dto.getGearProfile(), dto.getApplicationScale(), 
+				dto.getAliases(), dto.getCartridges(), dto.getLinks(), domain);
 	}
 
 	/**
@@ -169,9 +171,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 */
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
 			final Messages messages, final String applicationUrl, final String gitUrl,
-			final String initialGitUrl, final IGearProfile gearProfile, final ApplicationScale scale,
-			final IStandaloneCartridge cartridge, final List<String> aliases,
-			final List<CartridgeResourceDTO> embeddedCartridges, final Map<String, Link> links,
+			final String initialGitUrl, final IGearProfile gearProfile, final ApplicationScale scale, final List<String> aliases,
+			final Map<String, CartridgeResourceDTO> cartridgesByName, final Map<String, Link> links,
 			final DomainResource domain) {
 		super(domain.getService(), links, messages);
 		this.name = name;
@@ -179,20 +180,12 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.creationTime = RFC822DateUtils.safeGetDate(creationTime);
 		this.scale = scale;
 		this.gearProfile = gearProfile;
-		this.cartridge = cartridge;
 		this.applicationUrl = applicationUrl;
 		this.gitUrl = gitUrl;
 		this.initialGitUrl = initialGitUrl;
 		this.domain = domain;
 		this.aliases = aliases;
-		createEmbeddedCartridges(embeddedCartridges);
-	}
-	
-	protected void createEmbeddedCartridges(List<CartridgeResourceDTO> cartridges) {
-		for (CartridgeResourceDTO cartridgeDTO : cartridges) {
-			EmbeddedCartridgeResource embeddedCartridgeResource = new EmbeddedCartridgeResource(cartridgeDTO, this);
-			embeddedCartridgesByName.put(cartridgeDTO.getName(), embeddedCartridgeResource);
-		}
+		updateCartridges(cartridgesByName);
 	}
 
 	public String getName() {
@@ -247,7 +240,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			new ForceStopApplicationRequest().execute();
 		} else {
 			new StopApplicationRequest().execute();
-
 		}
 	}
 
@@ -318,7 +310,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		Assert.notNull(cartridge);
 
 		final CartridgeResourceDTO embeddedCartridgeDTO =
-				new AddEmbeddedCartridgeRequest().execute(cartridge.getName());
+				new AddEmbeddedCartridgeRequest().execute(cartridge);
 		final EmbeddedCartridgeResource embeddedCartridge = new EmbeddedCartridgeResource(embeddedCartridgeDTO, this);
 		this.embeddedCartridgesByName.put(embeddedCartridge.getName(), embeddedCartridge);
 		return embeddedCartridge;
@@ -358,27 +350,42 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	protected void refreshEmbeddedCartridges() throws OpenShiftException {
 		// load collection if necessary
 		Map<String, CartridgeResourceDTO> cartridgeDTOByName = new ListCartridgesRequest().execute();
-		updateAndAddCartridges(cartridgeDTOByName);
+		updateCartridges(cartridgeDTOByName);
 		removeCartridges(cartridgeDTOByName);
 	}
 
-	private void updateAndAddCartridges(Map<String, CartridgeResourceDTO> cartridgeDTOByName) {
+	private void updateCartridges(Map<String, CartridgeResourceDTO> cartridgeDTOByName) {
 		for (CartridgeResourceDTO cartridgeDTO : cartridgeDTOByName.values()) {
-			if (cartridgeDTO.getType() != CartridgeType.EMBEDDED) {
-				continue;
-			}
-			String name = cartridgeDTO.getName();
-			EmbeddedCartridgeResource embeddedCartridge = embeddedCartridgesByName.get(name);
-			if (embeddedCartridge != null) {
-				embeddedCartridge.update(cartridgeDTO);
-			} else {
-				embeddedCartridgesByName.put(name, new EmbeddedCartridgeResource(cartridgeDTO, this));
+			switch(cartridgeDTO.getType()) {
+			case STANDALONE:
+				createStandaloneCartrdige(cartridgeDTO);
+				break;
+			case EMBEDDED:
+				addOrUpdateEmbeddedCartridge(cartridgeDTO.getName(), cartridgeDTO);
 			}
 		}
 	}
 
+	private void createStandaloneCartrdige(CartridgeResourceDTO cartridgeDTO) {
+		this.cartridge = new StandaloneCartridge(
+				cartridgeDTO.getName(), 
+				cartridgeDTO.getUrl(), 
+				cartridgeDTO.getDisplayName(),
+				cartridgeDTO.getDescription());
+	}
+
+	private void addOrUpdateEmbeddedCartridge(String name, CartridgeResourceDTO cartridgeDTO) {
+		EmbeddedCartridgeResource embeddedCartridge = embeddedCartridgesByName.get(name);
+		if (embeddedCartridge != null) {
+			embeddedCartridge.update(cartridgeDTO);
+		} else {
+			embeddedCartridgesByName.put(name, new EmbeddedCartridgeResource(cartridgeDTO, this));
+		}
+	}
+
 	private void removeCartridges(Map<String, CartridgeResourceDTO> cartridgeDTOsByName) {
-		for (EmbeddedCartridgeResource cartridge : embeddedCartridgesByName.values()) {
+		List<EmbeddedCartridgeResource> cartridges = new ArrayList<EmbeddedCartridgeResource>(embeddedCartridgesByName.values());
+		for (EmbeddedCartridgeResource cartridge : cartridges) {
 			String name = cartridge.getName();
 			if (!cartridgeDTOsByName.containsKey(name)) {
 				// not present in updated collection
@@ -404,9 +411,14 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	public IEmbeddedCartridge getEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
 		Assert.notNull(cartridge);
 
-		return getEmbeddedCartridge(cartridge.getName());
+		for (IEmbeddedCartridge embeddedCartridge : getEmbeddedCartridges()) {
+			if (cartridge.equals(embeddedCartridge)) {
+				return embeddedCartridge;
+			}
+		}
+		return null;
 	}
-	
+
 	public IEmbeddedCartridge getEmbeddedCartridge(String cartridgeName) throws OpenShiftException {
 		Assert.notNull(cartridgeName);
 
@@ -747,135 +759,134 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	
 	private class DeleteApplicationRequest extends ServiceRequest {
 
-		protected DeleteApplicationRequest() {
+		private DeleteApplicationRequest() {
 			super(LINK_DELETE_APPLICATION);
 		}
 	}
 
 	private class StartApplicationRequest extends ServiceRequest {
 
-		protected StartApplicationRequest() {
+		private StartApplicationRequest() {
 			super(LINK_START_APPLICATION);
 		}
 
-		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
-					IOpenShiftJsonConstants.VALUE_START));
+		protected <DTO> DTO execute() throws OpenShiftException {
+			return super.execute(
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT, IOpenShiftJsonConstants.VALUE_START));
 		}
 	}
 
 	private class StopApplicationRequest extends ServiceRequest {
 
-		protected StopApplicationRequest() {
+		private StopApplicationRequest() {
 			super(LINK_STOP_APPLICATION);
 		}
 
-		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
-					IOpenShiftJsonConstants.VALUE_STOP));
+		protected <DTO> DTO execute() throws OpenShiftException {
+			return super.execute(
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT, IOpenShiftJsonConstants.VALUE_STOP));
 		}
 	}
 
 	private class ForceStopApplicationRequest extends ServiceRequest {
 
-		protected ForceStopApplicationRequest() {
+		private ForceStopApplicationRequest() {
 			super(LINK_FORCE_STOP_APPLICATION);
 		}
 
-		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
-					IOpenShiftJsonConstants.VALUE_FORCESTOP));
+		protected <DTO> DTO execute() throws OpenShiftException {
+			return super.execute(
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT, IOpenShiftJsonConstants.VALUE_FORCESTOP));
 		}
 	}
 
 	private class RestartApplicationRequest extends ServiceRequest {
 
-		protected RestartApplicationRequest() {
+		private RestartApplicationRequest() {
 			super(LINK_RESTART_APPLICATION);
 		}
 
-		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+		protected <DTO> DTO execute() throws OpenShiftException {
+			return super.execute(new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
 					IOpenShiftJsonConstants.VALUE_RESTART));
 		}
 	}
 
 	private class ScaleUpRequest extends ServiceRequest {
 
-		protected ScaleUpRequest() {
+		private ScaleUpRequest() {
 			super(LINK_SCALE_UP);
 		}
 
-		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+		protected <DTO> DTO execute() throws OpenShiftException {
+			return super.execute(new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
 					IOpenShiftJsonConstants.VALUE_SCALE_UP));
 		}
 	}
 
 	private class ScaleDownRequest extends ServiceRequest {
 
-		protected ScaleDownRequest() {
+		private ScaleDownRequest() {
 			super(LINK_SCALE_DOWN);
 		}
 
-		public <DTO> DTO execute() throws OpenShiftException {
-			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
+		protected <DTO> DTO execute() throws OpenShiftException {
+			return super.execute(new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
 					IOpenShiftJsonConstants.VALUE_SCALE_DOWN));
 		}
 	}
 
 	private class AddAliasRequest extends ServiceRequest {
 
-		protected AddAliasRequest() {
+		private AddAliasRequest() {
 			super(LINK_ADD_ALIAS);
 		}
 
-		public <DTO> DTO execute(String alias) throws OpenShiftException {
-			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
-					IOpenShiftJsonConstants.VALUE_ADD_ALIAS), new RequestParameter(
-					IOpenShiftJsonConstants.PROPERTY_ALIAS, alias));
+		protected <DTO> DTO execute(String alias) throws OpenShiftException {
+			return super.execute(
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT, IOpenShiftJsonConstants.VALUE_ADD_ALIAS), 
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_ALIAS, alias));
 		}
 	}
 
 	private class RemoveAliasRequest extends ServiceRequest {
 
-		protected RemoveAliasRequest() {
+		private RemoveAliasRequest() {
 			super(LINK_REMOVE_ALIAS);
 		}
 
-		public <DTO> DTO execute(String alias) throws OpenShiftException {
-			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_EVENT,
-					IOpenShiftJsonConstants.VALUE_REMOVE_ALIAS), new RequestParameter(
-					IOpenShiftJsonConstants.PROPERTY_ALIAS, alias));
+		protected <DTO> DTO execute(String alias) throws OpenShiftException {
+			return super.execute(
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT, IOpenShiftJsonConstants.VALUE_REMOVE_ALIAS), 
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_ALIAS, alias));
 		}
 	}
 
 	private class AddEmbeddedCartridgeRequest extends ServiceRequest {
 
-		protected AddEmbeddedCartridgeRequest() {
+		private AddEmbeddedCartridgeRequest() {
 			super(LINK_ADD_CARTRIDGE);
 		}
 
-		public <DTO> DTO execute(String embeddedCartridgeName) throws OpenShiftException {
-			return super
-					.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, embeddedCartridgeName));
+		protected <DTO> DTO execute(IEmbeddableCartridge embeddable) throws OpenShiftException {
+			return super.execute(new Parameters().addCartridge(embeddable).toArray());
 		}
 	}
 
 	private class ListCartridgesRequest extends ServiceRequest {
 
-		protected ListCartridgesRequest() {
+		private ListCartridgesRequest() {
 			super(LINK_LIST_CARTRIDGES);
 		}
 
-		public Map<String, CartridgeResourceDTO> execute() throws OpenShiftException {
+		protected Map<String, CartridgeResourceDTO> execute() throws OpenShiftException {
 			return super.execute();
 		}
 	}
 	
 	private class GetGearGroupsRequest extends ServiceRequest {
 
-		protected GetGearGroupsRequest() {
+		private GetGearGroupsRequest() {
 			super(LINK_GET_GEAR_GROUPS);
 		}
 	}

@@ -51,7 +51,7 @@ public class UserResourceIntegrationTest {
 		// dont test on dev server
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
 		if (configuration.isDevelopmentServer()) {
-			throw new InvalidCredentialsOpenShiftException(null, new HttpClientException(""));
+			throw new InvalidCredentialsOpenShiftException(null, new HttpClientException(""), null);
 		}
 
 		new TestConnectionFactory().getConnection(

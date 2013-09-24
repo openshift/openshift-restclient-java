@@ -19,6 +19,8 @@ import com.openshift.internal.client.AbstractOpenShiftConnectionFactory;
 import com.openshift.internal.client.IRestService;
 import com.openshift.internal.client.RestService;
 import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
+import com.openshift.internal.client.httpclient.request.JsonMediaType;
+import com.openshift.internal.client.response.OpenShiftJsonDTOFactory;
 import com.openshift.internal.client.utils.Assert;
 
 /**
@@ -136,12 +138,14 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 		}
 	}
 
-	protected IOpenShiftConnection getConnection(final String clientId, final String username, final String password, final String serverUrl, IHttpClient httpClient) throws OpenShiftException, IOException {
+	protected IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
+			final String serverUrl, IHttpClient httpClient) throws OpenShiftException, IOException {
 		Assert.notNull(clientId);
 		Assert.notNull(serverUrl);
 		Assert.notNull(httpClient);
 
-		IRestService service = new RestService(serverUrl, clientId, httpClient);
+		IRestService service = new RestService(serverUrl, clientId, new JsonMediaType(),
+				IHttpClient.MEDIATYPE_APPLICATION_JSON, new OpenShiftJsonDTOFactory(), httpClient);
 		return getConnection(service, username, password);
 	}
 }

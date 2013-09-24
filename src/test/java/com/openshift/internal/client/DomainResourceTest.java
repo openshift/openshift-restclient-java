@@ -10,12 +10,16 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
+import static com.openshift.client.utils.Cartridges.JBOSSAS_7_NAME;
+import static com.openshift.client.utils.Cartridges.JENKINS_14_NAME;
+import static com.openshift.client.utils.Cartridges.MONGODB_22_NAME;
 import static com.openshift.client.utils.Samples.DELETE_DOMAINS_FOOBARZ;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_EMPTY;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_DOWNLOADABLECART;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS;
 import static com.openshift.client.utils.Samples.POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS;
 import static com.openshift.client.utils.Samples.POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS;
@@ -46,16 +50,21 @@ import com.openshift.client.Message;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.cartridge.EmbeddableCartridge;
-import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.ApplicationAssert;
+import com.openshift.client.utils.CartridgeAssert;
+import com.openshift.client.utils.Cartridges;
+import com.openshift.client.utils.DomainAssert;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.Samples;
 import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.UnauthorizedException;
+import com.openshift.internal.client.httpclient.request.Parameter;
+import com.openshift.internal.client.httpclient.request.ParameterValueArray;
+import com.openshift.internal.client.httpclient.request.ParameterValueMap;
+import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
 /**
@@ -64,11 +73,6 @@ import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
  */
 public class DomainResourceTest {
 
-	private static final IStandaloneCartridge CARTRIDGE_JBOSSAS_7 = new StandaloneCartridge("jbossas-7");
-	private static final IStandaloneCartridge CARTRIDGE_JENKINS_14 = new StandaloneCartridge("jenkins-1.4");
-	private static final IEmbeddableCartridge EMBEDDABLE_CARTRIDGE_MYSQL_51 = new EmbeddableCartridge("mysql-5.1");
-	private static final IEmbeddableCartridge EMBEDDABLE_CARTRIDGE_MONGODB_22 = new EmbeddableCartridge("mongodb-2.2"); 
-	
 	private IUser user;
 	private IDomain domain;
 	private IHttpClient clientMock;
@@ -179,7 +183,6 @@ public class DomainResourceTest {
 		final IDomain updatedDomain = user.getDomain("foobars");
 		assertThat(updatedDomain).isNotNull();
 		assertThat(updatedDomain.getId()).isEqualTo("foobars");
-		assertThat(LinkRetriever.retrieveLink(updatedDomain, "UPDATE").getHref()).contains("/foobars");
 		mockDirector.verifyRenameDomain("foobarz");
 	}
 
@@ -288,75 +291,91 @@ public class DomainResourceTest {
 	}
 
 	@Test
-	public void shouldCreateApplication() throws Throwable {
+	public void shouldCreateApplicationWithDownloadableCartridge() throws Throwable {
 		// pre-conditions
 		mockDirector
 				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
-				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
-
-		// operation
-		final IApplication app = domain.createApplication("scalable", CARTRIDGE_JBOSSAS_7, ApplicationScale.NO_SCALE, null);
-
-		// verifications
-		new ApplicationAssert(app)
-			.hasName("scalable")
-			.hasGearProfile(IGearProfile.SMALL)
-			.hasApplicationScale(ApplicationScale.NO_SCALE)
-			.hasApplicationUrl("http://scalable-foobarz.rhcloud.com/")
-			.hasCreationTime()
-			.hasGitUrl("ssh://5183b49f4382ec9a0e000001@scalable-foobarz.rhcloud.com/~/git/scalable.git/")
-			.hasInitialGitUrl("git://github.com/openshift/openshift-java-client.git")
-			.hasCartridge(CARTRIDGE_JBOSSAS_7)
-			.hasUUID("5183b49f4382ec9a0e000001")
-			.hasDomain(domain);
-		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(18);
-		assertThat(domain.getApplications()).hasSize(1).contains(app);
-	}
-
-	@Test
-	public void shouldCreateApplicationWithEmbeddedCartridges() throws Throwable {
-		// pre-conditions
-		mockDirector
-				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
-				.mockCreateApplication("foobarz", Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2EMBEDDED);
+				.mockCreateApplication("foobarz", Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_DOWNLOADABLECART);
 
 		// operation
 		final IApplication app = domain.createApplication(
-				"scalable", 
-				CARTRIDGE_JBOSSAS_7, 
-				ApplicationScale.NO_SCALE, 
-				IGearProfile.SMALL, 
-				null, 
-				IHttpClient.NO_TIMEOUT, 
-				EMBEDDABLE_CARTRIDGE_MONGODB_22, 
-				EMBEDDABLE_CARTRIDGE_MYSQL_51);
+				"downloadablecart", Cartridges.go11(), null, null, null, IHttpClient.NO_TIMEOUT,
+				Cartridges.foreman063(),
+				Cartridges.mysql51());
 
 		// verifications
 		new ApplicationAssert(app)
-			.hasName("springeap6")
-			.hasGearProfile(IGearProfile.SMALL)
-			.hasApplicationScale(ApplicationScale.NO_SCALE)
-			.hasApplicationUrl("http://springeap6-foobarz.rhcloud.com/")
-			.hasCreationTime("2013-04-30T17:00:41Z")
-			.hasGitUrl("ssh://517ff8b9500446729b00008e@springeap6-foobarz.rhcloud.com/~/git/springeap6.git/")
-			.hasInitialGitUrl("git://github.com/openshift/spring-eap6-quickstart.git")
-			.hasCartridge(CARTRIDGE_JBOSSAS_7)
-			.hasUUID("517ff8b9500446729b00008e")
-			.hasDomain(domain)
-			.hasEmbeddableCartridges(2)
-			.hasEmbeddableCartridges(EMBEDDABLE_CARTRIDGE_MONGODB_22.getName(), EMBEDDABLE_CARTRIDGE_MYSQL_51.getName());
-		assertThat(LinkRetriever.retrieveLinks(app)).hasSize(18);
-		assertThat(domain.getApplications()).hasSize(1).contains(app);
+				.hasName("downloadablecart")
+				.hasGearProfile(IGearProfile.SMALL)
+				.hasCreationTime()
+				.hasUUID()
+				.hasDomain(domain)
+				.hasEmbeddableCartridges(2)
+				.hasEmbeddedCartridge(Cartridges.mysql51())
+				.hasEmbeddedCartridge(Cartridges.foreman063());
+		new DomainAssert(domain)
+				.hasApplications(app)
+				.hasApplications(1);
 	}
 
 	@Test
+	public void shouldUpdateDownloadableStandaloneCartridgeAfterDeploy() throws Throwable {
+		// pre-conditions
+		mockDirector
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+				.mockCreateApplication("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_DOWNLOADABLECART);
+		new CartridgeAssert<IStandaloneCartridge>(Cartridges.go11())
+				.hasName(null)
+				.hasDescription(null)
+				.hasDisplayName(null)
+				.hasUrl(Cartridges.GO_DOWNLOAD_URL);
+
+		// operation
+		final IApplication app = domain.createApplication(
+				"springeap6", Cartridges.eap6(), null, null, null, IHttpClient.NO_TIMEOUT,
+				Cartridges.foreman063(),
+				Cartridges.mysql51());
+
+		// verifications
+		// cartridge was updated with name, description, display name
+		new CartridgeAssert<IStandaloneCartridge>(app.getCartridge())
+			.hasName("smarterclayton-go-1.1")
+			.hasDescription("OpenShift Go cartridge")
+			.hasDisplayName("Go 1.1")
+			.hasUrl(Cartridges.GO_DOWNLOAD_URL);
+	}
+
+	@Test
+    public void shouldRequestCreateApplicationWithDownloadableCartridge() throws Throwable {    	
+        // pre-conditions
+        mockDirector
+                .mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
+                .mockCreateApplication("foobarz", Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_DOWNLOADABLECART);
+
+        // operation
+		domain.createApplication(
+				"downloadablecart", Cartridges.go11(), null, null, null, IHttpClient.NO_TIMEOUT, 
+				Cartridges.foreman063(),
+				Cartridges.mysql51());
+
+        // verifications
+        mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "downloadablecart"),
+				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
+						new ParameterValueArray()
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_URL, Cartridges.GO_DOWNLOAD_URL))
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_URL, Cartridges.FOREMAN_DOWNLOAD_URL))
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, Cartridges.mysql51().getName()))));
+    }
+
+    @Test
 	public void shouldHaveMessagesWhenCreating() throws Throwable {
 		// pre-conditions
 		mockDirector
 			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
 			.mockCreateApplication("foobarz", POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
-		final IApplication app = domain.createApplication("jekyll", CARTRIDGE_JENKINS_14);
+		final IApplication app = domain.createApplication("jekyll", Cartridges.jenkins14());
 		// verifications
 		Messages messages = app.getMessages();
 		assertThat(messages).isNotNull();
@@ -389,12 +408,17 @@ public class DomainResourceTest {
 			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
 			.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
-		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7);
+		domain.createApplication("foo", Cartridges.as7());
 		
 		// verification
-		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"), 
-				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, CARTRIDGE_JBOSSAS_7.getName())); 
+		mockDirector.verifyCreateApplication(
+				"foobarz",
+				IHttpClient.NO_TIMEOUT,
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
+				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
+						new ParameterValueArray()
+								.add(new ParameterValueMap().add(
+										IOpenShiftJsonConstants.PROPERTY_NAME, Cartridges.JBOSSAS_7_NAME))));
 	}
 
 	@Test
@@ -404,13 +428,15 @@ public class DomainResourceTest {
 				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
 				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
-		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7, ApplicationScale.SCALE);
+		domain.createApplication("foo", Cartridges.as7(), ApplicationScale.SCALE);
 		
 		// verification
 		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
-				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, CARTRIDGE_JBOSSAS_7.getName()),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()));
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
+				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
+						new ParameterValueArray()
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, JBOSSAS_7_NAME))),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()));
 	}
 
 	@Test
@@ -420,14 +446,16 @@ public class DomainResourceTest {
 				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
 				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
-		domain.createApplication("foo", CARTRIDGE_JBOSSAS_7, ApplicationScale.SCALE, GearProfile.JUMBO);
+		domain.createApplication("foo", Cartridges.as7(), ApplicationScale.SCALE, GearProfile.JUMBO);
 		
 		// verification
 		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
-				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, CARTRIDGE_JBOSSAS_7.getName()),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.JUMBO.getName())
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
+				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
+						new ParameterValueArray()
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, JBOSSAS_7_NAME))),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.JUMBO.getName())
 		);
 	}
 
@@ -439,18 +467,20 @@ public class DomainResourceTest {
 				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		domain.createApplication(
-				"foo", CARTRIDGE_JBOSSAS_7, 
+				"foo", Cartridges.as7(), 
 				ApplicationScale.SCALE, 
 				GearProfile.JUMBO, 
 				"git://github.com/adietish/openshift-java-client.git");
 		
 		// verification
 		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
-				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, CARTRIDGE_JBOSSAS_7.getName()),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.JUMBO.getName()),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, "git://github.com/adietish/openshift-java-client.git")
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "foo"),
+				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
+						new ParameterValueArray()
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, JBOSSAS_7_NAME))),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.JUMBO.getName()),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, "git://github.com/adietish/openshift-java-client.git")
 		);
 	}
 
@@ -464,24 +494,30 @@ public class DomainResourceTest {
 		// operation
 		domain.createApplication(
 				"jekyll", 
-				CARTRIDGE_JENKINS_14, 
+				Cartridges.jenkins14(), 
 				ApplicationScale.SCALE, 
 				GearProfile.LARGE, 
 				"git://github.com/adietish/openshift-java-client.git", 
 				42001, 
-				EMBEDDABLE_CARTRIDGE_MONGODB_22, EMBEDDABLE_CARTRIDGE_MYSQL_51);
+				Cartridges.mongodb22(), 
+				Cartridges.mysql51());
 		
 		// verification
 		mockDirector.verifyCreateApplication(
 				"foobarz",
 				42001,
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "jekyll"),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.LARGE.getName()),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, "git://github.com/adietish/openshift-java-client.git"),
-				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, 
-						CARTRIDGE_JENKINS_14.getName(), EMBEDDABLE_CARTRIDGE_MONGODB_22.getName(), EMBEDDABLE_CARTRIDGE_MYSQL_51.getName())
-		);
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "jekyll"),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.LARGE.getName()),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, "git://github.com/adietish/openshift-java-client.git"),
+				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
+						new ParameterValueArray()
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME,
+										JENKINS_14_NAME))
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME,
+										MONGODB_22_NAME))
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME,
+										Cartridges.MYSQL_51_NAME))));
 	}
 
 	@Test(expected = OpenShiftException.class)
@@ -489,7 +525,7 @@ public class DomainResourceTest {
 		// pre-conditions
 		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		// operation
-		domain.createApplication(null, CARTRIDGE_JBOSSAS_7, null, null);
+		domain.createApplication(null, Cartridges.as7(), null, null);
 		// verifications
 		// expected exception
 	}
@@ -510,7 +546,7 @@ public class DomainResourceTest {
 		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		// operation
 		try {
-			domain.createApplication("springeap6", CARTRIDGE_JBOSSAS_7, null, null);
+			domain.createApplication("springeap6", Cartridges.as7(), null, null);
 			// expect an exception
 			fail("Expected exception here...");
 		} catch (OpenShiftException e) {
@@ -574,13 +610,15 @@ public class DomainResourceTest {
 			.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 
 		// operation
-		domain.createApplication("scalable", CARTRIDGE_JBOSSAS_7, ApplicationScale.NO_SCALE, GearProfile.SMALL, null, timeout);
+		domain.createApplication("scalable", Cartridges.as7(), ApplicationScale.NO_SCALE, GearProfile.SMALL, null, timeout);
 
 		// verifications
 		mockDirector.verifyCreateApplication("foobarz", timeout, 
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, String.valueOf(Boolean.FALSE)),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.SMALL.getName()),
-				new ArrayRequestParameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, CARTRIDGE_JBOSSAS_7.getName()),
-				new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "scalable"));
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, String.valueOf(Boolean.FALSE)),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.SMALL.getName()),
+				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
+						new ParameterValueArray().add(
+								new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, JBOSSAS_7_NAME))),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "scalable"));
 	}
 }

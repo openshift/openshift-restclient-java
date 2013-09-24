@@ -29,15 +29,18 @@ import com.openshift.client.IGear;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
+import com.openshift.client.utils.Cartridges;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.ResourcePropertyAssert;
 import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.CartridgeType;
 
-public class ResourceDTOFactoryTest {
+public class OpenShiftJsonDTOFactoryTest {
 
 	private static final String LINK_ADD_APPLICATION = "ADD_APPLICATION";
 
+	private IRestResponseFactory factory = new OpenShiftJsonDTOFactory();
+	
 	private static final class ValidLinkCondition extends Condition<Map<?, ?>> {
 		@Override
 		public boolean matches(Map<?, ?> links) {
@@ -57,7 +60,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_USER.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.user);
 		UserResourceDTO userResourceDTO = response.getData();
@@ -73,7 +76,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_USER_KEYS_NONE.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.keys);
 		List<KeyResourceDTO> keys = response.getData();
@@ -86,7 +89,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_USER_KEYS_1KEY.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.keys);
 		List<KeyResourceDTO> keys = response.getData();
@@ -104,7 +107,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_USER_KEYS_2KEYS.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.keys);
 		List<KeyResourceDTO> keys = response.getData();
@@ -121,7 +124,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_API.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.links);
 		final Map<String, Link> links = response.getData();
@@ -136,7 +139,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_DOMAINS.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.domains);
 		final List<DomainResourceDTO> domainDTOs = response.getData();
@@ -160,7 +163,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_DOMAINS_EMPTY.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.domains);
 		final List<DomainResourceDTO> domains = response.getData();
@@ -173,7 +176,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_DOMAINS_FOOBARZ.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.domain);
 		final DomainResourceDTO domain = response.getData();
@@ -188,7 +191,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.DELETE_DOMAINS_FOOBAR_KO.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isNull();
 		assertThat(response.getMessages().size()).isEqualTo(1);
@@ -200,34 +203,42 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.applications);
 		final List<ApplicationResourceDTO> applications = response.getData();
 		assertThat(applications).hasSize(2);
-		ApplicationResourceDTO applicationDTO = applications.get(0);
+		ApplicationResourceDTO applicationDTO = applications.get(1);
 		assertThat(applicationDTO.getDomainId()).isEqualTo("foobarz");
-		assertThat(applicationDTO.getCreationTime()).isEqualTo("2013-04-30T17:00:41Z");
+		assertThat(applicationDTO.getCreationTime()).isEqualTo("2013-09-20T21:28:53Z");
 		assertThat(applicationDTO.getApplicationUrl()).isEqualTo("http://springeap6-foobarz.rhcloud.com/");
-		assertThat(applicationDTO.getFramework()).isEqualTo("jbosseap-6.0");
+		assertThat(applicationDTO.getFramework()).isEqualTo(Cartridges.JBOSSEAP_6_NAME);
 		assertThat(applicationDTO.getName()).isEqualTo("springeap6");
 		assertThat(applicationDTO.getApplicationScale()).isEqualTo(ApplicationScale.NO_SCALE);
-		assertThat(applicationDTO.getGitUrl()).isEqualTo("ssh://517ff8b9500446729b00008e@springeap6-foobarz.rhcloud.com/~/git/springeap6.git/");
-		assertThat(applicationDTO.getInitialGitUrl()).isEqualTo("git://github.com/openshift/spring-eap6-quickstart.git");
-		assertThat(applicationDTO.getUuid()).isEqualTo("517ff8b9500446729b00008e");
+		assertThat(applicationDTO.getGitUrl()).isEqualTo(
+				"ssh://523cbe15e0b8cd0a520001b6@springeap6-foobarz.rhcloud.com/~/git/springeap6.git/");
+		assertThat(applicationDTO.getInitialGitUrl())
+				.isEqualTo("git://github.com/openshift/spring-eap6-quickstart.git");
+		assertThat(applicationDTO.getUuid()).isEqualTo("523cbe15e0b8cd0a520001b6");
 		assertThat(applicationDTO.getGearProfile()).isEqualTo(IGearProfile.SMALL);
 		assertThat(applicationDTO.getAliases()).containsExactly("jbosstools.org");
-		assertThat(applicationDTO.getUuid()).isEqualTo("517ff8b9500446729b00008e");
-		assertThat(applicationDTO.getEmbeddedCartridges()).onProperty("name").containsExactly("mongodb-2.2", "mysql-5.1");
-		CartridgeResourceDTO cartridgeResourceDTO = applicationDTO.getEmbeddedCartridges().get(0);
+		assertThat(applicationDTO.getUuid()).isEqualTo("523cbe15e0b8cd0a520001b6");
+		assertThat(applicationDTO.getCartridges().keySet()).containsOnly(
+				Cartridges.JBOSSEAP_6_NAME,
+				Cartridges.MONGODB_22_NAME,
+				Cartridges.MYSQL_51_NAME);
+		CartridgeResourceDTO cartridgeResourceDTO = 
+				applicationDTO.getCartridges().get(Cartridges.MONGODB_22_NAME);
+		assertThat(cartridgeResourceDTO).isNotNull();
 		assertThat(cartridgeResourceDTO.getType()).isEqualTo(CartridgeType.EMBEDDED);
-		assertThat(cartridgeResourceDTO.getName()).isEqualTo("mongodb-2.2");
-		assertThat(cartridgeResourceDTO.getDescription()).isNull(); // not present in embedded node in application response (only in cartridges response)
-		assertThat(cartridgeResourceDTO.getDisplayName()).isNull(); // dito
+		assertThat(cartridgeResourceDTO.getName()).isEqualTo(Cartridges.MONGODB_22_NAME);
+		assertThat(cartridgeResourceDTO.getDescription()).startsWith("MongoDB is a scalable, high-performance, "); 
+		assertThat(cartridgeResourceDTO.getDisplayName()).startsWith("MongoDB NoSQL Database "); 
 		assertThat(cartridgeResourceDTO.getMessages()).isNull(); // dito
-		assertThat(cartridgeResourceDTO.getLinks()).isNull(); // dito
-		List<ResourceProperty> properties = cartridgeResourceDTO.getProperties().getAll();
-		assertThat(properties).onProperty("name").containsExactly("connection_url", "username", "password", "database_name", "info");
+		assertThat(cartridgeResourceDTO.getLinks()).hasSize(7); 
+		List<CartridgeResourceProperty> properties = cartridgeResourceDTO.getProperties().getAll();
+		assertThat(properties).onProperty("name").containsExactly(
+				"username", "password", "database_name", "connection_url");
 	}
 
 	/**
@@ -241,14 +252,14 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2ALIAS.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.application);
 		final ApplicationResourceDTO application = response.getData();
 		assertThat(application.getUuid()).hasSize(24);
 		assertThat(application.getCreationTime()).startsWith("2013-");
 		assertThat(application.getDomainId()).isEqualTo("foobarz");
-		assertThat(application.getFramework()).isEqualTo("jbosseap-6.0");
+		assertThat(application.getFramework()).isEqualTo(Cartridges.JBOSSEAP_6_NAME);
 		assertThat(application.getName()).isEqualTo("springeap6");
 		assertThat(application.getLinks()).hasSize(18);
 		assertThat(application.getAliases()).contains("jbosstools.org", "redhat.com");
@@ -266,7 +277,7 @@ public class ResourceDTOFactoryTest {
 		assertNotNull(content);
 
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 
 		// verifications
 		Messages messages = response.getMessages();
@@ -297,11 +308,12 @@ public class ResourceDTOFactoryTest {
 
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridge);
 		final CartridgeResourceDTO cartridge = response.getData();
-		assertThat(cartridge.getName()).isEqualTo("mysql-5.1");
+		assertThat(cartridge.getName()).isEqualTo(Cartridges.MYSQL_51_NAME);
 		assertThat(cartridge.getDisplayName()).isEqualTo("MySQL Database 5.1");
 		assertThat(cartridge.getDescription()).isEqualTo("MySQL is a multi-user, multi-threaded SQL database server.");
 		assertThat(cartridge.getType()).isEqualTo(CartridgeType.EMBEDDED);
-		ResourceProperties properties = cartridge.getProperties();
+		assertThat(cartridge.getUrl()).isNull();
+		CartridgeResourceProperties properties = cartridge.getProperties();
 		assertThat(properties).isNotNull();
 		assertThat(properties.size()).isEqualTo(4);
 		new ResourcePropertyAssert(properties.getAll().get(0))
@@ -339,13 +351,16 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getMessages().size()).isEqualTo(0);
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridges);
 		final Map<String, CartridgeResourceDTO> cartridges = response.getData();
 		assertThat(cartridges).hasSize(3); // mysql, mongo, jbosseap
-		assertThat(cartridges.values()).onProperty("name").contains("mongodb-2.2", "mysql-5.1", "jbosseap-6.0");
+		assertThat(cartridges.values()).onProperty("name").containsOnly(
+				Cartridges.MONGODB_22_NAME,
+				Cartridges.MYSQL_51_NAME,
+				Cartridges.JBOSSEAP_6_NAME);
 	}
 
 	@Test
@@ -354,13 +369,16 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		assertThat(response.getMessages().size()).isEqualTo(0);
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridges);
 		Map<String, CartridgeResourceDTO> cartridges = response.getData();
 		assertThat(cartridges).hasSize(3);
-		assertThat(cartridges.values()).onProperty("name").contains("mongodb-2.2", "mysql-5.1", "jbosseap-6.0");
+		assertThat(cartridges.values()).onProperty("name").containsOnly(
+				Cartridges.MONGODB_22_NAME,
+				Cartridges.MYSQL_51_NAME,
+				Cartridges.JBOSSEAP_6_NAME);
 	}
 
 	@Test
@@ -369,7 +387,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		Collection<GearGroupResourceDTO> gearGroups = response.getData();
 		assertThat(gearGroups.size()).isEqualTo(3);
@@ -388,7 +406,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		final CartridgeResourceDTO cartridge = response.getData();
 		final Link link = cartridge.getLink("RESTART");
@@ -402,7 +420,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.PUT_BBCC_DSA_USER_KEYS_SOMEKEY.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		final KeyResourceDTO key = response.getData();
 		final Link link = key.getLink("UPDATE");
@@ -416,7 +434,7 @@ public class ResourceDTOFactoryTest {
 		String content = Samples.LINKS_UNKNOWN_LINKPARAMETERTYPE.getContentAsString();
 		assertNotNull(content);
 		// operation
-		RestResponse response = ResourceDTOFactory.get(content);
+		RestResponse response = factory.get(content);
 		// verifications
 		final Map<String, Link> links = response.getData();
 		assertThat(links.size()).isEqualTo(1);

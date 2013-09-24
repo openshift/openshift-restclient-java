@@ -22,18 +22,18 @@ import com.openshift.internal.client.utils.Assert;
  * 
  * @see IEmbeddableCartridge
  */
-public class LatestEmbeddableCartridge extends LatestVersionSelector {
+public class LatestEmbeddableCartridge extends LatestVersionQuery {
 
 	public LatestEmbeddableCartridge(final String name) {
 		super(name);
 	}
 	
 	public IEmbeddableCartridge get(IApplication application) {
-		return super.get(getConnection(application).getEmbeddableCartridges());
+		return get(getConnection(application).getEmbeddableCartridges());
 	}
 
 	public IEmbeddableCartridge get(IUser user) {
 		Assert.notNull(user);
-		return super.get(user.getConnection().getEmbeddableCartridges());
+		return get(user.getConnection().getEmbeddableCartridges());
 	}
 }

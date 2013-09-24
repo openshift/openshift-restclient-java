@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client;
+package com.openshift.internal.client.cartridge;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,9 +31,9 @@ import com.openshift.internal.client.utils.Assert;
  * @see IEmbeddableCartridge for cartridges that have already been added and
  *      configured to an application.
  */
-public abstract class AbstractCartridgeSelector {
+public abstract class AbstractCartridgeQuery {
 	
-	protected <C extends ICartridge> Collection<C> getAllMatching(Collection<C> cartridges) {
+	public <C extends ICartridge> Collection<C> getAll(Collection<C> cartridges) {
 		List<C> matchingCartridges = new ArrayList<C>();
 
 		if (cartridges == null) {
@@ -49,6 +49,15 @@ public abstract class AbstractCartridgeSelector {
 		return matchingCartridges;
 	}
 	
+	public <C extends ICartridge> C get(Collection<C> cartridges) {
+		 Collection<C> matchingCartridges = getAll(cartridges);
+		 if (matchingCartridges == null
+				 || matchingCartridges.size() == 0) {
+			 return null;
+		 }
+		 return matchingCartridges.iterator().next();
+	}
+
 	public abstract <C extends ICartridge> boolean matches(C cartridge);
 
 	protected IOpenShiftConnection getConnection(IApplication application) {

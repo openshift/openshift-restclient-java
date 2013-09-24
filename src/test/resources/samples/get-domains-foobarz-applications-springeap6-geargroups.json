@@ -5,7 +5,7 @@
          "base_gear_storage":1,
          "cartridges":[
             {
-               "name":"jbosseap-6.0",
+               "name":"jbosseap-6",
                "display_name":"JBoss Enterprise Application Platform 6.0",
                "tags":[
                   "service",

@@ -12,10 +12,6 @@ package com.openshift.client;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.openshift.internal.client.response.ResourceDTOFactory;
 import com.openshift.internal.client.response.RestResponse;
 
 /**
@@ -25,16 +21,13 @@ public class OpenShiftEndpointException extends OpenShiftException {
 
 	private static final long serialVersionUID = 8251533839480636815L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(OpenShiftEndpointException.class);
-	
 	private final String url;
+	private final RestResponse response;
 	
-	private final String response;
-	
-	public OpenShiftEndpointException(final String url, final Throwable cause, final String response, final String message, final Object... arguments) {
+	public OpenShiftEndpointException(final String url, final Throwable cause, RestResponse response, final String message, final Object... arguments) {
 		super(cause, message, arguments);
-		this.response = response;
 		this.url = url;
+		this.response = response;
 	}
 		
 	/**
@@ -42,10 +35,7 @@ public class OpenShiftEndpointException extends OpenShiftException {
 	 * @throws OpenShiftException if the unmarshalling fails
 	 */
 	public RestResponse getRestResponse() throws OpenShiftException {
-		if (response == null) {
-			return null;
-		}
-		return ResourceDTOFactory.get(response);
+		return response;
 	}
 
 	/**
@@ -55,15 +45,7 @@ public class OpenShiftEndpointException extends OpenShiftException {
 		if (response == null) {
 			return null;
 		}
-		try {
-			return ResourceDTOFactory.get(response).getMessages();
-		} catch (OpenShiftException e) {
-			LOGGER.error("Unable to parse the response", e);
-		} catch (IllegalArgumentException e) {
-			LOGGER.error("Unable to parse the response", e);
-		}
-		
-		return null;
+		return response.getMessages();
 	}
 	
 	/**

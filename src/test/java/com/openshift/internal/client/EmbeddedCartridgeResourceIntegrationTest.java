@@ -36,6 +36,7 @@ import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.selector.LatestVersionOf;
 import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
+import com.openshift.client.utils.Cartridges;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.EmbeddedCartridgeAssert;
 import com.openshift.client.utils.EmbeddedCartridgeTestUtils;
@@ -138,7 +139,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 				LatestVersionOf.mySQL().get(user2);
 		assertThat(mysql).isNotNull();		
 		new EmbeddedCartridgeAssert(user2Application.getEmbeddedCartridge(mysql))
-				.hasUrl();
+				.hasUrlProperty();
 	}
 
 	/**
@@ -199,7 +200,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		assertThat(new ApplicationAssert(application))
 				.hasEmbeddedCartridge(LatestVersionOf.postgreSQL());
 		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(postgres))
-				.hasUrl();
+				.hasUrlProperty();
 	}
 
 	@Test
@@ -221,7 +222,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// verification
 		IEmbeddableCartridge postgres2 = LatestVersionOf.postgreSQL().get(user2);
 		new EmbeddedCartridgeAssert(user2Application.getEmbeddedCartridge(postgres2))
-				.hasUrl();
+				.hasUrlProperty();
 	}
 
 	@Test
@@ -240,7 +241,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		assertThat(new ApplicationAssert(application)
 				.hasEmbeddedCartridge(LatestVersionOf.mongoDB()));
 		new EmbeddedCartridgeAssert(application.getEmbeddedCartridge(mongo))
-				.hasUrl();
+				.hasUrlProperty();
 	}
 
 	@Test
@@ -255,13 +256,13 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 
 		// verification
 		new EmbeddedCartridgeAssert(jbossAs.getEmbeddedCartridge(LatestVersionOf.mongoDB().get(user)))
-				.hasUrl();
+				.hasUrlProperty();
 		// verify using user instance that's not the one used to create
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(jbossAs.getName());
 		IEmbeddableCartridge mongo = LatestVersionOf.mongoDB().get(user2);
 		new EmbeddedCartridgeAssert(user2Application.getEmbeddedCartridge(mongo))
-				.hasUrl();
+				.hasUrlProperty();
 	}
 
 	@Test
@@ -304,14 +305,14 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// verification
 		IEmbeddableCartridge rockMongo = LatestVersionOf.rockMongo().get(user);
 		new EmbeddedCartridgeAssert(jbossAs.getEmbeddedCartridge(rockMongo))
-				.hasUrl();
+				.hasUrlProperty();
 		// verify using user instance that's not the one used to create
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(jbossAs.getName());
 		assertThat(new ApplicationAssert(user2Application)).hasEmbeddedCartridges(
 				LatestVersionOf.mongoDB(), LatestVersionOf.rockMongo());
 		new EmbeddedCartridgeAssert(user2Application.getEmbeddedCartridge(rockMongo))
-				.hasUrl();
+				.hasUrlProperty();
 	}
 
 	@Test
@@ -353,13 +354,13 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// verification
 		IEmbeddableCartridge phpMyadmin = LatestVersionOf.phpMyAdmin().get(user);
 		new EmbeddedCartridgeAssert(jbossAs.getEmbeddedCartridge(phpMyadmin))
-				.hasUrl();
+				.hasUrlProperty();
 		// verify using user instance that's not the one used to create
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(jbossAs.getName());
 		IEmbeddableCartridge phpMyAdmin = LatestVersionOf.phpMyAdmin().get(user2);
 		new EmbeddedCartridgeAssert(user2Application.getEmbeddedCartridge(phpMyAdmin))
-				.hasUrl();
+				.hasUrlProperty();
 	}
 
 	@Test
@@ -401,16 +402,32 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 
 		// verification
 		new EmbeddedCartridgeAssert(jbossAs.getEmbeddedCartridge(LatestVersionOf.jenkinsClient().get(user)))
-				.hasUrl();
+				.hasUrlProperty();
 		// verify using user instance that's not the one used to create
 		IUser user2 = new TestConnectionFactory().getConnection().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(jbossAs.getName());
 		IEmbeddableCartridge jenkinsClient =
 				LatestVersionOf.jenkinsClient().get(user2);
 		new EmbeddedCartridgeAssert(user2Application.getEmbeddedCartridge(jenkinsClient))
-				.hasUrl();
+				.hasUrlProperty();
 	}
 
+	@Test
+	public void shouldEmbedDownloadableCartridge() throws Exception {
+		// pre-conditions
+		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(LatestVersionOf.jbossAs(), domain);
+		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(application);
+		assertThat(new ApplicationAssert(application))
+			.hasNotEmbeddableCartridge(Cartridges.foreman063());
+
+		// operation
+		application.addEmbeddableCartridge(Cartridges.foreman063());
+
+		// verification
+		new ApplicationAssert(application)
+				.hasEmbeddedCartridgeNames(Cartridges.foreman063().getName());
+	}
+	
 	@Test(expected = OpenShiftEndpointException.class)
 	public void shouldNotAddEmbeddedCartridgeTwice() throws Exception {
 		// pre-conditions

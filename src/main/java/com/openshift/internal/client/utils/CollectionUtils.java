@@ -23,5 +23,4 @@ public class CollectionUtils {
 	public static <T> List<T> toUnmodifiableCopy(Collection<T> collection) {
 		return Collections.unmodifiableList(new ArrayList<T>(collection));
 	}
-
 }

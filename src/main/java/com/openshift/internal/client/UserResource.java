@@ -22,6 +22,7 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftSSHKeyException;
 import com.openshift.client.OpenShiftUnknonwSSHKeyTypeException;
 import com.openshift.client.SSHKeyType;
+import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.KeyResourceDTO;
 import com.openshift.internal.client.response.UserResourceDTO;
 import com.openshift.internal.client.utils.Assert;
@@ -237,32 +238,35 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 
 	private class GetSShKeysRequest extends ServiceRequest {
 
-		public GetSShKeysRequest() throws OpenShiftException {
+		private GetSShKeysRequest() throws OpenShiftException {
 			super("LIST_KEYS");
 		}
 
-		public List<KeyResourceDTO> execute() throws OpenShiftException {
+		protected List<KeyResourceDTO> execute() throws OpenShiftException {
 			return super.execute();
 		}
 	}
 
 	private class AddSShKeyRequest extends ServiceRequest {
 
-		public AddSShKeyRequest() throws OpenShiftException {
+		private AddSShKeyRequest() throws OpenShiftException {
 			super("ADD_KEY");
 		}
 
-		public KeyResourceDTO execute(SSHKeyType type, String name, String content) throws OpenShiftException {
-			return super.execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_TYPE, type.getTypeId()),
-					new RequestParameter(IOpenShiftJsonConstants.PROPERTY_NAME, name), new RequestParameter(
-							IOpenShiftJsonConstants.PROPERTY_CONTENT, content));
+		protected KeyResourceDTO execute(SSHKeyType type, String name, String content) throws OpenShiftException {
+			return super.execute(
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_TYPE, type.getTypeId()),
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, name), 
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_CONTENT, content));
 		}
 	}
 
 
 	@Override
 	public String toString() {
-		return "UserResource [rhLogin=" + rhLogin + "]";
+		return "UserResource ["
+				+ "rhLogin=" + rhLogin 
+				+ "]";
 	}
 
 }

@@ -43,7 +43,7 @@ public class UrlEndsWithMatcher extends ArgumentMatcher<URL> {
 		URL url = (URL) argument;
 		final boolean match = url.toExternalForm().endsWith(urlSuffix);
 		if (match) {
-			LOGGER.info("Matching {}", urlSuffix);
+			LOGGER.trace("Matching {}", urlSuffix);
 		}
 		return match;
 	}

@@ -10,7 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import java.util.regex.Pattern;
+import java.net.URL;
 
 import com.openshift.client.IApplication;
 import com.openshift.client.OpenShiftException;
@@ -18,36 +18,32 @@ import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
-import com.openshift.internal.client.response.ResourceProperties;
-import com.openshift.internal.client.response.ResourceProperty;
+import com.openshift.internal.client.response.CartridgeResourceProperties;
 
 /**
- * A cartridge that is embedded into an application. The cartridge is added when
- * the application resource is loaded. The cartridge resource is only loaded
- * from backend when detail informations are needed (see #getDisplayName,
- * {@link #getDescription()}.
+ * A cartridge that is embedded into an application. 
  * 
  * @author André Dietisheim
  */
 public class EmbeddedCartridgeResource extends AbstractOpenShiftResource implements IEmbeddedCartridge {
 
-	private static final Pattern NAME_URL_PATTERN = Pattern.compile("url", Pattern.CASE_INSENSITIVE);
-	
 	private static final String LINK_DELETE_CARTRIDGE = "DELETE";
 
 	private final String name;
 	private String displayName;
 	private String description;
 	private final CartridgeType type;
+	private final URL url;
 	private final ApplicationResource application;
-	private ResourceProperties properties;
+	private CartridgeResourceProperties properties;
 
 	protected EmbeddedCartridgeResource(final CartridgeResourceDTO dto, final ApplicationResource application) {
 		super(application.getService(), dto.getLinks(), dto.getMessages());
 		this.name = dto.getName();
-		this.type = CartridgeType.EMBEDDED;
 		this.displayName = dto.getDisplayName();
 		this.description = dto.getDescription();
+		this.type = CartridgeType.EMBEDDED;
+		this.url = dto.getUrl();
 		this.properties = dto.getProperties();
 		this.application = application;
 	}
@@ -64,18 +60,10 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	}
 
 	public String getDisplayName() {
-		// only available in resource, not in embedded block within application
-		if (!isResourceLoaded()) {
-			refresh();
-		}
 		return displayName;
 	}
 
 	public String getDescription() {
-		// only available in resource, not in embedded block within application
-		if (!isResourceLoaded()) {
-			refresh();
-		}
 		return description;
 	}
 
@@ -83,15 +71,14 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		return type;
 	}
 
-	public String getUrl() throws OpenShiftException {
-		for (ResourceProperty property : properties.getAll()) {
-			if (NAME_URL_PATTERN.matcher(property.getName()).find()) {
-				return property.getValue();
-			}
-		}
-		return null;
+	public URL getUrl() {
+		return url;
 	}
-
+	
+	public boolean isDownloadable() {
+		return url != null;
+	}
+	
 	public IApplication getApplication() {
 		return application;
 	}
@@ -110,25 +97,18 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	}
 
 	public void destroy() throws OpenShiftException {
-		if (!isResourceLoaded()) {
-			application.refreshEmbeddedCartridges();
-		}
 		new DeleteCartridgeRequest().execute();
 		application.removeEmbeddedCartridge(this);
 	}
 
-	protected boolean isResourceLoaded() {
-		return areLinksLoaded();
-	}
-
 	@Override
-	public ResourceProperties getProperties() {
+	public CartridgeResourceProperties getProperties() {
 		return properties;
 	}
 
 	private class DeleteCartridgeRequest extends ServiceRequest {
 
-		protected DeleteCartridgeRequest() {
+		private DeleteCartridgeRequest() {
 			super(LINK_DELETE_CARTRIDGE);
 		}
 	}
@@ -167,6 +147,9 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	public String toString() {
 		return "EmbeddedCartridgeResource [" +
 				"name=" + name
+				+ "url=" + url
+				+ ", displayName=" + displayName
+				+ ", description=" + description
 				+ ", type=" + type
 				+ ", application=" + application.getName()
 				+ "]";

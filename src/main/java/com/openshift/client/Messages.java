@@ -141,4 +141,14 @@ public class Messages {
 	public int size() {
 		return getAll().size();
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (Message message : getAll()) {
+			builder.append(message.getText()).append('\n');					
+		}
+		return builder.toString();
+	}
+
 }

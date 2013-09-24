@@ -11,6 +11,7 @@
 package com.openshift.client;
 
 import com.openshift.internal.client.httpclient.HttpClientException;
+import com.openshift.internal.client.response.RestResponse;
 
 
 /**
@@ -20,7 +21,7 @@ public class InvalidCredentialsOpenShiftException extends OpenShiftEndpointExcep
 
 	private static final long serialVersionUID = 1L;
 
-	public  InvalidCredentialsOpenShiftException(String url, HttpClientException cause) throws OpenShiftException {
-		super(url, cause, cause.getMessage(), "Your credentials are not authorized to access \"{0}\"", (Object) url);
+	public  InvalidCredentialsOpenShiftException(String url, HttpClientException cause, RestResponse restResponse) throws OpenShiftException {
+		super(url, cause, restResponse, "Your credentials are not authorized to access \"{0}\"", (Object) url);
 	}
 }

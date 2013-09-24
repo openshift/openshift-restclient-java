@@ -21,7 +21,7 @@ import com.openshift.internal.client.utils.CollectionUtils;
  * 
  * @author Andre Dietisheim
  */
-public class ResourceProperties {
+public class CartridgeResourceProperties {
 
 	public static final String CONNECTION_URL = "connection_url";
 	public static final String JOB_URL = "job_url";
@@ -29,25 +29,25 @@ public class ResourceProperties {
 	public static final String PASSWORD = "password";
 	public static final String DATABASE_NAME = "database_name";
 
-	private Map<String, ResourceProperty> properties = new LinkedHashMap<String, ResourceProperty>();
+	private Map<String, CartridgeResourceProperty> properties = new LinkedHashMap<String, CartridgeResourceProperty>();
 
 	public String getPropertyValue(String name) {
-		ResourceProperty property = properties.get(name);
+		CartridgeResourceProperty property = properties.get(name);
 		if (property == null) {
 			return null;
 		}
 		return property.getValue();
 	}
 
-	public void add(String name, ResourceProperty property) {
+	public void add(String name, CartridgeResourceProperty property) {
 		properties.put(name, property);
 	}
 
-	public ResourceProperty getProperty(String name) {
+	public CartridgeResourceProperty getProperty(String name) {
 		return properties.get(name);
 	}
 
-	public List<ResourceProperty> getAll() {
+	public List<CartridgeResourceProperty> getAll() {
 		return CollectionUtils.toUnmodifiableCopy(properties.values());
 	}
 

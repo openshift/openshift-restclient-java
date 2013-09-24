@@ -162,7 +162,7 @@
             "info":"Connection URL: mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/"
          }
       },
-      "framework":"jbosseap-6.0",
+      "framework":"jbosseap-6",
       "gear_count":1,
       "gear_profile":"small",
       "git_url":"ssh://517ff8b9500446729b00008e@springeap6-foobarz.rhcloud.com/~/git/springeap6.git/",
@@ -412,7 +412,7 @@
                   "name":"colocate_with",
                   "type":"string",
                   "valid_options":[
-                     "jbosseap-6.0",
+                     "jbosseap-6",
                      "mongodb-2.2",
                      "mysql-5.1"
                   ]

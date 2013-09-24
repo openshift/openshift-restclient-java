@@ -11,8 +11,8 @@
 package com.openshift.client.cartridge.selector;
 
 import java.text.Collator;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,11 +21,11 @@ import com.openshift.client.IApplication;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.internal.client.AbstractCartridgeSelector;
+import com.openshift.internal.client.cartridge.AbstractCartridgeQuery;
 import com.openshift.internal.client.utils.Assert;
 
 /**
- * A constraint that shall match available embeddable cartridges by name. Among
+ * A constraint that shall match available embeddable and standalone cartridges by name. Among
  * several matching ones, the one with the highest version is chosen.
  * 
  * @author Andre Dietisheim
@@ -33,11 +33,11 @@ import com.openshift.internal.client.utils.Assert;
  * @see IEmbeddableCartridge for cartridges that have already been added and
  *      configured to an application.
  */
-public class LatestVersionSelector extends AbstractCartridgeSelector {
+public class LatestVersionQuery extends AbstractCartridgeQuery {
 
 	private final String nameConstraint;
 
-	public LatestVersionSelector(final String name) {
+	public LatestVersionQuery(final String name) {
 		Assert.isTrue(name != null);
 		this.nameConstraint = name;
 	}
@@ -46,8 +46,14 @@ public class LatestVersionSelector extends AbstractCartridgeSelector {
 		return nameConstraint;
 	}
 
+	@Override
+	public <C extends ICartridge> Collection<C> getAll(Collection<C> cartridges) {
+		return Collections.singleton(getLatest(super.getAll(cartridges)));
+	}
+
+	@Override
 	public <C extends ICartridge> C get(Collection<C> cartridges) {
-		return getLatest(new ArrayList<C>(super.getAllMatching(cartridges)));
+		return getLatest(super.getAll(cartridges));
 	}
 
 	public <C extends ICartridge> boolean matches(C cartridge) {
@@ -162,10 +168,10 @@ public class LatestVersionSelector extends AbstractCartridgeSelector {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof LatestVersionSelector)) {
+		if (!(obj instanceof LatestVersionQuery)) {
 			return false;
 		}
-		LatestVersionSelector other = (LatestVersionSelector) obj;
+		LatestVersionQuery other = (LatestVersionQuery) obj;
 		if (nameConstraint == null) {
 			if (other.nameConstraint != null) {
 				return false;

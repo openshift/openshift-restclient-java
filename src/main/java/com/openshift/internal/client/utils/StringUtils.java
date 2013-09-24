@@ -35,4 +35,12 @@ public class StringUtils {
 				|| string.trim().isEmpty();
 	}
 	
+	public static String prependIfNonEmpty(String prefix, String string) {
+		if (isEmpty(prefix)) {
+			return string;
+		}
+		
+		return new StringBuilder(prefix).append(string).toString();
+	}
+	
 }

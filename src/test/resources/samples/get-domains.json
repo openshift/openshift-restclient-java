@@ -45,7 +45,7 @@
                         "jenkins-1.4",
                         "ruby-1.8",
                         "python-2.7",
-                        "jbosseap-6.0",
+                        "jbosseap-6",
                         "diy-0.1",
                         "jbossews-1.0",
                         "php-5.3",

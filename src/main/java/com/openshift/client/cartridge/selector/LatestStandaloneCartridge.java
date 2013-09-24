@@ -22,18 +22,18 @@ import com.openshift.internal.client.utils.Assert;
  * 
  * @see IStandaloneCartridge
  */
-public class LatestStandaloneCartridge extends LatestVersionSelector {
+public class LatestStandaloneCartridge extends LatestVersionQuery {
 
 	public LatestStandaloneCartridge(final String name) {
 		super(name);
 	}
 	
 	public IStandaloneCartridge get(IApplication application) {
-		return super.get(getConnection(application).getStandaloneCartridges());
+		return get(getConnection(application).getStandaloneCartridges());
 	}
 
 	public IStandaloneCartridge get(IUser user) {
 		Assert.notNull(user);
-		return super.get(user.getConnection().getStandaloneCartridges());
+		return get(user.getConnection().getStandaloneCartridges());
 	}
 }

@@ -10,7 +10,7 @@
 	</appender>
 
 	<logger name="com.openshift">
-		<level value="info" />
+		<level value="warn" />
 	</logger>
 
 	<root>

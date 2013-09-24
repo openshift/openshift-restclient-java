@@ -20,6 +20,7 @@ import org.junit.Test;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.utils.Cartridges;
 import com.openshift.client.utils.TestConnectionFactory;
 
 /**
@@ -44,8 +45,14 @@ public class APIResourceTest {
 		assertThat(cartridges)
 				.hasSize(15)
 				.onProperty("name")
-					.contains("nodejs-0.6", "jbossas-7", "jbosseap-6.0", "jbossews-1.0", "jbossews-2.0")
-					.excludes("mongodb-2.2", "mysql-5.1", "switchyard-0.6");
+				.contains(Cartridges.NODEJS_06_NAME
+						, Cartridges.JBOSSAS_7_NAME
+						, Cartridges.JBOSSEAP_6_NAME
+						, Cartridges.JBOSSEWS_1_NAME
+						, Cartridges.JBOSSEWS_2_NAME)
+				.excludes(Cartridges.MONGODB_22_NAME
+						, Cartridges.MYSQL_51_NAME
+						, Cartridges.SWITCHYARD_06_NAME);
 	}
 
 	@Test
@@ -57,7 +64,13 @@ public class APIResourceTest {
 		assertThat(cartridges)
 				.hasSize(11)
 				.onProperty("name")
-				.excludes("nodejs-0.6", "jbossas-7", "jbosseap-6.0", "jbossews-1.0", "jbossews-2.0")
-				.contains("mongodb-2.2", "mysql-5.1", "switchyard-0.6");
+				.excludes(Cartridges.NODEJS_06_NAME
+						, Cartridges.JBOSSAS_7_NAME
+						, Cartridges.JBOSSEAP_6_NAME
+						, Cartridges.JBOSSEWS_1_NAME
+						, Cartridges.JBOSSEWS_2_NAME)
+				.contains(Cartridges.MONGODB_22_NAME
+						, Cartridges.MYSQL_51_NAME
+						, Cartridges.SWITCHYARD_06_NAME);
 	}
 }

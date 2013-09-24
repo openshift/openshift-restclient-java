@@ -23,8 +23,7 @@ public class UrlConnectionHttpClientBuilder {
 	private String password;
 	private String authKey;
 	private String authIV;
-	private IMediaType requestMediaType = new FormUrlEncodedMediaType();
-	private String acceptedMediaType = IHttpClient.MEDIATYPE_APPLICATION_JSON;
+	private String acceptedMediaType;
 	private String version;
 
 	public UrlConnectionHttpClientBuilder setUserAgent(String userAgent) {
@@ -49,13 +48,8 @@ public class UrlConnectionHttpClientBuilder {
 		return this;
 	}
 
-	public UrlConnectionHttpClientBuilder setRequestMediaType(IMediaType type) {
-		this.requestMediaType = type;
-		return this;
-	}
-
-	public UrlConnectionHttpClientBuilder setRequestMediaType(String acceptedMediaType) {
-		this.acceptedMediaType = acceptedMediaType;
+	public UrlConnectionHttpClientBuilder setAcceptMediaType(String mediaType) {
+		this.acceptedMediaType = mediaType;
 		return this;
 	}
 
@@ -65,8 +59,7 @@ public class UrlConnectionHttpClientBuilder {
 	}
 
 	public IHttpClient client() {
-		return new UrlConnectionHttpClient(username, password, userAgent,
-				sslChecks, requestMediaType, acceptedMediaType, version,
-				authKey, authIV);
+		return new UrlConnectionHttpClient(
+				username, password, userAgent, sslChecks, acceptedMediaType, version, authKey, authIV);
 	}
 }

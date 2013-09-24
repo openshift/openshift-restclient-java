@@ -10,62 +10,43 @@
  ******************************************************************************/
 package com.openshift.client.cartridge;
 
+import java.net.URL;
 
+import com.openshift.internal.client.APIResource;
+import com.openshift.internal.client.cartridge.BaseCartridge;
 
 /**
- * An interface that designate a cartridge that can be embedded into an
- * application.
+ * An cartridge that may be embedded (added) into an application. Add-on
+ * cartridge is an equivalent name for embedded cartridge.
  * 
  * @author Xavier Coulon
  * 
  * @see IEmbeddableCartridge for cartridges that have already been added and
  *      configured to an application.
  */
-public class EmbeddableCartridge implements IEmbeddableCartridge {
-
-	private final String name;
-	private String displayName;
-	private String description;
+public class EmbeddableCartridge extends BaseCartridge implements IEmbeddableCartridge {
 
 	public EmbeddableCartridge(final String name) {
-		this(name, null, null);
+		super(name);
 	}
 
-	public EmbeddableCartridge(final String name, String version) {
-		this(name + NAME_VERSION_DELIMITER + version, null, null);
+	public EmbeddableCartridge(final URL url) {
+		super(null, url);
 	}
 
-	public EmbeddableCartridge(final String name, String displayName, String description) {
-		this.name = name;
-		this.displayName = displayName;
-		this.description = description;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
+	public EmbeddableCartridge(final String name, final URL url) {
+		super(name, url);
 	}
 
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object) equals support comparison
-	 *      between EmbeddedCartridges and EmbeddableCartridges (ie, removed
-	 *      'class' comparison from generated equals() implementation)
+	 * Constructor used when available cartridges are loaded from OpenShift
+	 * 
+	 * @see APIResource#getEmbeddableCartridges()
 	 */
+	public EmbeddableCartridge(final String name, String displayName, String description) {
+		super(name, displayName, description);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -78,21 +59,24 @@ public class EmbeddableCartridge implements IEmbeddableCartridge {
 			return false;
 		}
 		IEmbeddableCartridge other = (IEmbeddableCartridge) obj;
-		if (name == null) {
+		// shortcut: downloadable cartridges get their name only when
+		// they're deployed thus should equal on url only
+		if (isDownloadable()) {
+			if (other.isDownloadable()) {
+				if (getUrl() == null) {
+					return other.getUrl() == null;
+				}
+				return getUrl().equals(other.getUrl());
+			}
+		}
+		if (getName() == null) {
 			if (other.getName() != null) {
 				return false;
 			}
-		} else if (!name.equals(other.getName())) {
+		} else if (!getName().equals(other.getName())) {
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "EmbeddableCartridge [" +
-				"name=" + name +
-				"]";
 	}
 
 }

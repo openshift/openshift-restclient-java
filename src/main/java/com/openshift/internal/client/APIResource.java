@@ -23,6 +23,8 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.cartridge.StandaloneCartridge;
+import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
 import com.openshift.internal.client.response.DomainResourceDTO;
 import com.openshift.internal.client.response.Link;
@@ -213,44 +215,44 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	
 	private class AddDomainRequest extends ServiceRequest {
 
-		public AddDomainRequest() throws OpenShiftException {
+		private AddDomainRequest() throws OpenShiftException {
 			super("ADD_DOMAIN");
 		}
 
-		public DomainResourceDTO execute(String namespace) throws OpenShiftException {
-			return execute(new RequestParameter(IOpenShiftJsonConstants.PROPERTY_ID, namespace));
+		private DomainResourceDTO execute(String namespace) throws OpenShiftException {
+			return execute(new StringParameter(IOpenShiftJsonConstants.PROPERTY_ID, namespace));
 		}
 	}
 
 	private class ListDomainsRequest extends ServiceRequest {
 
-		public ListDomainsRequest() throws OpenShiftException {
+		private ListDomainsRequest() throws OpenShiftException {
 			super("LIST_DOMAINS");
 		}
 
-		public List<DomainResourceDTO> execute() throws OpenShiftException {
+		protected List<DomainResourceDTO> execute() throws OpenShiftException {
 			return super.execute();
 		}
 	}
 
 	private class GetUserRequest extends ServiceRequest {
 
-		public GetUserRequest() throws OpenShiftException {
+		private GetUserRequest() throws OpenShiftException {
 			super("GET_USER");
 		}
 
-		public UserResourceDTO execute() throws OpenShiftException {
+		protected UserResourceDTO execute() throws OpenShiftException {
 			return super.execute();
 		}
 	}
 
 	private class GetCartridgesRequest extends ServiceRequest {
 
-		public GetCartridgesRequest() throws OpenShiftException {
+		private GetCartridgesRequest() throws OpenShiftException {
 			super("LIST_CARTRIDGES");
 		}
 
-		public Map<String, CartridgeResourceDTO> execute() throws OpenShiftException {
+		protected Map<String, CartridgeResourceDTO> execute() throws OpenShiftException {
 			return super.execute();
 		}
 	}
