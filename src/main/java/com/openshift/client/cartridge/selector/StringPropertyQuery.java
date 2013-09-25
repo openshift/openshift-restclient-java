@@ -44,7 +44,14 @@ public abstract class StringPropertyQuery extends AbstractCartridgeQuery {
 
 	@Override
 	public <C extends ICartridge> boolean matches(C cartridge) {
-		return namePattern.matcher(getProperty(cartridge)).matches();
+		if (cartridge == null) {
+			return false;
+		}
+		String propertyValue = getProperty(cartridge);
+		if (propertyValue == null) {
+			return namePattern == null;
+		}
+		return namePattern.matcher(propertyValue).matches();
 	}
 	
 	protected abstract <C extends ICartridge> String getProperty(C cartridge);

@@ -44,7 +44,7 @@ public abstract class BaseCartridge implements ICartridge {
 	}
 
 	protected BaseCartridge(final String name, String displayName, String description) {
-		this(name, null, description, displayName);
+		this(name, null, displayName, description);
 	}
 
 	protected BaseCartridge(final String name, URL url, String displayName, String description) {

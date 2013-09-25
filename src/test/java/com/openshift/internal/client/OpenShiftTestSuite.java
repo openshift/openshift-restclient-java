@@ -31,7 +31,7 @@ import com.openshift.internal.client.response.OpenShiftJsonDTOFactoryTest;
 	StandaloneCartridgeTest.class,
 	EmbeddableCartridgeTest.class,
 	EmbeddedCartridgeResourceTest.class,
-	CartrdigeSelectorTest.class,
+	QueryTest.class,
 	UserTest.class,
 	SSHKeyTest.class,
 	GearGroupsResourceTest.class,

@@ -31,7 +31,7 @@ public class EmbeddableCartridge extends BaseCartridge implements IEmbeddableCar
 	}
 
 	public EmbeddableCartridge(final URL url) {
-		super(null, url);
+		super(url);
 	}
 
 	public EmbeddableCartridge(final String name, final URL url) {
