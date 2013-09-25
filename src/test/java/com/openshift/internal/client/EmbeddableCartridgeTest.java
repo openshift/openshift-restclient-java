@@ -15,16 +15,33 @@ import static org.fest.assertions.Assertions.assertThat;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.client.IHttpClient;
+import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.cartridge.EmbeddableCartridge;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
+import com.openshift.client.utils.CartridgeAssert;
 import com.openshift.client.utils.Cartridges;
+import com.openshift.client.utils.Samples;
+import com.openshift.client.utils.TestConnectionFactory;
 
 /**
  * @author Andre Dietisheim
  */
 public class EmbeddableCartridgeTest {
+
+	private IOpenShiftConnection connection;
+
+	@Before
+	public void setup() throws Throwable {
+		IHttpClient client = new HttpClientMockDirector()
+				.mockGetCartridges(Samples.GET_CARTRIDGES)
+				.client();
+		this.connection = new TestConnectionFactory().getConnection(client);
+	}
 
 	@Test
 	public void shouldNonDownloadableEqualsNonDownloadable() {
@@ -53,7 +70,7 @@ public class EmbeddableCartridgeTest {
 		// verification
 		assertThat(new EmbeddableCartridge("redhat", new URL(Cartridges.FOREMAN_DOWNLOAD_URL)))
 				.isEqualTo(new EmbeddableCartridge(null, new URL(Cartridges.FOREMAN_DOWNLOAD_URL)));
-		// should equal if url is equal, name doesnt matter 
+		// should equal if url is equal, name doesnt matter
 		// (name is updated as soon as cartridge is deployed)
 		assertThat(new EmbeddableCartridge("jboss", new URL(Cartridges.FOREMAN_DOWNLOAD_URL)))
 				.isEqualTo(new EmbeddableCartridge("redhat", new URL(Cartridges.FOREMAN_DOWNLOAD_URL)));
@@ -66,6 +83,20 @@ public class EmbeddableCartridgeTest {
 		// verification
 		assertThat(new EmbeddableCartridge(null, new URL(Cartridges.FOREMAN_DOWNLOAD_URL)))
 				.isNotEqualTo(new StandaloneCartridge(null, new URL(Cartridges.GO_DOWNLOAD_URL)));
+	}
+
+	@Test
+	public void shouldHaveNameDisplaynameDescription() throws Throwable {
+		// pre-condition
+		IEmbeddableCartridge mongoDb = connection.getEmbeddableCartridges().get(0);
+		CartridgeAssert<IEmbeddableCartridge> cartridgeAssert = new CartridgeAssert<IEmbeddableCartridge>(mongoDb);
+
+		// operation
+		// verifcation
+		cartridgeAssert
+				.hasName("mongodb-2.2")
+				.hasDisplayName("MongoDB NoSQL Database 2.2")
+				.hasDescription("MongoDB is a scalable, high-performance, open source NoSQL database.");
 	}
 
 }

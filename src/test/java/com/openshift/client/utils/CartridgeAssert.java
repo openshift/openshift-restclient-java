@@ -12,7 +12,6 @@ package com.openshift.client.utils;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.fest.assertions.AssertExtension;
@@ -33,32 +32,37 @@ public class CartridgeAssert<C extends ICartridge> implements AssertExtension {
 		this.cartridge = cartridge;
 	}
 
-	public CartridgeAssert<C> hasName(String name) throws OpenShiftException, URISyntaxException {
+	public CartridgeAssert<C> hasName(String name) throws OpenShiftException {
 		assertThat(cartridge.getName()).isEqualTo(name);
 		return this;
 	}
 
-	public CartridgeAssert<C> hasName() throws OpenShiftException, URISyntaxException {
+	public CartridgeAssert<C> hasName() throws OpenShiftException {
 		assertThat(cartridge.getName()).isNotEmpty();
 		return this;
 	}
+	
+	public CartridgeAssert<C> nameStartWith(String namePrefix) throws OpenShiftException {
+		assertThat(cartridge.getName()).startsWith(namePrefix);
+		return this;
+	}
 
-	public CartridgeAssert<C> hasDisplayName(String displayName) throws OpenShiftException, URISyntaxException {
+	public CartridgeAssert<C> hasDisplayName(String displayName) throws OpenShiftException {
 		assertThat(cartridge.getDisplayName()).isEqualTo(displayName);
 		return this;
 	}
 
-	public CartridgeAssert<C> hasDisplayName() throws OpenShiftException, URISyntaxException {
+	public CartridgeAssert<C> hasDisplayName() throws OpenShiftException {
 		assertThat(cartridge.getDisplayName()).isNotEmpty();
 		return this;
 	}
 
-	public CartridgeAssert<C> hasDescription(String description) throws OpenShiftException, URISyntaxException {
+	public CartridgeAssert<C> hasDescription(String description) throws OpenShiftException {
 		assertThat(cartridge.getDescription()).isEqualTo(description);
 		return this;
 	}
 
-	public CartridgeAssert<C> hasDescription() throws OpenShiftException, URISyntaxException {
+	public CartridgeAssert<C> hasDescription() throws OpenShiftException {
 		assertThat(cartridge.getDescription()).isNotNull();
 		return this;
 	}
@@ -68,7 +72,7 @@ public class CartridgeAssert<C extends ICartridge> implements AssertExtension {
 		return this;
 	}
 
-	public CartridgeAssert<C> hasUrl() throws OpenShiftException, URISyntaxException {
+	public CartridgeAssert<C> hasUrl() throws OpenShiftException {
 		assertThat(cartridge.getUrl()).isNotNull();
 		return this;
 	}
@@ -83,7 +87,7 @@ public class CartridgeAssert<C extends ICartridge> implements AssertExtension {
 		return this;
 	}
 
-	public CartridgeAssert<C> isEqualsTo(BaseCartridge otherCartridge) throws OpenShiftException, URISyntaxException {
+	public CartridgeAssert<C> isEqualsTo(BaseCartridge otherCartridge) throws OpenShiftException {
 		assertThat(otherCartridge).isNotNull();
 		hasName(otherCartridge.getName());
 		hasDescription(otherCartridge.getDescription());

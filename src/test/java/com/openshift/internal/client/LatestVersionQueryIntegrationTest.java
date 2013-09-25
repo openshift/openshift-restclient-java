@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -24,12 +22,13 @@ import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.selector.LatestVersionOf;
+import com.openshift.client.utils.CartridgeAssert;
 import com.openshift.client.utils.TestConnectionFactory;
 
 /**
  * @author Andre Dietisheim
  */
-public class LatestVersionSelectorIntegrationTest {
+public class LatestVersionQueryIntegrationTest {
 
 	private IUser user;
 
@@ -183,9 +182,9 @@ public class LatestVersionSelectorIntegrationTest {
 		assertCartridge(IEmbeddedCartridge.NAME_ROCKMONGO, LatestVersionOf.rockMongo().get(user)); 
 	}
 
-	private void assertCartridge(String expectedName, ICartridge cartridge) {
-		assertThat(cartridge).isNotNull();
-		assertThat(cartridge.getName()).startsWith(expectedName);
+	private void assertCartridge(String expectedName, ICartridge cartridge) throws OpenShiftException {
+		new CartridgeAssert<ICartridge>(cartridge)
+			.nameStartWith(expectedName);
 	}
 	
 }
