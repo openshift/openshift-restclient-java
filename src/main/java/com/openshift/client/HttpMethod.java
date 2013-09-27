@@ -14,5 +14,5 @@ package com.openshift.client;
  * @author Andre Dietisheim
  */
 public enum HttpMethod {
-	GET, POST, PUT, DELETE
+	GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS
 }

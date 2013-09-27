@@ -67,9 +67,13 @@ public interface IHttpClient {
 
 	public String get(URL url, int timeout) throws HttpClientException, SocketTimeoutException;
 
+	public String head(URL url, int timeout) throws HttpClientException, SocketTimeoutException;
+
 	public String post(URL url, IMediaType mediaType, int timeout, Parameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
 
     public String put(URL url, IMediaType mediaType, int timeout, Parameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
+
+    public String patch(URL url, IMediaType mediaType, int timeout, Parameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
 
     public String delete(URL url, IMediaType mediaType, int timeout, Parameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
 
