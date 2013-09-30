@@ -173,12 +173,16 @@ public class RestService implements IRestService {
 		switch (httpMethod) {
 		case GET:
 			return client.get(url, timeout);
+		case HEAD:
+			return client.head(url, timeout);
 		case POST:
 			return client.post(url, mediaType, timeout, parameters);
 		case PUT:
 			return client.put(url, mediaType,timeout, parameters);
 		case DELETE:
 			return client.delete(url, mediaType, timeout, parameters);
+		case PATCH:
+			return client.patch(url, mediaType, timeout, parameters);
 		default:
 			throw new OpenShiftException("Unexpected HTTP method {0}", httpMethod.toString());
 		}

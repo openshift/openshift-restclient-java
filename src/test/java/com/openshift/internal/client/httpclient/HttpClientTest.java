@@ -80,6 +80,13 @@ public class HttpClientTest {
 	}
 
 	@Test
+	public void canHead() throws Throwable {
+		String response = httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+		assertNotNull(response);
+		assertTrue(response.startsWith("HEAD"));
+	}
+
+	@Test
 	public void canPost() throws Throwable {
 		String response = httpClient.post(serverFake.getUrl(), new FormUrlEncodedMediaType(), IHttpClient.NO_TIMEOUT);
 		assertNotNull(response);
@@ -99,6 +106,14 @@ public class HttpClientTest {
 		String response = httpClient.delete(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
 		assertNotNull(response);
 		assertTrue(response.startsWith("DELETE"));
+	}
+
+	@Test
+	public void canPatch() throws Throwable {
+		String response = httpClient.patch(serverFake.getUrl(), new FormUrlEncodedMediaType(), IHttpClient.NO_TIMEOUT);
+		assertNotNull(response);
+		assertTrue(response.startsWith("POST"));
+		assertTrue(response.contains("X-Http-Method-Override: PATCH"));
 	}
 
 	@Test

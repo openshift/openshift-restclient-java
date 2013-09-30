@@ -85,6 +85,11 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 
 	@Override
+	public String head(URL url, int timeout) throws HttpClientException, SocketTimeoutException {
+		return request(HttpMethod.HEAD, url, null, timeout);
+	}
+
+	@Override
 	public String put(URL url, IMediaType mediaType, int timeout, Parameter... parameters)
 			throws HttpClientException, SocketTimeoutException, EncodingException {
 		return request(HttpMethod.PUT, url, mediaType, timeout, parameters);
@@ -94,6 +99,12 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	public String post(URL url, IMediaType mediaType, int timeout, Parameter... parameters)
 			throws HttpClientException, SocketTimeoutException, EncodingException {
 		return request(HttpMethod.POST, url, mediaType, timeout, parameters);
+	}
+
+	@Override
+	public String patch(URL url, IMediaType mediaType, int timeout, Parameter... parameters)
+			throws HttpClientException, SocketTimeoutException, EncodingException {
+		return request(HttpMethod.PATCH, url, mediaType, timeout, parameters);
 	}
 
 	@Override
@@ -121,6 +132,11 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		try {
 			connection = createConnection(
 					url, username, password, authKey, authIV, userAgent, acceptedVersion, acceptedMediaType, timeout);
+			// PATCH not yet supported by JVM
+			if (httpMethod == HttpMethod.PATCH) {
+				httpMethod = HttpMethod.POST;
+				connection.setRequestProperty("X-Http-Method-Override", "PATCH");
+			}
 			connection.setRequestMethod(httpMethod.toString());
 			if (!parameters.isEmpty()) {
 				connection.setDoOutput(true);
