@@ -63,6 +63,16 @@ public class HttpClientMockDirector {
 		return this;
 	}
 
+	public HttpClientMockDirector mockHeadAny(String response) throws SocketTimeoutException, HttpClientException {
+		when(client.head(any(URL.class), anyInt())).thenReturn(response);
+		return this;
+	}
+
+	public HttpClientMockDirector mockHeadtAny(Exception exception) throws SocketTimeoutException, HttpClientException {
+		when(client.head(any(URL.class), anyInt())).thenThrow(exception);
+		return this;
+	}
+
 	public HttpClientMockDirector mockPostAny(Samples postRequestResponse)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
 		return mockPostAny(postRequestResponse.getContentAsString());
@@ -78,6 +88,25 @@ public class HttpClientMockDirector {
 	public HttpClientMockDirector mockPostAny(Exception exception)
 			throws SocketTimeoutException, HttpClientException, EncodingException {
 		when(client.post(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
+				.thenThrow(exception);
+		return this;
+	}
+
+	public HttpClientMockDirector mockPatchAny(Samples postRequestResponse)
+			throws SocketTimeoutException, HttpClientException, EncodingException {
+		return mockPatchAny(postRequestResponse.getContentAsString());
+	}
+
+	public HttpClientMockDirector mockPatchAny(String jsonResponse)
+			throws SocketTimeoutException, HttpClientException, EncodingException {
+		when(client.patch(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
+				.thenReturn(jsonResponse);
+		return this;
+	}
+
+	public HttpClientMockDirector mockPatchAny(Exception exception)
+			throws SocketTimeoutException, HttpClientException, EncodingException {
+		when(client.patch(any(URL.class), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
 				.thenThrow(exception);
 		return this;
 	}
