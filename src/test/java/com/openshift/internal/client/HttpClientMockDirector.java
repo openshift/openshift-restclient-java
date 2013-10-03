@@ -426,6 +426,18 @@ public class HttpClientMockDirector {
 		return this;
 	}
 
+	public HttpClientMockDirector verifyPatchAny(int times)
+			throws SocketTimeoutException, HttpClientException, EncodingException {
+		verify(client, times(times)).patch(any(URL.class), any(IMediaType.class), anyInt(),Matchers.<Parameter[]>anyVararg());
+		return this;
+	}
+
+	public HttpClientMockDirector verifyHeadAny(int times)
+			throws SocketTimeoutException, HttpClientException, EncodingException {
+		verify(client, times(times)).head(any(URL.class), anyInt());
+		return this;
+	}
+
 	public HttpClientMockDirector verifyGetDomains() throws SocketTimeoutException, HttpClientException {
 		verify(client, times(1)).get(urlEndsWith("/domains"), anyInt());
 		return this;

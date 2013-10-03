@@ -120,6 +120,24 @@ public class RestServiceTest {
 	}
 
 	@Test
+	public void shouldPatchIfPatchHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
+			EncodingException {
+		// operation
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.PATCH));
+		// verifications
+		mockDirector.verifyPatchAny(1);
+	}
+
+	@Test
+	public void shouldHeadIfHeadHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
+			EncodingException {
+		// operation
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.HEAD));
+		// verifications
+		mockDirector.verifyHeadAny(1);
+	}
+
+	@Test
 	public void shouldNotAddServerToAbsUrl() throws OpenShiftException, SocketTimeoutException, HttpClientException,
 			MalformedURLException {
 		// operation

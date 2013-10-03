@@ -81,9 +81,9 @@ public class HttpClientTest {
 
 	@Test
 	public void canHead() throws Throwable {
-		String response = httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+		String response = httpClient.head(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
 		assertNotNull(response);
-		assertTrue(response.startsWith("HEAD"));
+		assertEquals("", response);
 	}
 
 	@Test
