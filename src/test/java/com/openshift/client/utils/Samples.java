@@ -42,8 +42,14 @@ public enum Samples {
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_0ALIAS("get-domains-foobarz-applications-springeap6_0alias.json"), // 1.2
 	POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT("post-stop-domains-foobarz-applications-springeap6-events.json"), // 1.2
 	POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS("post-scalable-domains-foobarz-applications.json"), // 1.2
-	POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS("post-jekyll-domains-foobarz-applications.json"), // 1.2	
-	
+	POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS("post-jekyll-domains-foobarz-applications.json"), // 1.2
+	POST_ADD_ENVIRONMENT_VARIABLE_FOO_TO_FOOBARZ_SPRINGEAP6("post_add_environment_variable_foo_to_foobarz_springeap6.json"),//1.2
+	POST_ADD_2_ENVIRONMENT_VARIABLES_TO_FOOBARZ_SPRINGEAP6("post_add_2_environment_variables_to_foobarz_springeap6.json"),//1.2
+	GET_2_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6("get_two_environment_variabls_foobarz_springeap6.json"),//1.2
+	GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6("get_1_environment_variables_foobarz_springeap6.json"),
+	GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6("get_0_environment_variables_foobarz_springeap6.json"),
+	GET_4_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6("get_four_environment_variables_foobarz_springeap6.json"),
+	PUT_FOO_ENVIRONMENT_VARIABLE_FOOBARZ_SPRINGEAP6("put_foo_environment_variable_foobarz_springeap6.json"),//1.2
 	// domain
 	DELETE_DOMAINS_FOOBAR_KO("delete-domains-foobar_ko.json"), // 1.2
 	DELETE_DOMAINS_FOOBARZ("delete-domains-foobarz.json"), // 1.2

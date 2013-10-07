@@ -499,4 +499,37 @@ public class HttpClientMockDirector {
 		IUser user = new TestConnectionFactory().getConnection(client).getUser();
 		return user.getDomain("foobarz");
 	}
+	
+	public HttpClientMockDirector mockAddEnvironmentVariable(String domainId,String applicationName,Samples addEnvironmentVariableRequestResponse)
+			throws SocketTimeoutException, HttpClientException, EncodingException {
+		when(client.post(urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/environment-variables"), any(IMediaType.class), anyInt(), Matchers.<Parameter[]>anyVararg()))
+				.thenReturn(addEnvironmentVariableRequestResponse.getContentAsString());
+		return this;
+	}
+	public HttpClientMockDirector mockGetEnvironmentVariables(String domainId,String applicationName,Samples getZeroEnvironmentVariableRequestResponse,Samples getOneEnvironmentVariableRequestResponse)
+			throws SocketTimeoutException, HttpClientException, EncodingException {
+		when(client.get(urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/environment-variables"), anyInt()))
+		.thenReturn(getZeroEnvironmentVariableRequestResponse.getContentAsString(),getOneEnvironmentVariableRequestResponse.getContentAsString());
+		return this;
+	}
+	public HttpClientMockDirector mockGetEnvironmentVariables(String domainId,String applicationName,Samples getOneEnvironmentVariableRequestResponse)
+			throws SocketTimeoutException, HttpClientException, EncodingException {
+		when(client.get(urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/environment-variables"), anyInt()))
+		.thenReturn(getOneEnvironmentVariableRequestResponse.getContentAsString(),getOneEnvironmentVariableRequestResponse.getContentAsString());
+		return this;
+	}
+	public HttpClientMockDirector mockGetTwoEnvironmentVariables(String domainId,String applicationName,Samples getTwoEnvironmentVariableRequestResponse)
+			throws SocketTimeoutException, HttpClientException, EncodingException {
+		when(client.get(urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/environment-variables"), anyInt()))
+		.thenReturn(getTwoEnvironmentVariableRequestResponse.getContentAsString());
+		return this;
+	}
+	
+	public HttpClientMockDirector mockUpdateEnvironmentVariableValue(String domainId,String applicationName,String environmentName,Samples updateEnvironmentVariableValue)
+			throws SocketTimeoutException, HttpClientException, EncodingException {
+		when(client.put(urlEndsWith("/domains/" + domainId + "/applications/" + applicationName + "/environment-variables/"+ environmentName),
+				any(IMediaType.class),anyInt(),Matchers.<Parameter[]>anyVararg()))
+		.thenReturn(updateEnvironmentVariableValue.getContentAsString());
+		return this;
+	}
 }

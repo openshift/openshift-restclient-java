@@ -31,7 +31,12 @@ public enum EnumDataType {
 	/** The standalone cartridges type. */
 	cartridges,
 	/** The standalone cartridge type. */
-	cartridge;
+	cartridge,
+	/** The environment-variables type*/
+	environment_variables,
+	/** The environmetn-variable type*/
+	environment_variable
+	;
 	
 
 	/**
@@ -44,7 +49,7 @@ public enum EnumDataType {
 	static EnumDataType safeValueOf(String value) {
 		if (value != null) {
 			try {
-				return valueOf(value);
+				 return valueOf(value.replaceAll("-", "_"));
 			} catch (IllegalArgumentException e) {
 				// do nothing, will just return 'undefined'
 			}
