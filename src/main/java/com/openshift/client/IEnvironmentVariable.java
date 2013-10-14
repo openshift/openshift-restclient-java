@@ -28,5 +28,5 @@ public interface IEnvironmentVariable extends IOpenShiftResource{
 	 * Deletes the environment variable
 	 * @throws OpenShiftException
 	 */
-	public void delete() throws OpenShiftException;
+	public void destroy() throws OpenShiftException;
 }

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,6 @@ import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
 import com.openshift.client.utils.HostUtils;
 import com.openshift.client.utils.RFC822DateUtils;
-import com.openshift.internal.client.AbstractOpenShiftResource.Parameters;
 import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.ApplicationResourceDTO;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
@@ -64,6 +62,7 @@ import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.ssh.ApplicationPortForwarding;
 import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
+import com.openshift.internal.client.utils.StringUtils;
 
 /**
  * The Class Application.
@@ -71,6 +70,10 @@ import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
  * @author André Dietisheim
  */
 public class ApplicationResource extends AbstractOpenShiftResource implements IApplication {
+
+	private static final String ENVIRONMENT_VAR_JENKINS = "JENKINS_";
+
+	private static final String ENVIRONMENT_VAR_OPENSHIFT = "OPENSHIFT_";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationResource.class);
 
@@ -569,7 +572,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		List<String> openshiftProps = new ArrayList<String>();
 		List<String> allEnvProps = sshExecCmd("set", SshStreams.INPUT);
 		for (String line : allEnvProps) {
-			if (line.startsWith("OPENSHIFT_") || line.startsWith("JENKINS_")) {
+			if (line.startsWith(ENVIRONMENT_VAR_OPENSHIFT) 
+					|| line.startsWith(ENVIRONMENT_VAR_JENKINS)) {
 				openshiftProps.add(line);
 			}
 		}
@@ -577,95 +581,100 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 	
 	@Override
-	public List<IEnvironmentVariable> getEnvironmentVariables() throws OpenShiftSSHOperationException{
+	public List<IEnvironmentVariable> getEnvironmentVariables() throws OpenShiftException {
 		return Collections.unmodifiableList(getOrLoadEnvironmentVariables());
 	}
-	
-	protected List<IEnvironmentVariable> getOrLoadEnvironmentVariables() throws OpenShiftSSHOperationException{
-		if(environmentVariables==null){
-		this.environmentVariables = loadEnvironmentVariables();
+
+	protected List<IEnvironmentVariable> getOrLoadEnvironmentVariables() throws OpenShiftException {
+		if (environmentVariables == null) {
+			this.environmentVariables = loadEnvironmentVariables();
 		}
 		return environmentVariables;
 	}
 	
-	private List<IEnvironmentVariable> loadEnvironmentVariables() throws OpenShiftSSHOperationException{
+	private List<IEnvironmentVariable> loadEnvironmentVariables() throws OpenShiftException {
 		List<EnvironmentVariableResourceDTO> environmentVariableDTOs = new ListEnvironmentVariablesRequest().execute();
 		List<IEnvironmentVariable> environmentVariables = new ArrayList<IEnvironmentVariable>();
-		for(EnvironmentVariableResourceDTO environmentVariableResourceDTO : environmentVariableDTOs){
-			final IEnvironmentVariable environmentVariable = new EnvironmentVariableResource(environmentVariableResourceDTO, this);
+		for (EnvironmentVariableResourceDTO environmentVariableResourceDTO : environmentVariableDTOs) {
+			final IEnvironmentVariable environmentVariable = 
+					new EnvironmentVariableResource(environmentVariableResourceDTO, this);
 			environmentVariables.add(environmentVariable);
 		}
 		return environmentVariables;
 	}
-	
+
 	@Override
-    public IEnvironmentVariable addEnvironmentVariable(String name,String value) throws OpenShiftSSHOperationException{
-    if(name==null){
-    	throw new OpenShiftException("Environment variable name is mandatory but none was given.");
-    }
-    if(value==null){
-    	throw new OpenShiftException("Value for environment variable \"{0}\" not given.",name);
-    }
-    if(hasEnvironmentVariableByName(name)){
-    	throw new OpenShiftException("Environment variable with name \"{0}\" already exists.",name);
-    }
-    
-    EnvironmentVariableResourceDTO environmentVariableResourceDTO = new AddEnvironmentVariableRequest().execute(name, value);
-    IEnvironmentVariable environmentVariable = new EnvironmentVariableResource(environmentVariableResourceDTO, this);
-    updateEnvironmentVariables(environmentVariable);
-    return environmentVariable;
-    }
+	public IEnvironmentVariable addEnvironmentVariable(String name, String value) throws OpenShiftException {
+		if (name == null) {
+			throw new OpenShiftException("Environment variable name is mandatory but none was given.");
+		}
+		if (value == null) {
+			throw new OpenShiftException("Value for environment variable \"{0}\" not given.", name);
+		}
+		if (hasEnvironmentVariableByName(name)) {
+			throw new OpenShiftException("Environment variable with name \"{0}\" already exists.", name);
+		}
+
+		EnvironmentVariableResourceDTO environmentVariableResourceDTO =
+				new AddEnvironmentVariableRequest().execute(name, value);
+		IEnvironmentVariable environmentVariable = new EnvironmentVariableResource(environmentVariableResourceDTO, this);
+		updateEnvironmentVariables(environmentVariable);
+		return environmentVariable;
+	}
+
 	@Override
-    public List<IEnvironmentVariable> addEnvironmentVariables(Map<String,String> environmentVariablesMap) throws OpenShiftSSHOperationException{
+	public List<IEnvironmentVariable> addEnvironmentVariables(Map<String, String> environmentVariablesMap)
+			throws OpenShiftException {
+
+		List<EnvironmentVariableResourceDTO> environmentVariableResourceDTOs = new AddEnvironmentVariablesRequest()
+				.execute(environmentVariablesMap);
+		List<IEnvironmentVariable> environmentVariables = new ArrayList<IEnvironmentVariable>();
+		for (EnvironmentVariableResourceDTO dto : environmentVariableResourceDTOs) {
+			IEnvironmentVariable environmentVariable = new EnvironmentVariableResource(dto, this);
+			environmentVariables.add(environmentVariable);
+		}
+
+		updateEnvironmentVariables(environmentVariables);
+		return environmentVariables;
+	}
     
-    List<EnvironmentVariableResourceDTO> environmentVariableResourceDTOs = new AddEnvironmentVariablesRequest().execute(environmentVariablesMap);
-    List<IEnvironmentVariable> environmentVariables = new ArrayList<IEnvironmentVariable>();
-    for(EnvironmentVariableResourceDTO dto : environmentVariableResourceDTOs){
-    IEnvironmentVariable environmentVariable = new EnvironmentVariableResource(dto, this);
-    environmentVariables.add(environmentVariable);
-    }
-   
-    updateEnvironmentVariables(environmentVariables);
-    return environmentVariables;
+    private void updateEnvironmentVariables(IEnvironmentVariable environmentVariable) throws OpenShiftException{
+		if (environmentVariables == null) {
+			this.environmentVariables = loadEnvironmentVariables();
+		} else {
+			environmentVariables.clear();
+			environmentVariables.addAll(loadEnvironmentVariables());
+		}
     }
     
-    private void updateEnvironmentVariables(IEnvironmentVariable environmentVariable) throws OpenShiftSSHOperationException{
-    	if(environmentVariables==null){
-    	environmentVariables = loadEnvironmentVariables();
-    	}else{
-    	environmentVariables.clear();
-    	environmentVariables.addAll(loadEnvironmentVariables());
-    	}
-    }
-    
-    private void updateEnvironmentVariables(List<IEnvironmentVariable> environmentVariables) throws OpenShiftSSHOperationException{
-    	if(this.environmentVariables==null){
-    	this.environmentVariables = loadEnvironmentVariables();
-    	}else{
-    	this.environmentVariables.addAll(environmentVariables);
-    	}
+    private void updateEnvironmentVariables(List<IEnvironmentVariable> environmentVariables) throws OpenShiftException{
+		if (this.environmentVariables == null) {
+			this.environmentVariables = loadEnvironmentVariables();
+		} else {
+			this.environmentVariables.addAll(environmentVariables);
+		}
     }
     @Override
-    public boolean hasEnvironmentVariableByName(String name) throws OpenShiftSSHOperationException{
-		if(name==null){
-		throw new OpenShiftException("Environment variable name is mandatory but none was given.");	
+	public boolean hasEnvironmentVariableByName(String name) throws OpenShiftException {
+		if (StringUtils.isEmpty(name)) {
+			throw new OpenShiftException("Environment variable name is mandatory but none was given.");
 		}
-		return getEnvironmentVariableByName(name)!=null;
-		
-    }
+		return getEnvironmentVariableByName(name) != null;
+
+	}
     
-    protected void updateEnvironmentVariables(){
-    	if(environmentVariables==null){
-    		environmentVariables = loadEnvironmentVariables();
-    	}else{
-    		environmentVariables.clear();
-    		environmentVariables.addAll(loadEnvironmentVariables());
-    	}
-    }
+	protected void updateEnvironmentVariables() throws OpenShiftException {
+		if (environmentVariables == null) {
+			environmentVariables = loadEnvironmentVariables();
+		} else {
+			environmentVariables.clear();
+			environmentVariables.addAll(loadEnvironmentVariables());
+		}
+	}
     
-    public IEnvironmentVariable getEnvironmentVariableByName(String name){
-    	return getEnvironmentVariableByName(name,getEnvironmentVariables());
-    }
+	public IEnvironmentVariable getEnvironmentVariableByName(String name) {
+		return getEnvironmentVariableByName(name, getEnvironmentVariables());
+	}
     
     private IEnvironmentVariable getEnvironmentVariableByName(String name,Collection<IEnvironmentVariable> environmentVariables){
     	IEnvironmentVariable matchingEnvironmentVariable = null;
@@ -1004,20 +1013,23 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			super(LINK_GET_GEAR_GROUPS);
 		}
 	}
+	
 	private class ListEnvironmentVariablesRequest extends ServiceRequest {
 		protected ListEnvironmentVariablesRequest() {
 			super(LINK_LIST_ENVIRONMENT_VARIABLES);
 		}
 	}
+
 	private class AddEnvironmentVariableRequest extends ServiceRequest {
 		protected AddEnvironmentVariableRequest() {
 			super(LINK_SET_UNSET_ENVIRONMENT_VARIABLES);
 		}
-		protected EnvironmentVariableResourceDTO execute(String name,String value){
+
+		protected EnvironmentVariableResourceDTO execute(String name, String value) throws OpenShiftException {
 			Parameters parameters = new Parameters()
-			.add(IOpenShiftJsonConstants.PROPERTY_NAME,name)
-			.add(IOpenShiftJsonConstants.PROPERTY_VALUE, value);
-		return	super.execute(parameters.toArray());
+					.add(IOpenShiftJsonConstants.PROPERTY_NAME, name)
+					.add(IOpenShiftJsonConstants.PROPERTY_VALUE, value);
+			return super.execute(parameters.toArray());
 		}
 	}
 	
@@ -1025,16 +1037,13 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		protected AddEnvironmentVariablesRequest() {
 			super(LINK_SET_UNSET_ENVIRONMENT_VARIABLES);
 		}
-		protected List<EnvironmentVariableResourceDTO> execute(Map<String,String> environmentVariables){
+
+		protected List<EnvironmentVariableResourceDTO> execute(Map<String, String> environmentVariables)
+				throws OpenShiftException {
 			Parameters parameters = new Parameters()
-			.addEnvironmentVariables(environmentVariables);
-		return	super.execute(parameters.toArray());
+					.addEnvironmentVariables(environmentVariables);
+			return super.execute(parameters.toArray());
 		}
 	}
-
-	
-	
-	
-	
 
 }

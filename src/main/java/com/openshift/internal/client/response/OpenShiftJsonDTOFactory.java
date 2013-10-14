@@ -33,7 +33,6 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_MAX_GEARS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_METHOD;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_NAME;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_VALUE;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_OPTIONAL_PARAMS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROPERTIES;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REL;
@@ -44,6 +43,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_URL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_UUID;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_VALID_OPTIONS;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_VALUE;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -410,7 +410,6 @@ public class OpenShiftJsonDTOFactory implements IRestResponseFactory {
 		final String domainId = getAsString(appNode, PROPERTY_DOMAIN_ID);
 		final Map<String, Link> links = createLinks(appNode.get(PROPERTY_LINKS));
 		final List<String> aliases = createAliases(appNode.get(PROPERTY_ALIASES));
-		appNode.get("environment-variables");
 		final Map<String, CartridgeResourceDTO> cartridges = createCartridges(appNode.get(PROPERTY_CARTRIDGES));
 		
 		return new ApplicationResourceDTO(
@@ -696,32 +695,27 @@ public class OpenShiftJsonDTOFactory implements IRestResponseFactory {
 		return propertyNode.isDefined() ? propertyNode.asInt() : 0;
 	}
 	
-	private List<EnvironmentVariableResourceDTO> createEnvironmentVariables(
-			ModelNode rootNode) throws OpenShiftException {
+	private List<EnvironmentVariableResourceDTO> createEnvironmentVariables(ModelNode rootNode)
+			throws OpenShiftException {
 		final List<EnvironmentVariableResourceDTO> environmentVariables = new ArrayList<EnvironmentVariableResourceDTO>();
 		if (rootNode.has(PROPERTY_DATA)) {
-			for (ModelNode environmentVariableNode : rootNode
-					.get(PROPERTY_DATA).asList()) {
-				environmentVariables.add(createEnvironmentVariable(
-						environmentVariableNode, null));
+			for (ModelNode environmentVariableNode : rootNode.get(PROPERTY_DATA).asList()) {
+				environmentVariables.add(createEnvironmentVariable(environmentVariableNode, null));
 			}
 		}
 		return environmentVariables;
 	}
 
-	private EnvironmentVariableResourceDTO createEnvironmentVariable(
-			ModelNode environmentVariableNode, Messages messages)
+	private EnvironmentVariableResourceDTO createEnvironmentVariable(ModelNode environmentVariableNode,
+			Messages messages)
 			throws OpenShiftException {
 		if (environmentVariableNode.has(PROPERTY_DATA)) {
 			// recurse into 'data' node
 			return createEnvironmentVariable(environmentVariableNode.get(PROPERTY_DATA), messages);
 		}
 		final String name = getAsString(environmentVariableNode, PROPERTY_NAME);
-		final String value = getAsString(environmentVariableNode,
-				PROPERTY_VALUE);
-		final Map<String, Link> links = createLinks(environmentVariableNode
-				.get(PROPERTY_LINKS));
-		return new EnvironmentVariableResourceDTO(name,value,links,messages);
-
+		final String value = getAsString(environmentVariableNode, PROPERTY_VALUE);
+		final Map<String, Link> links = createLinks(environmentVariableNode.get(PROPERTY_LINKS));
+		return new EnvironmentVariableResourceDTO(name, value, links, messages);
 	}
 }

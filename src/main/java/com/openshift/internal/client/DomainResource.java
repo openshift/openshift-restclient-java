@@ -159,9 +159,9 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return application;
 	}
 	
-public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
 			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl, int timeout,
-			Map<String,String> environmentVariables,IEmbeddableCartridge... cartridges)
+			Map<String, String> environmentVariables, IEmbeddableCartridge... cartridges)
 			throws OpenShiftException {
 		if (name == null) {
 			throw new OpenShiftException("Application name is mandatory but none was given.");
@@ -174,7 +174,8 @@ public IApplication createApplication(final String name, final IStandaloneCartri
 		}
 
 		ApplicationResourceDTO applicationDTO =
-				new CreateApplicationRequest().execute(name, cartridge, scale, gearProfile, initialGitUrl, timeout,environmentVariables,cartridges);
+				new CreateApplicationRequest().execute(
+						name, cartridge, scale, gearProfile, initialGitUrl, timeout, environmentVariables, cartridges);
 		IApplication application = new ApplicationResource(applicationDTO, this);
 
 		getOrLoadApplications().add(application);
@@ -309,8 +310,6 @@ public IApplication createApplication(final String name, final IStandaloneCartri
 		protected DomainResourceDTO execute() throws OpenShiftException {
 			return (DomainResourceDTO) super.execute();
 		}
-		
-		
 	}
 	
 	private class ListApplicationsRequest extends ServiceRequest {
@@ -336,22 +335,20 @@ public IApplication createApplication(final String name, final IStandaloneCartri
 
 		protected ApplicationResourceDTO execute(final String name, IStandaloneCartridge cartridge,
 				final ApplicationScale scale, final IGearProfile gearProfile, final String initialGitUrl,
-				final int timeout,Map<String,String> environmentVariables, final IEmbeddableCartridge... embeddableCartridges)
+				final int timeout, Map<String, String> environmentVariables,
+				final IEmbeddableCartridge... embeddableCartridges)
 				throws OpenShiftException {
 			if (cartridge == null) {
 				throw new OpenShiftException("Application cartridge is mandatory but was not given.");
-			} 
-			
+			}
+
 			Parameters parameters = new Parameters()
 					.add(IOpenShiftJsonConstants.PROPERTY_NAME, name)
 					.addCartridges(cartridge, embeddableCartridges)
 					.scale(scale)
 					.gearProfile(gearProfile)
-					.add(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl);
-			if(environmentVariables!=null&&!environmentVariables.isEmpty()){
-				parameters.addEnvironmentVariables(environmentVariables);
-			}
-			        
+					.add(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl)
+					.addEnvironmentVariables(environmentVariables);
 			
 			// ?include=cartridges
 			Parameters urlParameters = new Parameters()

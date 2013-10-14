@@ -10,15 +10,8 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.Samples.GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.GET_2_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.GET_4_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.POST_ADD_2_ENVIRONMENT_VARIABLES_TO_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.POST_ADD_ENVIRONMENT_VARIABLE_FOO_TO_FOOBARZ_SPRINGEAP6;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -49,6 +42,7 @@ import com.openshift.client.utils.TestConnectionFactory;
 
 /**
  * @author André Dietisheim
+ * @author Syed Iqbal
  */
 public class ApplicationResourceIntegrationTest {
 
@@ -309,61 +303,62 @@ public class ApplicationResourceIntegrationTest {
 		assertThat(environmentVariable.getValue()).isEqualTo("123");
     }
     
-    @Test
-	public void shouldAddEnvironmentVariablesToApplication() throws Throwable{
-    	//pre-conditions
-    	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-    	//operation
-    	Map<String,String> environmentVariables = new HashMap<String,String>();
-    	environmentVariables.put("X_NAME","X_VALUE");
-    	environmentVariables.put("Y_NAME","Y_VALUE");
-    	List<IEnvironmentVariable> environmentVariablesList = application.addEnvironmentVariables(environmentVariables);
-    	//verification
-    	assertThat(environmentVariablesList).hasSize(2);
-    }
+	@Test
+	public void shouldAddEnvironmentVariablesToApplication() throws Throwable {
+		// pre-conditions
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+
+		// operation
+		Map<String, String> environmentVariables = new HashMap<String, String>();
+		environmentVariables.put("X_NAME", "X_VALUE");
+		environmentVariables.put("Y_NAME", "Y_VALUE");
+		List<IEnvironmentVariable> environmentVariablesList = application.addEnvironmentVariables(environmentVariables);
+
+		// verification
+		assertThat(environmentVariablesList.size()).isEqualTo(2);
+	}
     
-    @Test
- 	public void shouldGetEnvironmentVariableByNameFromApplication() throws Throwable{
-    	//pre-conditions
-    	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-    	application.addEnvironmentVariable("Z_NAME","Z_VALUE");
-    	//operation
-    	IEnvironmentVariable environmentVariable = application.getEnvironmentVariableByName("Z_NAME");
-		//verification
+	@Test
+	public void shouldGetEnvironmentVariableByNameFromApplication() throws Throwable {
+		// pre-conditions
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		application.addEnvironmentVariable("Z_NAME", "Z_VALUE");
+
+		// operation
+		IEnvironmentVariable environmentVariable = application.getEnvironmentVariableByName("Z_NAME");
+
+		// verification
 		assertThat(environmentVariable).isNotNull();
 		assertThat(environmentVariable.getName()).isEqualTo("Z_NAME");
 		assertThat(environmentVariable.getValue()).isEqualTo("Z_VALUE");
-		
 	}
-    @Test
-	public void shouldNotAddExistingEnvironmentVariableToApplication() throws Throwable{
-		//precondition
-    	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-    	application.addEnvironmentVariable("A_NAME","A_VALUE");
-    	//operation
-		try{
-		application.addEnvironmentVariable("A_NAME","A_NEW_VALUE");
-		fail("Expected an exception here...");
-		}catch(OpenShiftException e){
-			//expected
-		}
+
+	@Test(expected = OpenShiftException.class)
+	public void shouldNotAddExistingEnvironmentVariableToApplication() throws Throwable {
+		// precondition
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		application.addEnvironmentVariable("A_NAME", "A_VALUE");
+
+		// operation
+		application.addEnvironmentVariable("A_NAME", "A_NEW_VALUE");
 	}
 
 	@Test
-	public void shouldListAllEnvironmentVariablesFromApplication() throws Throwable{
-	//preconditions
-	ApplicationTestUtils.silentlyDestroyAllApplications(domain);
-	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-	Map<String,String> environmentVariableMap = new HashMap<String,String>();
-	environmentVariableMap.put("X_NAME","X_VALUE");
-	environmentVariableMap.put("Y_NAME","Y_VALUE");
-	environmentVariableMap.put("Z_NAME","Z_VALUE");
-	application.addEnvironmentVariables(environmentVariableMap);
-	//operation	
-	List<IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
-	//verifications
-	assertThat(environmentVariables).isNotEmpty();
-	assertThat(environmentVariables).hasSize(3);
+	public void shouldListAllEnvironmentVariablesFromApplication() throws Throwable {
+		// preconditions
+		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		Map<String, String> environmentVariableMap = new HashMap<String, String>();
+		environmentVariableMap.put("X_NAME", "X_VALUE");
+		environmentVariableMap.put("Y_NAME", "Y_VALUE");
+		environmentVariableMap.put("Z_NAME", "Z_VALUE");
+		application.addEnvironmentVariables(environmentVariableMap);
+
+		// operation
+		List<IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
+
+		// verifications
+		assertThat(environmentVariables).hasSize(3);
 	}
 	
 	@Test
@@ -371,8 +366,10 @@ public class ApplicationResourceIntegrationTest {
 		//precondition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+
 		//operation
 		List<IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
+
 		//verifications
 		assertThat(environmentVariables).isEmpty();
 	}

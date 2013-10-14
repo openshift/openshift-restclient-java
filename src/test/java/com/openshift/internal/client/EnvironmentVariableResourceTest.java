@@ -1,7 +1,17 @@
+/******************************************************************************* 
+ * Copyright (c) 2013 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.Samples.GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
 import static com.openshift.client.utils.Samples.GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
+import static com.openshift.client.utils.Samples.GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED;
@@ -12,13 +22,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.client.IApplication;
-import com.openshift.client.IDomain;
 import com.openshift.client.IEnvironmentVariable;
 
+/**
+ * @author Syed Iqbal 
+ */
 public class EnvironmentVariableResourceTest {
 	
 	private IApplication application;
-	private IDomain domain;
 	private HttpClientMockDirector mockDirector;
     @Before
 	public void setup() throws Throwable{
@@ -59,7 +70,7 @@ public class EnvironmentVariableResourceTest {
        //operation
       IEnvironmentVariable environmentVariable = application.getEnvironmentVariableByName("FOO");
       assertThat(environmentVariable).isNotNull();
-      environmentVariable.delete();
+      environmentVariable.destroy();
       environmentVariable = application.getEnvironmentVariableByName("FOO");
       assertThat(environmentVariable).isNull();
     }
@@ -75,7 +86,4 @@ public class EnvironmentVariableResourceTest {
       environmentVariable.update("321");;
       assertThat(environmentVariable.getValue()).isEqualTo("321");
     }
-    
-	
-	
 }
