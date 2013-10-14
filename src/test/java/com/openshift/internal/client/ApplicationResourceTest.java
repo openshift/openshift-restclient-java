@@ -10,8 +10,12 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.Cartridges.MYSQL_51_NAME;
 import static com.openshift.client.utils.Cartridges.FOREMAN_DOWNLOAD_URL;
+import static com.openshift.client.utils.Cartridges.MYSQL_51_NAME;
+import static com.openshift.client.utils.Samples.GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
+import static com.openshift.client.utils.Samples.GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
+import static com.openshift.client.utils.Samples.GET_2_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
+import static com.openshift.client.utils.Samples.GET_4_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED;
@@ -21,6 +25,8 @@ import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATION
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED;
+import static com.openshift.client.utils.Samples.POST_ADD_2_ENVIRONMENT_VARIABLES_TO_FOOBARZ_SPRINGEAP6;
+import static com.openshift.client.utils.Samples.POST_ADD_ENVIRONMENT_VARIABLE_FOO_TO_FOOBARZ_SPRINGEAP6;
 import static com.openshift.client.utils.Samples.POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES;
 import static com.openshift.client.utils.Samples.POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT;
 import static org.fest.assertions.Assertions.assertThat;
@@ -31,7 +37,9 @@ import static org.junit.Assert.fail;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -41,8 +49,10 @@ import org.mockito.Mockito;
 import com.openshift.client.IApplication;
 import com.openshift.client.IApplicationPortForwarding;
 import com.openshift.client.IDomain;
+import com.openshift.client.IEnvironmentVariable;
 import com.openshift.client.IField;
 import com.openshift.client.OpenShiftEndpointException;
+import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftTimeoutException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
@@ -59,6 +69,7 @@ import com.openshift.internal.client.httpclient.InternalServerErrorException;
  * @author Xavier Coulon
  * @author Andre Dietisheim
  * @author Nicolas Spano
+ * @author Syed Iqbal
  */
 public class ApplicationResourceTest {
 
@@ -549,6 +560,107 @@ public class ApplicationResourceTest {
 						"5190d701500446506a0000e4-foobarz.rhcloud.com");
 		assertThat(forwardablePorts)
 				.onProperty("remotePort").containsExactly(8080, 8080, 3528, 4447, 5445, 5455, 8080, 9990, 9999, 56756);
+	}
+
+	@Test
+	public void shouldAddOneEnvironmentVariableToApplication() throws Throwable {
+		// pre-conditions
+		mockDirector
+				.mockAddEnvironmentVariable("foobarz", "springeap6",
+						POST_ADD_ENVIRONMENT_VARIABLE_FOO_TO_FOOBARZ_SPRINGEAP6)
+				.mockGetEnvironmentVariables("foobarz", "springeap6", GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6,
+						GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
+
+		// operation
+		final IApplication app = domain.getApplicationByName("springeap6");
+		IEnvironmentVariable environmentVariable = app.addEnvironmentVariable("FOO", "123");
+
+		// verification
+		assertThat(environmentVariable).isNotNull();
+		assertThat(environmentVariable.getName()).isEqualTo("FOO");
+		assertThat(environmentVariable.getValue()).isEqualTo("123");
+	}
+    
+	@Test
+	public void shouldAddEnvironmentVariablesToApplication() throws Throwable {
+		// pre-conditions
+		mockDirector.mockAddEnvironmentVariable("foobarz", "springeap6",
+				POST_ADD_2_ENVIRONMENT_VARIABLES_TO_FOOBARZ_SPRINGEAP6)
+				.mockGetEnvironmentVariables("foobarz", "springeap6", GET_2_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
+
+		// operation
+		final IApplication app = domain.getApplicationByName("springeap6");
+		Map<String, String> environmentVariables = new HashMap<String, String>();
+		environmentVariables.put("X_NAME", "X_VALUE");
+		environmentVariables.put("Y_NAME", "Y_VALUE");
+		List<IEnvironmentVariable> environmentVariablesList = app.addEnvironmentVariables(environmentVariables);
+		// verification
+		assertThat(environmentVariablesList).hasSize(2);
+	}
+
+	@Test
+	public void shouldGetEnvironmentVariableByNameFromApplication() throws Throwable {
+		// precondition
+		mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6",
+				GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
+		// operation
+		final IApplication app = domain.getApplicationByName("springeap6");
+		IEnvironmentVariable environmentVariable = app.getEnvironmentVariableByName("FOO");
+		// verification
+		assertThat(environmentVariable).isNotNull();
+		assertThat(environmentVariable.getName()).isEqualTo("FOO");
+		assertThat(environmentVariable.getValue()).isEqualTo("123");
+
+	}
+
+	@Test
+	public void shouldNotAddExistingEnvironmentVariableToApplication() throws Throwable {
+		// precondition
+		mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6",
+				GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
+		final IApplication app = domain.getApplicationByName("springeap6");
+		IEnvironmentVariable existingEnvironmentVariable = app.getEnvironmentVariables().get(0);
+		assertThat(app.getEnvironmentVariables()).hasSize(1);
+		assertThat(existingEnvironmentVariable.getName()).isEqualTo("FOO");
+
+		// operation
+		try {
+			app.addEnvironmentVariable("FOO", "123");
+			fail("Expected an exception here...");
+		} catch (OpenShiftException e) {
+			// expected
+		}
+		
+		// verification
+		assertThat(app.getEnvironmentVariables()).hasSize(1);
+	}
+
+	@Test
+	public void shouldListAllEnvironmentVariablesFromApplication() throws Throwable {
+		// preconditions
+		mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6",
+				GET_4_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
+
+		// operation
+		final IApplication app = domain.getApplicationByName("springeap6");
+		List<IEnvironmentVariable> environmentVariables = app.getEnvironmentVariables();
+
+		// verifications
+		assertThat(environmentVariables).isNotEmpty();
+		assertThat(environmentVariables).hasSize(4);
+
+	}
+
+	@Test
+	public void shouldLoadEmptyListOfEnvironmentVariables() throws Throwable {
+		// precondition
+		mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6",
+				GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
+		// operation
+		final IApplication application = domain.getApplicationByName("springeap6");
+		List<IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
+		// verifications
+		assertThat(environmentVariables).isEmpty();
 	}
 
 }

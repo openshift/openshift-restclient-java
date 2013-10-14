@@ -10,10 +10,13 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
+import java.util.regex.Pattern;
+
 /**
  * The Enum EnumDataType.
  */
 public enum EnumDataType {
+		
 	/** Links / the root node that allows for navigation amongst resources.*/
 	links,
 	user,
@@ -31,8 +34,14 @@ public enum EnumDataType {
 	/** The standalone cartridges type. */
 	cartridges,
 	/** The standalone cartridge type. */
-	cartridge;
+	cartridge,
+	/** The environment-variables type*/
+	environment_variables,
+	/** The environmetn-variable type*/
+	environment_variable
+	;
 	
+	private static final Pattern pattern = Pattern.compile("-");
 
 	/**
 	 * Returns the enum value matching the given value (as string), or 'undefined' if null/unknown value.
@@ -44,7 +53,7 @@ public enum EnumDataType {
 	static EnumDataType safeValueOf(String value) {
 		if (value != null) {
 			try {
-				return valueOf(value);
+				 return valueOf(pattern.matcher(value).replaceAll("_"));
 			} catch (IllegalArgumentException e) {
 				// do nothing, will just return 'undefined'
 			}

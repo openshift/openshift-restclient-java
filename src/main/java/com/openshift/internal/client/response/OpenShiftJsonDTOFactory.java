@@ -43,6 +43,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_URL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_UUID;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_VALID_OPTIONS;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_VALUE;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -129,6 +130,11 @@ public class OpenShiftJsonDTOFactory implements IRestResponseFactory {
 			return createCartridges(rootNode.get(PROPERTY_DATA));
 		case cartridge:
 			return createCartridge(rootNode, messages);
+		case environment_variables:
+			return createEnvironmentVariables(rootNode);
+		case environment_variable:
+			return createEnvironmentVariable(rootNode, messages);
+			
 		default:
 			return null;
 		}
@@ -687,5 +693,29 @@ public class OpenShiftJsonDTOFactory implements IRestResponseFactory {
 	private int getAsInteger(final ModelNode node, String propertyName) {
 		final ModelNode propertyNode = node.get(propertyName);
 		return propertyNode.isDefined() ? propertyNode.asInt() : 0;
+	}
+	
+	private List<EnvironmentVariableResourceDTO> createEnvironmentVariables(ModelNode rootNode)
+			throws OpenShiftException {
+		final List<EnvironmentVariableResourceDTO> environmentVariables = new ArrayList<EnvironmentVariableResourceDTO>();
+		if (rootNode.has(PROPERTY_DATA)) {
+			for (ModelNode environmentVariableNode : rootNode.get(PROPERTY_DATA).asList()) {
+				environmentVariables.add(createEnvironmentVariable(environmentVariableNode, null));
+			}
+		}
+		return environmentVariables;
+	}
+
+	private EnvironmentVariableResourceDTO createEnvironmentVariable(ModelNode environmentVariableNode,
+			Messages messages)
+			throws OpenShiftException {
+		if (environmentVariableNode.has(PROPERTY_DATA)) {
+			// recurse into 'data' node
+			return createEnvironmentVariable(environmentVariableNode.get(PROPERTY_DATA), messages);
+		}
+		final String name = getAsString(environmentVariableNode, PROPERTY_NAME);
+		final String value = getAsString(environmentVariableNode, PROPERTY_VALUE);
+		final Map<String, Link> links = createLinks(environmentVariableNode.get(PROPERTY_LINKS));
+		return new EnvironmentVariableResourceDTO(name, value, links, messages);
 	}
 }

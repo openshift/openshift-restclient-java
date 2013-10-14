@@ -11,6 +11,7 @@
 package com.openshift.client;
 
 import java.util.List;
+import java.util.Map;
 
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
@@ -18,6 +19,7 @@ import com.openshift.client.cartridge.IStandaloneCartridge;
 /**
  * @author André Dietisheim
  * @author Nicolas Spano
+ * @author Syed Iqbal
  */
 public interface IDomain extends IOpenShiftResource {
 	
@@ -144,6 +146,43 @@ public interface IDomain extends IOpenShiftResource {
 	public IApplication createApplication(String name, IStandaloneCartridge cartridge, ApplicationScale scale,
 			IGearProfile gearProfile, String initialGitUrl, int timeout, IEmbeddableCartridge... cartridges)
 			throws OpenShiftException;
+	
+	/**
+	 * Creates a new application with the given name and the given
+	 * cartridge/framework. Optionally, adds scalability, a specific gear
+	 * profile, a git url to use for the initial template, the timeout value, 
+	 * environment variables  and
+	 * the embeddable (add-on) cartridges for it.
+	 * 
+	 * @param name
+	 *            the name of the application
+	 * @param cartridge
+	 *            the cartridge (the application type, ex. jbossas-7,
+	 *            jbossews-2, php.5.2, etc.
+	 * @param scale
+	 *            or null (will use default on openshift, ie, false)
+	 * @param gearProfile
+	 *            ("small", "micro", "medium", "large", "exlarge", "jumbo") or
+	 *            null (will use default on openshift, ie, 'small')
+	 * @param initialGitUrl
+	 *            the git url for the initial template app to be used
+	 * @param timeout
+	 *            the timeout value in milliseconds
+	 * @param environmentVariable
+	 *            the environment variables to be added to the application           
+	 * @param cartridges
+	 *            the embeddable cartridges that shall get added to the new
+	 *            application (the add-on cartridges mysql, mongodb, postgresql,
+	 *            etc.)
+	 * 
+	 * @return IApplication created
+	 * @throws OpenShiftException
+	 */
+	public IApplication createApplication(String name, IStandaloneCartridge cartridge, ApplicationScale scale,
+			IGearProfile gearProfile, String initialGitUrl, int timeout,Map<String,String> environmentVariable,
+	        IEmbeddableCartridge... cartridges)
+			throws OpenShiftException;
+	
 	public List<IApplication> getApplications() throws OpenShiftException;
 	
 	/**
