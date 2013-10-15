@@ -112,4 +112,34 @@ public class EnvironmentVariableResource extends AbstractOpenShiftResource imple
 			super(LINK_DELETE);
 		}
 	}
+	@Override
+	public boolean hasGetLink(){
+		try {
+			return getLink(LINK_GET) != null;
+		} catch (OpenShiftException e) {
+
+			return false;
+		}
+	}
+    
+	@Override
+	public boolean hasUpdateLink(){
+		try {
+			return getLink(LINK_UPDATE) != null;
+		} catch (OpenShiftException e) {
+
+			return false;
+		}
+	}
+
+	@Override
+	public boolean hasDeleteLink(){
+		try {
+			return getLink(LINK_DELETE) != null;
+		} catch (OpenShiftException e) {
+
+			return false;
+		}
+	}
+
 }

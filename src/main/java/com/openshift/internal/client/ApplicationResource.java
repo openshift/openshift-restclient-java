@@ -68,6 +68,7 @@ import com.openshift.internal.client.utils.StringUtils;
  * The Class Application.
  * 
  * @author André Dietisheim
+ * @author Syed Iqbal
  */
 public class ApplicationResource extends AbstractOpenShiftResource implements IApplication {
 
@@ -687,6 +688,24 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
     	return matchingEnvironmentVariable;
     	
     }
+    @Override
+	public boolean hasListEnvironmentVariablesLink() {
+		try {
+			return getLink(LINK_LIST_ENVIRONMENT_VARIABLES) != null;
+		} catch (OpenShiftException e) {
+
+			return false;
+		}
+	}
+	@Override
+	public boolean hasAddEnvironmentVariableLink() {
+		try {
+			return getLink(LINK_SET_UNSET_ENVIRONMENT_VARIABLES) != null;
+		} catch (OpenShiftException e) {
+
+			return false;
+		}
+	}
     
   
 	/**

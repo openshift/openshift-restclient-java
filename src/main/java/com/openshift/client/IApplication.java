@@ -442,5 +442,19 @@ public interface IApplication extends IOpenShiftResource {
 	 * @throws OpenShiftSSHOperationException
 	 */
 	public IEnvironmentVariable getEnvironmentVariableByName(String name) throws OpenShiftSSHOperationException;
+	/**
+	 * Checks if the LIST_ENVIRONMENT_VARIABLES link is present. 
+	 * This link should be present to request all environment
+	 * variables in an application. 
+	 * @return true if the LIST_ENVIRONMENT_VARIABLES link is available.
+	 */
+	public boolean hasListEnvironmentVariablesLink();
+	/**
+	 * Checks if the SET_UNSET_ENVIRONMENT_VARIABLES link is present.
+	 * This link should be present to add environment variables
+	 * to an application
+	 * @return true if the SET_UNSET_ENVIRONMENT_VARIABLES link is available
+	 */
+	public boolean hasAddEnvironmentVariableLink();
 
 }

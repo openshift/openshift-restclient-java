@@ -373,5 +373,28 @@ public class ApplicationResourceIntegrationTest {
 		//verifications
 		assertThat(environmentVariables).isEmpty();
 	}
+	
+	@Test
+	public void shouldVerifyEnvironmentVariableLinksAreAvailable() throws Throwable {
+		// pre-conditions
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		application.addEnvironmentVariable("LINK_NAME", "LINK_VALUE");
+
+		// operation
+		IEnvironmentVariable environmentVariable = application.getEnvironmentVariableByName("Z_NAME");
+		
+        // verify add environment variables
+		assertThat(application.hasAddEnvironmentVariableLink()).isTrue();
+		//verify list environment variables
+		assertThat(application.hasListEnvironmentVariablesLink()).isTrue();
+		//verify update environment variables
+		assertThat(environmentVariable.hasUpdateLink()).isTrue();
+		//verify delete environment variables
+		assertThat(environmentVariable.hasDeleteLink()).isTrue();
+		//verify get environment variables (used if refresh is called)
+		assertThat(environmentVariable.hasGetLink()).isTrue();
+		
+	}
+	
 
 }
