@@ -112,4 +112,5 @@ public class EnvironmentVariableResource extends AbstractOpenShiftResource imple
 			super(LINK_DELETE);
 		}
 	}
+
 }

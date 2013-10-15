@@ -69,9 +69,9 @@ public class EnvironmentVariableResourceIntegrationTest {
 		// precondition
 		application.addEnvironmentVariable("Z_NAME", "Z_VALUE");
 		// operation
-		IEnvironmentVariable zEnvironmentVariable = application.getEnvironmentVariableByName("Z_NAME");
+		IEnvironmentVariable zEnvironmentVariable = application.getEnvironmentVariable("Z_NAME");
 		zEnvironmentVariable.destroy();
-		zEnvironmentVariable = application.getEnvironmentVariableByName("Z_NAME");
+		zEnvironmentVariable = application.getEnvironmentVariable("Z_NAME");
 		assertThat(zEnvironmentVariable).isNull();
 	}
 

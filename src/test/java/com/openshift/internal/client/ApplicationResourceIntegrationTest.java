@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -290,7 +289,7 @@ public class ApplicationResourceIntegrationTest {
 	}
 	
     @Test
-	public void shouldAddOneEnvironmentVariableToApplication() throws Throwable{
+	public void shouldAddOneEnvironmentVariable() throws Throwable{
     	//pre-conditions
     	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
     	
@@ -304,7 +303,7 @@ public class ApplicationResourceIntegrationTest {
     }
     
 	@Test
-	public void shouldAddEnvironmentVariablesToApplication() throws Throwable {
+	public void shouldAddEnvironmentVariables() throws Throwable {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 
@@ -312,20 +311,20 @@ public class ApplicationResourceIntegrationTest {
 		Map<String, String> environmentVariables = new HashMap<String, String>();
 		environmentVariables.put("X_NAME", "X_VALUE");
 		environmentVariables.put("Y_NAME", "Y_VALUE");
-		List<IEnvironmentVariable> environmentVariablesList = application.addEnvironmentVariables(environmentVariables);
+		Map<String, IEnvironmentVariable> variables = application.addEnvironmentVariables(environmentVariables);
 
 		// verification
-		assertThat(environmentVariablesList.size()).isEqualTo(2);
+		assertThat(variables.size()).isEqualTo(2);
 	}
     
 	@Test
-	public void shouldGetEnvironmentVariableByNameFromApplication() throws Throwable {
+	public void shouldGetEnvironmentVariableByName() throws Throwable {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		application.addEnvironmentVariable("Z_NAME", "Z_VALUE");
 
 		// operation
-		IEnvironmentVariable environmentVariable = application.getEnvironmentVariableByName("Z_NAME");
+		IEnvironmentVariable environmentVariable = application.getEnvironmentVariable("Z_NAME");
 
 		// verification
 		assertThat(environmentVariable).isNotNull();
@@ -333,7 +332,23 @@ public class ApplicationResourceIntegrationTest {
 		assertThat(environmentVariable.getValue()).isEqualTo("Z_VALUE");
 	}
 
-	@Test(expected = OpenShiftException.class)
+    @Test
+	public void shouldRemoveEnvironmentVariable() throws Throwable{
+    	//pre-conditions
+    	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+    	int numOfEnvironmentVariables = application.getEnvironmentVariables().size(); 
+    	IEnvironmentVariable environmentVariable = application.addEnvironmentVariable("FOOBAR","123");
+    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(numOfEnvironmentVariables + 1);
+    	
+    	//operation
+    	environmentVariable.destroy();
+    	
+    	//verification
+    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(numOfEnvironmentVariables);
+    	assertThat(application.hasEnvironmentVariable("FOOBAR")).isFalse();
+    }
+
+    @Test(expected = OpenShiftException.class)
 	public void shouldNotAddExistingEnvironmentVariableToApplication() throws Throwable {
 		// precondition
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
@@ -344,7 +359,7 @@ public class ApplicationResourceIntegrationTest {
 	}
 
 	@Test
-	public void shouldListAllEnvironmentVariablesFromApplication() throws Throwable {
+	public void shouldListAllEnvironmentVariables() throws Throwable {
 		// preconditions
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
@@ -355,7 +370,7 @@ public class ApplicationResourceIntegrationTest {
 		application.addEnvironmentVariables(environmentVariableMap);
 
 		// operation
-		List<IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
+		Map<String, IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
 
 		// verifications
 		assertThat(environmentVariables).hasSize(3);
@@ -368,10 +383,21 @@ public class ApplicationResourceIntegrationTest {
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 
 		//operation
-		List<IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
+		Map<String, IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
 
 		//verifications
 		assertThat(environmentVariables).isEmpty();
 	}
+	
+	@Test
+	public void shouldCanGetCanUpdateEnvironmentVariables() throws Throwable {
+		// pre-conditions
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 
+		// operation
+        // verifications
+		assertThat(application.canUpdateEnvironmentVariables()).isTrue();
+		//verify list environment variables
+		assertThat(application.canGetEnvironmentVariables()).isTrue();
+	}
 }

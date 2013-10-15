@@ -48,7 +48,7 @@ public class EnvironmentVariableResourceTest {
     	//precondition
     	mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6", GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
     	//operartion
-    	IEnvironmentVariable environmentVariable = application.getEnvironmentVariableByName("FOO");
+    	IEnvironmentVariable environmentVariable = application.getEnvironmentVariable("FOO");
     	//verification
     	assertThat(environmentVariable.getName()).isEqualTo("FOO");
     }
@@ -58,7 +58,7 @@ public class EnvironmentVariableResourceTest {
         //precondition
     	mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6", GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
     	//operartion
-    	IEnvironmentVariable environmentVariable = application.getEnvironmentVariableByName("FOO");
+    	IEnvironmentVariable environmentVariable = application.getEnvironmentVariable("FOO");
     	//verification
     	assertThat(environmentVariable.getValue()).isEqualTo("123");
     }
@@ -68,10 +68,10 @@ public class EnvironmentVariableResourceTest {
     	//precondition
     	mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6", GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6,GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
        //operation
-      IEnvironmentVariable environmentVariable = application.getEnvironmentVariableByName("FOO");
+      IEnvironmentVariable environmentVariable = application.getEnvironmentVariable("FOO");
       assertThat(environmentVariable).isNotNull();
       environmentVariable.destroy();
-      environmentVariable = application.getEnvironmentVariableByName("FOO");
+      environmentVariable = application.getEnvironmentVariable("FOO");
       assertThat(environmentVariable).isNull();
     }
     
@@ -81,7 +81,7 @@ public class EnvironmentVariableResourceTest {
     	mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6", GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6,GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6)
     	.mockUpdateEnvironmentVariableValue("foobarz", "springeap6","FOO", PUT_FOO_ENVIRONMENT_VARIABLE_FOOBARZ_SPRINGEAP6);
        //operation
-      IEnvironmentVariable environmentVariable = application.getEnvironmentVariableByName("FOO");
+      IEnvironmentVariable environmentVariable = application.getEnvironmentVariable("FOO");
       assertThat(environmentVariable.getValue()).isEqualTo("123");
       environmentVariable.update("321");;
       assertThat(environmentVariable.getValue()).isEqualTo("321");
