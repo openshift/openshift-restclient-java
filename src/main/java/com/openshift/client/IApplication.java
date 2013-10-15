@@ -21,6 +21,7 @@ import com.jcraft.jsch.Session;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.internal.client.ApplicationResource;
 
 /**
  * @author André Dietisheim
@@ -409,52 +410,82 @@ public interface IApplication extends IOpenShiftResource {
 	 * @throws OpenShiftSSHOperationException
 	 */
 	public List<String> getEnvironmentProperties() throws OpenShiftSSHOperationException;
+
 	/**
-	 * Retrieves the list of environment variables
-	 * @return the list of environment variables 
+	 * Retrieves the map of environment variables
+	 * 
+	 * @return the list of environment variables
 	 * @throws OpenShiftSSHOperationException
 	 */
-	public List<IEnvironmentVariable> getEnvironmentVariables() throws OpenShiftSSHOperationException;
+	public Map<String, IEnvironmentVariable> getEnvironmentVariables() throws OpenShiftSSHOperationException;
+
 	/**
 	 * Checks if the environment variable is present in the application.
-	 * @param name Name of the environment variable
-	 * @return 
+	 * 
+	 * @param name
+	 *            Name of the environment variable
+	 * @return
 	 * @throws OpenShiftSSHOperationException
 	 */
-	public boolean hasEnvironmentVariableByName(String name) throws OpenShiftSSHOperationException;
+	public boolean hasEnvironmentVariable(String name) throws OpenShiftSSHOperationException;
+
 	/**
-	 * Adds an environment variable
-	 * @param name name of the variable to add
-	 * @param value value of the new variable
+	 * Adds an environment variable to this application. If the environment
+	 * variable exists already, then an OpenShift exception is thrown.
+	 * 
+	 * @param name
+	 *            name of the variable to add
+	 * @param value
+	 *            value of the new variable
 	 * @throws OpenShiftSSHOperationException
 	 */
-	public IEnvironmentVariable addEnvironmentVariable(String name,String value) throws OpenShiftSSHOperationException;
+	public IEnvironmentVariable addEnvironmentVariable(String name, String value) throws OpenShiftSSHOperationException;
+
 	/**
 	 * Adds a map of environment variables to the application
-	 * @param environmentVariables map of environment variables
+	 * 
+	 * @param environmentVariables
+	 *            map of environment variables
 	 * @throws OpenShiftSSHOperationException
 	 */
-	public List<IEnvironmentVariable> addEnvironmentVariables(Map<String,String> environmentVariables) throws OpenShiftSSHOperationException;
+	public Map<String, IEnvironmentVariable> addEnvironmentVariables(Map<String, String> environmentVariables)
+			throws OpenShiftSSHOperationException;
+
 	/**
 	 * Return the environment variable for the specified name
-	 * @param name Name of the environment variable
+	 * 
+	 * @param name
+	 *            Name of the environment variable
 	 * @return environment variable
 	 * @throws OpenShiftSSHOperationException
 	 */
-	public IEnvironmentVariable getEnvironmentVariableByName(String name) throws OpenShiftSSHOperationException;
+	public IEnvironmentVariable getEnvironmentVariable(String name) throws OpenShiftSSHOperationException;
+
 	/**
-	 * Checks if the LIST_ENVIRONMENT_VARIABLES link is present. 
-	 * This link should be present to request all environment
-	 * variables in an application. 
-	 * @return true if the LIST_ENVIRONMENT_VARIABLES link is available.
+	 * Returns <code>true</code> if this application can list its environment
+	 * variables. Returns <code>false</code> if it cant. Internally this
+	 * translates to the presence of the link to list environment variables.
+	 * 
+	 * @return true if this application can list its envirnoment variables
+	 * 
+	 * @see #getEnvironmentVariables()
+	 * @see #getEnvironmentVariable(String)
+	 * @see ApplicationResource#LINK_LIST_ENVIRONMENT_VARIABLES
 	 */
-	public boolean hasListEnvironmentVariablesLink();
+	public boolean canGetEnvironmentVariables();
+
 	/**
-	 * Checks if the SET_UNSET_ENVIRONMENT_VARIABLES link is present.
-	 * This link should be present to add environment variables
-	 * to an application
-	 * @return true if the SET_UNSET_ENVIRONMENT_VARIABLES link is available
+	 * Returns <code>true</code> if this application can update (set or unset)
+	 * its environment variables. Returns <code>false</code> if it cannot.
+	 * Internally this translates to the presence of the link to set and unset
+	 * environment variables.
+	 * 
+	 * @return true if this application can set/unset its environment variables
+	 * 
+	 * @see #addEnvironmentVariable(String, String)
+	 * @see #addEnvironmentVariables(Map)
+	 * @see ApplicationResource#LINK_SET_UNSET_ENVIRONMENT_VARIABLES
 	 */
-	public boolean hasAddEnvironmentVariableLink();
+	public boolean canUpdateEnvironmentVariables();
 
 }
