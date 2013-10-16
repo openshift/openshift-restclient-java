@@ -26,4 +26,11 @@ public interface IGear {
 	 * @return the state
 	 */
 	public GearState getState();
+	
+	/**
+	 * The URL to use when connecting with SSH in the following form:
+	 * {@code ssh://<username>@<host>}
+	 * @return the SSH URL
+	 */
+	public String getSshUrl();
 }

@@ -15,11 +15,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import org.fest.assertions.AssertExtension;
+import org.fest.assertions.Assertions;
 
 import com.openshift.client.GearState;
 import com.openshift.client.IGear;
 import com.openshift.client.IGearGroup;
+import com.openshift.client.cartridge.ICartridge;
 
 /**
  * @author André Dietisheim
@@ -109,5 +117,26 @@ public class GearGroupAssert implements AssertExtension {
 			assertEquals(state, gear.getState());
 			return GearGroupAssert.this;
 		}
+
+		public GearGroupAssert hasSshUrl(String sshUrl) {
+			assertNotNull(sshUrl);
+			
+			assertEquals(sshUrl, gear.getSshUrl());
+			return GearGroupAssert.this;
+		}
 	}
+
+	public GearGroupAssert hasCartridges(final String... expectedCartridgeNames) {
+		final Collection<ICartridge> existingCartridges = gearGroup.getCartridges();
+		final List<String> existingCartridgeNames = new ArrayList<String>();
+		final Iterator<ICartridge> cartridgeIterator = existingCartridges.iterator();
+		for(int i = 0; i < existingCartridges.size(); i++) {
+			existingCartridgeNames.add(cartridgeIterator.next().getName());
+		}
+		
+		Assertions.assertThat(existingCartridgeNames).isEqualTo(Arrays.asList(expectedCartridgeNames));
+		return this;
+		
+	}
+
 }

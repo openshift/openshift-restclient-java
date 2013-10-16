@@ -206,8 +206,10 @@ public interface IApplication extends IOpenShiftResource {
 
 
 	/**
-	 * Returns the gear groups for this application 
-	 * @return
+	 * Returns the gear groups for this application.
+	 * The collection is never cached, so each call will trigger a request to the OpenShift Broker.
+	 *  
+	 * @return the collection of {@link IGearGroup} for this application.
 	 * @throws OpenShiftException
 	 */
 	public Collection<IGearGroup> getGearGroups() throws OpenShiftException;

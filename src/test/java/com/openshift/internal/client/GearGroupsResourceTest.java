@@ -57,16 +57,17 @@ public class GearGroupsResourceTest {
 		// operation
 		final Collection<IGearGroup> gearGroups = app.getGearGroups();
 		// verifications
-		assertThat(new GearGroupsAssert(gearGroups)).hasSize(3);
+		assertThat(new GearGroupsAssert(gearGroups)).hasSize(2);
 		assertThat(new GearGroupsAssert(gearGroups)).assertGroup("514207b84382ec1fef0000ab")
 				.hasUUID("514207b84382ec1fef0000ab")
 				.assertGear("514207b84382ec1fef000098").inState(GearState.IDLE)
-				.assertGear("5146f047500446f12d00002e").inState(GearState.BUILDING);
-		assertThat(new GearGroupsAssert(gearGroups)).assertGroup("514208014382ec1fef0000c8")
-				.hasUUID("514208014382ec1fef0000c8")
-				.assertGear("514208014382ec1fef0000bc").inState(GearState.STARTED);
+				.assertGear("514207b84382ec1fef000098").hasSshUrl("ssh://52380549e0b8cd1e0e000032@springeap6-foobarz.rhcloud.com")
+				.assertGear("5146f047500446f12d00002e").inState(GearState.BUILDING)
+				.hasCartridges("jbosseap-6", "mongodb-2.2");
 		assertThat(new GearGroupsAssert(gearGroups)).assertGroup("514212ce500446b64e0000c0")
 				.hasUUID("514212ce500446b64e0000c0")
-				.assertGear("514212ce500446b64e0000b4").inState(GearState.DEPLOYING);
+				.assertGear("514212ce500446b64e0000b4").hasSshUrl("ssh://523809b75973ca569600019b@523809b75973ca569600019b-foobarz.rhcloud.com")
+				.assertGear("514212ce500446b64e0000b4").inState(GearState.DEPLOYING)
+				.hasCartridges("mongodb-2.2");
 	}
 }

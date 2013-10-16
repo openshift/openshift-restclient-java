@@ -69,6 +69,7 @@ import com.openshift.client.Message;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.internal.client.Gear;
 import com.openshift.internal.client.GearProfile;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
@@ -450,23 +451,25 @@ public class OpenShiftJsonDTOFactory implements IRestResponseFactory {
 	}
 
 	private GearGroupResourceDTO createGearGroupResourceDTO(ModelNode gearGroupNode) {
-		String uuid = getAsString(gearGroupNode, PROPERTY_UUID);
-		String name = getAsString(gearGroupNode, PROPERTY_NAME);
-		Collection<IGear> gears = createGears(gearGroupNode.get(PROPERTY_GEARS));
-		return new GearGroupResourceDTO(uuid, name, gears);
+		final String uuid = getAsString(gearGroupNode, PROPERTY_UUID);
+		final String name = getAsString(gearGroupNode, PROPERTY_NAME);
+		final Collection<GearResourceDTO> gears = createGears(gearGroupNode.get(PROPERTY_GEARS));
+		final Map<String, CartridgeResourceDTO> cartridges = createCartridges(gearGroupNode.get(PROPERTY_CARTRIDGES));
+		return new GearGroupResourceDTO(uuid, name, gears, cartridges);
 	}
 	
-	private Collection<IGear> createGears(ModelNode gearsNode) {
-		List<IGear> gears = new ArrayList<IGear>();
+	private Collection<GearResourceDTO> createGears(ModelNode gearsNode) {
+		List<GearResourceDTO> gears = new ArrayList<GearResourceDTO>();
 		for (ModelNode gearNode : gearsNode.asList()) {
 			gears.add(
-					new Gear(
+					new GearResourceDTO(
 							getAsString(gearNode, PROPERTY_ID),
-							GearState.safeValueOf(getAsString(gearNode, PROPERTY_GEAR_STATE))));
+							getAsString(gearNode, PROPERTY_GEAR_STATE),
+							getAsString(gearNode, PROPERTY_SSH_URL)));
 		}
 		return gears;
 	}
-	
+
 	/**
 	 * Creates a new CartridgeResourceDTO for a given root node.
 	 * 
@@ -678,6 +681,7 @@ public class OpenShiftJsonDTOFactory implements IRestResponseFactory {
 	 *            the name of the property
 	 * @return the property as a String
 	 */
+	@SuppressWarnings("unused")
 	private Boolean getAsBoolean(final ModelNode node, String propertyName) {
 		final ModelNode propertyNode = node.get(propertyName);
 		return propertyNode.isDefined() ? propertyNode.asBoolean() : Boolean.FALSE;

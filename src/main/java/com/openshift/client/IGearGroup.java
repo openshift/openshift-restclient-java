@@ -12,6 +12,8 @@ package com.openshift.client;
 
 import java.util.Collection;
 
+import com.openshift.client.cartridge.ICartridge;
+
 public interface IGearGroup {
 
 	/**
@@ -34,4 +36,11 @@ public interface IGearGroup {
 	 * @return the gears
 	 */
 	public Collection<IGear> getGears();
+
+	/**
+	 * Returns the cartridges in this gear group resource
+	 * 
+	 * @return the gears
+	 */
+	public Collection<ICartridge> getCartridges();
 }

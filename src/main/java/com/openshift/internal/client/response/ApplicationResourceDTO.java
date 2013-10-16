@@ -24,7 +24,7 @@ import com.openshift.client.Messages;
  */
 public class ApplicationResourceDTO extends BaseResourceDTO {
 
-	/** the application's framework. */
+	/** the application's framework (or main cartridge). */
 	private final String framework;
 	
 	/** the application's domainId. */
