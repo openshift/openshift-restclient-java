@@ -52,6 +52,13 @@ public interface IApplication extends IOpenShiftResource {
 	public String getGitUrl();
 
 	/**
+	 * Returns the url to use to connect with ssh.
+	 * 
+	 * @return the url to use to connect with ssh.
+	 */
+	public String getSshUrl();
+
+	/**
 	 * Returns the git url that the application will get its initial code and configuration from.
 	 *  
 	 * @return the initial git url

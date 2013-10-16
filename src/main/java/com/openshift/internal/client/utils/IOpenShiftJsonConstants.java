@@ -77,6 +77,7 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_SSH = "ssh";
 	public static final String PROPERTY_SSH_KEY = "ssh_key";
 	public static final String PROPERTY_SSH_TYPE = "ssh_type";
+	public static final String PROPERTY_SSH_URL = "ssh_url";
 	public static final String PROPERTY_STATUS = "status";
 	public static final String PROPERTY_SUFFIX = "suffix";
 	public static final String PROPERTY_TEXT = "text";

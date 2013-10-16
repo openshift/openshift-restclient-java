@@ -212,6 +212,7 @@ public class OpenShiftJsonDTOFactoryTest {
 		assertThat(applicationDTO.getDomainId()).isEqualTo("foobarz");
 		assertThat(applicationDTO.getCreationTime()).isEqualTo("2013-09-20T21:28:53Z");
 		assertThat(applicationDTO.getApplicationUrl()).isEqualTo("http://springeap6-foobarz.rhcloud.com/");
+		assertThat(applicationDTO.getSshUrl()).isEqualTo("ssh://523cbe15e0b8cd0a520001b6@springeap6-foobarz.rhcloud.com");
 		assertThat(applicationDTO.getFramework()).isEqualTo(Cartridges.JBOSSEAP_6_NAME);
 		assertThat(applicationDTO.getName()).isEqualTo("springeap6");
 		assertThat(applicationDTO.getApplicationScale()).isEqualTo(ApplicationScale.NO_SCALE);
