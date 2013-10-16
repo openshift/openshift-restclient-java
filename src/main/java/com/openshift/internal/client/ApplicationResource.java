@@ -121,6 +121,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	/** The url of this application. */
 	private final String applicationUrl;
 
+	/** The url to use to connect with ssh.*/
+	private final String sshUrl;
+	
 	/** The url at which the git repo of this application may be reached. */
 	private final String gitUrl;
 
@@ -155,7 +158,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	protected ApplicationResource(ApplicationResourceDTO dto, DomainResource domain) {
 		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getMessages(), dto.getApplicationUrl(),
-				dto.getGitUrl(), dto.getInitialGitUrl(), dto.getGearProfile(), dto.getApplicationScale(), 
+				dto.getSshUrl(), dto.getGitUrl(), dto.getInitialGitUrl(), dto.getGearProfile(), dto.getApplicationScale(), 
 				dto.getAliases(), dto.getCartridges(), dto.getLinks(), domain);
 	}
 
@@ -174,6 +177,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 *            the application url
 	 * @param gitUrl
 	 *            the git url
+	 * @param sshUrl
+	 *            the ssh url
 	 * @param cartridge
 	 *            the cartridge (type/framework)
 	 * @param aliases
@@ -185,7 +190,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * @throws DatatypeConfigurationException
 	 */
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
-			final Messages messages, final String applicationUrl, final String gitUrl,
+			final Messages messages, final String applicationUrl, final String sshUrl, final String gitUrl, 
 			final String initialGitUrl, final IGearProfile gearProfile, final ApplicationScale scale, final List<String> aliases,
 			final Map<String, CartridgeResourceDTO> cartridgesByName, final Map<String, Link> links,
 			final DomainResource domain) {
@@ -196,6 +201,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.scale = scale;
 		this.gearProfile = gearProfile;
 		this.applicationUrl = applicationUrl;
+		this.sshUrl = sshUrl;
 		this.gitUrl = gitUrl;
 		this.initialGitUrl = initialGitUrl;
 		this.domain = domain;
@@ -308,6 +314,13 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	public String getInitialGitUrl() {
 		return initialGitUrl;
+	}
+
+	/**
+	 * @return the sshUrl
+	 */
+	public String getSshUrl() {
+		return sshUrl;
 	}
 
 	public String getApplicationUrl() {

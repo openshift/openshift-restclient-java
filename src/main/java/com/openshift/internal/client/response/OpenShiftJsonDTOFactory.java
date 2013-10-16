@@ -38,6 +38,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REQUIRED_PARAMS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SCALABLE;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SSH_URL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SUFFIX;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_TYPE;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_URL;
@@ -405,6 +406,7 @@ public class OpenShiftJsonDTOFactory implements IRestResponseFactory {
 		final ApplicationScale scalable = ApplicationScale.safeValueOf(getAsString(appNode, PROPERTY_SCALABLE));
 		final IGearProfile gearProfile = createGearProfile(appNode);
 		final String applicationUrl = getAsString(appNode, PROPERTY_APP_URL);
+		final String sshUrl = getAsString(appNode, PROPERTY_SSH_URL);
 		final String gitUrl = getAsString(appNode, PROPERTY_GIT_URL);
 		final String initialGitUrl = getAsString(appNode, PROPERTY_INITIAL_GIT_URL);
 		final String domainId = getAsString(appNode, PROPERTY_DOMAIN_ID);
@@ -421,6 +423,7 @@ public class OpenShiftJsonDTOFactory implements IRestResponseFactory {
 				scalable, 
 				uuid, 
 				applicationUrl, 
+				sshUrl,
 				gitUrl, 
 				initialGitUrl,
 				aliases, 
