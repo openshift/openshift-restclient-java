@@ -48,6 +48,7 @@ import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftSSHOperationException;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
@@ -230,6 +231,23 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	public IStandaloneCartridge getCartridge() {
 		return cartridge;
 	}
+
+	/**
+	 * Returns the main (standalone) cartrige or one of the embedded cartridges
+	 * whose name matches the given param.
+	 * @param cartridgeName the name of the cartridge to look for.
+	 * @return the cartridge or null if none has this name.
+	 */
+	protected ICartridge getCartridge(String cartridgeName) {
+		if(cartridgeName == null) {
+			return null;
+		}
+		if(this.cartridge != null && cartridgeName.equals(this.cartridge.getName())) {
+			return this.cartridge;
+		}
+		return getEmbeddedCartridge(cartridgeName);
+	}
+
 
 	public Date getCreationTime() {
 		return creationTime;
@@ -478,9 +496,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	public Collection<IGearGroup> getGearGroups() throws OpenShiftException {
-		if (gearGroups == null) {
-			loadGearGroups();
-		}
+		// this collection is not cached so we always have the latest info 
+		// about the gear groups consumed by this application.
+		loadGearGroups();
 		return gearGroups;
 	}
 
@@ -488,7 +506,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		List<IGearGroup> gearGroups = new ArrayList<IGearGroup>();
 		Collection<GearGroupResourceDTO> dtos = new GetGearGroupsRequest().execute(); 
 		for(GearGroupResourceDTO dto : dtos) {
-			gearGroups.add(new GearGroupResource(dto, getService()));
+			gearGroups.add(new GearGroupResource(dto, this, getService()));
 		}
 		
 		return this.gearGroups = gearGroups;
@@ -1066,5 +1084,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			return super.execute(parameters.toArray());
 		}
 	}
+
 
 }

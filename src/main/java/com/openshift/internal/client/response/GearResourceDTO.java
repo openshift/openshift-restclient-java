@@ -12,32 +12,38 @@ package com.openshift.internal.client.response;
 
 import java.util.HashMap;
 
-import com.openshift.client.Messages;
-
 /**
  * The Class ApplicationDTO.
  *
  * @author Xavier Coulon
  */
-public class GearDTO extends BaseResourceDTO {
+public class GearResourceDTO extends BaseResourceDTO {
+
+	/** uuid the Gear UUID. */
+	private final String uuid;
+	
+	/** state the Gear state. */
+	private final String state;
+	
+	/** the URL to connect with SSH. */
+	private final String sshUrl;
 
 	/**
-	 * Instantiates a new gearGroup dto.
-	 *
+	 * Constructor
+	 * @param uuid the Gear UUID
+	 * @param state the Gear state
+	 * @param sshUrl the URL to connect with SSH
 	 */
-	
-	String uuid;
-	String state;
-	
-	GearDTO(String uuid, String state, Messages messages) {
-		super(new HashMap<String, Link>(), messages);
+	GearResourceDTO(String uuid, String state, String sshUrl) {
+		super(new HashMap<String, Link>(), null);
 		this.uuid = uuid;
+		this.sshUrl = sshUrl;
 		this.state = state;
 	}
 	
 	@Override
 	public String toString() {
-		return "GearDTO";
+		return "GearResourceDTO";
 	}
 	
 	public String getUuid() {
@@ -46,6 +52,13 @@ public class GearDTO extends BaseResourceDTO {
 	
 	public String getState() {
 		return state;
+	}
+
+	/**
+	 * @return the sshUrl
+	 */
+	public String getSshUrl() {
+		return sshUrl;
 	}
 
 }

@@ -23,10 +23,12 @@ public class Gear implements IGear {
 	
 	private final String id;
 	private GearState state;
+	private final String sshUrl;
 
-	public Gear(String id, GearState state) {
+	public Gear(String id, GearState state, String sshUrl) {
 		this.id = id;
 		this.state = state;
+		this.sshUrl = sshUrl;
 	}
 
 	public String getId() {
@@ -37,6 +39,13 @@ public class Gear implements IGear {
 		return state;
 	}
 	
+	/**
+	 * @return the sshUrl
+	 */
+	public String getSshUrl() {
+		return sshUrl;
+	}
+
 	public String toString() {
 		return "Gear [id=" + id + ", state=" + state + "]";
 	}

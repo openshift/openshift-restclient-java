@@ -11,8 +11,7 @@
 package com.openshift.internal.client.response;
 
 import java.util.Collection;
-
-import com.openshift.client.IGear;
+import java.util.Map;
 
 /**
  * The DTO for a gear groups
@@ -27,23 +26,31 @@ public class GearGroupResourceDTO extends BaseResourceDTO {
 	/** the gear groups name */
 	private final String name;
 
-	private Collection<IGear> gears;
-
+	/** The gears part of this group. */
+	private final Collection<GearResourceDTO> gears;
+	
+	/** The cartridges part of this group, indexed by their name. */
+	private final Map<String, CartridgeResourceDTO> cartridges;
+	
 	/**
 	 * Instantiates a new gears resource dto.
 	 * 
 	 * @param uuid
 	 *            the uuid
-	 * @param components
-	 *            the components
-	 * @param gitUrl
-	 *            the git url
+	 * @param name
+	 *            the gear group name
+	 * @param gears
+	 *            the gears in this group
+	 * @param cartridges
+	 *            the cartridges in this group
+	 *            
 	 */
-	GearGroupResourceDTO(final String uuid, final String name, Collection<IGear> gears) {
+	GearGroupResourceDTO(final String uuid, final String name, final Collection<GearResourceDTO> gears, final Map<String, CartridgeResourceDTO> cartridges) {
 		super();
 		this.uuid = uuid;
 		this.name = name;
 		this.gears = gears;
+		this.cartridges = cartridges;
 	}
 
 	/**
@@ -69,7 +76,24 @@ public class GearGroupResourceDTO extends BaseResourceDTO {
 	 * 
 	 * @return the gears
 	 */
-	public final Collection<IGear> getGears() {
+	public final Collection<GearResourceDTO> getGears() {
 		return gears;
 	}
+
+	/**
+	 * Returns the cartridges within this gear group.
+	 * @return the cartridges
+	 */
+	public Map<String, CartridgeResourceDTO> getCartridges() {
+		return cartridges;
+	}
+
+	/**
+	 * Returns the cartridge identified by the given name.
+	 * @return the cartridge or null if none exists in this group
+	 */
+	public CartridgeResourceDTO getCartridge(final String name) {
+		return cartridges.get(name);
+	}
+
 }

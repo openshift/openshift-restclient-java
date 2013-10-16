@@ -391,14 +391,14 @@ public class OpenShiftJsonDTOFactoryTest {
 		RestResponse response = factory.get(content);
 		// verifications
 		Collection<GearGroupResourceDTO> gearGroups = response.getData();
-		assertThat(gearGroups.size()).isEqualTo(3);
+		assertThat(gearGroups.size()).isEqualTo(2);
 		GearGroupResourceDTO gearGroup = gearGroups.iterator().next();
 		assertThat(gearGroup.getName()).isEqualTo("514207b84382ec1fef0000ab");
 		assertThat(gearGroup.getUuid()).isEqualTo("514207b84382ec1fef0000ab");
 		assertThat(gearGroup.getGears()).hasSize(2);
-		final IGear gear = gearGroup.getGears().iterator().next();
-		assertThat(gear.getId()).isEqualTo("514207b84382ec1fef000098");
-		assertThat(gear.getState()).isEqualTo(GearState.IDLE);
+		final GearResourceDTO gear = gearGroup.getGears().iterator().next();
+		assertThat(gear.getUuid()).isEqualTo("514207b84382ec1fef000098");
+		assertThat(gear.getState()).isEqualToIgnoringCase(GearState.IDLE.toString());
 	}
 
 	@Test
