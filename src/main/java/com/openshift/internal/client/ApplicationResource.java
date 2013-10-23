@@ -74,14 +74,12 @@ import com.openshift.internal.client.utils.StringUtils;
  */
 public class ApplicationResource extends AbstractOpenShiftResource implements IApplication {
 
-	private static final String ENVIRONMENT_VAR_JENKINS = "JENKINS_";
-
-	private static final String ENVIRONMENT_VAR_OPENSHIFT = "OPENSHIFT_";
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationResource.class);
+	// private static final String ENVIRONMENT_VAR_JENKINS = "JENKINS_";
+	// private static final String ENVIRONMENT_VAR_OPENSHIFT = "OPENSHIFT_";
 
 	private static final long APPLICATION_WAIT_RETRY_DELAY = 2 * 1024;
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationResource.class);
+	
 	private static final String LINK_DELETE_APPLICATION = "DELETE";
 	private static final String LINK_START_APPLICATION = "START";
 	private static final String LINK_STOP_APPLICATION = "STOP";
@@ -606,10 +604,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		List<String> openshiftProps = new ArrayList<String>();
 		List<String> allEnvProps = sshExecCmd("set", SshStreams.INPUT);
 		for (String line : allEnvProps) {
-			if (line.startsWith(ENVIRONMENT_VAR_OPENSHIFT) 
-					|| line.startsWith(ENVIRONMENT_VAR_JENKINS)) {
+//			if (line.startsWith(ENVIRONMENT_VAR_OPENSHIFT) 
+//					|| line.startsWith(ENVIRONMENT_VAR_JENKINS)) {
 				openshiftProps.add(line);
-			}
+//			}
 		}
 		return openshiftProps;
 	}
@@ -628,6 +626,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	
 	private Map<String, IEnvironmentVariable> loadEnvironmentVariables() throws OpenShiftException {
 		List<EnvironmentVariableResourceDTO> environmentVariableDTOs = new ListEnvironmentVariablesRequest().execute();
+		if (environmentVariableDTOs == null) {
+			return new LinkedHashMap<String, IEnvironmentVariable>();
+		}
+
 		Map<String, IEnvironmentVariable> environmentVariablesByName = new LinkedHashMap<String, IEnvironmentVariable>();
 		for (EnvironmentVariableResourceDTO environmentVariableResourceDTO : environmentVariableDTOs) {
 			final IEnvironmentVariable environmentVariable = 
