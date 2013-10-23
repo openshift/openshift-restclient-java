@@ -626,6 +626,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	
 	private Map<String, IEnvironmentVariable> loadEnvironmentVariables() throws OpenShiftException {
 		List<EnvironmentVariableResourceDTO> environmentVariableDTOs = new ListEnvironmentVariablesRequest().execute();
+		if (environmentVariableDTOs == null) {
+			return new LinkedHashMap<String, IEnvironmentVariable>();
+		}
+
 		Map<String, IEnvironmentVariable> environmentVariablesByName = new LinkedHashMap<String, IEnvironmentVariable>();
 		for (EnvironmentVariableResourceDTO environmentVariableResourceDTO : environmentVariableDTOs) {
 			final IEnvironmentVariable environmentVariable = 
