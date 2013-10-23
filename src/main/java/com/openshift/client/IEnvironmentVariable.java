@@ -41,4 +41,12 @@ public interface IEnvironmentVariable extends IOpenShiftResource {
 	 */
 	public void destroy() throws OpenShiftException;
 
+	
+	/**
+	 * Returns the application for this environment variable
+	 * 
+	 * @return
+	 */
+	public IApplication getApplication();
+
 }

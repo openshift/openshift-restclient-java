@@ -12,6 +12,7 @@ package com.openshift.internal.client;
 
 import java.util.Map;
 
+import com.openshift.client.IApplication;
 import com.openshift.client.IEnvironmentVariable;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
@@ -113,4 +114,9 @@ public class EnvironmentVariableResource extends AbstractOpenShiftResource imple
 		}
 	}
 
+	@Override
+	public IApplication getApplication() {
+		return application;
+	}
+	
 }

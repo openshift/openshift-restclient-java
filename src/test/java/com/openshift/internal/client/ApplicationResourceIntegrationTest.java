@@ -333,7 +333,7 @@ public class ApplicationResourceIntegrationTest {
 	}
 
     @Test
-	public void shouldRemoveEnvironmentVariable() throws Throwable{
+	public void shouldDestroyEnvironmentVariable() throws Throwable{
     	//pre-conditions
     	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
     	int numOfEnvironmentVariables = application.getEnvironmentVariables().size(); 
@@ -342,6 +342,22 @@ public class ApplicationResourceIntegrationTest {
     	
     	//operation
     	environmentVariable.destroy();
+    	
+    	//verification
+    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(numOfEnvironmentVariables);
+    	assertThat(application.hasEnvironmentVariable("FOOBAR")).isFalse();
+    }
+
+    @Test
+	public void shouldRemoveEnvironmentVariable() throws Throwable{
+    	//pre-conditions
+    	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+    	int numOfEnvironmentVariables = application.getEnvironmentVariables().size(); 
+    	IEnvironmentVariable environmentVariable = application.addEnvironmentVariable("FOOBAR","123");
+    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(numOfEnvironmentVariables + 1);
+    	
+    	//operation
+    	application.removeEnvironmentVariable(environmentVariable.getName());
     	
     	//verification
     	assertThat(application.getEnvironmentVariables().size()).isEqualTo(numOfEnvironmentVariables);

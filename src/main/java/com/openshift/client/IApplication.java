@@ -436,7 +436,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @return
 	 * @throws OpenShiftSSHOperationException
 	 */
-	public boolean hasEnvironmentVariable(String name) throws OpenShiftSSHOperationException;
+	public boolean hasEnvironmentVariable(String name) throws OpenShiftException;
 
 	/**
 	 * Adds an environment variable to this application. If the environment
@@ -448,7 +448,7 @@ public interface IApplication extends IOpenShiftResource {
 	 *            value of the new variable
 	 * @throws OpenShiftSSHOperationException
 	 */
-	public IEnvironmentVariable addEnvironmentVariable(String name, String value) throws OpenShiftSSHOperationException;
+	public IEnvironmentVariable addEnvironmentVariable(String name, String value) throws OpenShiftException;
 
 	/**
 	 * Adds a map of environment variables to the application
@@ -458,7 +458,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @throws OpenShiftSSHOperationException
 	 */
 	public Map<String, IEnvironmentVariable> addEnvironmentVariables(Map<String, String> environmentVariables)
-			throws OpenShiftSSHOperationException;
+			throws OpenShiftException;
 
 	/**
 	 * Return the environment variable for the specified name
@@ -468,7 +468,16 @@ public interface IApplication extends IOpenShiftResource {
 	 * @return environment variable
 	 * @throws OpenShiftSSHOperationException
 	 */
-	public IEnvironmentVariable getEnvironmentVariable(String name) throws OpenShiftSSHOperationException;
+	public IEnvironmentVariable getEnvironmentVariable(String name) throws OpenShiftException;
+
+	/**
+	 * Removes the environment variables with the given name from this application.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws OpenShiftException
+	 */
+	public void removeEnvironmentVariable(String name) throws OpenShiftException;
 
 	/**
 	 * Returns <code>true</code> if this application can list its environment
