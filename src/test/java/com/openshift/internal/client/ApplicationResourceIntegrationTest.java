@@ -12,6 +12,7 @@ package com.openshift.internal.client;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -306,7 +307,8 @@ public class ApplicationResourceIntegrationTest {
 	public void shouldAddEnvironmentVariables() throws Throwable {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-
+		ApplicationTestUtils.destroyAllEnvironmentVariables(application);
+		
 		// operation
 		Map<String, String> environmentVariables = new HashMap<String, String>();
 		environmentVariables.put("X_NAME", "X_VALUE");
@@ -321,6 +323,7 @@ public class ApplicationResourceIntegrationTest {
 	public void shouldGetEnvironmentVariableByName() throws Throwable {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		ApplicationTestUtils.destroyAllEnvironmentVariables(application);
 		application.addEnvironmentVariable("Z_NAME", "Z_VALUE");
 
 		// operation
@@ -336,15 +339,15 @@ public class ApplicationResourceIntegrationTest {
 	public void shouldDestroyEnvironmentVariable() throws Throwable{
     	//pre-conditions
     	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-    	int numOfEnvironmentVariables = application.getEnvironmentVariables().size(); 
+		ApplicationTestUtils.destroyAllEnvironmentVariables(application);
     	IEnvironmentVariable environmentVariable = application.addEnvironmentVariable("FOOBAR","123");
-    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(numOfEnvironmentVariables + 1);
+    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(1);
     	
     	//operation
     	environmentVariable.destroy();
     	
     	//verification
-    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(numOfEnvironmentVariables);
+    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(0);
     	assertThat(application.hasEnvironmentVariable("FOOBAR")).isFalse();
     }
 
@@ -352,26 +355,32 @@ public class ApplicationResourceIntegrationTest {
 	public void shouldRemoveEnvironmentVariable() throws Throwable{
     	//pre-conditions
     	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-    	int numOfEnvironmentVariables = application.getEnvironmentVariables().size(); 
+		ApplicationTestUtils.destroyAllEnvironmentVariables(application);
     	IEnvironmentVariable environmentVariable = application.addEnvironmentVariable("FOOBAR","123");
-    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(numOfEnvironmentVariables + 1);
+    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(1);
     	
     	//operation
     	application.removeEnvironmentVariable(environmentVariable.getName());
     	
     	//verification
-    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(numOfEnvironmentVariables);
+    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(0);
     	assertThat(application.hasEnvironmentVariable("FOOBAR")).isFalse();
     }
 
-    @Test(expected = OpenShiftException.class)
+    @Test
 	public void shouldNotAddExistingEnvironmentVariableToApplication() throws Throwable {
 		// precondition
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		ApplicationTestUtils.destroyAllEnvironmentVariables(application);
 		application.addEnvironmentVariable("A_NAME", "A_VALUE");
 
 		// operation
-		application.addEnvironmentVariable("A_NAME", "A_NEW_VALUE");
+		try {
+			application.addEnvironmentVariable("A_NAME", "A_NEW_VALUE");
+			fail("Should not be able to add same variable a 2nd time");
+		} catch(OpenShiftException e) {
+			// success
+		}
 	}
 
 	@Test
