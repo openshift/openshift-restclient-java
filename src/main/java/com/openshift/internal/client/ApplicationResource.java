@@ -74,9 +74,6 @@ import com.openshift.internal.client.utils.StringUtils;
  */
 public class ApplicationResource extends AbstractOpenShiftResource implements IApplication {
 
-	// private static final String ENVIRONMENT_VAR_JENKINS = "JENKINS_";
-	// private static final String ENVIRONMENT_VAR_OPENSHIFT = "OPENSHIFT_";
-
 	private static final long APPLICATION_WAIT_RETRY_DELAY = 2 * 1024;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationResource.class);
 	
@@ -604,17 +601,14 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		List<String> openshiftProps = new ArrayList<String>();
 		List<String> allEnvProps = sshExecCmd("set", SshStreams.INPUT);
 		for (String line : allEnvProps) {
-//			if (line.startsWith(ENVIRONMENT_VAR_OPENSHIFT) 
-//					|| line.startsWith(ENVIRONMENT_VAR_JENKINS)) {
-				openshiftProps.add(line);
-//			}
+			openshiftProps.add(line);
 		}
 		return openshiftProps;
 	}
 	
 	@Override
 	public Map<String, IEnvironmentVariable> getEnvironmentVariables() throws OpenShiftException {
-		return Collections.unmodifiableMap(getOrLoadEnvironmentVariables());
+		return Collections.unmodifiableMap(new LinkedHashMap<String, IEnvironmentVariable>(getOrLoadEnvironmentVariables()));
 	}
 
 	protected Map<String, IEnvironmentVariable> getOrLoadEnvironmentVariables() throws OpenShiftException {

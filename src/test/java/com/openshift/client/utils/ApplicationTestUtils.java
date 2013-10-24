@@ -227,5 +227,12 @@ public class ApplicationTestUtils {
 		}
 		return domain.getUser().getConnection();
 	}
+	
+	public static IApplication destroyAllEnvironmentVariables(IApplication application) {
+		for (String name : application.getEnvironmentVariables().keySet()) {
+			application.removeEnvironmentVariable(name);;
+		}
+		return application;
+	}
 
 }
