@@ -12,15 +12,23 @@ package com.openshift.client;
 
 import com.openshift.internal.client.utils.StringUtils;
 
-
 public enum GearState {
-	STOPPED, BUILDING, DEPLOYING, STARTED, IDLE, UNKNOWN;
+	/**
+	 * @see <a
+	 *      href="http://openshift.github.io/documentation/oo_cartridge_developers_guide.html#the-code-status-code-action">OpenShift
+	 *      Origin Cartridge Developer’s Guide, 7.10.2. The status Action</a>
+	 */
+	BUILDING, DEPLOYING, IDLE, NEW, STARTED, STOPPED, UNKNOWN;
 
 	public static GearState safeValueOf(String gearStateString) {
-		if (StringUtils.isEmpty(gearStateString)) {
+		try {
+			if (StringUtils.isEmpty(gearStateString)) {
+				return UNKNOWN;
+			}
+			return valueOf(gearStateString.toUpperCase());
+		} catch (IllegalArgumentException e) {
 			return UNKNOWN;
 		}
-		return valueOf(gearStateString.toUpperCase());
 	}
-	
+
 }
