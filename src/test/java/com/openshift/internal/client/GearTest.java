@@ -46,4 +46,12 @@ public class GearTest {
 		assertThat(state).isEqualTo(GearState.STARTED);
 	}
 
+	@Test
+	public void bogusStateShouldBeUnknown() {
+		// operation
+		GearState state = GearState.safeValueOf("BOGUS!");
+		// verification
+		assertThat(state).isEqualTo(GearState.UNKNOWN);
+	}
+
 }
