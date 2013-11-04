@@ -13,6 +13,7 @@ package com.openshift.internal.client;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import com.openshift.client.ApplicationScale;
@@ -193,7 +194,11 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 
 	private IApplication getApplicationByName(String name, Collection<IApplication> applications) throws OpenShiftException {
 		Assert.notNull(name);
-
+		
+		if (applications == null) {
+			return null;
+		}
+		
 		IApplication matchingApplication = null;
 		for (IApplication application : applications) {
 			if (application.getName().equalsIgnoreCase(name)) {
@@ -227,29 +232,83 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		connectionResource.removeDomain(this);
 	}
 
+	public List<IApplication> getApplications() throws OpenShiftException {
+		return CollectionUtils.toUnmodifiableCopy(getOrLoadApplications());
+	}
+
 	protected List<IApplication> getOrLoadApplications() throws OpenShiftException {
 		if (applications == null) {
 			this.applications = loadApplications();
 		}
 		return applications;
 	}
-	
-	public List<IApplication> getApplications() throws OpenShiftException {
-		return CollectionUtils.toUnmodifiableCopy(getOrLoadApplications());
-	}
 
 	/**
+	 * Requests the list of application from the backend.
+	 * 
+	 * @return all applications that are known to the backend for this domain
 	 * @throws OpenShiftException
 	 */
 	private List<IApplication> loadApplications() throws OpenShiftException {
-		List<IApplication> apps = new ArrayList<IApplication>();
+		List<IApplication> applications = new ArrayList<IApplication>();
 		List<ApplicationResourceDTO> applicationDTOs = new ListApplicationsRequest().execute();
-		for (ApplicationResourceDTO applicationDTO : applicationDTOs) {
-			final IApplication application =
-					new ApplicationResource(applicationDTO, this);
-			apps.add(application);
+		for (ApplicationResourceDTO dto : applicationDTOs) {
+			applications.add(new ApplicationResource(dto, this));
 		}
-		return apps;
+		return applications;
+	}
+
+	/**
+	 * Updates the list of applications in this domain. It adds new
+	 * applications, updates the existing ones and removes the ones that were
+	 * removed in the backend.
+	 * 
+	 * @param applications
+	 * @return 
+	 * @return
+	 * @throws OpenShiftException
+	 */
+	private List<IApplication> updateApplications() throws OpenShiftException {
+		List<ApplicationResourceDTO> applicationDTOs = new ListApplicationsRequest().execute();
+		addOrUpdateApplications(applicationDTOs, applications);
+		removeApplications(applicationDTOs, applications);
+		return applications;
+	}
+
+	private List<IApplication> addOrUpdateApplications(List<ApplicationResourceDTO> dtos, List<IApplication> applications) throws OpenShiftException {
+		for (ApplicationResourceDTO dto : dtos) {
+			addOrUpdateApplication(dto, applications);
+		}
+		return applications;
+	}
+
+	private void addOrUpdateApplication(ApplicationResourceDTO applicationDTO, List<IApplication> applications) {
+		ApplicationResource application = (ApplicationResource) getApplicationByName(applicationDTO.getName(), applications);
+		if (application == null) {
+			final IApplication newApplication = new ApplicationResource(applicationDTO, this);
+			applications.add(newApplication);
+		} else {
+			application.update(applicationDTO);
+		}
+	}
+
+	private List<IApplication> removeApplications(List<ApplicationResourceDTO> dtos, List<IApplication> applications) {
+		for (ListIterator<IApplication> it = applications.listIterator(); it.hasNext(); ) {
+			IApplication application = it.next();
+			if (!hasApplicationDTOByName(application.getName(), dtos)) {
+				it.remove();
+			}
+		}
+		return applications;
+	}
+	
+	private boolean hasApplicationDTOByName(String name, List<ApplicationResourceDTO> dtos) {
+		for (ApplicationResourceDTO dto : dtos) {
+			if (name.equals(dto.getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected void removeApplication(IApplication application) {
@@ -281,16 +340,12 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		}
 		return gearSizes;
 	}
-	
-	
+
 	public void refresh() throws OpenShiftException {
-		final DomainResourceDTO domainResourceDTO =  new GetDomainRequest().execute();
+		final DomainResourceDTO domainResourceDTO = new GetDomainRequest().execute();
 		this.id = domainResourceDTO.getId();
 		this.suffix = domainResourceDTO.getSuffix();
-		if(this.applications != null) {
-			this.applications = loadApplications();
-		}
-		
+		updateApplications();
 	}
 
 	@Override

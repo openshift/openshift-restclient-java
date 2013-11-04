@@ -94,40 +94,40 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
     private static final Pattern REGEX_FORWARDED_PORT = Pattern.compile("([^ ]+) -> ([^:]+):(\\d+)");
 	
 	/** The (unique) uuid of this application. */
-	private final String uuid;
+	private String uuid;
 
 	/** The name of this application. */
-	private final String name;
+	private String name;
 
 	/** The time at which this application was created. */
-	private final Date creationTime;
+	private Date creationTime;
 
 	/** The cartridge (application type/framework) of this application. */
 	private IStandaloneCartridge cartridge;
 
 	/** The scalability enablement. */
-	private final ApplicationScale scale;
+	private ApplicationScale scale;
 
 	/** The application gear profile. */
-	private final IGearProfile gearProfile;
+	private IGearProfile gearProfile;
 
 	/** The domain this application belongs to. */
 	private final DomainResource domain;
 
 	/** The url of this application. */
-	private final String applicationUrl;
+	private String applicationUrl;
 
 	/** The url to use to connect with ssh.*/
-	private final String sshUrl;
+	private String sshUrl;
 	
 	/** The url at which the git repo of this application may be reached. */
-	private final String gitUrl;
+	private String gitUrl;
 
 	/** the git url for the initial code and configuration for the application */
-	private final String initialGitUrl;
+	private String initialGitUrl;
 	
 	/** The aliases of this application. */
-	private final List<String> aliases;
+	private List<String> aliases;
 
 	/**
 	 * Map of configured embedded cartridges. 
@@ -840,6 +840,20 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return ports;
 	}
 
+	protected void update(ApplicationResourceDTO dto) {
+		this.name = dto.getName();
+		this.uuid = dto.getUuid();
+		this.creationTime = RFC822DateUtils.safeGetDate(dto.getCreationTime());
+		this.scale = dto.getApplicationScale();
+		this.gearProfile = dto.getGearProfile();
+		this.applicationUrl = dto.getApplicationUrl();
+		this.sshUrl = dto.getSshUrl();
+		this.gitUrl = dto.getGitUrl();
+		this.initialGitUrl = dto.getInitialGitUrl();
+		this.aliases = dto.getAliases();
+		updateCartridges(dto.getCartridges());
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
