@@ -48,13 +48,6 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		this.application = application;
 	}
 
-	protected void update(CartridgeResourceDTO dto) {
-		this.description = dto.getDescription();
-		this.displayName = dto.getDisplayName();
-		this.properties = dto.getProperties();
-		setLinks(dto.getLinks());
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -81,6 +74,13 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	
 	public IApplication getApplication() {
 		return application;
+	}
+
+	protected void update(CartridgeResourceDTO dto) {
+		this.description = dto.getDescription();
+		this.displayName = dto.getDisplayName();
+		this.properties = dto.getProperties();
+		setLinks(dto.getLinks());
 	}
 
 	/**

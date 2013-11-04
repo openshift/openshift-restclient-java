@@ -171,6 +171,27 @@ public class DomainResourceIntegrationTest {
 	}
 
 	@Test
+	public void shouldMissApplicationAfterRefresh() throws OpenShiftException, FileNotFoundException, IOException {
+		// pre-condition
+		IDomain domain = DomainTestUtils.ensureHasDomain(user);
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		assertThat(application).isNotNull();
+		IUser otherUser = new TestConnectionFactory().getConnection().getUser();
+		IDomain otherDomain = otherUser.getDomain(domain.getId());
+		assertNotNull(otherDomain);
+		IApplication otherDomainApplication = otherDomain.getApplicationByName(application.getName());
+		assertThat(otherDomainApplication).isNotNull();
+		
+		// operation
+		otherDomainApplication.destroy();
+		assertThat(otherDomain.getApplicationByName(application.getName())).isNull();
+		domain.refresh();
+
+		// verification
+		assertThat(domain.getApplicationByName(application.getName())).isNull();
+	}
+	
+	@Test
 	public void shouldGetApplicationByNameCaseInsensitive() throws OpenShiftException, FileNotFoundException, IOException {
 		// pre-condition
 		IDomain domain = DomainTestUtils.ensureHasDomain(user);
@@ -425,5 +446,4 @@ public class DomainResourceIntegrationTest {
 		// operation
 		domain.createApplication(name.toUpperCase(), LatestVersionOf.jbossAs().get(user));
 	}
-
 }
