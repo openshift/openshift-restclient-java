@@ -67,13 +67,13 @@ public interface IDomain extends IOpenShiftResource {
 	public void destroy(boolean force) throws OpenShiftException;
 
 	/**
-	 * Waits for the domain to become accessible. A domain is considered as accessible as soon as at least 1 application
-	 * url in it resolves to a valid ip address.
+	 * Returns <code>true</code> if this domain can create application with environment variables. Returns <code>false</code> otherwise. 
 	 * 
-	 * @return boolean true if at least 1 application within this domain resolves
-	 * @throws OpenShiftException
+	 * @return true if can create an application with environment variables
+	 * 
+	 * @see IApplication#getEnvironmentVariables()
 	 */
-	public boolean waitForAccessible(long timeout) throws OpenShiftException;
+	public boolean canCreateApplicationWithEnvironmentVariables();
 
 	public IApplication createApplication(String name, IStandaloneCartridge cartridge)
 			throws OpenShiftException;
