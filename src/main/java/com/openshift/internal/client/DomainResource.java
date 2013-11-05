@@ -24,6 +24,7 @@ import com.openshift.client.IHttpClient;
 import com.openshift.client.IUser;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.OpenShiftRequestException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.httpclient.request.StringParameter;
@@ -68,14 +69,17 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		this(domainDTO.getId(), domainDTO.getSuffix(), domainDTO.getLinks(), domainDTO.getMessages(), api);
 	}
 
+	@Override
 	public String getId() {
 		return id;
 	}
 
+	@Override
 	public String getSuffix() {
 		return suffix;
 	}
 
+	@Override
 	public void rename(String id) throws OpenShiftException {
 		Assert.notNull(id);
 
@@ -86,27 +90,24 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		this.getLinks().putAll(domainDTO.getLinks());
 	}
 
+	@Override
 	public IUser getUser() throws OpenShiftException {
 		return connectionResource.getUser();
 	}
 
-	public boolean waitForAccessible(long timeout) throws OpenShiftException {
-		throw new UnsupportedOperationException();
-		//TODO: implement
-	}
-
+	@Override
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge)
 			throws OpenShiftException {
 		return createApplication(name, cartridge, (String) null);
 	}
-	
-	
 
+	@Override
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
 			final ApplicationScale scale) throws OpenShiftException {
 		return createApplication(name, cartridge, scale, null, null);
 	}
 
+	@Override
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge, String initialGitUrl)
 			throws OpenShiftException {
 		return createApplication(name, cartridge, null, null, initialGitUrl);
@@ -117,6 +118,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return createApplication(name, cartridge, scale, null, initialGitUrl);
 	}
 
+	@Override
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
 			final IGearProfile gearProfile) throws OpenShiftException {
 		return createApplication(name, cartridge, null, gearProfile);
@@ -127,17 +129,20 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return createApplication(name, cartridge, null, gearProfile, initialGitUrl);
 	}
 
+	@Override
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
 			final ApplicationScale scale, final IGearProfile gearProfile) throws OpenShiftException {
 		return createApplication(name, cartridge, scale, gearProfile, null);
 	}
 
+	@Override
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
 			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl)
 			throws OpenShiftException {
 		return createApplication(name, cartridge, scale, gearProfile, initialGitUrl, IHttpClient.NO_TIMEOUT);
 	}
-	
+
+	@Override
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
 			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl, int timeout,
 			IEmbeddableCartridge... cartridges)
@@ -153,13 +158,15 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		}
 
 		ApplicationResourceDTO applicationDTO =
-				new CreateApplicationRequest().execute(name, cartridge, scale, gearProfile, initialGitUrl, timeout,null,cartridges);
+				new CreateApplicationRequest().execute(name, cartridge, scale, gearProfile, initialGitUrl, timeout,
+						null, cartridges);
 		IApplication application = new ApplicationResource(applicationDTO, this);
 
 		getOrLoadApplications().add(application);
 		return application;
 	}
-	
+
+	@Override
 	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
 			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl, int timeout,
 			Map<String, String> environmentVariables, IEmbeddableCartridge... cartridges)
@@ -183,22 +190,25 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return application;
 	}
 
-    public boolean hasApplicationByName(String name) throws OpenShiftException {
+	@Override
+	public boolean hasApplicationByName(String name) throws OpenShiftException {
 		return getApplicationByName(name) != null;
 	}
 
+	@Override
 	public IApplication getApplicationByName(String name) throws OpenShiftException {
 		Assert.notNull(name);
 		return getApplicationByName(name, getApplications());
 	}
 
-	private IApplication getApplicationByName(String name, Collection<IApplication> applications) throws OpenShiftException {
+	private IApplication getApplicationByName(String name, Collection<IApplication> applications)
+			throws OpenShiftException {
 		Assert.notNull(name);
-		
+
 		if (applications == null) {
 			return null;
 		}
-		
+
 		IApplication matchingApplication = null;
 		for (IApplication application : applications) {
 			if (application.getName().equalsIgnoreCase(name)) {
@@ -209,6 +219,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return matchingApplication;
 	}
 
+	@Override
 	public List<IApplication> getApplicationsByCartridge(IStandaloneCartridge cartridge) throws OpenShiftException {
 		List<IApplication> matchingApplications = new ArrayList<IApplication>();
 		for (IApplication application : getApplications()) {
@@ -219,19 +230,33 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return matchingApplications;
 	}
 
+	@Override
 	public boolean hasApplicationByCartridge(IStandaloneCartridge cartridge) throws OpenShiftException {
 		return getApplicationsByCartridge(cartridge).size() > 0;
 	}
 
+	@Override
+	public boolean canCreateApplicationWithEnvironmentVariables() {
+		try {
+			Link link = getLink(LINK_ADD_APPLICATION);
+			return link.hasParameter(IOpenShiftJsonConstants.PROPERTY_ENVIRONMENT_VARIABLES);
+		} catch (OpenShiftRequestException e) {
+			return false;
+		}
+	}
+
+	@Override
 	public void destroy() throws OpenShiftException {
 		destroy(false);
 	}
 
+	@Override
 	public void destroy(boolean force) throws OpenShiftException {
 		new DeleteDomainRequest().execute(force);
 		connectionResource.removeDomain(this);
 	}
 
+	@Override
 	public List<IApplication> getApplications() throws OpenShiftException {
 		return CollectionUtils.toUnmodifiableCopy(getOrLoadApplications());
 	}
@@ -264,7 +289,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	 * removed in the backend.
 	 * 
 	 * @param applications
-	 * @return 
+	 * @return
 	 * @return
 	 * @throws OpenShiftException
 	 */
@@ -275,7 +300,8 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return applications;
 	}
 
-	private List<IApplication> addOrUpdateApplications(List<ApplicationResourceDTO> dtos, List<IApplication> applications) throws OpenShiftException {
+	private List<IApplication> addOrUpdateApplications(List<ApplicationResourceDTO> dtos,
+			List<IApplication> applications) throws OpenShiftException {
 		for (ApplicationResourceDTO dto : dtos) {
 			addOrUpdateApplication(dto, applications);
 		}
@@ -283,7 +309,8 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	}
 
 	private void addOrUpdateApplication(ApplicationResourceDTO applicationDTO, List<IApplication> applications) {
-		ApplicationResource application = (ApplicationResource) getApplicationByName(applicationDTO.getName(), applications);
+		ApplicationResource application = (ApplicationResource) getApplicationByName(applicationDTO.getName(),
+				applications);
 		if (application == null) {
 			final IApplication newApplication = new ApplicationResource(applicationDTO, this);
 			applications.add(newApplication);
@@ -293,7 +320,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	}
 
 	private List<IApplication> removeApplications(List<ApplicationResourceDTO> dtos, List<IApplication> applications) {
-		for (ListIterator<IApplication> it = applications.listIterator(); it.hasNext(); ) {
+		for (ListIterator<IApplication> it = applications.listIterator(); it.hasNext();) {
 			IApplication application = it.next();
 			if (!hasApplicationDTOByName(application.getName(), dtos)) {
 				it.remove();
@@ -301,7 +328,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		}
 		return applications;
 	}
-	
+
 	private boolean hasApplicationDTOByName(String name, List<ApplicationResourceDTO> dtos) {
 		for (ApplicationResourceDTO dto : dtos) {
 			if (name.equals(dto.getName())) {
@@ -316,11 +343,11 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		this.applications.remove(application);
 	}
 
+	@Override
 	public List<String> getAvailableCartridgeNames() throws OpenShiftException {
 		final List<String> cartridges = new ArrayList<String>();
 		for (LinkParameter param : getLink(LINK_ADD_APPLICATION).getRequiredParams()) {
-			// TODO: extract "cartridge" to constant
-			if (param.getName().equals("cartridge")) {
+			if (param.getName().equals(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE)) {
 				for (String option : param.getValidOptions()) {
 					cartridges.add(option);
 				}
@@ -329,6 +356,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return cartridges;
 	}
 
+	@Override
 	public List<IGearProfile> getAvailableGearProfiles() throws OpenShiftException {
 		final List<IGearProfile> gearSizes = new ArrayList<IGearProfile>();
 		for (LinkParameter param : getLink(LINK_ADD_APPLICATION).getOptionalParams()) {
@@ -341,11 +369,17 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		return gearSizes;
 	}
 
+	@Override
 	public void refresh() throws OpenShiftException {
 		final DomainResourceDTO domainResourceDTO = new GetDomainRequest().execute();
 		this.id = domainResourceDTO.getId();
 		this.suffix = domainResourceDTO.getSuffix();
-		updateApplications();
+		if (applications == null) {
+			// not loaded yet
+			loadApplications();
+		} else {
+			updateApplications();
+		}
 	}
 
 	@Override
@@ -366,7 +400,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 			return (DomainResourceDTO) super.execute();
 		}
 	}
-	
+
 	private class ListApplicationsRequest extends ServiceRequest {
 
 		private ListApplicationsRequest() throws OpenShiftException {
@@ -404,11 +438,11 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 					.gearProfile(gearProfile)
 					.add(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl)
 					.addEnvironmentVariables(environmentVariables);
-			
+
 			// ?include=cartridges
 			Parameters urlParameters = new Parameters()
 					.include(IOpenShiftParameterConstants.PARAMETER_CARTRIDGES);
-					
+
 			return execute(timeout, urlParameters.toList(), parameters.toArray());
 		}
 	}

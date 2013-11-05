@@ -25,7 +25,6 @@ import com.openshift.client.ApplicationScale;
 import com.openshift.client.GearState;
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IField;
-import com.openshift.client.IGear;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
@@ -134,7 +133,7 @@ public class OpenShiftJsonDTOFactoryTest {
 	}
 
 	@Test
-	public void shouldUnmarshallGetDomainsWith1ExistingResponseBody() throws Throwable {
+	public void shouldUnmarshallGetDomainsWith2ExistingResponseBody() throws Throwable {
 		// pre-conditions
 		String content = Samples.GET_DOMAINS.getContentAsString();
 		assertNotNull(content);
@@ -144,7 +143,7 @@ public class OpenShiftJsonDTOFactoryTest {
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.domains);
 		final List<DomainResourceDTO> domainDTOs = response.getData();
 		assertThat(domainDTOs).isNotEmpty();
-		assertThat(domainDTOs).hasSize(1);
+		assertThat(domainDTOs).hasSize(2);
 		final DomainResourceDTO domainDTO = domainDTOs.get(0);
 		assertThat(domainDTO.getId()).isEqualTo("foobarz");
 		assertThat(domainDTO.getLinks()).hasSize(5);

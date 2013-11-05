@@ -14,7 +14,6 @@ import static com.openshift.client.utils.Cartridges.JBOSSAS_7_NAME;
 import static com.openshift.client.utils.Cartridges.JENKINS_14_NAME;
 import static com.openshift.client.utils.Cartridges.MONGODB_22_NAME;
 import static com.openshift.client.utils.Samples.DELETE_DOMAINS_FOOBARZ;
-import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_EMPTY;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ;
@@ -87,7 +86,7 @@ public class DomainResourceTest {
 	@Before
 	public void setup() throws Throwable {
 		this.mockDirector = new HttpClientMockDirector();
-		this.clientMock = mockDirector.mockGetDomains(GET_DOMAINS).client();
+		this.clientMock = mockDirector.mockGetDomains(Samples.GET_DOMAINS).client();
 		this.user = new TestConnectionFactory().getConnection(clientMock).getUser();
 		this.domain = user.getDomain("foobarz");
 	}
@@ -109,12 +108,12 @@ public class DomainResourceTest {
 	}
 
 	@Test
-	public void shouldLoadSingleUserDomain() throws Throwable {
+	public void shouldLoadDomains() throws Throwable {
 		// pre-conditions
 		// operation
 		final List<IDomain> domains = user.getDomains();
 		// verifications
-		assertThat(domains).hasSize(1);
+		assertThat(domains).hasSize(2);
 		// 3 calls: /API + /API/user + /API/domains
 		mockDirector.verifyGetAny(3);
 	}
@@ -150,7 +149,8 @@ public class DomainResourceTest {
 		domain.destroy();
 		// verifications
 		assertThat(user.getDomain("foobarz")).isNull();
-		assertThat(user.getDomains()).isEmpty();
+		// 2 domains, 1 destroyed
+		assertThat(user.getDomains()).hasSize(1); 
 	}
 
 	@Test
@@ -198,6 +198,25 @@ public class DomainResourceTest {
 	}
 
 	@Test
+	public void shouldRefreshDomainAndLoadApplications() throws Throwable {
+		// pre-conditions
+		mockDirector
+			.mockGetDomain("foobarz", GET_DOMAINS_FOOBARZ)
+			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
+		
+		final IDomain domain = user.getDomain("foobarz");
+		assertThat(domain).isNotNull();
+
+		// operation
+		domain.refresh();
+
+		// verifications
+		mockDirector
+			.verifyGetDomain("foobarz") // explicit refresh 
+			.verifyGetApplications("foobarz", 1); // two calls, before and while refresh
+	}
+
+	@Test
 	public void shouldRefreshDomainAndReloadApplications() throws Throwable {
 		// pre-conditions
 		mockDirector
@@ -206,31 +225,18 @@ public class DomainResourceTest {
 		
 		final IDomain domain = user.getDomain("foobarz");
 		assertThat(domain).isNotNull();
-		domain.getApplications();
+		
 		// operation
+		domain.getApplications();
 		domain.refresh();
+
 		// verifications
 		mockDirector
 			.verifyGetDomain("foobarz") // explicit refresh 
 			.verifyGetApplications("foobarz", 2); // two calls, before and while refresh
 	}
 
-	@Test
-	public void shouldRefreshDomainAndNotReloadApplications() throws Throwable {
-		// pre-conditions
-		mockDirector
-			.mockGetDomain("foobarz", GET_DOMAINS_FOOBARZ)
-			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
-		final IDomain domain = user.getDomain("foobarz");
-		assertThat(domain).isNotNull();
-		// operation
-		domain.refresh();
-		// verifications
-		mockDirector
-			.verifyGetDomains() // explicit refresh 
-			.verifyGetApplications("foobarz", 0); // // no call, neither before and while refresh
-	}
-
+	
 	@Test
 	public void shouldLoadListOfApplicationsWithNoElement() throws Throwable {
 		// pre-conditions
@@ -620,5 +626,31 @@ public class DomainResourceTest {
 						new ParameterValueArray().add(
 								new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, JBOSSAS_7_NAME))),
 				new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "scalable"));
+	}
+	
+	@Test
+	public void shouldReportCannotCreateAppWithEnvVars() throws Throwable {
+		// pre-conditions
+		IDomain domain = user.getDomain("foobarz");
+		assertThat(domain).isNotNull();
+		
+		// operation
+		boolean canCreateWithEnvVars = domain.canCreateApplicationWithEnvironmentVariables();
+
+		// verifications
+		assertThat(canCreateWithEnvVars).isFalse();
+	}
+
+	@Test
+	public void shouldReportCanCreateAppWithEnvVars() throws Throwable {
+		// pre-conditions
+		IDomain domain = user.getDomain("foogoo");
+		assertThat(domain).isNotNull();
+		
+		// operation
+		boolean canCreateWithEnvVars = domain.canCreateApplicationWithEnvironmentVariables();
+
+		// verifications
+		assertThat(canCreateWithEnvVars).isTrue();
 	}
 }

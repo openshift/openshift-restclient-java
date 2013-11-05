@@ -50,6 +50,7 @@ public enum Samples {
 	GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6("get_0_environment_variables_foobarz_springeap6.json"),
 	GET_4_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6("get_four_environment_variables_foobarz_springeap6.json"),
 	PUT_FOO_ENVIRONMENT_VARIABLE_FOOBARZ_SPRINGEAP6("put_foo_environment_variable_foobarz_springeap6.json"),//1.2
+
 	// domain
 	DELETE_DOMAINS_FOOBAR_KO("delete-domains-foobar_ko.json"), // 1.2
 	DELETE_DOMAINS_FOOBARZ("delete-domains-foobarz.json"), // 1.2

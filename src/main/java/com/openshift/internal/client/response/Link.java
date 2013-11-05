@@ -137,7 +137,16 @@ public class Link {
 		return optionalParams;
 	}
 
-	public void validateParameters(Parameter[] parameters)
+	public boolean hasParameter(String name) {
+		if (getParameter(name, requiredParams) != null) {
+			return true;
+		} else if (getParameter(name, optionalParams) != null) {
+			return true;
+		}
+		return false;
+	}
+		
+	public void validateRequestParameters(Parameter[] parameters)
 			throws OpenShiftRequestException {
 		if (getRequiredParams() != null) {
 			for (LinkParameter requiredParameter : getRequiredParams()) {
@@ -168,7 +177,8 @@ public class Link {
 	}
 
 	private Parameter getParameter(String name, Parameter[] parameters) {
-		if (StringUtils.isEmpty(name)) {
+		if (StringUtils.isEmpty(name)
+				|| parameters == null) {
 			return null;
 		}
 		for (Parameter parameter : parameters) {
@@ -179,6 +189,19 @@ public class Link {
 		return null;
 	}
 	
+	private LinkParameter getParameter(String name, List<LinkParameter> parameters) {
+		if (StringUtils.isEmpty(name)
+				|| parameters == null) {
+			return null;
+		}
+		for (LinkParameter parameter : parameters) {
+			if (name.equals(parameter.getName())) {
+				return parameter;
+			}
+		}
+		return null;
+	}
+
 	private void validateOptionalParameters(LinkParameter optionalParameter) {
 		// TODO: implement
 	}
