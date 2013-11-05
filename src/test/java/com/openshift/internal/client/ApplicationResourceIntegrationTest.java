@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -43,6 +44,7 @@ import com.openshift.client.utils.TestConnectionFactory;
 /**
  * @author André Dietisheim
  * @author Syed Iqbal
+ * @author Martes G Wigglesworth 
  */
 public class ApplicationResourceIntegrationTest {
 
@@ -336,22 +338,6 @@ public class ApplicationResourceIntegrationTest {
 	}
 
     @Test
-	public void shouldDestroyEnvironmentVariable() throws Throwable{
-    	//pre-conditions
-    	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-		ApplicationTestUtils.destroyAllEnvironmentVariables(application);
-    	IEnvironmentVariable environmentVariable = application.addEnvironmentVariable("FOOBAR","123");
-    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(1);
-    	
-    	//operation
-    	environmentVariable.destroy();
-    	
-    	//verification
-    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(0);
-    	assertThat(application.hasEnvironmentVariable("FOOBAR")).isFalse();
-    }
-
-    @Test
 	public void shouldRemoveEnvironmentVariable() throws Throwable{
     	//pre-conditions
     	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
@@ -361,6 +347,22 @@ public class ApplicationResourceIntegrationTest {
     	
     	//operation
     	application.removeEnvironmentVariable(environmentVariable.getName());
+    	
+    	//verification
+    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(0);
+    	assertThat(application.hasEnvironmentVariable("FOOBAR")).isFalse();
+    }
+    
+    @Test
+	public void shouldRemoveEnvironmentVariableByInstance() throws Throwable{
+    	//pre-conditions
+    	IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		ApplicationTestUtils.destroyAllEnvironmentVariables(application);
+    	IEnvironmentVariable environmentVariable = application.addEnvironmentVariable("FOOBAR","123");
+    	assertThat(application.getEnvironmentVariables().size()).isEqualTo(1);
+    	
+    	//operation
+    	application.removeEnvironmentVariable(environmentVariable);
     	
     	//verification
     	assertThat(application.getEnvironmentVariables().size()).isEqualTo(0);
@@ -383,37 +385,39 @@ public class ApplicationResourceIntegrationTest {
 		}
 	}
 
-	@Test
-	public void shouldListAllEnvironmentVariables() throws Throwable {
-		// preconditions
-		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
-		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
-		Map<String, String> environmentVariableMap = new HashMap<String, String>();
-		environmentVariableMap.put("X_NAME", "X_VALUE");
-		environmentVariableMap.put("Y_NAME", "Y_VALUE");
-		environmentVariableMap.put("Z_NAME", "Z_VALUE");
-		application.addEnvironmentVariables(environmentVariableMap);
-
-		// operation
-		Map<String, IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
-
-		// verifications
-		assertThat(environmentVariables).hasSize(3);
-	}
 	
 	@Test
-	public void shouldLoadEmptyListOfEnvironmentVariables() throws Throwable{
-		//precondition
-		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
-		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+    public void shouldGetMapOfAllEnvironmentVariables() throws Throwable {
+        // preconditions
+        ApplicationTestUtils.silentlyDestroyAllApplications(domain);
+        IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+        Map<String, String> environmentVariableMap = new HashMap<String, String>();
+        environmentVariableMap.put("X_NAME", "X_VALUE");
+        environmentVariableMap.put("Y_NAME", "Y_VALUE");
+        environmentVariableMap.put("Z_NAME", "Z_VALUE");
+        application.addEnvironmentVariables(environmentVariableMap);
 
-		//operation
-		Map<String, IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
+        // operation
+        Map<String, IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
 
-		//verifications
-		assertThat(environmentVariables).isEmpty();
-	}
+        // verifications
+        assertThat(environmentVariables).hasSize(3);
+    }
+    
 	
+    @Test
+    public void shouldLoadEmptyMapOfEnvironmentVariables() throws Throwable{
+        //precondition
+        ApplicationTestUtils.silentlyDestroyAllApplications(domain);
+        IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+
+        //operation
+        Map<String, IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
+
+        //verifications
+        assertThat(environmentVariables).isEmpty();
+    }
+
 	@Test
 	public void shouldCanGetCanUpdateEnvironmentVariables() throws Throwable {
 		// pre-conditions

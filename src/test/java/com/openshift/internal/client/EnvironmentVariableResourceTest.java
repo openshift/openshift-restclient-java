@@ -26,6 +26,7 @@ import com.openshift.client.IEnvironmentVariable;
 
 /**
  * @author Syed Iqbal 
+ * @author Martes G Wigglesworth
  */
 public class EnvironmentVariableResourceTest {
 	
@@ -70,7 +71,8 @@ public class EnvironmentVariableResourceTest {
        //operation
       IEnvironmentVariable environmentVariable = application.getEnvironmentVariable("FOO");
       assertThat(environmentVariable).isNotNull();
-      environmentVariable.destroy();
+      application.removeEnvironmentVariable(environmentVariable);
+      application.refresh();
       environmentVariable = application.getEnvironmentVariable("FOO");
       assertThat(environmentVariable).isNull();
     }

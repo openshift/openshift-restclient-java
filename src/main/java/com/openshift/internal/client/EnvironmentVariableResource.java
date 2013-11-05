@@ -61,14 +61,22 @@ public class EnvironmentVariableResource extends AbstractOpenShiftResource imple
 	}
 
 	@Override
-	public void update(String value) throws OpenShiftException {
-		if (value == null) {
+	public void update(String newValue) throws OpenShiftException {
+		if (newValue == null) {
 			throw new OpenShiftException("Value for environment variable \"{0}\" not given.", name);
 		}
 		EnvironmentVariableResourceDTO environmentVariableResourceDTO = 
-				new UpdateEnvironmentVariableRequest().execute(value);
+				new UpdateEnvironmentVariableRequest().execute(newValue);
 		updateEnvironmentVariable(environmentVariableResourceDTO);
+		/*
+		 * This should be done in the IApplication, to break up this dependency
+		 * on the entity, i.e. IEnvironmentVariable, on something that is 
+		 * outside of itself, such as the implementation of IApplication.
+		 * @author Martes G Wigglesworth
+		 */
 		application.updateEnvironmentVariables();
+		
+		
 	}
 
 	private void updateEnvironmentVariable(EnvironmentVariableResourceDTO dto) {
@@ -81,7 +89,7 @@ public class EnvironmentVariableResource extends AbstractOpenShiftResource imple
 	@Override
 	public void destroy() throws OpenShiftException {
 		new DeleteEnvironmentVariableRequest().execute();
-		application.updateEnvironmentVariables();
+		
 	}
 
 	@Override
@@ -118,5 +126,10 @@ public class EnvironmentVariableResource extends AbstractOpenShiftResource imple
 	public IApplication getApplication() {
 		return application;
 	}
-	
+
+	public String toString(){
+		return new String(
+				"Name:"+this.name+",Value:"+value
+				);
+	}
 }

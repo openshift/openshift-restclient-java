@@ -70,7 +70,8 @@ public class EnvironmentVariableResourceIntegrationTest {
 		application.addEnvironmentVariable("Z_NAME", "Z_VALUE");
 		// operation
 		IEnvironmentVariable zEnvironmentVariable = application.getEnvironmentVariable("Z_NAME");
-		zEnvironmentVariable.destroy();
+		application.removeEnvironmentVariable(zEnvironmentVariable);
+		//application.refresh();
 		zEnvironmentVariable = application.getEnvironmentVariable("Z_NAME");
 		assertThat(zEnvironmentVariable).isNull();
 	}

@@ -67,10 +67,12 @@ import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 import com.openshift.internal.client.utils.StringUtils;
 
 /**
- * The Class Application.
+ * The ApplicationResource object is an implementation of com.openshift.client.IApplication, and provides 
+ * a runtime model for the real application that resides on the OpenShift platform being accessed.
  * 
  * @author André Dietisheim
  * @author Syed Iqbal
+ * @author Martes G Wigglesworth
  */
 public class ApplicationResource extends AbstractOpenShiftResource implements IApplication {
 
@@ -149,7 +151,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	/**
 	 * The environment variables for this application
 	 */
-	private Map<String, IEnvironmentVariable> environmentVariableByName;
+	private Map<String, IEnvironmentVariable> environmentVariablesMap;
 
 
 	protected ApplicationResource(ApplicationResourceDTO dto, DomainResource domain) {
@@ -203,6 +205,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.domain = domain;
 		this.aliases = aliases;
 		updateCartridges(cartridgesByName);
+		environmentVariablesMap = new HashMap<String, IEnvironmentVariable>();
 	}
 
 	public String getName() {
@@ -611,11 +614,11 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return Collections.unmodifiableMap(new LinkedHashMap<String, IEnvironmentVariable>(getOrLoadEnvironmentVariables()));
 	}
 
-	protected Map<String, IEnvironmentVariable> getOrLoadEnvironmentVariables() throws OpenShiftException {
-		if (environmentVariableByName == null) {
-			this.environmentVariableByName = loadEnvironmentVariables();
-		}
-		return environmentVariableByName;
+	
+  protected Map<String, IEnvironmentVariable> getOrLoadEnvironmentVariables() throws OpenShiftException {
+	if(environmentVariablesMap.isEmpty())
+	   environmentVariablesMap = loadEnvironmentVariables();		
+	return environmentVariablesMap;
 	}
 	
 	private Map<String, IEnvironmentVariable> loadEnvironmentVariables() throws OpenShiftException {
@@ -624,13 +627,14 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			return new LinkedHashMap<String, IEnvironmentVariable>();
 		}
 
-		Map<String, IEnvironmentVariable> environmentVariablesByName = new LinkedHashMap<String, IEnvironmentVariable>();
 		for (EnvironmentVariableResourceDTO environmentVariableResourceDTO : environmentVariableDTOs) {
 			final IEnvironmentVariable environmentVariable = 
 					new EnvironmentVariableResource(environmentVariableResourceDTO, this);
-			environmentVariablesByName.put(environmentVariable.getName(), environmentVariable);
+			
+			environmentVariablesMap.put(environmentVariable.getName(),environmentVariable);
+			
 		}
-		return environmentVariablesByName;
+		return environmentVariablesMap;
 	}
 
 	@Override
@@ -643,42 +647,67 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 		if (hasEnvironmentVariable(name)) {
 			throw new OpenShiftException("Environment variable with name \"{0}\" already exists.", name);
-		}
-
+		}		
+		
 		EnvironmentVariableResourceDTO environmentVariableResourceDTO =
-				new AddEnvironmentVariableRequest().execute(name, value);
+				new AddEnvironmentVariableRequest().execute(name, value);		
 		IEnvironmentVariable environmentVariable = new EnvironmentVariableResource(environmentVariableResourceDTO, this);
-		updateEnvironmentVariables();
+		
+		environmentVariablesMap.put(environmentVariable.getName(), environmentVariable);
+		
 		return environmentVariable;
 	}
 
 	@Override
-	public Map<String, IEnvironmentVariable> addEnvironmentVariables(Map<String, String> environmentVariablesMap)
+	public Map<String, IEnvironmentVariable> addEnvironmentVariables(Map<String, String> environmentVariables)
 			throws OpenShiftException {
-
-		List<EnvironmentVariableResourceDTO> environmentVariableResourceDTOs = new AddEnvironmentVariablesRequest()
-				.execute(environmentVariablesMap);
-		Map<String, IEnvironmentVariable> environmentVariables = new HashMap<String, IEnvironmentVariable>();
+	  
+	  Map<String,String>variablesCandidateMap = new HashMap<String,String>();
+	  for(String varCandidateName:environmentVariables.keySet()){
+	    IEnvironmentVariable tempVar = environmentVariablesMap.get(varCandidateName);
+	    if(tempVar != null)
+	    {  if(tempVar.getValue() == environmentVariables.get(varCandidateName))
+	        variablesCandidateMap.put(varCandidateName,environmentVariables.get(varCandidateName));
+	    }
+	    else
+	        variablesCandidateMap.put(varCandidateName, environmentVariables.get(varCandidateName));
+	  }
+	  List<EnvironmentVariableResourceDTO> environmentVariableResourceDTOs = new AddEnvironmentVariablesRequest()
+				.execute(variablesCandidateMap);
+		
 		for (EnvironmentVariableResourceDTO dto : environmentVariableResourceDTOs) {
 			IEnvironmentVariable environmentVariable = new EnvironmentVariableResource(dto, this);
-			environmentVariables.put(environmentVariable.getName(), environmentVariable);
-		}
-
-		updateEnvironmentVariables();
-		return environmentVariables;
-	}
-    
-	@Override
-	public void removeEnvironmentVariable(String name) {
-		IEnvironmentVariable environmentVariable = getEnvironmentVariable(name);
-		if (environmentVariable == null) {
-			return;
+			environmentVariablesMap.put(environmentVariable.getName(), environmentVariable);
 		}
 		
-		environmentVariable.destroy();
-		updateEnvironmentVariables();
+		return environmentVariablesMap;
+	}
+    /*
+     * (non-Javadoc)
+     * @see com.openshift.client.IApplication#removeEnvironmentVariable(java.lang.String)
+     */
+	@Override
+	public void removeEnvironmentVariable(String targetName) {
+		removeEnvironmentVariable(getEnvironmentVariable(targetName));		
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.openshift.client.IApplication#removeEnvironmentVariable(com.openshift.client.IEnvironmentVariable)
+	 */
+	@Override
+	public void removeEnvironmentVariable(IEnvironmentVariable environmentVariable){      
+      if(getEnvironmentVariable(environmentVariable.getName()) == null)
+        throw new OpenShiftException("IEnvironmentVariable with supplied name does not exist.");
+      environmentVariable.destroy();
+      environmentVariablesMap.remove(environmentVariable.getName());
+     
+    }
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.openshift.client.IApplication#hasEnvironmentVariable(java.lang.String)
+	 */
     @Override
 	public boolean hasEnvironmentVariable(String name) throws OpenShiftException {
 		if (StringUtils.isEmpty(name)) {
@@ -689,17 +718,20 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
     
 	protected void updateEnvironmentVariables() throws OpenShiftException {
-		if (!canGetEnvironmentVariables()) {
+		if (!canGetEnvironmentVariables()) 
 			return;
+		else
+		{
+		  environmentVariablesMap.clear();
+		  environmentVariablesMap = loadEnvironmentVariables();
 		}
-		if (environmentVariableByName == null) {
-			environmentVariableByName = loadEnvironmentVariables();
-		} else {
-			environmentVariableByName.clear();
-			environmentVariableByName.putAll(loadEnvironmentVariables());
-		}
+
 	}
     
+	/*
+	 * (non-Javadoc)
+	 * @see com.openshift.client.IApplication#getEnvironmentVariable(java.lang.String)
+	 */
 	@Override
 	public IEnvironmentVariable getEnvironmentVariable(String name) {
 		return getEnvironmentVariables().get(name);
@@ -714,6 +746,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.openshift.client.IApplication#canUpdateEnvironmentVariables()
+	 */
 	@Override
 	public boolean canUpdateEnvironmentVariables() {
 		try {
@@ -820,9 +856,11 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			try {
 				port.start(session);
 			} catch (OpenShiftSSHOperationException oss) {
-				// ignore for now
-				// FIXME: should store this error on the forward to let user
-				// know why it could not start/stop
+				/*
+				 * ignore for now
+				 * FIXME: should store this error on the forward to let user 
+				 * know why it could not start/stop
+				 */
 			}
 		}
 		return ports;
@@ -833,9 +871,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			try {
 				port.stop(session);
 			} catch (OpenShiftSSHOperationException oss) {
-				// ignore for now
-				// should store this error on the forward to let user know why
-				// it could not start/stop
+				/* ignore for now
+				 *  should store this error on the forward to let user know why
+				 *  it could not start/stop
+				 */
 			}
 		}
 		// make sure port forwarding is stopped by closing session...
@@ -1094,5 +1133,4 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
-
-}
+ }
