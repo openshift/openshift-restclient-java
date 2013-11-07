@@ -23,6 +23,12 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,7 +72,8 @@ public class HttpClientTest {
 	}
 
 	@Test(expected = HttpClientException.class)
-	public void shouldThrowIfNoAcceptedMediaType() throws SocketTimeoutException, HttpClientException, MalformedURLException {
+	public void shouldThrowIfNoAcceptedMediaType() throws SocketTimeoutException, HttpClientException,
+			MalformedURLException {
 		IHttpClient client = new UrlConnectionHttpClient(
 				"username", "password", "useragent", false, null, "42.0");
 		client.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
@@ -350,6 +357,93 @@ public class HttpClientTest {
 		}
 	}
 
+	@Test
+	public void shouldFallbackToOpenShiftTimeout() throws Throwable {
+		// pre-conditions
+		final int timeout = 1000;
+		final int serverDelay = timeout * 4;
+		assertThat(timeout).isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+		System.setProperty(IHttpClient.SYSPROP_OPENSHIFT_READ_TIMEOUT, String.valueOf(timeout));
+		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
+		long startTime = System.currentTimeMillis();
+		// operations
+		try {
+			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+			fail("Timeout expected.");
+		} catch (SocketTimeoutException e) {
+			// assert
+			assertThat(System.currentTimeMillis() - startTime).isGreaterThan(timeout)
+					.isLessThan(serverDelay)
+					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+		} finally {
+			serverFake.stop();
+			System.clearProperty(IHttpClient.SYSPROP_OPENSHIFT_READ_TIMEOUT);
+		}
+	}
+
+	@Test
+	public void shouldFallbackToDefaultSystemPropertyTimeout() throws Throwable {
+		// pre-conditions
+		final int timeout = 1000;
+		final int serverDelay = timeout * 4;
+		System.clearProperty(IHttpClient.SYSPROP_OPENSHIFT_READ_TIMEOUT);
+		String timeoutBackup = System.getProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT);
+		System.setProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT, String.valueOf(timeout));
+		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
+		long startTime = System.currentTimeMillis();
+		// operations
+		try {
+			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+			fail("Timeout expected.");
+		} catch (SocketTimeoutException e) {
+			// assert
+			assertThat(System.currentTimeMillis() - startTime).isGreaterThan(timeout)
+					.isLessThan(serverDelay)
+					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+		} finally {
+			serverFake.stop();
+			restoreSystemProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT, timeoutBackup);
+		}
+	}
+
+	@Test
+	public void shouldFallbackToDefaultTimeout() throws Throwable {
+		// pre-conditions
+		final int serverDelay = 4 * 1000;
+		System.clearProperty(IHttpClient.SYSPROP_OPENSHIFT_READ_TIMEOUT);
+		final String timeoutBackup = System.getProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT);
+		System.clearProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT);
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		final WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
+		final long startTime = System.currentTimeMillis();
+		// operations
+		Future<Long> future = executor.submit(new Callable<Long>() {
+
+			@Override
+			public Long call() throws Exception {
+				try {
+					httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+					return -1l;
+				} catch (SocketTimeoutException e) {
+					return -1l;
+				}
+			}
+		});
+		long waited = -1;
+		try {
+			waited = future.get(serverDelay, TimeUnit.MILLISECONDS);
+			fail("get should have timed out");
+		} catch (TimeoutException e) {
+			assertThat(waited).isGreaterThanOrEqualTo(-1);
+			assertThat(System.currentTimeMillis() - startTime)
+					.isGreaterThanOrEqualTo(serverDelay)
+					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+		} finally {
+			executor.shutdownNow();
+			restoreSystemProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT, timeoutBackup);
+		}
+	}
+
 	private HttpServerFake startHttpServerFake(String statusLine) throws IOException {
 		int port = new Random().nextInt(9 * 1024) + 1024;
 		HttpServerFake serverFake = null;
@@ -402,5 +496,14 @@ public class HttpClientTest {
 					userAgent, acceptedVersion, acceptedMediaType, NO_TIMEOUT);
 		}
 	};
+
+	private void restoreSystemProperty(String property, String value) {
+		if (value == null) {
+			System.clearProperty(property);
+		} else {
+			System.setProperty(property, value);
+		}
+
+	}
 
 }
