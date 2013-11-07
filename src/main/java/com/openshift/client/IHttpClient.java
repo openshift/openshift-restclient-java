@@ -57,7 +57,8 @@ public interface IHttpClient {
 	
 	public static final String VERSION = "version";
 
-	public static final String SYSPROP_OPENSHIFT_CONNECT_TIMEOUT = "com.openshift.httpclient.timeout";
+	public static final String SYSPROP_OPENSHIFT_CONNECT_TIMEOUT = "com.openshift.httpclient.connect.timeout";
+	public static final String SYSPROP_OPENSHIFT_READ_TIMEOUT = "com.openshift.httpclient.read.timeout";
 	public static final String SYSPROP_DEFAULT_CONNECT_TIMEOUT = "sun.net.client.defaultConnectTimeout";
 	public static final String SYSPROP_DEFAULT_READ_TIMEOUT = "sun.net.client.defaultReadTimeout";
 

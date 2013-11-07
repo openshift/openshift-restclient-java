@@ -233,7 +233,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		connection.setUseCaches(false);
 		connection.setDoInput(true);
 		connection.setAllowUserInteraction(false);
-		setConnectTimeout(connection);
+		setConnectTimeout(NO_TIMEOUT, connection);
 		setReadTimeout(timeout, connection);
 		// wont work when switching http->https
 		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4620571
@@ -301,24 +301,32 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		}
 	}
 
-	private void setConnectTimeout(URLConnection connection) {
-		int timeout = getTimeout(
-				getSystemPropertyInteger(SYSPROP_OPENSHIFT_CONNECT_TIMEOUT),
-				getSystemPropertyInteger(SYSPROP_DEFAULT_CONNECT_TIMEOUT),
-				DEFAULT_CONNECT_TIMEOUT);
-		connection.setConnectTimeout(timeout);
+	private void setConnectTimeout(int timeout, URLConnection connection) {
+		connection.setConnectTimeout(
+				getTimeout(
+						timeout,
+						getSystemPropertyInteger(SYSPROP_OPENSHIFT_CONNECT_TIMEOUT),
+						getSystemPropertyInteger(SYSPROP_DEFAULT_CONNECT_TIMEOUT),
+						DEFAULT_CONNECT_TIMEOUT));
 	}
 
 	private void setReadTimeout(int timeout, URLConnection connection) {
-		timeout = getTimeout(timeout, getSystemPropertyInteger(SYSPROP_DEFAULT_READ_TIMEOUT), DEFAULT_READ_TIMEOUT);
-		connection.setReadTimeout(timeout);
+		connection.setReadTimeout(
+				getTimeout(
+						timeout,
+						getSystemPropertyInteger(SYSPROP_OPENSHIFT_READ_TIMEOUT),
+						getSystemPropertyInteger(SYSPROP_DEFAULT_READ_TIMEOUT),
+						DEFAULT_READ_TIMEOUT));
 	}
 
-	private int getTimeout(int timeout, int systemPropertyTimeout, int defaultTimeout) {
+	private int getTimeout(int timeout, int openShiftTimeout, int systemPropertyTimeout, int defaultTimeout) {
 		if (timeout == NO_TIMEOUT) {
-			timeout = systemPropertyTimeout;
+			timeout = openShiftTimeout;
 			if (timeout == NO_TIMEOUT) {
-				timeout = defaultTimeout;
+				timeout = systemPropertyTimeout;
+				if (timeout == NO_TIMEOUT) {
+					timeout = defaultTimeout;
+				}
 			}
 		}
 		return timeout;
