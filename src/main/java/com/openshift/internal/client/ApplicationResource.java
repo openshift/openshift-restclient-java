@@ -858,7 +858,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
 		return result;
 	}
 
@@ -871,10 +871,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		if (getClass() != object.getClass())
 			return false;
 		ApplicationResource other = (ApplicationResource) object;
-		if (name == null) {
-			if (other.name != null)
+		if (uuid == null) {
+			if (other.uuid != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!uuid.equals(other.uuid))
 			return false;
 		return true;
 	}

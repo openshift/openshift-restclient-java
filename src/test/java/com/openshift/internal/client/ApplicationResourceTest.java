@@ -729,4 +729,14 @@ public class ApplicationResourceTest {
 		assertThat(environmentVariables).isEmpty();
 	}
 
+	@Test
+	public void shouldEqualApplication() throws Throwable {
+		// precondition
+		// operation
+		IDomain domain = mockDirector.getDomain("foobarz");
+		// verifications
+		assertThat(domain).isEqualTo(this.domain);
+		assertTrue(domain != this.domain);
+	}
+
 }

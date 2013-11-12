@@ -23,6 +23,7 @@ import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATION
 import static com.openshift.client.utils.Samples.POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS;
 import static com.openshift.client.utils.Samples.POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS;
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.reset;
 
@@ -653,4 +654,18 @@ public class DomainResourceTest {
 		// verifications
 		assertThat(canCreateWithEnvVars).isTrue();
 	}
+
+	@Test
+	public void shouldEqualDomainFromOtherUser() throws Throwable {
+		// pre-conditions
+		IUser user = new TestConnectionFactory().getConnection(clientMock).getUser();
+
+		// operation
+		final IDomain domain = user.getDomain("foobarz");
+
+		// verifications
+		assertThat(domain).isEqualTo(this.domain);
+		assertTrue(domain != this.domain); // not same objects
+	}
+
 }
