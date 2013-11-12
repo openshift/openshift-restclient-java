@@ -64,7 +64,7 @@ public interface IHttpClient {
 
     public static final int DEFAULT_CONNECT_TIMEOUT = 10 * 	1000;
     public static final int DEFAULT_READ_TIMEOUT = 2 * 60 * 1000;
-	public static final int NO_TIMEOUT = -1;
+	public static final int NO_TIMEOUT = 0;
 
 	public String get(URL url, int timeout) throws HttpClientException, SocketTimeoutException;
 

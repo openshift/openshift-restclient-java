@@ -346,7 +346,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		try {
 			return Integer.parseInt(System.getProperty(key));
 		} catch (NumberFormatException e) {
-			return -1;
+			return NO_TIMEOUT;
 		}
 	}
 

@@ -82,44 +82,38 @@ public class HttpClientTest {
 	@Test
 	public void canGet() throws Throwable {
 		String response = httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
-		assertNotNull(response);
-		assertTrue(response.startsWith("GET"));
+		assertThat(response).startsWith("GET");
 	}
 
 	@Test
 	public void canHead() throws Throwable {
 		String response = httpClient.head(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
-		assertNotNull(response);
-		assertEquals("", response);
+		assertThat(response).isEqualTo("");
 	}
 
 	@Test
 	public void canPost() throws Throwable {
 		String response = httpClient.post(serverFake.getUrl(), new FormUrlEncodedMediaType(), IHttpClient.NO_TIMEOUT);
-		assertNotNull(response);
-		assertTrue(response.startsWith("POST"));
+		assertThat(response).startsWith("POST");
 	}
 
 	@Test
 	public void canPut() throws SocketTimeoutException, HttpClientException, MalformedURLException,
 			EncodingException {
 		String response = httpClient.put(serverFake.getUrl(), new FormUrlEncodedMediaType(), IHttpClient.NO_TIMEOUT);
-		assertNotNull(response);
-		assertTrue(response.startsWith("PUT"));
+		assertThat(response).startsWith("PUT");
 	}
 
 	@Test
 	public void canDelete() throws Throwable {
 		String response = httpClient.delete(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
-		assertNotNull(response);
-		assertTrue(response.startsWith("DELETE"));
+		assertThat(response).startsWith("DELETE");
 	}
 
 	@Test
 	public void canPatch() throws Throwable {
 		String response = httpClient.patch(serverFake.getUrl(), new FormUrlEncodedMediaType(), IHttpClient.NO_TIMEOUT);
-		assertNotNull(response);
-		assertTrue(response.startsWith("POST"));
+		assertThat(response).startsWith("POST");
 		assertTrue(response.contains("X-Http-Method-Override: PATCH"));
 	}
 
@@ -503,7 +497,5 @@ public class HttpClientTest {
 		} else {
 			System.setProperty(property, value);
 		}
-
 	}
-
 }
