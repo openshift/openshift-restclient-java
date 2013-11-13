@@ -18,6 +18,7 @@ import static com.openshift.client.utils.Samples.GET_2_ENVIRONMENT_VARIABLES_FOO
 import static com.openshift.client.utils.Samples.GET_4_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_NOENVVARS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_0ALIAS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED;
@@ -720,8 +721,8 @@ public class ApplicationResourceTest {
 	@Test
 	public void shouldLoadEmptyListOfEnvironmentVariables() throws Throwable {
 		// precondition
-		mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6",
-				GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
+		mockDirector
+			.mockGetEnvironmentVariables("foobarz", "springeap6", GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
 		// operation
 		final IApplication application = domain.getApplicationByName("springeap6");
 		Map<String, IEnvironmentVariable> environmentVariables = application.getEnvironmentVariables();
@@ -729,6 +730,22 @@ public class ApplicationResourceTest {
 		assertThat(environmentVariables).isEmpty();
 	}
 
+	/**
+	 * Tests if IApplication#refresh works even when environment variables are not supported
+	 * 
+	 * @see <a href="https://issues.jboss.org/browse/JBIDE-15939">https://issues.jboss.org/browse/JBIDE-15939</a>
+	 */
+	@Test
+	public void shouldRefreshWithoutLoadingEnvironmentVariablesIfNotSupported() throws Throwable {
+		// precondition
+		mockDirector
+				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOENVVARS);
+		IApplication application = domain.getApplicationByName("springeap6");
+		// operation
+		application.refresh();
+		// verifications
+	}
+	
 	@Test
 	public void shouldEqualApplication() throws Throwable {
 		// precondition

@@ -689,6 +689,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
     
 	protected void updateEnvironmentVariables() throws OpenShiftException {
+		if (!canGetEnvironmentVariables()) {
+			return;
+		}
 		if (environmentVariableByName == null) {
 			environmentVariableByName = loadEnvironmentVariables();
 		} else {

@@ -31,6 +31,7 @@ public enum Samples {
 	
 	// application
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED("get-domains-foobarz-applications_1embedded.json"), // 1.2
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_NOENVVARS("get-domains-foobarz-applications_noenvvars.json"), // 1.2
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED("get-domains-foobarz-applications_2embedded.json"), // 1.2
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_3EMBEDDED("get-domains-foobarz-applications_3embedded.json"), // 1.2
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP_SCALABLE_DOWNLOADABLECART("get-domains-foobarz-applications_springeap_scalable_downloadablecart.json"), // 1.2
