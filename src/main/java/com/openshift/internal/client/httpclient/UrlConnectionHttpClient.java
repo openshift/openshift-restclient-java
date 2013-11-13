@@ -51,8 +51,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UrlConnectionHttpClient.class);
 
-	private static final String USERAGENT_FOR_KEYAUTH = "OpenShift";
-
 	protected String userAgent;
 	protected boolean sslChecks;
 	protected String username;
@@ -71,7 +69,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			String acceptedMediaType, String version, String authKey, String authIV) {
 		this.username = username;
 		this.password = password;
-		this.userAgent = setupUserAgent(authKey, authIV, userAgent);
+		this.userAgent = userAgent;
 		this.sslChecks = sslChecks;
 		this.acceptedMediaType = acceptedMediaType;
 		this.acceptedVersion = version;
@@ -242,17 +240,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		setAcceptHeader(acceptedVersion, acceptedMediaType, connection);
 
 		return connection;
-	}
-
-	private String setupUserAgent(String authKey, String authIV, String userAgent) {
-		if (!StringUtils.isEmpty(authKey)) {
-			if (userAgent == null) {
-				userAgent = USERAGENT_FOR_KEYAUTH;
-			} else if (!userAgent.startsWith(USERAGENT_FOR_KEYAUTH)) {
-				userAgent = USERAGENT_FOR_KEYAUTH + '-' + userAgent;
-			}
-		}
-		return userAgent;
 	}
 
 	private void setUserAgent(String userAgent, String authKey, HttpURLConnection connection) {

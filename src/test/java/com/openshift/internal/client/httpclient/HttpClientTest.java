@@ -147,26 +147,6 @@ public class HttpClientTest {
 	}
 
 	@Test
-	public void hasProperAgentWhenUsingKeys() throws IOException {
-		// pre-conditions
-		UserAgentClientFake clientFake = new UserAgentClientFake("com.needskey");
-		// operation
-		HttpURLConnection connection = clientFake.createConnection();
-		// verification
-		assertThat(clientFake.getUserAgent(connection)).isEqualTo("OpenShift-com.needskey");
-	}
-
-	@Test
-	public void hasProperAgentWhenUsingKeysAndNoAgent() throws IOException {
-		// pre-conditions
-		UserAgentClientFake clientFake = new UserAgentClientFake(null);
-		// operation
-		HttpURLConnection connection = clientFake.createConnection();
-		// verification
-		assertThat(clientFake.getUserAgent(connection)).isEqualTo("OpenShift");
-	}
-
-	@Test
 	public void shouldEncodeParametersCorrectly() throws HttpClientException, FileNotFoundException, IOException,
 			OpenShiftException {
 		// pre-conditions
