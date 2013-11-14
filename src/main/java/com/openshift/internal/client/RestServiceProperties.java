@@ -51,14 +51,14 @@ public class RestServiceProperties {
 		}
 	}
 
-	public String getUseragent(String id) {
+	public String getUseragent(String clientId) {
 		String userAgent = null;
 		String version = getVersion();
 		String useragentPattern = getUseragentPattern();
-		if (!StringUtils.isEmpty(id)
-				&& !StringUtils.isEmpty(version)
-				&& !StringUtils.isEmpty(useragentPattern)) {
-			userAgent = MessageFormat.format(useragentPattern, version, id);
+		if (!StringUtils.isEmpty(useragentPattern)) {
+			userAgent = MessageFormat.format(useragentPattern, 
+					StringUtils.nullToEmptyString(version), 
+					StringUtils.nullToEmptyString(clientId));
 		}
 		return userAgent;
 	}

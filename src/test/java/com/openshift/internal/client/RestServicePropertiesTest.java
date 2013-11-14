@@ -55,4 +55,18 @@ public class RestServicePropertiesTest {
 		String[] clientIdAndVersion = userAgent.split(" ");
 		assertThat(clientIdAndVersion).isNotNull().hasSize(2).containsOnly(clientId, VERSION);
 	}
+	
+	@Test
+	public void shouldReturnUserAgentEvenIfClientIdIsNull() {
+		// pre-conditions
+
+		// operation
+		String userAgent = serviceProperties.getUseragent(null);
+
+		// verification
+		assertThat(userAgent).isNotEmpty();
+		// length of version + space, no client-id
+		assertThat(userAgent).hasSize(VERSION.length() + 1); 
+	}
+
 }

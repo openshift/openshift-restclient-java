@@ -43,4 +43,11 @@ public class StringUtils {
 		return new StringBuilder(prefix).append(string).toString();
 	}
 	
+	public static String nullToEmptyString(String string) {
+		if (string == null) {
+			return "";
+		}
+		return string;
+	}
+	
 }
