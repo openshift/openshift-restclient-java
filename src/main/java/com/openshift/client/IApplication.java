@@ -26,6 +26,7 @@ import com.openshift.internal.client.ApplicationResource;
 /**
  * @author André Dietisheim
  * @author Syed Iqbal
+ * @author Martes G Wigglesworth
  */
 public interface IApplication extends IOpenShiftResource {
 
@@ -423,7 +424,7 @@ public interface IApplication extends IOpenShiftResource {
 	/**
 	 * Retrieves the map of environment variables
 	 * 
-	 * @return the list of environment variables
+	 * @return the Map<String,IEnvironmentVariable> of environment variables
 	 * @throws OpenShiftSSHOperationException
 	 */
 	public Map<String, IEnvironmentVariable> getEnvironmentVariables() throws OpenShiftSSHOperationException;
@@ -431,30 +432,26 @@ public interface IApplication extends IOpenShiftResource {
 	/**
 	 * Checks if the environment variable is present in the application.
 	 * 
-	 * @param name
-	 *            Name of the environment variable
-	 * @return
+	 * @param name  Name of the environment variable
+	 * @return <code>true</code> if the current instance has IEnvironmentVariables to return <br>
+	 *         <code>false</code> if the current instance has no IEnvironmentVariables to return
 	 * @throws OpenShiftSSHOperationException
 	 */
 	public boolean hasEnvironmentVariable(String name) throws OpenShiftException;
 
 	/**
-	 * Adds an environment variable to this application. If the environment
-	 * variable exists already, then an OpenShift exception is thrown.
+	 * Adds an environment variable to this application. 
 	 * 
-	 * @param name
-	 *            name of the variable to add
-	 * @param value
-	 *            value of the new variable
-	 * @throws OpenShiftSSHOperationException
+	 * @param name  key associated with the variable to add
+	 * @param value value of the new variable
+	 * @throws OpenShiftSSHOperationException - if the variable already exists
 	 */
 	public IEnvironmentVariable addEnvironmentVariable(String name, String value) throws OpenShiftException;
 
 	/**
 	 * Adds a map of environment variables to the application
 	 * 
-	 * @param environmentVariables
-	 *            map of environment variables
+	 * @param environmentVariables Map<String,String> of environment variables
 	 * @throws OpenShiftSSHOperationException
 	 */
 	public Map<String, IEnvironmentVariable> addEnvironmentVariables(Map<String, String> environmentVariables)
@@ -463,42 +460,47 @@ public interface IApplication extends IOpenShiftResource {
 	/**
 	 * Return the environment variable for the specified name
 	 * 
-	 * @param name
-	 *            Name of the environment variable
-	 * @return environment variable
-	 * @throws OpenShiftSSHOperationException
+	 * @param name key to be used to locate the environment variable
+	 * @return IEnvironmentVariable associated with the provided key
+	 * @throws OpenShiftSSHOperationException - thrown if the key does not exist
 	 */
 	public IEnvironmentVariable getEnvironmentVariable(String name) throws OpenShiftException;
 
 	/**
 	 * Removes the environment variables with the given name from this application.
 	 * 
-	 * @param name
-	 * @return
-	 * @throws OpenShiftException
+	 * @param name key associated with the IEnvironmentVariable to be removed
+	 * @return 
+	 * @throws OpenShiftException - thrown if there is no IEnvironmentVariable associated with the explicit parameter.
 	 */
 	public void removeEnvironmentVariable(String name) throws OpenShiftException;
+	
+	/**
+     * Removes the environment variables with the given name from this application.
+     * 
+     * @param environmentVariable IEnvironmentVariable instance which should be removed
+     * @return 
+     * @throws OpenShiftException - thrown if there is no instance  of IEnvironmentVariable available to be removed
+     */
+	public void removeEnvironmentVariable(IEnvironmentVariable environmentVariable);
 
 	/**
-	 * Returns <code>true</code> if this application can list its environment
-	 * variables. Returns <code>false</code> if it cant. Internally this
-	 * translates to the presence of the link to list environment variables.
+	 * Used to determine if environment variables exist and are available to be retrieved 
 	 * 
-	 * @return true if this application can list its envirnoment variables
+	 * @return Returns <code>true</code> if this application can list its environment variables. <br>
+	 *         Returns <code>false</code> if it cannot. Internally this translates to the presence of the link to list environment variables.
 	 * 
-	 * @see #getEnvironmentVariables()
+	 * @see #getEnvironmentVariablesMap()
 	 * @see #getEnvironmentVariable(String)
 	 * @see ApplicationResource#LINK_LIST_ENVIRONMENT_VARIABLES
 	 */
 	public boolean canGetEnvironmentVariables();
 
 	/**
-	 * Returns <code>true</code> if this application can update (set or unset)
-	 * its environment variables. Returns <code>false</code> if it cannot.
-	 * Internally this translates to the presence of the link to set and unset
-	 * environment variables.
+	 * Used to determine if the current instance is able to update environment variables.
 	 * 
-	 * @return true if this application can set/unset its environment variables
+	 * @return Returns <code>true</code> if this application can augment its environment variables.<br>
+     *         Returns <code>false</code> if it cannot. <br>
 	 * 
 	 * @see #addEnvironmentVariable(String, String)
 	 * @see #addEnvironmentVariables(Map)

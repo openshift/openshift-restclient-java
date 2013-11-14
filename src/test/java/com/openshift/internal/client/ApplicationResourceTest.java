@@ -564,7 +564,7 @@ public class ApplicationResourceTest {
 	}
 
 	@Test
-	public void shouldCanListEnvironmentVariables() throws Throwable {
+	public void shouldCanGetEnvironmentVariables() throws Throwable {
 		// pre-conditions
 		mockDirector
 				.mockAddEnvironmentVariable("foobarz", "springeap6",
@@ -639,11 +639,9 @@ public class ApplicationResourceTest {
 				.mockGetEnvironmentVariables("foobarz", "springeap6",
 						GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6, GET_2_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
 		final IApplication app = domain.getApplicationByName("springeap6");
-		Map<String, IEnvironmentVariable> environmentVariables = app.getEnvironmentVariables();
-		assertThat(environmentVariables).hasSize(1);
+		assertThat(app.getEnvironmentVariables()).hasSize(1);
 		// operation
 		app.refresh();
-		
 		// verification
 		assertThat(app.getEnvironmentVariables()).hasSize(2);
 	}
@@ -685,25 +683,42 @@ public class ApplicationResourceTest {
 	}
 
 	@Test
-	public void shouldRemoveEnvironmentVariable() throws Throwable {
+	public void shouldRemoveEnvironmentVariableByName() throws Throwable {
 		// precondition
 		mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6",
 				GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6, GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
 		final IApplication app = domain.getApplicationByName("springeap6");
 		assertThat(app.getEnvironmentVariables()).hasSize(1);
-		IEnvironmentVariable existingEnvironmentVariable = app.getEnvironmentVariables().get("FOO");
-		assertThat(existingEnvironmentVariable.getName()).isEqualTo("FOO");
+		assertThat(app.getEnvironmentVariables().get("FOO").getName() == "FOO");
 
 		// operation
-		existingEnvironmentVariable.destroy();
+		app.removeEnvironmentVariable("FOO");
 		
 		// verification
 		assertThat(app.getEnvironmentVariables()).hasSize(0);
 		assertThat(app.hasEnvironmentVariable("FOO")).isFalse();
 	}
+	
+	@Test
+    public void shouldRemoveEnvironmentVariable() throws Throwable {
+        // precondition
+        mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6",
+                GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6, GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
+        final IApplication app = domain.getApplicationByName("springeap6");
+        assertThat(app.getEnvironmentVariables()).hasSize(1);
+        IEnvironmentVariable environmentVariable = app.getEnvironmentVariables().get("FOO");
+        assertThat(environmentVariable.getName()).isEqualTo("FOO");
+
+        // operation
+        app.removeEnvironmentVariable(environmentVariable);
+        
+        // verification
+        assertThat(app.getEnvironmentVariables()).hasSize(0);
+        assertThat(app.hasEnvironmentVariable("FOO")).isFalse();
+    }
 
 	@Test
-	public void shouldListAllEnvironmentVariablesFromApplication() throws Throwable {
+	public void shouldGetMapOfAllEnvironmentVariablesFromApplication() throws Throwable {
 		// preconditions
 		mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6",
 				GET_4_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
@@ -719,7 +734,7 @@ public class ApplicationResourceTest {
 	}
 
 	@Test
-	public void shouldLoadEmptyListOfEnvironmentVariables() throws Throwable {
+	public void shouldLoadEmptyMapOfEnvironmentVariables() throws Throwable {
 		// precondition
 		mockDirector
 			.mockGetEnvironmentVariables("foobarz", "springeap6", GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
@@ -755,5 +770,6 @@ public class ApplicationResourceTest {
 		assertThat(domain).isEqualTo(this.domain);
 		assertTrue(domain != this.domain);
 	}
+
 
 }
