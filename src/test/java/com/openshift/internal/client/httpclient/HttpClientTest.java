@@ -11,6 +11,7 @@
 package com.openshift.internal.client.httpclient;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -22,6 +23,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.security.KeyStoreException;
+import java.security.cert.X509Certificate;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -32,16 +35,24 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLSession;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.openshift.client.IHttpClient;
+import com.openshift.client.IHttpClient.ISSLCertificateCallback;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.fakes.HttpServerFake;
+import com.openshift.client.fakes.HttpsServerFake;
 import com.openshift.client.fakes.PayLoadReturningHttpClientFake;
 import com.openshift.client.fakes.WaitingHttpServerFake;
 import com.openshift.client.utils.Base64Coder;
+import com.openshift.client.utils.ExceptionCauseMatcher;
 import com.openshift.internal.client.httpclient.request.FormUrlEncodedMediaType;
 import com.openshift.internal.client.httpclient.request.StringParameter;
 
@@ -56,10 +67,15 @@ public class HttpClientTest {
 
 	private HttpServerFake serverFake;
 	private IHttpClient httpClient;
+	private HttpsServerFake httpsServerFake;
 
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
 	@Before
-	public void setUp() throws IOException {
+	public void setUp() throws Exception {
 		this.serverFake = startHttpServerFake(null);
+		this.httpsServerFake = startHttpsServerFake(null);
 		this.httpClient = new UrlConnectionHttpClientBuilder()
 				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
 				.setUserAgent("com.openshift.client.test")
@@ -69,13 +85,14 @@ public class HttpClientTest {
 	@After
 	public void tearDown() {
 		serverFake.stop();
+		httpsServerFake.stop();
 	}
 
 	@Test(expected = HttpClientException.class)
 	public void shouldThrowIfNoAcceptedMediaType() throws SocketTimeoutException, HttpClientException,
 			MalformedURLException {
 		IHttpClient client = new UrlConnectionHttpClient(
-				"username", "password", "useragent", false, null, "42.0");
+				"username", "password", "useragent", null, "42.0");
 		client.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
 	}
 
@@ -85,6 +102,7 @@ public class HttpClientTest {
 		assertThat(response).startsWith("GET");
 	}
 
+	
 	@Test
 	public void canHead() throws Throwable {
 		String response = httpClient.head(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
@@ -117,6 +135,80 @@ public class HttpClientTest {
 		assertTrue(response.contains("X-Http-Method-Override: PATCH"));
 	}
 
+	/**
+	 * Assumes that the server is sending a certificate that is not known to the
+	 * client. The test does this by having a custom ssl server with a self-signed certificate.
+	 *
+	 * @see HttpsServerFake
+	 */
+	@Test
+	public void shouldFailHttpsSelfsignedCertificateNoCallback() throws Throwable {
+		// pre-condition
+		expectedException.expect(new ExceptionCauseMatcher(instanceOf(SSLHandshakeException.class)));
+
+		// operation
+		httpClient.get(httpsServerFake.getUrl(), IHttpClient.NO_TIMEOUT);
+	}
+	
+	/**
+	 * Assumes that the server is sending a certificate that is not known to the
+	 * client. The test does this by having a custom ssl server with a self-signed certificate.
+	 *
+	 * @see HttpsServerFake
+	 */
+	@Test
+	public void shouldSucceedHttpsSelfsignedCertificate() throws Throwable {
+		IHttpClient client = new UrlConnectionHttpClientBuilder()
+		.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
+		.setUserAgent("com.openshift.client.test")
+		.setSSLCertificateCallback(new ISSLCertificateCallback() {
+			
+			@Override
+			public boolean allowHostname(String hostname, SSLSession session) {
+				return true;
+			}
+			
+			@Override
+			public boolean allowCertificate(X509Certificate[] chain) {
+				return true;
+			}
+		})
+		.client();
+		client.get(httpsServerFake.getUrl(), IHttpClient.NO_TIMEOUT);
+	}
+	
+	/**
+	 * Assumes that the server is sending a certificate that is not known to the
+	 * client. The test does this by having a custom ssl server with a self-signed certificate.
+	 *
+	 * @see HttpsServerFake
+	 */
+	@Test
+	public void shouldFailHttpsSelfsignedCertificate() throws Throwable {
+		// pre-condition
+		expectedException.expect(new ExceptionCauseMatcher(instanceOf(SSLHandshakeException.class)));
+
+		IHttpClient client = new UrlConnectionHttpClientBuilder()
+		.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
+		.setUserAgent("com.openshift.client.test")
+		.setSSLCertificateCallback(new ISSLCertificateCallback() {
+			
+			@Override
+			public boolean allowHostname(String hostname, SSLSession session) {
+				return true;
+			}
+			
+			@Override
+			public boolean allowCertificate(X509Certificate[] chain) {
+				return false;
+			}
+		})
+		.client();
+
+		// operation
+		client.get(httpsServerFake.getUrl(), IHttpClient.NO_TIMEOUT);
+	}
+	
 	@Test
 	public void canAddAuthorization() throws SocketTimeoutException, HttpClientException, MalformedURLException {
 		String username = "andre.dietisheim@redhat.com";
@@ -134,8 +226,8 @@ public class HttpClientTest {
 		assertEquals(1, matcher.groupCount());
 		String credentials = matcher.group(1);
 		String cleartextCredentials = Base64Coder.decode(credentials);
-		assertThat(credentials).describedAs("credentials were not encoded in httpClient").isNotEqualTo(
-				cleartextCredentials);
+		assertThat(credentials)
+				.describedAs("credentials were not encoded in httpClient").isNotEqualTo(cleartextCredentials);
 		assertEquals(username + ":" + password, cleartextCredentials);
 	}
 
@@ -172,8 +264,7 @@ public class HttpClientTest {
 	}
 
 	@Test
-	public void shouldAddServiceVersionToAcceptHeader() throws FileNotFoundException, IOException, OpenShiftException,
-			HttpClientException {
+	public void shouldAddServiceVersionToAcceptHeader() throws Exception {
 		// pre-conditions
 		String version = "42.0";
 		AcceptVersionClientFake clientFake = new AcceptVersionClientFake(version);
@@ -184,7 +275,7 @@ public class HttpClientTest {
 	}
 
 	@Test(expected = NotFoundException.class)
-	public void shouldThrowNotFoundException() throws IOException {
+	public void shouldThrowNotFoundException() throws Exception {
 		HttpServerFake server = null;
 		try {
 			// precondition
@@ -208,7 +299,7 @@ public class HttpClientTest {
 	 * @throws IOException
 	 */
 	@Test(expected = NotFoundException.class)
-	public void shouldReasonPhraseIsOptional() throws IOException {
+	public void shouldReasonPhraseIsOptional() throws Exception {
 		HttpServerFake server = null;
 		try {
 			// precondition
@@ -224,7 +315,7 @@ public class HttpClientTest {
 	}
 
 	@Test
-	public void shouldHaveURLInExceptionMessage() throws IOException {
+	public void shouldHaveURLInExceptionMessage() throws Exception {
 		HttpServerFake server = null;
 		try {
 			// precondition
@@ -418,7 +509,7 @@ public class HttpClientTest {
 		}
 	}
 
-	private HttpServerFake startHttpServerFake(String statusLine) throws IOException {
+	private HttpServerFake startHttpServerFake(String statusLine) throws Exception {
 		int port = new Random().nextInt(9 * 1024) + 1024;
 		HttpServerFake serverFake = null;
 		if (statusLine == null) {
@@ -430,7 +521,19 @@ public class HttpClientTest {
 		return serverFake;
 	}
 
-	private WaitingHttpServerFake startWaitingHttpServerFake(int delay) throws IOException {
+	private HttpsServerFake startHttpsServerFake(String statusLine) throws Exception {
+		int port = new Random().nextInt(9 * 1024) + 1024;
+		HttpsServerFake serverFake = null;
+		if (statusLine == null) {
+			serverFake = new HttpsServerFake(port);
+		} else {
+			serverFake = new HttpsServerFake(port, null, statusLine);
+		}
+		serverFake.start();
+		return serverFake;
+	}
+	
+	private WaitingHttpServerFake startWaitingHttpServerFake(int delay) throws Exception {
 		WaitingHttpServerFake serverFake = new WaitingHttpServerFake(delay);
 		serverFake.start();
 		return serverFake;
@@ -461,13 +564,18 @@ public class HttpClientTest {
 
 	private abstract class UrlConnectionHttpClientFake extends UrlConnectionHttpClient {
 		private UrlConnectionHttpClientFake(String userAgent, String acceptVersion) {
-			super("username", "password", userAgent, false, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
-					"authkey", "authiv");
+			super("username", "password", userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
+					"authkey", "authiv", null);
 		}
 
-		public HttpURLConnection createConnection() throws IOException {
+		private UrlConnectionHttpClientFake(String userAgent, String acceptVersion, ISSLCertificateCallback callback) {
+			super("username", "password", userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
+					"authkey", "authiv", callback);
+		}
+		
+		public HttpURLConnection createConnection() throws IOException, KeyStoreException {
 			return super.createConnection(new URL("http://localhost"), username, password, authKey, authIV,
-					userAgent, acceptedVersion, acceptedMediaType, NO_TIMEOUT);
+					userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, NO_TIMEOUT);
 		}
 	};
 
