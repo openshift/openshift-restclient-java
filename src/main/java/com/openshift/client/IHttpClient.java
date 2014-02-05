@@ -12,6 +12,9 @@ package com.openshift.client;
 
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLSession;
 
 import com.openshift.internal.client.httpclient.EncodingException;
 import com.openshift.internal.client.httpclient.HttpClientException;
@@ -85,5 +88,12 @@ public interface IHttpClient {
 	public void setAcceptVersion(String version);
 	
 	public void setAcceptedMediaType(String acceptedMediaType);
+	
+	public interface ISSLCertificateCallback {
+
+		public boolean allowCertificate(X509Certificate[] chain);
+
+		public boolean allowHostname(String hostname, SSLSession session); 
+	}
 	
 }

@@ -15,20 +15,21 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.KeyManagementException;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import org.slf4j.Logger;
@@ -52,29 +53,34 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UrlConnectionHttpClient.class);
 
 	protected String userAgent;
-	protected boolean sslChecks;
 	protected String username;
 	protected String password;
 	protected String authKey;
 	protected String authIV;
 	protected String acceptedMediaType;
 	protected String acceptedVersion;
+	protected ISSLCertificateCallback sslAuthorizationCallback;
 
-	public UrlConnectionHttpClient(String username, String password, String userAgent, boolean sslChecks,
-			String acceptedMediaType, String version) {
-		this(username, password, userAgent, sslChecks, acceptedMediaType, version, null, null);
+	public UrlConnectionHttpClient(
+			String username, String password, String userAgent, String acceptedMediaType, String version) {
+		this(username, password, userAgent, acceptedMediaType, version, null, null);
 	}
 
-	public UrlConnectionHttpClient(String username, String password, String userAgent, boolean sslChecks,
-			String acceptedMediaType, String version, String authKey, String authIV) {
+	public UrlConnectionHttpClient(
+			String username, String password, String userAgent, String acceptedMediaType, String version, String authKey, String authIV) {
+		this(username, password, userAgent, acceptedMediaType, version, authKey, authIV, null);
+	}
+
+	public UrlConnectionHttpClient(String username, String password, String userAgent, String acceptedMediaType,
+			String version, String authKey, String authIV, ISSLCertificateCallback callback) {
 		this.username = username;
 		this.password = password;
 		this.userAgent = userAgent;
-		this.sslChecks = sslChecks;
 		this.acceptedMediaType = acceptedMediaType;
 		this.acceptedVersion = version;
 		this.authKey = authKey;
 		this.authIV = authIV;
+		this.sslAuthorizationCallback = callback;
 	}
 
 	@Override
@@ -129,7 +135,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		HttpURLConnection connection = null;
 		try {
 			connection = createConnection(
-					url, username, password, authKey, authIV, userAgent, acceptedVersion, acceptedMediaType, timeout);
+					url, username, password, authKey, authIV, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
 			// PATCH not yet supported by JVM
 			if (httpMethod == HttpMethod.PATCH) {
 				httpMethod = HttpMethod.POST;
@@ -199,34 +205,14 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		return "https".equals(url.getProtocol());
 	}
 
-	/**
-	 * Sets a trust manager that will always trust.
-	 * <p>
-	 * TODO: dont swallog exceptions and setup things so that they dont disturb
-	 * other components.
-	 */
-	private void setPermissiveSSLSocketFactory(HttpsURLConnection connection) {
-		try {
-			SSLContext sslContext = SSLContext.getInstance("SSL");
-			sslContext.init(
-					new KeyManager[0], new TrustManager[] { new PermissiveTrustManager() }, new SecureRandom());
-			SSLSocketFactory socketFactory = sslContext.getSocketFactory();
-			((HttpsURLConnection) connection).setSSLSocketFactory(socketFactory);
-		} catch (KeyManagementException e) {
-			// ignore
-		} catch (NoSuchAlgorithmException e) {
-			// ignore
-		}
-	}
-
 	protected HttpURLConnection createConnection(URL url, String username, String password, String authKey,
-			String authIV, String userAgent, String acceptedVersion, String acceptedMediaType, int timeout)
+			String authIV, String userAgent, String acceptedVersion, String acceptedMediaType, ISSLCertificateCallback callback, int timeout)
 			throws IOException {
 		LOGGER.trace(
 				"creating connection to {} using username \"{}\" and password \"{}\"",
 				new Object[] { url, username, password });
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		setSSLChecks(url, connection);
+		setSSLCallback(url, connection);
 		setAuthorisation(username, password, authKey, authIV, connection);
 		connection.setUseCaches(false);
 		connection.setDoInput(true);
@@ -279,15 +265,37 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		}
 	}
 
-	private void setSSLChecks(URL url, HttpURLConnection connection) {
+	private void setSSLCallback(URL url, HttpURLConnection connection) {
 		if (isHttps(url)
-				&& !sslChecks) {
+				&& sslAuthorizationCallback != null) {
 			HttpsURLConnection httpsConnection = (HttpsURLConnection) connection;
-			httpsConnection.setHostnameVerifier(new NoopHostnameVerifier());
-			setPermissiveSSLSocketFactory(httpsConnection);
+			httpsConnection.setHostnameVerifier(new CallbackHostnameVerifier());
+			setupTrustManagerCallback(httpsConnection);;
 		}
 	}
 
+	/**
+	 * Sets the trust manager callbacks to the given connection
+	 * 
+	 * @see ISSLCertificateCallback
+	 */
+	private void setupTrustManagerCallback(HttpsURLConnection connection) {
+		try {
+			SSLContext sslContext = SSLContext.getInstance("SSL");
+			X509TrustManager trustManager = getCurrentTrustManager();
+			if (trustManager == null) {
+				LOGGER.warn("Could not install trust manager callback, no trustmanager was found.", trustManager);
+			} else {
+				sslContext.init(null, new TrustManager[] { 
+						new CallbackTrustManager(trustManager, sslAuthorizationCallback) }, null);
+				SSLSocketFactory socketFactory = sslContext.getSocketFactory();
+				((HttpsURLConnection) connection).setSSLSocketFactory(socketFactory);
+			}
+		} catch (GeneralSecurityException e) {
+			LOGGER.warn("Could not install trust manager callback", e);;
+		}
+	}
+	
 	private void setConnectTimeout(int timeout, URLConnection connection) {
 		connection.setConnectTimeout(
 				getTimeout(
@@ -336,29 +344,22 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			return NO_TIMEOUT;
 		}
 	}
+	
+	private X509TrustManager getCurrentTrustManager() throws NoSuchAlgorithmException, KeyStoreException {
+		TrustManagerFactory trustManagerFactory = 
+				TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		trustManagerFactory.init((KeyStore) null);
 
-	private class PermissiveTrustManager implements X509TrustManager {
-
-		public X509Certificate[] getAcceptedIssuers() {
-			return null;
+		X509TrustManager x509TrustManager = null;
+		for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
+			if (trustManager instanceof X509TrustManager) {
+				x509TrustManager = (X509TrustManager) trustManager;
+				break;
+			}
 		}
-
-		public void checkServerTrusted(X509Certificate[] chain,
-				String authType) throws CertificateException {
-		}
-
-		public void checkClientTrusted(X509Certificate[] chain,
-				String authType) throws CertificateException {
-		}
+		return x509TrustManager;
 	}
-
-	private class NoopHostnameVerifier implements HostnameVerifier {
-
-		public boolean verify(String hostname, SSLSession sslSession) {
-			return true;
-		}
-	}
-
+	
 	@Override
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
@@ -373,4 +374,43 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	public void setAcceptedMediaType(String acceptedMediaType) {
 		this.acceptedMediaType = acceptedMediaType;
 	}
+	
+	public class CallbackTrustManager implements X509TrustManager {
+
+		private X509TrustManager trustManager;
+		private ISSLCertificateCallback callback;
+
+		private CallbackTrustManager(X509TrustManager currentTrustManager, ISSLCertificateCallback callback) throws NoSuchAlgorithmException, KeyStoreException {
+			this.trustManager = currentTrustManager; 
+			this.callback = callback;
+		}
+		
+		public X509Certificate[] getAcceptedIssuers() {
+			return trustManager.getAcceptedIssuers();
+		}
+
+		public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+			try {
+				trustManager.checkServerTrusted(chain, authType);
+			} catch (CertificateException e) {
+				if (!callback.allowCertificate(chain)) {
+					throw e;
+				}
+			}
+		}
+
+		public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+			trustManager.checkServerTrusted(chain, authType);
+		}
+	}
+
+	private class CallbackHostnameVerifier implements HostnameVerifier {
+
+		@Override
+		public boolean verify(String hostname, SSLSession session) {
+			return sslAuthorizationCallback.allowHostname(hostname, session);
+		}
+		
+	}
+	
 }

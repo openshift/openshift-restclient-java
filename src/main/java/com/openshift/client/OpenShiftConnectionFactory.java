@@ -13,6 +13,7 @@ package com.openshift.client;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import com.openshift.client.IHttpClient.ISSLCertificateCallback;
 import com.openshift.client.configuration.IOpenShiftConfiguration;
 import com.openshift.client.configuration.OpenShiftConfiguration;
 import com.openshift.internal.client.AbstractOpenShiftConnectionFactory;
@@ -102,9 +103,19 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 */
 	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
 			final String serverUrl) throws OpenShiftException {
-		return getConnection(clientId, username, password, null, null, serverUrl);
+		return getConnection(clientId, username, password, serverUrl, (ISSLCertificateCallback) null);
 	}
 
+	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
+			final String serverUrl, ISSLCertificateCallback sslCallback) throws OpenShiftException {
+		return getConnection(clientId, username, password, null, null, serverUrl, sslCallback);
+	}
+
+	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
+			final String authKey, final String authIV, final String serverUrl) throws OpenShiftException {
+		return getConnection(clientId, username, password, null, null, serverUrl, null);
+	}
+	
 	/**
 	 * Establish a connection with the clientId along with user's login and
 	 * password.
@@ -123,7 +134,8 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * @throws OpenShiftException
 	 */
 	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
-			final String authKey, final String authIV, final String serverUrl) throws OpenShiftException {
+			final String authKey, final String authIV, final String serverUrl,
+			final ISSLCertificateCallback sslCertificateCallback) throws OpenShiftException {
 		Assert.notNull(clientId);
 		Assert.notNull(username);
 		Assert.notNull(password);
@@ -131,7 +143,10 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 
 		try {
 			IHttpClient httpClient =
-					new UrlConnectionHttpClientBuilder().setCredentials(username, password, authKey, authIV).client();
+					new UrlConnectionHttpClientBuilder()
+						.setCredentials(username, password, authKey, authIV)
+						.setSSLCertificateCallback(sslCertificateCallback)
+						.client();
 			return getConnection(clientId, username, password, serverUrl, httpClient);
 		} catch (IOException e) {
 			throw new OpenShiftException(e, "Failed to establish connection for user ''{0}}''", username);

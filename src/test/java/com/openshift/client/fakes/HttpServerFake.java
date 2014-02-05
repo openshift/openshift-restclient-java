@@ -46,8 +46,8 @@ public class HttpServerFake {
 	private ExecutorService executor;
 	private int port;
 	private String response;
-	private ServerSocket serverSocket;
 	private String statusLine;
+	private ServerFakeSocket serverFakeSocket;
 
 	public HttpServerFake(int port) {
 		this(port, null, DEFAULT_STATUSLINE);
@@ -86,36 +86,53 @@ public class HttpServerFake {
 		}
 	}
 
-	public void start() throws IOException {
+	public void start() throws Exception {
 		executor = Executors.newFixedThreadPool(1);
-		this.serverSocket = new ServerSocket(port);
-		executor.submit(new ServerFakeSocket());
+		this.serverFakeSocket = createServerFakeSocket(statusLine, response, port);
+		executor.submit(serverFakeSocket);
+	}
+
+	protected ServerFakeSocket createServerFakeSocket(String statusLine, String response, int port) throws Exception {
+		return new  ServerFakeSocket(statusLine, response, port);
 	}
 
 	public URL getUrl() throws MalformedURLException {
 		return new URL(MessageFormat.format("http://localhost:{0}/", String.valueOf(port)));
 	}
 
+	public URL getHttpsUrl() throws MalformedURLException {
+		return new URL(MessageFormat.format("https://localhost:{0}/", String.valueOf(port)));
+	}
+	
 	public void stop() {
-		silentlyClose(serverSocket);
+		serverFakeSocket.close();
 		executor.shutdownNow();
 	}
 
-	public void silentlyClose(ServerSocket serverSocket) {
-		if (serverSocket != null) {
-			try {
-				serverSocket.close();
-			} catch (IOException e) {
-				//e.printStackTrace();
-			}
-		}
-	}
 
-    protected void write(byte[] bytes, OutputStream outputStream) throws IOException{
+	protected void write(byte[] bytes, OutputStream outputStream) throws IOException{
         outputStream.write(bytes);
     }
 	
-	private class ServerFakeSocket implements Runnable {
+	protected int getPort() {
+		return port;
+	}
+	
+	protected class ServerFakeSocket implements Runnable {
+
+		private String statusLine;
+		private String response;
+		private ServerSocket serverSocket;
+		
+		public ServerFakeSocket(String statusLine, String response, int port) throws Exception {
+			this.statusLine = statusLine;
+			this.response = response;
+			this.serverSocket = createServerSocket(port);
+		}
+		
+		protected ServerSocket createServerSocket(int port) throws Exception {
+			return new ServerSocket(port);
+		}
 
 		public void run() {
 			Socket socket = null;
@@ -156,7 +173,7 @@ public class HttpServerFake {
 			return readRequestToString(socket.getInputStream());
 		}
 
-		public String readRequestToString(InputStream inputStream) throws IOException {
+		private String readRequestToString(InputStream inputStream) throws IOException {
 			BufferedReader bufferedReader = null;
 			bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 			StringWriter writer = new StringWriter();
@@ -170,5 +187,20 @@ public class HttpServerFake {
 			}
 			return writer.toString();
 		}
+
+		public void close() {
+			silentlyClose(serverSocket);
+		}
+		
+		private void silentlyClose(ServerSocket serverSocket) {
+			if (serverSocket != null) {
+				try {
+					serverSocket.close();
+				} catch (IOException e) {
+					//e.printStackTrace();
+				}
+			}
+		}
+		
 	}
 }

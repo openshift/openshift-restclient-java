@@ -40,9 +40,11 @@ public class PayLoadReturningHttpClientFake extends UrlConnectionHttpClient {
 		super(configuration.getRhlogin(),
 				configuration.getPassword(),
 				configuration.getClientId(),
-				false,
 				mediaType,
-				version);
+				version,
+				null,
+				null,
+				null);
 	}
 
 	@Override

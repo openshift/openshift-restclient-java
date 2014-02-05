@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
+import com.openshift.client.NoopSSLCertificateCallback;
 import com.openshift.client.OpenShiftConnectionFactory;
 import com.openshift.client.OpenShiftException;
 
@@ -36,7 +37,8 @@ public class TestConnectionFactory extends OpenShiftConnectionFactory {
 				, configuration.getPassword()
 				, null
 				, null
-				, configuration.getLibraServer());
+				, configuration.getLibraServer()
+				, new NoopSSLCertificateCallback());
 	}
 
 	public IOpenShiftConnection getConnection(String password, String server, IHttpClient httpClient) throws FileNotFoundException, IOException, OpenShiftException {

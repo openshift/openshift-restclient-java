@@ -11,6 +11,7 @@
 package com.openshift.internal.client.httpclient;
 
 import com.openshift.client.IHttpClient;
+import com.openshift.client.IHttpClient.ISSLCertificateCallback;
 
 /**
  * @author André Dietisheim
@@ -18,21 +19,16 @@ import com.openshift.client.IHttpClient;
 public class UrlConnectionHttpClientBuilder {
 
 	private String userAgent;
-	private boolean sslChecks = false;
 	private String username;
 	private String password;
 	private String authKey;
 	private String authIV;
 	private String acceptedMediaType;
 	private String version;
+	private ISSLCertificateCallback callback;
 
 	public UrlConnectionHttpClientBuilder setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
-		return this;
-	}
-
-	public UrlConnectionHttpClientBuilder setSSLChecks(boolean check) {
-		this.sslChecks = check;
 		return this;
 	}
 
@@ -53,6 +49,11 @@ public class UrlConnectionHttpClientBuilder {
 		return this;
 	}
 
+	public UrlConnectionHttpClientBuilder setSSLCertificateCallback(ISSLCertificateCallback callback) {
+		this.callback = callback;
+		return this;
+	}
+	
 	public UrlConnectionHttpClientBuilder setVersion(String version) {
 		this.version = version;
 		return this;
@@ -60,6 +61,6 @@ public class UrlConnectionHttpClientBuilder {
 
 	public IHttpClient client() {
 		return new UrlConnectionHttpClient(
-				username, password, userAgent, sslChecks, acceptedMediaType, version, authKey, authIV);
+				username, password, userAgent, acceptedMediaType, version, authKey, authIV, callback);
 	}
 }
