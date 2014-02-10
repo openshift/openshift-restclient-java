@@ -101,7 +101,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(
 				LatestVersionOf.jbossAs(), domain);
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(application);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
 		IEmbeddableCartridge mysql = LatestVersionOf.mySQL().get(user);
 		assertThat(mysql).isNotNull();
 		assertThat(new ApplicationAssert(application)).hasNotEmbeddableCartridge(mysql);
@@ -188,7 +188,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(
 				LatestVersionOf.jbossAs(), domain);
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(application);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
 		IEmbeddableCartridge postgres = LatestVersionOf.postgreSQL().get(user);
 		assertThat(new ApplicationAssert(application))
 			.hasNotEmbeddableCartridge(postgres);
@@ -229,7 +229,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	public void shouldEmbedMongo() throws Exception {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(LatestVersionOf.jbossAs(), domain);
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(application);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
 		IEmbeddableCartridge mongo = LatestVersionOf.mongoDB().get(user);
 		assertThat(new ApplicationAssert(application))
 			.hasNotEmbeddableCartridge(mongo);
@@ -249,7 +249,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 			IOException {
 		// pre-conditions
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(jbossAs);
 
 		// operation
 		jbossAs.addEmbeddableCartridge(LatestVersionOf.mongoDB().get(user));
@@ -271,7 +271,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// have to make sure have non-scalable app without cartridges
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
 		jbossAs = ApplicationTestUtils.destroyAndRecreateIfScalable(jbossAs);
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(jbossAs);
 
 		assertThat(new ApplicationAssert(jbossAs)
 				.hasNotEmbeddableCartridges(LatestVersionOf.mongoDB())
@@ -293,7 +293,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
 		jbossAs = ApplicationTestUtils.destroyAndRecreateIfScalable(jbossAs);
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(jbossAs);
 		assertThat(new ApplicationAssert(jbossAs)
 				.hasNotEmbeddableCartridges(LatestVersionOf.mongoDB())
 				.hasNotEmbeddableCartridges(LatestVersionOf.rockMongo()));
@@ -320,7 +320,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
 		jbossAs = ApplicationTestUtils.destroyAndRecreateIfScalable(jbossAs);
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(jbossAs);
 		assertThat(new ApplicationAssert(jbossAs)
 				.hasNotEmbeddableCartridges(LatestVersionOf.mySQL())
 				.hasNotEmbeddableCartridges(LatestVersionOf.phpMyAdmin()));
@@ -342,7 +342,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
 		jbossAs = ApplicationTestUtils.destroyAndRecreateIfScalable(jbossAs);
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(jbossAs);
 		assertThat(new ApplicationAssert(jbossAs)
 				.hasNotEmbeddableCartridges(LatestVersionOf.mySQL())
 				.hasNotEmbeddableCartridges(LatestVersionOf.phpMyAdmin()));
@@ -369,7 +369,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// need 2 free gears; jenkins + builder
 		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(
 				LatestVersionOf.jbossAs(), domain);
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(application);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
 		ApplicationTestUtils.createApplication(
 				LatestVersionOf.jenkins().get(user), domain);
 
@@ -394,7 +394,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 		// pre-conditions
 		IApplication jbossAs = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(user));
 		jbossAs = ApplicationTestUtils.destroyAndRecreateIfScalable(jbossAs);
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(jbossAs);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(jbossAs);
 		ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.jenkins().get(user));
 
 		// operation
@@ -416,7 +416,7 @@ public class EmbeddedCartridgeResourceIntegrationTest {
 	public void shouldEmbedDownloadableCartridge() throws Exception {
 		// pre-conditions
 		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(LatestVersionOf.jbossAs(), domain);
-		EmbeddedCartridgeTestUtils.destroyAllEmbeddedCartridges(application);
+		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
 		assertThat(new ApplicationAssert(application))
 			.hasNotEmbeddableCartridge(Cartridges.foreman063());
 

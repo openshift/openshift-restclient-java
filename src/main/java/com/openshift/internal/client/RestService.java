@@ -100,25 +100,36 @@ public class RestService implements IRestService {
 	@Override
 	public RestResponse request(Link link, List<Parameter> urlParameters, Parameter... parameters)
 			throws OpenShiftException {
-		return request(link, IHttpClient.NO_TIMEOUT, urlParameters, defaultRequestMediaType, parameters);
+		return request(link, IHttpClient.NO_TIMEOUT, defaultRequestMediaType, urlParameters, parameters);
 	}
 
 	@Override
 	public RestResponse request(Link link, int timeout, IMediaType requestMediaType, Parameter... parameters)
 			throws OpenShiftException {
-		return request(link, timeout, Collections.<Parameter>emptyList(), requestMediaType, parameters);
+		return request(link, timeout, requestMediaType, Collections.<Parameter>emptyList(), parameters);
 	}
 	
 	@Override
 	public RestResponse request(Link link, int timeout, List<Parameter> urlParameters, Parameter... parameters)
 			throws OpenShiftException {
-		return request(link, timeout, urlParameters, defaultRequestMediaType, parameters);
+		return request(link, timeout, defaultRequestMediaType, Collections.<Parameter>emptyList(), urlParameters, parameters);
 	}
 
 	@Override
-    public RestResponse request(Link link, int timeout, List<Parameter> urlParameters, IMediaType requestMediaType, Parameter... parameters) throws OpenShiftException {
+    public RestResponse request(Link link, int timeout, List<Parameter> urlPathParameters, List<Parameter> urlParameters, Parameter... parameters) throws OpenShiftException {
+		return request(link, timeout, defaultRequestMediaType, urlPathParameters, urlParameters, parameters);
+	}
+
+	@Override
+    public RestResponse request(Link link, int timeout, IMediaType requestMediaType, List<Parameter> urlParameters, Parameter... parameters) throws OpenShiftException {
+		return request(link, timeout, requestMediaType, Collections.<Parameter>emptyList(), urlParameters, parameters);
+	}
+
+	@Override
+	public RestResponse request(Link link, int timeout, IMediaType requestMediaType, List<Parameter> urlPathParameter,
+			List<Parameter> urlParameters, Parameter... parameters) throws OpenShiftException {
 		// link.validateParameters(parameters);
-        String url = link.getHref(server, SERVICE_PATH, urlParameters);
+        String url = link.getHref(server, SERVICE_PATH, urlPathParameter, urlParameters);
         try {
             String response = request(new URL(url), link.getHttpMethod(), requestMediaType, timeout, parameters);
             return factory.get(response);

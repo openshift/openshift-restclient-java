@@ -16,10 +16,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -30,16 +28,15 @@ import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.Message;
 import com.openshift.client.OpenShiftEndpointException;
-import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
 import com.openshift.client.utils.Samples;
-import com.openshift.internal.client.httpclient.EncodingException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.NotFoundException;
 import com.openshift.internal.client.httpclient.request.JsonMediaType;
 import com.openshift.internal.client.httpclient.request.Parameter;
+import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.LinkParameter;
 import com.openshift.internal.client.response.LinkParameterType;
@@ -57,7 +54,7 @@ public class RestServiceTest {
 	private IHttpClient clientMock;
 
 	@Before
-	public void setUp() throws FileNotFoundException, IOException, OpenShiftException, HttpClientException {
+	public void setUp() throws Exception {
 		this.mockDirector = new HttpClientMockDirector();
 		String jsonResponse = "{}";
 		this.clientMock = mockDirector
@@ -78,14 +75,14 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldNotThrowIfNoReqiredParameter() throws OpenShiftException, SocketTimeoutException {
+	public void shouldNotThrowIfNoReqiredParameter() throws Exception {
 		// operation
 		Link link = new TestLink("0 required parameter", "/dummy", HttpMethod.GET);
 		service.request(link);
 	}
 
 	@Test
-	public void shouldGetIfGetHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException {
+	public void shouldGetIfGetHttpMethod() throws Exception {
 		// operation
 		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.GET));
 		// verifications
@@ -93,8 +90,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldPostIfPostHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
-			EncodingException {
+	public void shouldPostIfPostHttpMethod() throws Exception {
 		// operation
 		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.POST));
 		// verifications
@@ -102,8 +98,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldPutIfPutHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
-			EncodingException {
+	public void shouldPutIfPutHttpMethod() throws Exception {
 		// operation
 		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.PUT));
 		// verifications
@@ -111,8 +106,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldDeleteIfDeleteHttpMethod() throws OpenShiftException, SocketTimeoutException,
-			HttpClientException, EncodingException {
+	public void shouldDeleteIfDeleteHttpMethod() throws Exception {
 		// operation
 		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.DELETE));
 		// verifications
@@ -120,8 +114,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldPatchIfPatchHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
-			EncodingException {
+	public void shouldPatchIfPatchHttpMethod() throws Exception {
 		// operation
 		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.PATCH));
 		// verifications
@@ -129,8 +122,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldHeadIfHeadHttpMethod() throws OpenShiftException, SocketTimeoutException, HttpClientException,
-			EncodingException {
+	public void shouldHeadIfHeadHttpMethod() throws Exception {
 		// operation
 		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.HEAD));
 		// verifications
@@ -138,8 +130,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldNotAddServerToAbsUrl() throws OpenShiftException, SocketTimeoutException, HttpClientException,
-			MalformedURLException {
+	public void shouldNotAddServerToAbsUrl() throws Exception {
 		// operation
 		String url = "http://www.redhat.com";
 		service.request(new TestLink("0 required parameter", url, HttpMethod.GET));
@@ -148,8 +139,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldAddServerToPath() throws OpenShiftException, SocketTimeoutException, HttpClientException,
-			MalformedURLException {
+	public void shouldAddServerToPath() throws Exception {
 		// operation
 		String url = "/adietisheim-redhat";
 		service.request(new TestLink("0 require parameter", url, HttpMethod.GET));
@@ -159,8 +149,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldNotAddBrokerPathIfPresent() throws OpenShiftException, SocketTimeoutException,
-			HttpClientException, MalformedURLException {
+	public void shouldNotAddBrokerPathIfPresent() throws Exception {
 		// operation
 		String url = "/broker/rest/adietisheim-redhat";
 		service.request(new TestLink("0 require parameter", url, HttpMethod.GET));
@@ -170,8 +159,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldNotAddEmptyServerAndEmptyServicePath() throws OpenShiftException, SocketTimeoutException,
-			HttpClientException, MalformedURLException {
+	public void shouldNotAddEmptyServerAndEmptyServicePath() throws Exception {
 		// pre-conditions
 		String href = "/adietisheim-redhat";
 		Link link = new TestLink("0 require parameter", href , HttpMethod.GET);
@@ -181,8 +169,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldAddParameters() throws OpenShiftException, SocketTimeoutException,
-			HttpClientException, MalformedURLException {
+	public void shouldAddParameters() throws Exception {
 		// pre-conditions
 		String href = "/broker/rest/adietisheim-redhat";
 		Link link = new TestLink("0 require parameter", href , HttpMethod.GET);
@@ -193,7 +180,48 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldThrowExceptionWithResponseOnNotFound() throws Throwable {
+	public void shouldSubstituteUrlVariables() throws Exception {
+		// pre-conditions
+		String href = "/broker/rest/:company/adietisheim/:language/openshift-java-client";
+		Link link = new TestLink("", href , HttpMethod.GET);
+		// operation
+		String url = link.getHref(null, null, Arrays.<Parameter>asList(
+				new StringParameter("company", "redhat"), 
+				new StringParameter("language", "java")),
+				null);
+		// verifications
+		assertThat(url).isEqualTo("/broker/rest/redhat/adietisheim/java/openshift-java-client");
+	}
+
+	@Test
+	public void shouldNotSubstituteUrlVariables() throws Exception {
+		// pre-conditions
+		String href = "https://openshift.redhat.com/broker/rest/:company/adietisheim/:oss/openshift-java-client";
+		Link link = new TestLink("", href , HttpMethod.GET);
+		// operation
+		String url = link.getHref(null, null, Arrays.<Parameter>asList(
+				new StringParameter("company", "redhat"), 
+				new StringParameter("cloud", "redhat")),
+				null);
+		// verifications
+		assertThat(url).isEqualTo("https://openshift.redhat.com/broker/rest/redhat/adietisheim/:oss/openshift-java-client");
+	}
+
+	@Test
+	public void shouldSubstituteUrlVariablesTwice() throws Exception {
+		// pre-conditions
+		String href = "https://openshift.redhat.com/broker/rest/:cloud_company/adietisheim/:cloud_company/openshift-java-client";
+		Link link = new TestLink("", href , HttpMethod.GET);
+		// operation
+		String url = link.getHref(null, null, 
+				Arrays.<Parameter>asList(new StringParameter("cloud_company", "redhat")),
+				null);
+		// verifications
+		assertThat(url).isEqualTo("https://openshift.redhat.com/broker/rest/redhat/adietisheim/redhat/openshift-java-client");
+	}
+
+	@Test
+	public void shouldThrowExceptionWithResponseOnNotFound() throws Exception {
 		try {
 			// pre-conditions
 			mockDirector.mockGetAny(new NotFoundException(Samples.GET_DOMAINS_FOOBAR_KO_NOTFOUND.getContentAsString()));
@@ -207,7 +235,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldHaveMessageIfErrors() throws Throwable {
+	public void shouldHaveMessageIfErrors() throws Exception {
 		try {
 			// pre-conditions
 			mockDirector
@@ -230,7 +258,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldReportPlatformUrlInException() throws Throwable {
+	public void shouldReportPlatformUrlInException() throws Exception {
 		try {
 			// pre-conditions
 			mockDirector
@@ -245,7 +273,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldReturnPlatformWithSchema() throws Throwable {
+	public void shouldReturnPlatformWithSchema() throws Exception {
 		// pre-conditions
 		final String serverUrl = "nonHttpUrl";
 		IRestService service = new RestService(
@@ -263,7 +291,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldReturnUnchangedPlatformUrl() throws Throwable {
+	public void shouldReturnUnchangedPlatformUrl() throws Exception {
 		// pre-conditions
 		final String serverUrl = "http://fakeUrl";
 		IRestService service = new RestService(
@@ -280,7 +308,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldSetUserAgentToHttpClient() throws OpenShiftException, SocketTimeoutException, HttpClientException {
+	public void shouldSetUserAgentToHttpClient() throws Exception {
 		// pre-condition
 		RestServiceProperties properties = new RestServiceProperties() {
 			protected Properties getProperties() throws IOException {
@@ -307,8 +335,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldDefaultTo12ProtocolVersion()
-			throws OpenShiftException, SocketTimeoutException, HttpClientException, EncodingException {
+	public void shouldDefaultTo12ProtocolVersion() throws Exception {
 		// pre-condition
 		RestServiceProperties properties = new RestServiceProperties();
 		IHttpClient httpClientMock = mock(IHttpClient.class);
@@ -329,8 +356,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldSetAcceptedMediaTypeJsonToHttpClient() throws OpenShiftException, SocketTimeoutException,
-			HttpClientException {
+	public void shouldSetAcceptedMediaTypeJsonToHttpClient() throws Exception {
 		// pre-condition
 		IHttpClient httpClientMock = mock(IHttpClient.class);
 		RestServiceProperties properties = new RestServiceProperties();
@@ -350,7 +376,7 @@ public class RestServiceTest {
 	}
 
 	@Test
-	public void shouldUseGivenProtocolVersion() throws OpenShiftException, SocketTimeoutException, HttpClientException {
+	public void shouldUseGivenProtocolVersion() throws Exception {
 		// pre-condition
 		RestServiceProperties properties = new RestServiceProperties();
 		IHttpClient httpClientMock = mock(IHttpClient.class);

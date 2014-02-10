@@ -18,10 +18,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.client.IDomain;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.utils.DomainAssert;
+import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.TestConnectionFactory;
 
 /**
@@ -100,6 +103,23 @@ public class APIResourceIntegrationTest {
 		
 		// verification
 		assertThat(cartridges).onProperty("displayName").isNotEmpty();
+	}
+
+	@Test
+	public void shouldShowDomain() throws Exception {
+		// pre-condition
+		IDomain domain = DomainTestUtils.ensureHasDomain(connection.getUser());
+		assertThat(domain).isNotNull();
+		String domainId = domain.getId();
+		assertThat(domainId).isNotEmpty();
+		IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
+		APIResource api = ((APIResource) connection);
+		
+		// operation
+		IDomain retrievedDomain = api.showDomain(domainId);
+		
+		// verification
+		new DomainAssert(retrievedDomain).hasId(domainId);
 	}
 
 }

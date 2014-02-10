@@ -11,12 +11,14 @@
 package com.openshift.internal.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.openshift.client.IDomain;
+import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftException;
@@ -24,6 +26,7 @@ import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
+import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
 import com.openshift.internal.client.response.DomainResourceDTO;
@@ -135,7 +138,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		}
 		return null;
 	}
-	
+
 	public IDomain createDomain(String id) throws OpenShiftException {
 		Assert.notNull(id);
 
@@ -146,6 +149,15 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		final DomainResourceDTO domainDTO = new AddDomainRequest().execute(id);
 		final IDomain domain = new DomainResource(domainDTO, this);
 		this.domains.add(domain);
+		return domain;
+	}
+
+	public IDomain showDomain(String id) throws OpenShiftException {
+		Assert.notNull(id);
+
+		final DomainResourceDTO domainDTO = new ShowDomainRequest().execute(id);
+		final IDomain domain = new DomainResource(domainDTO, this);
+		// TODO: implement caching
 		return domain;
 	}
 
@@ -254,6 +266,20 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 
 		protected Map<String, CartridgeResourceDTO> execute() throws OpenShiftException {
 			return super.execute();
+		}
+	}
+
+	private class ShowDomainRequest extends ServiceRequest {
+
+		private ShowDomainRequest() throws OpenShiftException {
+			super("SHOW_DOMAIN");
+		}
+
+		protected DomainResourceDTO execute(String id) throws OpenShiftException {
+			List<Parameter> urlPathParameter = new Parameters().add("name", id).toList();
+			return super.execute(IHttpClient.NO_TIMEOUT, 
+					urlPathParameter,  // url path parameter
+					Collections.<Parameter>emptyList()); // request body parameter
 		}
 	}
 }
