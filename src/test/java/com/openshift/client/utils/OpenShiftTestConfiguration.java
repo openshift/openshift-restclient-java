@@ -23,11 +23,15 @@ import com.openshift.client.configuration.IOpenShiftConfiguration;
 import com.openshift.client.configuration.SystemConfiguration;
 import com.openshift.client.configuration.SystemProperties;
 import com.openshift.client.configuration.UserConfiguration;
+import com.openshift.client.fakes.SystemConfigurationFake;
+import com.openshift.client.fakes.SystemPropertiesFake;
+import com.openshift.client.fakes.UserConfigurationFake;
 import com.openshift.internal.client.utils.StreamUtils;
 import com.openshift.internal.client.utils.StringUtils;
 
 /**
  * @author André Dietisheim
+ * @author Corey Daley
  */
 public class OpenShiftTestConfiguration extends AbstractOpenshiftConfiguration {
 
@@ -38,10 +42,10 @@ public class OpenShiftTestConfiguration extends AbstractOpenshiftConfiguration {
 	private static final String DEVSERVER_PREFIX = "https://ec2-";
 
 	public OpenShiftTestConfiguration() throws FileNotFoundException, IOException, OpenShiftException {
-		super(new SystemProperties(
+		super(new SystemPropertiesFake(
 				new IntegrationTestConfiguration(
-						new UserConfiguration(
-								new SystemConfiguration(
+						new UserConfigurationFake(
+								new SystemConfigurationFake(
 										new DefaultConfiguration())))));
 	}
 

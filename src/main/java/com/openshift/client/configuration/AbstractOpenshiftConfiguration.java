@@ -25,6 +25,7 @@ import com.openshift.internal.client.utils.UrlUtils;
 
 /**
  * @author André Dietisheim
+ * @author Corey Daley
  */
 public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfiguration {
 
@@ -32,9 +33,12 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	protected static final String KEY_LIBRA_SERVER = "libra_server";
 	protected static final String KEY_LIBRA_DOMAIN = "libra_domain";
 
+
 	protected static final String KEY_PASSWORD = "rhpassword";
 	protected static final String KEY_CLIENT_ID = "client_id";
-	
+
+	protected static final String KEY_TIMEOUT = "timeout";
+
 	private static final Pattern QUOTED_REGEX = Pattern.compile("['\"]*([^'\"]+)['\"]*");
 	private static final char SINGLEQUOTE = '\'';
 		
@@ -137,6 +141,10 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 
 	public String getLibraDomain() {
 		return removeQuotes(properties.getProperty(KEY_LIBRA_DOMAIN));
+	}
+
+	public Integer getTimeout() {
+		return Integer.parseInt(properties.getProperty(KEY_TIMEOUT));
 	}
 
 	protected String ensureIsSingleQuoted(String value) {

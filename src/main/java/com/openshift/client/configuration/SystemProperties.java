@@ -18,9 +18,12 @@ import com.openshift.client.OpenShiftException;
 
 /**
  * @author André Dietisheim
+ * @author Corey Daley
  */
 public class SystemProperties extends AbstractOpenshiftConfiguration {
 
+	protected static final String KEY_OPENSHIFT_TIMEOUT = "express.timeout";
+	
 	public SystemProperties(IOpenShiftConfiguration parentConfiguration) throws OpenShiftException, IOException {
 		super(parentConfiguration);
 	}
@@ -33,12 +36,15 @@ public class SystemProperties extends AbstractOpenshiftConfiguration {
 		copySystemProperty(KEY_RHLOGIN, properties);
 		copySystemProperty(KEY_PASSWORD, properties);
 		copySystemProperty(KEY_CLIENT_ID, properties);
+		copySystemProperty(KEY_OPENSHIFT_TIMEOUT, properties);
 		return properties;
 	}
 
 	private void copySystemProperty(String key, Properties properties) {
 		Object value = System.getProperties().get(key);
-		if (value != null) {
+		if (key.equals(KEY_OPENSHIFT_TIMEOUT) && value != null) {
+			properties.put(KEY_TIMEOUT, value);
+		} else if (value != null) {
 			properties.put(key, value);
 		}
 	}

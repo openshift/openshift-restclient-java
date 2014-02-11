@@ -15,6 +15,7 @@ import com.openshift.client.IHttpClient.ISSLCertificateCallback;
 
 /**
  * @author André Dietisheim
+ * @author Corey Daley
  */
 public class UrlConnectionHttpClientBuilder {
 
@@ -25,6 +26,7 @@ public class UrlConnectionHttpClientBuilder {
 	private String authIV;
 	private String acceptedMediaType;
 	private String version;
+	private Integer configTimeout;
 	private ISSLCertificateCallback callback;
 
 	public UrlConnectionHttpClientBuilder setUserAgent(String userAgent) {
@@ -41,6 +43,10 @@ public class UrlConnectionHttpClientBuilder {
 		this.password = password;
 		this.authKey = authKey;
 		this.authIV = authIV;
+		return this;
+	}
+	public UrlConnectionHttpClientBuilder setConfigTimeout (Integer configTimeout) {
+		this.configTimeout = configTimeout;
 		return this;
 	}
 
@@ -61,6 +67,6 @@ public class UrlConnectionHttpClientBuilder {
 
 	public IHttpClient client() {
 		return new UrlConnectionHttpClient(
-				username, password, userAgent, acceptedMediaType, version, authKey, authIV, callback);
+				username, password, userAgent, acceptedMediaType, version, authKey, authIV, callback, configTimeout);
 	}
 }

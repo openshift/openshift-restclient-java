@@ -14,6 +14,7 @@ import java.util.Properties;
 
 /**
  * @author André Dietisheim
+ * @author Corey Daley
  */
 public interface IOpenShiftConfiguration {
 
@@ -26,6 +27,8 @@ public interface IOpenShiftConfiguration {
 	public abstract void setLibraServer(String libraServer);
 
 	public abstract String getLibraDomain();
+
+	public Integer getTimeout();
 
 	public abstract void setLibraDomain(String libraDomain);
 

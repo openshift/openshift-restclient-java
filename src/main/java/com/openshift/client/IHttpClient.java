@@ -24,6 +24,7 @@ import com.openshift.internal.client.httpclient.request.Parameter;
 /**
  * @author André Dietisheim
  * @author Nicolas Spano
+ * @author Corey Daley
  */
 public interface IHttpClient {
 	
@@ -65,9 +66,8 @@ public interface IHttpClient {
 	public static final String SYSPROP_DEFAULT_CONNECT_TIMEOUT = "sun.net.client.defaultConnectTimeout";
 	public static final String SYSPROP_DEFAULT_READ_TIMEOUT = "sun.net.client.defaultReadTimeout";
 
-    public static final int DEFAULT_CONNECT_TIMEOUT = 10 * 	1000;
     public static final int DEFAULT_READ_TIMEOUT = 2 * 60 * 1000;
-	public static final int NO_TIMEOUT = 0;
+	public static final int NO_TIMEOUT = -1;
 
 	public String get(URL url, int timeout) throws HttpClientException, SocketTimeoutException;
 

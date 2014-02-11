@@ -19,12 +19,14 @@ import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.KeyStoreException;
 import java.security.cert.X509Certificate;
+import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -38,6 +40,8 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSession;
 
+import com.openshift.client.configuration.*;
+import com.openshift.client.fakes.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,18 +51,16 @@ import org.junit.rules.ExpectedException;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IHttpClient.ISSLCertificateCallback;
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.fakes.HttpServerFake;
-import com.openshift.client.fakes.HttpsServerFake;
-import com.openshift.client.fakes.PayLoadReturningHttpClientFake;
-import com.openshift.client.fakes.WaitingHttpServerFake;
 import com.openshift.client.utils.Base64Coder;
 import com.openshift.client.utils.ExceptionCauseMatcher;
 import com.openshift.internal.client.httpclient.request.FormUrlEncodedMediaType;
 import com.openshift.internal.client.httpclient.request.StringParameter;
+import sun.net.www.http.HttpClient;
 
 /**
  * @author Andre Dietisheim
  * @author Nicolas Spano
+ * @author Corey Daley
  */
 public class HttpClientTest {
 
@@ -68,6 +70,7 @@ public class HttpClientTest {
 	private HttpServerFake serverFake;
 	private IHttpClient httpClient;
 	private HttpsServerFake httpsServerFake;
+	private IOpenShiftConfiguration configuration;
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -76,9 +79,11 @@ public class HttpClientTest {
 	public void setUp() throws Exception {
 		this.serverFake = startHttpServerFake(null);
 		this.httpsServerFake = startHttpsServerFake(null);
+		this.configuration = new OpenShiftConfigurationFake("10000","10000","10000");
 		this.httpClient = new UrlConnectionHttpClientBuilder()
 				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
 				.setUserAgent("com.openshift.client.test")
+				.setConfigTimeout(configuration.getTimeout())
 				.client();
 	}
 
@@ -426,7 +431,7 @@ public class HttpClientTest {
 	public void shouldFallbackToOpenShiftTimeout() throws Throwable {
 		// pre-conditions
 		final int timeout = 1000;
-		final int serverDelay = timeout * 4;
+		final int serverDelay = timeout * 15;
 		assertThat(timeout).isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
 		System.setProperty(IHttpClient.SYSPROP_OPENSHIFT_READ_TIMEOUT, String.valueOf(timeout));
 		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
@@ -447,10 +452,118 @@ public class HttpClientTest {
 	}
 
 	@Test
+	public void shouldRespectDefaultTimeout() throws Throwable {
+		// pre-conditions
+		final int timeout = 1000;
+		final int serverDelay = timeout * 190;
+		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,null,null);
+		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
+				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
+				.setUserAgent("com.openshift.client.test")
+				.setConfigTimeout(configuration.getTimeout())
+				.client();
+		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
+		long startTime = System.currentTimeMillis();
+		// operations
+		try {
+			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+			fail("Timeout expected.");
+		} catch (SocketTimeoutException e) {
+			// assert
+			assertThat(System.currentTimeMillis() - startTime)
+					.isGreaterThan(configuration.getTimeout() - 20)
+					.isLessThan(configuration.getTimeout() + 20);
+		} finally {
+			serverFake.stop();
+		}
+	}
+
+	@Test
+	public void shouldRespectSystemConfigurationTimeoutOverridingDefaultTimeout() throws Throwable {
+		// pre-conditions
+		final int timeout = 1000;
+		final int serverDelay = timeout * 15;
+		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,null,"11000");
+		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
+				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
+				.setUserAgent("com.openshift.client.test")
+				.setConfigTimeout(configuration.getTimeout())
+				.client();
+		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
+		long startTime = System.currentTimeMillis();
+		// operations
+		try {
+			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+			fail("Timeout expected.");
+		} catch (SocketTimeoutException e) {
+			// assert
+			assertThat(System.currentTimeMillis() - startTime)
+					.isGreaterThan(configuration.getTimeout() - 20)
+					.isLessThan(configuration.getTimeout() + 20);
+		} finally {
+			serverFake.stop();
+		}
+	}
+
+	@Test
+	public void shouldRespectUserConfigurationTimeoutOverridingSystemConfigurationTimeout() throws Throwable {
+		// pre-conditions
+		final int timeout = 1000;
+		final int serverDelay = timeout * 15;
+		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,"12000","11000");
+		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
+				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
+				.setUserAgent("com.openshift.client.test")
+				.setConfigTimeout(configuration.getTimeout())
+				.client();
+		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
+		long startTime = System.currentTimeMillis();
+		// operations
+		try {
+			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+			fail("Timeout expected.");
+		} catch (SocketTimeoutException e) {
+			// assert
+			assertThat(System.currentTimeMillis() - startTime)
+					.isGreaterThan(configuration.getTimeout() - 20)
+					.isLessThan(configuration.getTimeout() + 20);
+		} finally {
+			serverFake.stop();
+		}
+	}
+
+	@Test
+	public void shouldRespectSystemPropertiesTimeoutOverridingUserConfigurationTimeout() throws Throwable {
+		// pre-conditions
+		final int timeout = 1000;
+		final int serverDelay = timeout * 15;
+		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake("13000","12000","11000");
+		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
+				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
+				.setUserAgent("com.openshift.client.test")
+				.setConfigTimeout(configuration.getTimeout())
+				.client();
+		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
+		long startTime = System.currentTimeMillis();
+		// operations
+		try {
+			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+			fail("Timeout expected.");
+		} catch (SocketTimeoutException e) {
+			// assert
+			assertThat(System.currentTimeMillis() - startTime)
+					.isGreaterThan(configuration.getTimeout() - 20)
+					.isLessThan(configuration.getTimeout() + 20);
+		} finally {
+			serverFake.stop();
+		}
+	}
+
+	@Test
 	public void shouldFallbackToDefaultSystemPropertyTimeout() throws Throwable {
 		// pre-conditions
 		final int timeout = 1000;
-		final int serverDelay = timeout * 4;
+		final int serverDelay = timeout * 15;
 		System.clearProperty(IHttpClient.SYSPROP_OPENSHIFT_READ_TIMEOUT);
 		String timeoutBackup = System.getProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT);
 		System.setProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT, String.valueOf(timeout));
@@ -565,12 +678,12 @@ public class HttpClientTest {
 	private abstract class UrlConnectionHttpClientFake extends UrlConnectionHttpClient {
 		private UrlConnectionHttpClientFake(String userAgent, String acceptVersion) {
 			super("username", "password", userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
-					"authkey", "authiv", null);
+					"authkey", "authiv", null,IHttpClient.NO_TIMEOUT);
 		}
 
 		private UrlConnectionHttpClientFake(String userAgent, String acceptVersion, ISSLCertificateCallback callback) {
 			super("username", "password", userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
-					"authkey", "authiv", callback);
+					"authkey", "authiv", callback,IHttpClient.NO_TIMEOUT);
 		}
 		
 		public HttpURLConnection createConnection() throws IOException, KeyStoreException {
