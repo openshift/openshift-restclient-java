@@ -80,6 +80,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		this.doSSLChecks = doSSLChecks;
 	}
 
+    @Deprecated
 	public void setProxySet(boolean proxySet) {
 		if (proxySet) {
 			System.setProperty(SYSPROPERTY_PROXY_SET, "true");
@@ -88,10 +89,12 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		}
 	}
 
+    @Deprecated
 	public void setProxyHost(String proxyHost) {
 		System.setProperty(SYSPROPERTY_PROXY_HOST, proxyHost);
 	}
 
+    @Deprecated
 	public void setProxyPort(String proxyPort) {
 		Assert.notNull(proxyPort);
 
