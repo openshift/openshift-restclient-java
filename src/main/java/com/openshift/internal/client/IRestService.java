@@ -34,12 +34,44 @@ public interface IRestService {
 
     public RestResponse request(Link link, int timeout, Parameter... parameters) throws OpenShiftException;
 
+	public RestResponse request(Link link, int timeout, IMediaType mediaType, Parameter... parameters)
+			throws OpenShiftException;
+
+	public RestResponse request(Link link, List<Parameter> urlParameters, Parameter... parameters)
+			throws OpenShiftException;
+
+	public RestResponse request(Link link, int timeout, List<Parameter> urlParameters, Parameter... parameters)
+			throws OpenShiftException;
+
+    public RestResponse request(Link link, int timeout, List<Parameter> urlPathParameters, List<Parameter> urlParameters, Parameter... parameters) 
+    		throws OpenShiftException;
+	
+	public RestResponse request(Link link, int timeout, IMediaType mediaType, List<Parameter> urlParameters, Parameter... parameters)
+			throws OpenShiftException;
+
 	/**
 	 * Requests the given link sending the given parameters while encoding the
 	 * parameters with the given media type and respecting the given timeout.
+	 * Parameters are supported in 3 different forms:
+	 * <ul>
+	 * <li>
+	 * in the request body (ignored for GET requests)</li>
+	 * <li>
+	 * in the url (url-parameters: ?parameter=value)</li>
+	 * <li>
+	 * in the url path (url-path-parameters: /applications/:application)</li>
+	 * </ul>
 	 * 
 	 * @param link
 	 *            the link to use
+	 * @param timeout
+	 *            the timeout in millis (or {@link IHttpClient#NO_TIMEOUT})
+	 * @param urlPathParameters
+	 *            the parameters in the url ("/applications/:applicationname")
+	 * @param urlParameters
+	 *            the url parameters ("?parameter=value")
+	 * @param parameters
+	 *            the body parameters (ingnored for GET requests)
 	 * @param parameters
 	 *            the parameters to send
 	 * @return the rest response
@@ -55,16 +87,8 @@ public interface IRestService {
 	 * @see IHttpClient#DEFAULT_CONNECT_TIMEOUT
 	 * @see IHttpClient#DEFAULT_READ_TIMEOUT
 	 */
-	public RestResponse request(Link link, int timeout, IMediaType mediaType, Parameter... parameters)
-			throws OpenShiftException;
-
-	public RestResponse request(Link link, List<Parameter> urlParameters, Parameter... parameters)
-			throws OpenShiftException;
-
-	public RestResponse request(Link link, int timeout, List<Parameter> urlParameters, Parameter... parameters)
-			throws OpenShiftException;
-
-	public RestResponse request(Link link, int timeout, List<Parameter> urlParameters, IMediaType mediaType, Parameter... parameters)
+	public RestResponse request(Link link, int timeout, IMediaType mediaType, List<Parameter> urlPathParameters,
+			List<Parameter> urlParameters, Parameter... parameters)
 			throws OpenShiftException;
 
 	/**

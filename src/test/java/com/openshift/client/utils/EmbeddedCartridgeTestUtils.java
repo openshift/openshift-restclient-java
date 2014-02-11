@@ -30,7 +30,7 @@ public class EmbeddedCartridgeTestUtils {
 			}
 			application.removeEmbeddedCartridge(selector.get(application));
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -42,7 +42,7 @@ public class EmbeddedCartridgeTestUtils {
 			}
 			application.removeEmbeddedCartridge(cartridge);
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -52,7 +52,7 @@ public class EmbeddedCartridgeTestUtils {
 	 * 
 	 * @param application
 	 */
-	public static void destroyAllEmbeddedCartridges(IApplication application) {
+	public static void silentlyDestroyAllEmbeddedCartridges(IApplication application) {
 		if (application == null) {
 			return;
 		}

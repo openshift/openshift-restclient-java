@@ -13,7 +13,11 @@ package com.openshift.internal.client.response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
@@ -32,6 +36,8 @@ import com.openshift.internal.client.utils.UrlUtils;
  * @author Xavier Coulon
  */
 public class Link {
+
+	private final Pattern PATH_VAR_PATTERN = Pattern.compile(":([a-z_]+)");
 
 	/** The related resource (destination) this link points to */
 	private final String rel;
@@ -106,8 +112,10 @@ public class Link {
 		return addParameters(ensureAbsoluteUrl(href, server, servicePath), urlParameters);
 	}
 
-	public final String getHref(String server, String servicePath, List<Parameter> urlParameters) {
-		return addParameters(ensureAbsoluteUrl(href, server, servicePath), urlParameters);
+	public final String getHref(String server, String servicePath, List<Parameter> urlPathParameters,
+			List<Parameter> urlParameters) {
+		String url = substituteUrlPathParameters(href, urlPathParameters);
+		return addParameters(ensureAbsoluteUrl(url, server, servicePath), urlParameters);
 	}
 
 	/**
@@ -145,7 +153,7 @@ public class Link {
 		}
 		return false;
 	}
-		
+
 	public void validateRequestParameters(Parameter[] parameters)
 			throws OpenShiftRequestException {
 		if (getRequiredParams() != null) {
@@ -188,7 +196,7 @@ public class Link {
 		}
 		return null;
 	}
-	
+
 	private LinkParameter getParameter(String name, List<LinkParameter> parameters) {
 		if (StringUtils.isEmpty(name)
 				|| parameters == null) {
@@ -212,13 +220,6 @@ public class Link {
 				&& StringUtils.isEmpty((String) parameterValue);
 	}
 
-	/**
-	 * 
-	 * @param href
-	 * @param server
-	 * @param servicePath
-	 * @return
-	 */
 	private String ensureAbsoluteUrl(String href, String server, String servicePath) {
 		if (StringUtils.isEmpty(href)
 				|| href.startsWith(IHttpClient.HTTP)) {
@@ -229,13 +230,13 @@ public class Link {
 				|| href.startsWith(servicePath)) {
 			return StringUtils.prependIfNonEmpty(server, href);
 		}
-		
-		if(!href.startsWith(servicePath)) {
+
+		if (!href.startsWith(servicePath)) {
 			href = UrlUtils.appendPath(servicePath, href);
 		}
 		return StringUtils.prependIfNonEmpty(server, href);
 	}
-	
+
 	private String addParameters(String url, Parameter... urlParameters) {
 		if (urlParameters == null
 				|| urlParameters.length == 0) {
@@ -260,6 +261,57 @@ public class Link {
 		} catch (EncodingException e) {
 			throw new OpenShiftException(e, "Could not add paramters {0} to url {1}", urlParameters, url);
 		}
+	}
+
+	/**
+	 * Replaces variables within the url in the form (":var"):
+	 * 
+	 * <pre>
+	 * <code>
+	 * https://openshift.redhat.com/broker/rest/domain/:domain_name/application/:name
+	 * </code>
+	 * </pre>
+	 * 
+	 * @param href the href (link) that contains the variables that shall get substituted 
+	 * @param urlPathParameters the list of parameters that shall contain the substitution values 
+	 * @return
+	 */
+	private String substituteUrlPathParameters(String href, List<Parameter> urlPathParameters) {
+		if (urlPathParameters == null
+				|| urlPathParameters.size() == 0) {
+			return href;
+		}
+		return substituteVariables(href, urlPathParameters);
+	}
+
+	private String substituteVariables(String url, List<Parameter> parameters) {
+		if (StringUtils.isEmpty(url)) {
+			return url;
+		}
+		
+		StringBuffer buffer = new StringBuffer();
+		Map<String, Parameter> parameterByName = toMap(parameters);
+		Matcher matcher = PATH_VAR_PATTERN.matcher(url);
+		while (matcher.find()) {
+			String name = matcher.group(1);
+			if (!StringUtils.isEmpty(name)) {
+				Parameter parameter = parameterByName.get(name);
+				if (parameter != null) {
+					matcher.appendReplacement(buffer, String.valueOf(parameter.getValue().getValue()));
+				}
+			}
+		}
+		matcher.appendTail(buffer);
+		
+		return buffer.toString();
+	}
+
+	private Map<String, Parameter> toMap(List<Parameter> parameters) {
+		HashMap<String, Parameter> parameterByName = new HashMap<String, Parameter>();
+		for (Parameter parameter : parameters) {
+			parameterByName.put(parameter.getName(), parameter);
+		}
+		return parameterByName;
 	}
 
 	public String toString() {
