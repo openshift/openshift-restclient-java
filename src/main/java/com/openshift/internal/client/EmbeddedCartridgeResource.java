@@ -33,7 +33,7 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	private String displayName;
 	private String description;
 	private final CartridgeType type;
-	private final URL url;
+	private URL url;
 	private final ApplicationResource application;
 	private CartridgeResourceProperties properties;
 
@@ -79,6 +79,7 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	protected void update(CartridgeResourceDTO dto) {
 		this.description = dto.getDescription();
 		this.displayName = dto.getDisplayName();
+		this.url = dto.getUrl();
 		this.properties = dto.getProperties();
 		setLinks(dto.getLinks());
 	}
