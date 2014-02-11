@@ -76,21 +76,27 @@ public interface IOpenShiftConnection {
 	 * Sets flag for using an HTTP proxy
 	 * 
 	 * @param proxySet
+	 * @deprecated
 	 */
+	@Deprecated
 	public void setProxySet(boolean proxySet);
 
 	/**
 	 * Sets the HTTP proxy hostname
 	 * 
 	 * @param proxyHost
+	 * @deprecated
 	 */
+	@Deprecated
 	public void setProxyHost(String proxyHost);
 
 	/**
 	 * Sets the HTTP proxy port
 	 * 
 	 * @param proxyPort
+	 * @deprecated 
 	 */
+	@Deprecated
 	public void setProxyPort(String proxyPort);
 
 	/**
