@@ -60,7 +60,7 @@ public class EnvironmentVariableResourceIntegrationTest {
 		assertThat(environmentVariable).isNotNull();
 		assertThat(environmentVariable.getName()).isEqualTo("Y_NAME");
 		assertThat(environmentVariable.getValue()).isEqualTo("Y_VALUE");
-		environmentVariable.update("UPDATED_Y_VALUE");
+		application.updateEnvironmentVariable("Y_NAME","UPDATED_Y_VALUE");
 		assertThat(environmentVariable.getValue()).isEqualTo("UPDATED_Y_VALUE");
 	}
 

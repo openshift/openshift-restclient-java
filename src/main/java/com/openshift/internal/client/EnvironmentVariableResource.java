@@ -61,6 +61,7 @@ public class EnvironmentVariableResource extends AbstractOpenShiftResource imple
 	}
 
 	@Override
+	@Deprecated
 	public void update(String newValue) throws OpenShiftException {
 		if (newValue == null) {
 			throw new OpenShiftException("Value for environment variable \"{0}\" not given.", name);
@@ -87,6 +88,7 @@ public class EnvironmentVariableResource extends AbstractOpenShiftResource imple
 	}
 
 	@Override
+	@Deprecated
 	public void destroy() throws OpenShiftException {
 		new DeleteEnvironmentVariableRequest().execute();
 		

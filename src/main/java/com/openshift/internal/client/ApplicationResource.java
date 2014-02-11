@@ -659,6 +659,26 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	@Override
+	public IEnvironmentVariable updateEnvironmentVariable(String name, String value) throws OpenShiftException {
+		if (name == null) {
+			throw new OpenShiftException("Environment variable name is mandatory but none was given.");
+		}
+		if (value == null) {
+			throw new OpenShiftException("Value for environment variable \"{0}\" not given.", name);
+		}
+		if (!hasEnvironmentVariable(name)) {
+			throw new OpenShiftException("Environment variable with name \"{0}\" does not exist.", name);
+		}
+
+		IEnvironmentVariable environmentVariable = getEnvironmentVariable(name);
+		environmentVariable.update(value);
+
+		environmentVariablesMap.put(environmentVariable.getName(), environmentVariable);
+
+		return environmentVariable;
+	}
+
+	@Override
 	public Map<String, IEnvironmentVariable> addEnvironmentVariables(Map<String, String> environmentVariables)
 			throws OpenShiftException {
 	  
@@ -736,7 +756,16 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	public IEnvironmentVariable getEnvironmentVariable(String name) {
 		return getEnvironmentVariables().get(name);
 	}
-    
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.openshift.client.IApplication#getEnvironmentVariableValue(java.lang.String)
+	 */
+	@Override
+	public String getEnvironmentVariableValue(String name) {
+		return environmentVariablesMap.get(name).getValue();
+	}
+
 	@Override
 	public boolean canGetEnvironmentVariables() {
 		try {

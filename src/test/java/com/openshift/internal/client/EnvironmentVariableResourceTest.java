@@ -85,7 +85,7 @@ public class EnvironmentVariableResourceTest {
        //operation
       IEnvironmentVariable environmentVariable = application.getEnvironmentVariable("FOO");
       assertThat(environmentVariable.getValue()).isEqualTo("123");
-      environmentVariable.update("321");;
+      application.updateEnvironmentVariable("FOO","321");
       assertThat(environmentVariable.getValue()).isEqualTo("321");
     }
 }

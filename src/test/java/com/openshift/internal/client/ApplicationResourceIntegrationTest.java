@@ -320,7 +320,23 @@ public class ApplicationResourceIntegrationTest {
 		// verification
 		assertThat(variables.size()).isEqualTo(2);
 	}
-    
+
+	@Test
+	public void shouldUpdateOneEnvironmentVariable() throws Throwable{
+		//pre-conditions
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+
+		//operation
+		IEnvironmentVariable environmentVariable = application.addEnvironmentVariable("FOO","123");
+		assertThat(environmentVariable.getValue()).isEqualTo("123");
+		application.updateEnvironmentVariable("FOO","321");
+
+		//vaerification
+		assertThat(environmentVariable).isNotNull();
+		assertThat(environmentVariable.getName()).isEqualTo("FOO");
+		assertThat(environmentVariable.getValue()).isEqualTo("321");
+	}
+
 	@Test
 	public void shouldGetEnvironmentVariableByName() throws Throwable {
 		// pre-conditions
@@ -335,6 +351,18 @@ public class ApplicationResourceIntegrationTest {
 		assertThat(environmentVariable).isNotNull();
 		assertThat(environmentVariable.getName()).isEqualTo("Z_NAME");
 		assertThat(environmentVariable.getValue()).isEqualTo("Z_VALUE");
+	}
+
+	@Test
+	public void shouldGetEnvironmentVariableValueByName() throws Throwable {
+		// pre-conditions
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		ApplicationTestUtils.destroyAllEnvironmentVariables(application);
+		application.addEnvironmentVariable("Z_NAME", "Z_VALUE");
+
+		// verification
+		assertTrue(application.hasEnvironmentVariable("Z_NAME"));
+		assertThat(application.getEnvironmentVariableValue("Z_NAME")).isEqualTo("Z_VALUE");
 	}
 
     @Test
