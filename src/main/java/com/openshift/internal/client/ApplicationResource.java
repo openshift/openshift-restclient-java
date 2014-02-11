@@ -800,10 +800,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			channel.connect();
 			return sshStream.getLines(channel);
 		} catch (JSchException e) {
-			throw new OpenShiftSSHOperationException(e, "Failed to list forwardable ports for application \"{0}\"",
+			throw new OpenShiftSSHOperationException(e, "Failed to execute remote ssh command \"{0}\"",
 					this.getName());
 		} catch (IOException e) {
-			throw new OpenShiftSSHOperationException(e, "Failed to list forwardable ports for application \"{0}\"",
+			throw new OpenShiftSSHOperationException(e, "Failed to execute remote ssh command \"{0}\"",
 					this.getName());
 		} finally {
 
