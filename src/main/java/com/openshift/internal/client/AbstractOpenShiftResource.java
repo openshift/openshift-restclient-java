@@ -11,11 +11,13 @@
 package com.openshift.internal.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IGearProfile;
+import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftResource;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
@@ -24,11 +26,11 @@ import com.openshift.client.OpenShiftRequestException;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.internal.client.httpclient.request.IMediaType;
 import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.httpclient.request.ParameterValueArray;
 import com.openshift.internal.client.httpclient.request.ParameterValueMap;
 import com.openshift.internal.client.httpclient.request.StringParameter;
+import com.openshift.internal.client.response.IRestResponseFactory;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.RestResponse;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
@@ -139,36 +141,57 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 		}
 
 		protected <DTO> DTO execute(final Parameter... parameters) throws OpenShiftException {
-			return getData(getService().request(getLink(linkName), parameters));
+			return getData(getService().request(
+					getLink(linkName), 
+					IHttpClient.NO_TIMEOUT,
+					Collections.<Parameter> emptyList(),
+					Collections.<Parameter> emptyList(),
+					parameters));
 		}
 		
 		protected <DTO> DTO execute(final int timeout, final Parameter... parameters) throws OpenShiftException {
-			return getData(getService().request(getLink(linkName), timeout, parameters));
+			return getData(getService().request(
+					getLink(linkName), 
+					timeout, 
+					Collections.<Parameter> emptyList(), 
+					Collections.<Parameter> emptyList(),
+					parameters));
 		}
 		
-		protected <DTO> DTO execute(final int timeout, final IMediaType mediaType, final Parameter... parameters)
-				throws OpenShiftException {
-			return getData(getService().request(getLink(linkName), timeout, mediaType, parameters));
-		}
-
 		protected <DTO> DTO execute(final List<Parameter> urlParameters, final Parameter... parameters) throws OpenShiftException {
-			return getData(getService().request(getLink(linkName), urlParameters, parameters));
+			return getData(getService().request(
+					getLink(linkName), 
+					IHttpClient.NO_TIMEOUT,
+					Collections.<Parameter> emptyList(),
+					urlParameters, parameters));
 		}
 
 		protected <DTO> DTO execute(final int timeout, List<Parameter> urlParameters, final Parameter... parameters) throws OpenShiftException {
-			return getData(getService().request(getLink(linkName), timeout, urlParameters, parameters));
+			return getData(getService().request(
+					getLink(linkName), 
+					timeout,
+					Collections.<Parameter> emptyList(), 
+					urlParameters, 
+					parameters));
 		}
 
 		protected <DTO> DTO execute(final int timeout, List<Parameter> urlPathParameters, List<Parameter> urlParameters, final Parameter... parameters) throws OpenShiftException {
-			return getData(getService().request(getLink(linkName), timeout, urlPathParameters, urlParameters, parameters));
+			return getData(getService().request(
+					getLink(linkName), 
+					timeout, 
+					urlPathParameters, 
+					urlParameters, 
+					parameters));
 		}
 
-		protected <DTO> DTO execute(final int timeout, final IMediaType mediaType, List<Parameter> urlParameter, final Parameter... parameters) throws OpenShiftException {
-			return getData(getService().request(getLink(linkName), timeout, mediaType, urlParameter, parameters));
-		}
-
-		protected <DTO> DTO execute(final int timeout, final IMediaType mediaType, List<Parameter> urlPathParameter, List<Parameter> urlParameter, final Parameter... parameters) throws OpenShiftException {
-			return getData(getService().request(getLink(linkName), timeout, mediaType, urlPathParameter, urlParameter, parameters));
+		protected <DTO> DTO execute(final int timeout, IRestResponseFactory responseFactory, List<Parameter> urlPathParameter, List<Parameter> urlParameter, final Parameter... parameters) throws OpenShiftException {
+			return getData(getService().request(
+					getLink(linkName), 
+					timeout, 
+					responseFactory, 
+					urlPathParameter, 
+					urlParameter, 
+					parameters));
 		}
 
 		protected <DTO> DTO getData(RestResponse response) {

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -78,13 +79,14 @@ public class RestServiceTest extends TestTimer {
 	public void shouldNotThrowIfNoReqiredParameter() throws Exception {
 		// operation
 		Link link = new TestLink("0 required parameter", "/dummy", HttpMethod.GET);
-		service.request(link);
+		service.request(link, IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 	}
 
 	@Test
 	public void shouldGetIfGetHttpMethod() throws Exception {
 		// operation
-		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.GET));
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.GET),
+				IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 		// verifications
 		mockDirector.verifyGetAny(1);
 	}
@@ -92,7 +94,8 @@ public class RestServiceTest extends TestTimer {
 	@Test
 	public void shouldPostIfPostHttpMethod() throws Exception {
 		// operation
-		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.POST));
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.POST),
+				IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 		// verifications
 		mockDirector.verifyPostAny(1);
 	}
@@ -100,7 +103,8 @@ public class RestServiceTest extends TestTimer {
 	@Test
 	public void shouldPutIfPutHttpMethod() throws Exception {
 		// operation
-		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.PUT));
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.PUT),
+		IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 		// verifications
 		mockDirector.verifyPutAny(1);
 	}
@@ -108,7 +112,8 @@ public class RestServiceTest extends TestTimer {
 	@Test
 	public void shouldDeleteIfDeleteHttpMethod() throws Exception {
 		// operation
-		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.DELETE));
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.DELETE),
+				IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 		// verifications
 		mockDirector.verifyDeleteAny(1);
 	}
@@ -116,7 +121,8 @@ public class RestServiceTest extends TestTimer {
 	@Test
 	public void shouldPatchIfPatchHttpMethod() throws Exception {
 		// operation
-		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.PATCH));
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.PATCH),
+				IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 		// verifications
 		mockDirector.verifyPatchAny(1);
 	}
@@ -124,7 +130,8 @@ public class RestServiceTest extends TestTimer {
 	@Test
 	public void shouldHeadIfHeadHttpMethod() throws Exception {
 		// operation
-		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.HEAD));
+		service.request(new TestLink("0 required parameter", "http://www.redhat.com", HttpMethod.HEAD),
+				IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 		// verifications
 		mockDirector.verifyHeadAny(1);
 	}
@@ -133,7 +140,8 @@ public class RestServiceTest extends TestTimer {
 	public void shouldNotAddServerToAbsUrl() throws Exception {
 		// operation
 		String url = "http://www.redhat.com";
-		service.request(new TestLink("0 required parameter", url, HttpMethod.GET));
+		service.request(new TestLink("0 required parameter", url, HttpMethod.GET),
+				IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 		// verifications
 		mockDirector.verifyGet(url, 1);
 	}
@@ -142,7 +150,8 @@ public class RestServiceTest extends TestTimer {
 	public void shouldAddServerToPath() throws Exception {
 		// operation
 		String url = "/adietisheim-redhat";
-		service.request(new TestLink("0 require parameter", url, HttpMethod.GET));
+		service.request(new TestLink("0 require parameter", url, HttpMethod.GET),
+				IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 		// verifications
 		String targetUrl = service.getServiceUrl() + url.substring(1, url.length());
 		mockDirector.verifyGet(targetUrl, 1);
@@ -152,7 +161,8 @@ public class RestServiceTest extends TestTimer {
 	public void shouldNotAddBrokerPathIfPresent() throws Exception {
 		// operation
 		String url = "/broker/rest/adietisheim-redhat";
-		service.request(new TestLink("0 require parameter", url, HttpMethod.GET));
+		service.request(new TestLink("0 require parameter", url, HttpMethod.GET),
+				IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 		// verifications
 		String targetUrl = service.getPlatformUrl() + url;
 		mockDirector.verifyGet(targetUrl, 1);
@@ -162,7 +172,7 @@ public class RestServiceTest extends TestTimer {
 	public void shouldNotAddEmptyServerAndEmptyServicePath() throws Exception {
 		// pre-conditions
 		String href = "/adietisheim-redhat";
-		Link link = new TestLink("0 require parameter", href , HttpMethod.GET);
+		Link link = new TestLink("0 require parameter", href, HttpMethod.GET);
 		String url = link.getHref(null, null);
 		// verifications
 		assertThat(url).isEqualTo(href);
@@ -172,9 +182,10 @@ public class RestServiceTest extends TestTimer {
 	public void shouldAddParameters() throws Exception {
 		// pre-conditions
 		String href = "/broker/rest/adietisheim-redhat";
-		Link link = new TestLink("0 require parameter", href , HttpMethod.GET);
+		Link link = new TestLink("0 require parameter", href, HttpMethod.GET);
 		// operation
-		String url = link.getHref(null, null, new Parameter("include", "cartridges"), new Parameter("exclude", "fridges"));
+		String url = link.getHref(null, null, new Parameter("include", "cartridges"), new Parameter("exclude",
+				"fridges"));
 		// verifications
 		assertThat(url).isEqualTo(href + "?include=cartridges&exclude=fridges");
 	}
@@ -183,10 +194,10 @@ public class RestServiceTest extends TestTimer {
 	public void shouldSubstituteUrlVariables() throws Exception {
 		// pre-conditions
 		String href = "/broker/rest/:company/adietisheim/:language/openshift-java-client";
-		Link link = new TestLink("", href , HttpMethod.GET);
+		Link link = new TestLink("", href, HttpMethod.GET);
 		// operation
-		String url = link.getHref(null, null, Arrays.<Parameter>asList(
-				new StringParameter("company", "redhat"), 
+		String url = link.getHref(null, null, Arrays.<Parameter> asList(
+				new StringParameter("company", "redhat"),
 				new StringParameter("language", "java")),
 				null);
 		// verifications
@@ -197,27 +208,29 @@ public class RestServiceTest extends TestTimer {
 	public void shouldNotSubstituteUrlVariables() throws Exception {
 		// pre-conditions
 		String href = "https://openshift.redhat.com/broker/rest/:company/adietisheim/:oss/openshift-java-client";
-		Link link = new TestLink("", href , HttpMethod.GET);
+		Link link = new TestLink("", href, HttpMethod.GET);
 		// operation
-		String url = link.getHref(null, null, Arrays.<Parameter>asList(
-				new StringParameter("company", "redhat"), 
+		String url = link.getHref(null, null, Arrays.<Parameter> asList(
+				new StringParameter("company", "redhat"),
 				new StringParameter("cloud", "redhat")),
 				null);
 		// verifications
-		assertThat(url).isEqualTo("https://openshift.redhat.com/broker/rest/redhat/adietisheim/:oss/openshift-java-client");
+		assertThat(url).isEqualTo(
+				"https://openshift.redhat.com/broker/rest/redhat/adietisheim/:oss/openshift-java-client");
 	}
 
 	@Test
 	public void shouldSubstituteUrlVariablesTwice() throws Exception {
 		// pre-conditions
 		String href = "https://openshift.redhat.com/broker/rest/:cloud_company/adietisheim/:cloud_company/openshift-java-client";
-		Link link = new TestLink("", href , HttpMethod.GET);
+		Link link = new TestLink("", href, HttpMethod.GET);
 		// operation
-		String url = link.getHref(null, null, 
-				Arrays.<Parameter>asList(new StringParameter("cloud_company", "redhat")),
+		String url = link.getHref(null, null,
+				Arrays.<Parameter> asList(new StringParameter("cloud_company", "redhat")),
 				null);
 		// verifications
-		assertThat(url).isEqualTo("https://openshift.redhat.com/broker/rest/redhat/adietisheim/redhat/openshift-java-client");
+		assertThat(url).isEqualTo(
+				"https://openshift.redhat.com/broker/rest/redhat/adietisheim/redhat/openshift-java-client");
 	}
 
 	@Test
@@ -226,7 +239,8 @@ public class RestServiceTest extends TestTimer {
 			// pre-conditions
 			mockDirector.mockGetAny(new NotFoundException(Samples.GET_DOMAINS_FOOBAR_KO_NOTFOUND.getContentAsString()));
 			// operation
-			service.request(new TestLink("0 require parameter", "/broker/rest/adietisheim", HttpMethod.GET));
+			service.request(new TestLink("0 require parameter", "/broker/rest/adietisheim", HttpMethod.GET),
+					IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 			// verifications
 			fail("OpenShiftEndPointException expected, did not occurr");
 		} catch (OpenShiftEndpointException e) {
@@ -241,7 +255,8 @@ public class RestServiceTest extends TestTimer {
 			mockDirector
 					.mockPostAny(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
 			// operation
-			service.request(new TestLink("0 require parameter", "/broker/rest/domains", HttpMethod.POST));
+			service.request(new TestLink("0 require parameter", "/broker/rest/domains", HttpMethod.POST),
+					IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 			// verifications
 			fail("OpenShiftEndPointException expected, did not occurr");
 		} catch (OpenShiftEndpointException e) {
@@ -264,7 +279,8 @@ public class RestServiceTest extends TestTimer {
 			mockDirector
 					.mockPostAny(new HttpClientException(Samples.POST_FOOBAR_DOMAINS_KO_INUSE.getContentAsString()));
 			// operation
-			service.request(new TestLink("0 require parameter", "/broker/rest/domains", HttpMethod.POST));
+			service.request(new TestLink("0 require parameter", "/broker/rest/domains", HttpMethod.POST),
+					IHttpClient.NO_TIMEOUT, Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 			// verifications
 			fail("OpenShiftEndPointException expected, did not occurr");
 		} catch (OpenShiftEndpointException e) {
@@ -384,9 +400,9 @@ public class RestServiceTest extends TestTimer {
 		// operation
 		String clientId = "unit-test";
 		new RestService(
-				"jboss.org", 
-				clientId, 
-				"4.2", 				
+				"jboss.org",
+				clientId,
+				"4.2",
 				new JsonMediaType(),
 				IHttpClient.MEDIATYPE_APPLICATION_JSON,
 				new OpenShiftJsonDTOFactory(),

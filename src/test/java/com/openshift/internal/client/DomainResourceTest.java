@@ -10,9 +10,9 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.Cartridges.JBOSSAS_7_NAME;
-import static com.openshift.client.utils.Cartridges.JENKINS_14_NAME;
-import static com.openshift.client.utils.Cartridges.MONGODB_22_NAME;
+import static com.openshift.client.utils.CartridgeTestUtils.JBOSSAS_7_NAME;
+import static com.openshift.client.utils.CartridgeTestUtils.JENKINS_14_NAME;
+import static com.openshift.client.utils.CartridgeTestUtils.MONGODB_22_NAME;
 import static com.openshift.client.utils.Samples.DELETE_DOMAINS_FOOBARZ;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_EMPTY;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARS;
@@ -299,9 +299,9 @@ public class DomainResourceTest extends TestTimer {
 
 		// operation
 		final IApplication app = domain.createApplication(
-				"downloadablecart", Cartridges.go11(), null, null, null, IHttpClient.NO_TIMEOUT,
-				Cartridges.foreman063(),
-				Cartridges.mysql51());
+				"downloadablecart", CartridgeTestUtils.go11(), null, null, null, IHttpClient.NO_TIMEOUT,
+				CartridgeTestUtils.foreman063(),
+				CartridgeTestUtils.mysql51());
 
 		// verifications
 		new ApplicationAssert(app)
@@ -311,8 +311,8 @@ public class DomainResourceTest extends TestTimer {
 				.hasUUID()
 				.hasDomain(domain)
 				.hasEmbeddableCartridges(2)
-				.hasEmbeddedCartridge(Cartridges.mysql51())
-				.hasEmbeddedCartridge(Cartridges.foreman063());
+				.hasEmbeddedCartridge(CartridgeTestUtils.mysql51())
+				.hasEmbeddedCartridge(CartridgeTestUtils.foreman063());
 		new DomainAssert(domain)
 				.hasApplications(app)
 				.hasApplications(1);
@@ -324,17 +324,17 @@ public class DomainResourceTest extends TestTimer {
 		mockDirector
 				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
 				.mockCreateApplication("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_DOWNLOADABLECART);
-		new CartridgeAssert<IStandaloneCartridge>(Cartridges.go11())
+		new CartridgeAssert<IStandaloneCartridge>(CartridgeTestUtils.go11())
 				.hasName(null)
 				.hasDescription(null)
 				.hasDisplayName(null)
-				.hasUrl(Cartridges.GO_DOWNLOAD_URL);
+				.hasUrl(CartridgeTestUtils.GO_URL);
 
 		// operation
 		final IApplication app = domain.createApplication(
-				"springeap6", Cartridges.eap6(), null, null, null, IHttpClient.NO_TIMEOUT,
-				Cartridges.foreman063(),
-				Cartridges.mysql51());
+				"springeap6", CartridgeTestUtils.eap6(), null, null, null, IHttpClient.NO_TIMEOUT,
+				CartridgeTestUtils.foreman063(),
+				CartridgeTestUtils.mysql51());
 
 		// verifications
 		// cartridge was updated with name, description, display name
@@ -342,7 +342,7 @@ public class DomainResourceTest extends TestTimer {
 			.hasName("smarterclayton-go-1.1")
 			.hasDescription("OpenShift Go cartridge")
 			.hasDisplayName("Go 1.1")
-			.hasUrl(Cartridges.GO_DOWNLOAD_URL);
+			.hasUrl(CartridgeTestUtils.GO_URL);
 	}
 
 	@Test
@@ -354,18 +354,18 @@ public class DomainResourceTest extends TestTimer {
 
         // operation
 		domain.createApplication(
-				"downloadablecart", Cartridges.go11(), null, null, null, IHttpClient.NO_TIMEOUT, 
-				Cartridges.foreman063(),
-				Cartridges.mysql51());
+				"downloadablecart", CartridgeTestUtils.go11(), null, null, null, IHttpClient.NO_TIMEOUT, 
+				CartridgeTestUtils.foreman063(),
+				CartridgeTestUtils.mysql51());
 
         // verifications
         mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,
 				new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "downloadablecart"),
 				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
 						new ParameterValueArray()
-								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_URL, Cartridges.GO_DOWNLOAD_URL))
-								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_URL, Cartridges.FOREMAN_DOWNLOAD_URL))
-								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, Cartridges.mysql51().getName()))));
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_URL, CartridgeTestUtils.GO_URL))
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_URL, CartridgeTestUtils.FOREMAN_URL))
+								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, CartridgeTestUtils.mysql51().getName()))));
     }
 
     @Test
@@ -375,7 +375,7 @@ public class DomainResourceTest extends TestTimer {
 			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
 			.mockCreateApplication("foobarz", POST_JEKYLL_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
-		final IApplication app = domain.createApplication("jekyll", Cartridges.jenkins14());
+		final IApplication app = domain.createApplication("jekyll", CartridgeTestUtils.jenkins14());
 		// verifications
 		Messages messages = app.getMessages();
 		assertThat(messages).isNotNull();
@@ -408,7 +408,7 @@ public class DomainResourceTest extends TestTimer {
 			.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
 			.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
-		domain.createApplication("foo", Cartridges.as7());
+		domain.createApplication("foo", CartridgeTestUtils.as7());
 		
 		// verification
 		mockDirector.verifyCreateApplication(
@@ -418,7 +418,7 @@ public class DomainResourceTest extends TestTimer {
 				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
 						new ParameterValueArray()
 								.add(new ParameterValueMap().add(
-										IOpenShiftJsonConstants.PROPERTY_NAME, Cartridges.JBOSSAS_7_NAME))));
+										IOpenShiftJsonConstants.PROPERTY_NAME, CartridgeTestUtils.JBOSSAS_7_NAME))));
 	}
 
 	@Test
@@ -428,7 +428,7 @@ public class DomainResourceTest extends TestTimer {
 				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
 				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
-		domain.createApplication("foo", Cartridges.as7(), ApplicationScale.SCALE);
+		domain.createApplication("foo", CartridgeTestUtils.as7(), ApplicationScale.SCALE);
 		
 		// verification
 		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
@@ -446,7 +446,7 @@ public class DomainResourceTest extends TestTimer {
 				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
 				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
-		domain.createApplication("foo", Cartridges.as7(), ApplicationScale.SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain));
+		domain.createApplication("foo", CartridgeTestUtils.as7(), ApplicationScale.SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain));
 		
 		// verification
 		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
@@ -467,7 +467,7 @@ public class DomainResourceTest extends TestTimer {
 				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
 		domain.createApplication(
-				"foo", Cartridges.as7(), 
+				"foo", CartridgeTestUtils.as7(), 
 				ApplicationScale.SCALE,
 				GearProfileTestUtils.getFirstAvailableGearProfile(domain),
 				"git://github.com/adietish/openshift-java-client.git");
@@ -494,13 +494,13 @@ public class DomainResourceTest extends TestTimer {
 		// operation
 		domain.createApplication(
 				"jekyll", 
-				Cartridges.jenkins14(), 
+				CartridgeTestUtils.jenkins14(), 
 				ApplicationScale.SCALE,
 				GearProfileTestUtils.getFirstAvailableGearProfile(domain),
 				"git://github.com/adietish/openshift-java-client.git", 
 				42001, 
-				Cartridges.mongodb22(), 
-				Cartridges.mysql51());
+				CartridgeTestUtils.mongodb22(), 
+				CartridgeTestUtils.mysql51());
 		
 		// verification
 		mockDirector.verifyCreateApplication(
@@ -517,7 +517,7 @@ public class DomainResourceTest extends TestTimer {
 								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME,
 										MONGODB_22_NAME))
 								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME,
-										Cartridges.MYSQL_51_NAME))));
+										CartridgeTestUtils.MYSQL_51_NAME))));
 	}
 
 	@Test(expected = OpenShiftException.class)
@@ -525,7 +525,7 @@ public class DomainResourceTest extends TestTimer {
 		// pre-conditions
 		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		// operation
-		domain.createApplication(null, Cartridges.as7(), null, null);
+		domain.createApplication(null, CartridgeTestUtils.as7(), null, null);
 		// verifications
 		// expected exception
 	}
@@ -546,7 +546,7 @@ public class DomainResourceTest extends TestTimer {
 		mockDirector.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED);
 		// operation
 		try {
-			domain.createApplication("springeap6", Cartridges.as7(), null, null);
+			domain.createApplication("springeap6", CartridgeTestUtils.as7(), null, null);
 			// expect an exception
 			fail("Expected exception here...");
 		} catch (OpenShiftException e) {
@@ -610,7 +610,7 @@ public class DomainResourceTest extends TestTimer {
 			.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 
 		// operation
-		domain.createApplication("scalable", Cartridges.as7(), ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, timeout);
+		domain.createApplication("scalable", CartridgeTestUtils.as7(), ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, timeout);
 
 		// verifications
 		mockDirector.verifyCreateApplication("foobarz", timeout, 

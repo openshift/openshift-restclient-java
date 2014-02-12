@@ -32,7 +32,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-import com.openshift.client.configuration.OpenShiftConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +150,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 				setRequestMediaType(requestMediaType, connection);
 				requestMediaType.writeTo(parameters, connection.getOutputStream());
 			}
-			return StreamUtils.readToString(connection.getInputStream());
+			return StreamUtils.readToString(connection.getInputStream(), StreamUtils.UTF_8);
 		} catch (SocketTimeoutException e) {
 			throw e;
 		} catch (IOException e) {

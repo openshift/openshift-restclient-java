@@ -21,7 +21,7 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.cartridge.selector.LatestVersionOf;
+import com.openshift.client.cartridge.query.LatestVersionOf;
 import com.openshift.client.utils.CartridgeAssert;
 import com.openshift.client.utils.TestConnectionFactory;
 

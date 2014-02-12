@@ -13,7 +13,6 @@ package com.openshift.internal.client;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -88,51 +87,25 @@ public class RestService implements IRestService {
 	}
 	
 	@Override
-    public RestResponse request(Link link, Parameter... parameters) throws OpenShiftException {
-		return request(link, IHttpClient.NO_TIMEOUT, defaultRequestMediaType, parameters);
+	public RestResponse request(Link link, int timeout, List<Parameter> urlPathParameters,
+			List<Parameter> urlParameters, Parameter... parameters)	throws OpenShiftException {
+		return request(link, timeout, defaultRequestMediaType, factory, urlPathParameters, urlParameters, parameters);
 	}
 
 	@Override
-    public RestResponse request(Link link, int timeout, Parameter... parameters) throws OpenShiftException {
-		return request(link, timeout, defaultRequestMediaType, parameters);
-	}
-
-	@Override
-	public RestResponse request(Link link, List<Parameter> urlParameters, Parameter... parameters)
-			throws OpenShiftException {
-		return request(link, IHttpClient.NO_TIMEOUT, defaultRequestMediaType, urlParameters, parameters);
-	}
-
-	@Override
-	public RestResponse request(Link link, int timeout, IMediaType requestMediaType, Parameter... parameters)
-			throws OpenShiftException {
-		return request(link, timeout, requestMediaType, Collections.<Parameter>emptyList(), parameters);
+	public RestResponse request(Link link, int timeout, IRestResponseFactory responseFactory, List<Parameter> urlPathParameters,
+			List<Parameter> urlParameters, Parameter... parameters) throws OpenShiftException {
+		return request(link, timeout, defaultRequestMediaType, responseFactory, urlPathParameters, urlParameters, parameters);
 	}
 	
 	@Override
-	public RestResponse request(Link link, int timeout, List<Parameter> urlParameters, Parameter... parameters)
-			throws OpenShiftException {
-		return request(link, timeout, defaultRequestMediaType, Collections.<Parameter>emptyList(), urlParameters, parameters);
-	}
-
-	@Override
-    public RestResponse request(Link link, int timeout, List<Parameter> urlPathParameters, List<Parameter> urlParameters, Parameter... parameters) throws OpenShiftException {
-		return request(link, timeout, defaultRequestMediaType, urlPathParameters, urlParameters, parameters);
-	}
-
-	@Override
-    public RestResponse request(Link link, int timeout, IMediaType requestMediaType, List<Parameter> urlParameters, Parameter... parameters) throws OpenShiftException {
-		return request(link, timeout, requestMediaType, Collections.<Parameter>emptyList(), urlParameters, parameters);
-	}
-
-	@Override
-	public RestResponse request(Link link, int timeout, IMediaType requestMediaType, List<Parameter> urlPathParameter,
+	public RestResponse request(Link link, int timeout, IMediaType requestMediaType, IRestResponseFactory responseFactory, List<Parameter> urlPathParameter,
 			List<Parameter> urlParameters, Parameter... parameters) throws OpenShiftException {
 		// link.validateParameters(parameters);
         String url = link.getHref(server, SERVICE_PATH, urlPathParameter, urlParameters);
         try {
             String response = request(new URL(url), link.getHttpMethod(), requestMediaType, timeout, parameters);
-            return factory.get(response);
+            return responseFactory.get(response);
         } catch (EncodingException e) {
             throw new OpenShiftException(e, e.getMessage());
 		} catch (MalformedURLException e) {
@@ -150,9 +123,10 @@ public class RestService implements IRestService {
             throw new OpenShiftTimeoutException(url, e,
                     "Could not request url {0}, connection timed out", url);
         }
-    }
+		
+	}
 
-    private RestResponse getRestResponse(HttpClientException clientException) {
+	private RestResponse getRestResponse(HttpClientException clientException) {
 		try {
 			return factory.get(clientException.getMessage());
 		} catch (OpenShiftException e) {

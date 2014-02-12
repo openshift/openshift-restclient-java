@@ -12,7 +12,7 @@ package com.openshift.client.utils;
 
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
+import com.openshift.internal.client.utils.StreamUtils;
 
 /**
  * @author Andre Dietisheim
@@ -65,6 +65,9 @@ public enum Samples {
 	
 	// user
 	GET_API("get-api.json"), // 1.2 
+	GET_API_QUICKSTARTS("get-api-quickstarts.json"),
+	
+	// user
 	GET_USER("get-user.json"), // 1.2
 	GET_USER_KEYS_2KEYS("get-user-keys_2keys.json"), // 1.2
 	GET_USER_KEYS_NONE("get-user-keys_none.json"), // 1.2
@@ -89,7 +92,7 @@ public enum Samples {
 		String content = null;
 		try {
 			final InputStream contentStream = Samples.class.getResourceAsStream(filePath);
-			content = IOUtils.toString(contentStream);
+			content = StreamUtils.readToString(contentStream, StreamUtils.UTF_8);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not read file " + filePath + ": " + e.getMessage());

@@ -35,7 +35,14 @@ import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.cartridge.selector.LatestVersionOf;
+import com.openshift.client.cartridge.query.LatestVersionOf;
+import com.openshift.client.utils.ApplicationAssert;
+import com.openshift.client.utils.ApplicationTestUtils;
+import com.openshift.client.utils.CartridgeTestUtils;
+import com.openshift.client.utils.DomainTestUtils;
+import com.openshift.client.utils.MessageAssert;
+import com.openshift.client.utils.StringUtils;
+import com.openshift.client.utils.TestConnectionFactory;
 
 /**
  * @author Andre Dietisheim
@@ -365,7 +372,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
 
         // operation
 		final IApplication app = domain.createApplication(
-				applicationName, Cartridges.go11(), ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, CREATE_TIMEOUT);
+				applicationName, CartridgeTestUtils.go11(), ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, CREATE_TIMEOUT);
 
         // verifications
         new ApplicationAssert(app)
@@ -375,7 +382,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
         	.hasUUID()
 			.hasValidApplicationUrl()
 			.hasValidGitUrl()
-        	.hasCartridge(Cartridges.go11())
+        	.hasCartridge(CartridgeTestUtils.go11())
         	.hasEmbeddableCartridges(0);
     }
 
@@ -390,7 +397,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
         // operation
  		final IApplication app = domain.createApplication(
 				applicationName, jbossAs, ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, CREATE_TIMEOUT,
-				Cartridges.foreman063());
+				CartridgeTestUtils.foreman063());
 
         // verifications
         new ApplicationAssert(app)
@@ -401,7 +408,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
 			.hasValidApplicationUrl()
 			.hasValidGitUrl()
         	.hasCartridge(jbossAs)
-        	.hasEmbeddedCartridge(Cartridges.foreman063());
+        	.hasEmbeddedCartridge(CartridgeTestUtils.foreman063());
     }
 
 	

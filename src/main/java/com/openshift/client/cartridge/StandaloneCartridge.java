@@ -12,6 +12,7 @@ package com.openshift.client.cartridge;
 
 import java.net.URL;
 
+import com.openshift.internal.client.CartridgeType;
 import com.openshift.internal.client.cartridge.BaseCartridge;
 
 
@@ -41,5 +42,10 @@ public class StandaloneCartridge extends BaseCartridge implements IStandaloneCar
 
 	public StandaloneCartridge(String name, URL url, String displayName, String description) {
 		super(name, url, displayName, description);
+	}
+
+	@Override
+	public CartridgeType getType() {
+		return CartridgeType.STANDALONE;
 	}
 }

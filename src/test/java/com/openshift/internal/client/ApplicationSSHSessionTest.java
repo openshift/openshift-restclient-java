@@ -10,35 +10,24 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.Cartridges.FOREMAN_DOWNLOAD_URL;
-import static com.openshift.client.utils.Cartridges.MYSQL_51_NAME;
-import static com.openshift.client.utils.Samples.*;
+import static com.openshift.client.utils.Samples.GET_DOMAINS;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED;
+import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
-import com.jcraft.jsch.JSch;
-import com.openshift.client.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.openshift.client.cartridge.EmbeddableCartridge;
-import com.openshift.client.cartridge.IEmbeddableCartridge;
-import com.openshift.client.cartridge.IEmbeddedCartridge;
-import com.openshift.client.utils.CartridgeAssert;
-import com.openshift.client.utils.Cartridges;
-import com.openshift.client.utils.EmbeddedCartridgeAssert;
-import com.openshift.client.utils.MessageAssert;
-import com.openshift.client.utils.Samples;
-import com.openshift.internal.client.httpclient.HttpClientException;
-import com.openshift.internal.client.httpclient.InternalServerErrorException;
+import com.jcraft.jsch.JSch;
+import com.openshift.client.IApplication;
+import com.openshift.client.IApplicationPortForwarding;
+import com.openshift.client.IApplicationSSHSession;
+import com.openshift.client.IDomain;
 
 /**
  * @author Corey Daley

@@ -50,4 +50,11 @@ public class StringUtils {
 		return string;
 	}
 	
+	public static String encodeQuotationMarks(String string) {
+		return string.replaceAll("\"", "&quot;");
+	}
+	
+	public static String decodeQuotationMarks(String string) {
+		return string.replaceAll("&quot;", "\"");
+	}
 }

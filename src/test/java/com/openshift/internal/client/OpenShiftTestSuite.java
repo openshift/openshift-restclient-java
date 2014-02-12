@@ -17,6 +17,7 @@ import com.openshift.internal.client.httpclient.HttpClientTest;
 import com.openshift.internal.client.httpclient.request.FormUrlEncodedMediaTypeTest;
 import com.openshift.internal.client.httpclient.request.JsonMediaTypeTest;
 import com.openshift.internal.client.response.OpenShiftJsonDTOFactoryTest;
+import com.openshift.internal.client.response.QuickstartDTOCartridgeQueryTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -31,7 +32,7 @@ import com.openshift.internal.client.response.OpenShiftJsonDTOFactoryTest;
 	StandaloneCartridgeTest.class,
 	EmbeddableCartridgeTest.class,
 	EmbeddedCartridgeResourceTest.class,
-	QueryTest.class,
+	CartridgeQueryTest.class,
 	UserTest.class,
 	SSHKeyTest.class,
 	GearGroupsResourceTest.class,
@@ -41,7 +42,8 @@ import com.openshift.internal.client.response.OpenShiftJsonDTOFactoryTest;
 	FormUrlEncodedMediaTypeTest.class,
 	JsonMediaTypeTest.class,
 	EnvironmentVariableResourceTest.class,
-	ApplicationSSHSessionTest.class
+	ApplicationSSHSessionTest.class,
+	QuickstartDTOCartridgeQueryTest.class
 })
 
 /**

@@ -124,7 +124,7 @@
 		<dependency>
 			<groupId>org.jboss</groupId>
 			<artifactId>jboss-dmr</artifactId>
-			<version>1.0.0.Final</version>
+			<version>1.2.0.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jcraft</groupId>

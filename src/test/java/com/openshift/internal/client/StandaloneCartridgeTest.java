@@ -24,7 +24,7 @@ import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
 import com.openshift.client.utils.CartridgeAssert;
-import com.openshift.client.utils.Cartridges;
+import com.openshift.client.utils.CartridgeTestUtils;
 import com.openshift.client.utils.Samples;
 import com.openshift.client.utils.TestConnectionFactory;
 
@@ -59,8 +59,8 @@ public class StandaloneCartridgeTest extends TestTimer {
 		// pre-coniditions
 		// operation
 		// verification
-		assertThat(new StandaloneCartridge(new URL(Cartridges.GO_DOWNLOAD_URL)))
-				.isEqualTo(new StandaloneCartridge(new URL(Cartridges.GO_DOWNLOAD_URL)));
+		assertThat(new StandaloneCartridge(new URL(CartridgeTestUtils.GO_URL)))
+				.isEqualTo(new StandaloneCartridge(new URL(CartridgeTestUtils.GO_URL)));
 	}
 
 	@Test
@@ -68,12 +68,12 @@ public class StandaloneCartridgeTest extends TestTimer {
 		// pre-coniditions
 		// operation
 		// verification
-		assertThat(new StandaloneCartridge("redhat", new URL(Cartridges.GO_DOWNLOAD_URL)))
-				.isEqualTo(new StandaloneCartridge(new URL(Cartridges.GO_DOWNLOAD_URL)));
+		assertThat(new StandaloneCartridge("redhat", new URL(CartridgeTestUtils.GO_URL)))
+				.isEqualTo(new StandaloneCartridge(new URL(CartridgeTestUtils.GO_URL)));
 		// should equal if url is equal, name doesnt matter 
 		// (name is updated as soon as cartridge is deployed)
-		assertThat(new StandaloneCartridge("jboss", new URL(Cartridges.GO_DOWNLOAD_URL)))
-				.isEqualTo(new StandaloneCartridge("redhat", new URL(Cartridges.GO_DOWNLOAD_URL)));
+		assertThat(new StandaloneCartridge("jboss", new URL(CartridgeTestUtils.GO_URL)))
+				.isEqualTo(new StandaloneCartridge("redhat", new URL(CartridgeTestUtils.GO_URL)));
 	}
 
 	@Test
@@ -81,8 +81,8 @@ public class StandaloneCartridgeTest extends TestTimer {
 		// pre-coniditions
 		// operation
 		// verification
-		assertThat(new StandaloneCartridge(new URL(Cartridges.GO_DOWNLOAD_URL)))
-				.isNotEqualTo(new EmbeddableCartridge(new URL(Cartridges.FOREMAN_DOWNLOAD_URL)));
+		assertThat(new StandaloneCartridge(new URL(CartridgeTestUtils.GO_URL)))
+				.isNotEqualTo(new EmbeddableCartridge(new URL(CartridgeTestUtils.FOREMAN_URL)));
 	}
 	
 	@Test

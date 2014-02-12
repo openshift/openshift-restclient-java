@@ -12,6 +12,8 @@ package com.openshift.client.cartridge;
 
 import java.net.URL;
 
+import com.openshift.internal.client.CartridgeType;
+
 /**
  * @author André Dietisheim
  */
@@ -67,6 +69,7 @@ public interface ICartridge {
 	 * @see #isDownloadable()
 	 */
 	public URL getUrl();
-
+	
+	public CartridgeType getType();
 
 }

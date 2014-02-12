@@ -14,8 +14,8 @@ import com.openshift.client.IApplication;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
-import com.openshift.client.cartridge.selector.LatestEmbeddableCartridge;
-import com.openshift.client.cartridge.selector.LatestVersionOf;
+import com.openshift.client.cartridge.query.LatestEmbeddableCartridge;
+import com.openshift.client.cartridge.query.LatestVersionOf;
 
 /**
  * @author André Dietisheim

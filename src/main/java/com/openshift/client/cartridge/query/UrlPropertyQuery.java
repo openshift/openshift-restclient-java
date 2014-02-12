@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.client.cartridge.selector;
+package com.openshift.client.cartridge.query;
 
 import java.util.regex.Pattern;
 
@@ -18,11 +18,10 @@ import com.openshift.internal.client.response.CartridgeResourceProperty;
 /**
  * @author André Dietisheim
  */
-public class UrlPropertyQuery extends CartridgePropertyQuery {
+public class UrlPropertyQuery {
 
 	private static final Pattern NAME_URL_PATTERN = Pattern.compile("url", Pattern.CASE_INSENSITIVE);
 
-	@Override
 	public CartridgeResourceProperty getMatchingProperty(IEmbeddedCartridge embeddedCartridge) {
 		for (CartridgeResourceProperty property : embeddedCartridge.getProperties().getAll()) {
 			if (NAME_URL_PATTERN.matcher(property.getName()).find()) {

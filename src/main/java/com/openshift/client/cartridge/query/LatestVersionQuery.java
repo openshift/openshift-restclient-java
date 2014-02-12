@@ -8,20 +8,18 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.client.cartridge.selector;
+package com.openshift.client.cartridge.query;
 
 import java.text.Collator;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.openshift.client.IApplication;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
-import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.internal.client.cartridge.AbstractCartridgeQuery;
 import com.openshift.internal.client.utils.Assert;
 
 /**
@@ -47,12 +45,12 @@ public class LatestVersionQuery extends AbstractCartridgeQuery {
 	}
 
 	@Override
-	public <C extends ICartridge> Collection<C> getAll(Collection<C> cartridges) {
-		return Collections.singleton(getLatest(super.getAll(cartridges)));
+	public <C extends ICartridge> List<C> getAll(List<C> cartridges) {
+		return Collections.singletonList(getLatest(super.getAll(cartridges)));
 	}
 
 	@Override
-	public <C extends ICartridge> C get(Collection<C> cartridges) {
+	public <C extends ICartridge> C get(List<C> cartridges) {
 		return getLatest(super.getAll(cartridges));
 	}
 
@@ -147,11 +145,6 @@ public class LatestVersionQuery extends AbstractCartridgeQuery {
 		}
 	}
 	
-	public Collection<IStandaloneCartridge> allStandaloneCartridges(IApplication application) {
-		Assert.notNull(application);
-		return getConnection(application).getStandaloneCartridges();
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;

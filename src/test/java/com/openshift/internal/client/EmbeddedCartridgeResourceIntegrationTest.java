@@ -33,10 +33,10 @@ import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.cartridge.selector.LatestVersionOf;
+import com.openshift.client.cartridge.query.LatestVersionOf;
 import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
-import com.openshift.client.utils.Cartridges;
+import com.openshift.client.utils.CartridgeTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.EmbeddedCartridgeAssert;
 import com.openshift.client.utils.EmbeddedCartridgeTestUtils;
@@ -418,14 +418,14 @@ public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(LatestVersionOf.jbossAs(), domain);
 		EmbeddedCartridgeTestUtils.silentlyDestroyAllEmbeddedCartridges(application);
 		assertThat(new ApplicationAssert(application))
-			.hasNotEmbeddableCartridge(Cartridges.foreman063());
+			.hasNotEmbeddableCartridge(CartridgeTestUtils.foreman063());
 
 		// operation
-		application.addEmbeddableCartridge(Cartridges.foreman063());
+		application.addEmbeddableCartridge(CartridgeTestUtils.foreman063());
 
 		// verification
 		new ApplicationAssert(application)
-				.hasEmbeddedCartridgeNames(Cartridges.foreman063().getName());
+				.hasEmbeddedCartridgeNames(CartridgeTestUtils.foreman063().getName());
 	}
 	
 	@Test(expected = OpenShiftEndpointException.class)
