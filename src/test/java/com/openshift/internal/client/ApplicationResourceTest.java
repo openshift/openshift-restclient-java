@@ -12,24 +12,7 @@ package com.openshift.internal.client;
 
 import static com.openshift.client.utils.Cartridges.FOREMAN_DOWNLOAD_URL;
 import static com.openshift.client.utils.Cartridges.MYSQL_51_NAME;
-import static com.openshift.client.utils.Samples.GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.GET_2_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.GET_4_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.GET_DOMAINS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_NOENVVARS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_0ALIAS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2ALIAS;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_2EMBEDDED;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED;
-import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED;
-import static com.openshift.client.utils.Samples.POST_ADD_2_ENVIRONMENT_VARIABLES_TO_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.POST_ADD_ENVIRONMENT_VARIABLE_FOO_TO_FOOBARZ_SPRINGEAP6;
-import static com.openshift.client.utils.Samples.POST_MYSQL_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES;
-import static com.openshift.client.utils.Samples.POST_STOP_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_EVENT;
+import static com.openshift.client.utils.Samples.*;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -633,6 +616,28 @@ public class ApplicationResourceTest {
 	}
 
 	@Test
+	public void shouldUpdateOneEnvironmentVariableToApplication() throws Throwable {
+		// pre-conditions
+		mockDirector
+				.mockAddEnvironmentVariable("foobarz", "springeap6",
+						POST_ADD_ENVIRONMENT_VARIABLE_FOO_TO_FOOBARZ_SPRINGEAP6)
+				.mockGetEnvironmentVariables("foobarz", "springeap6", GET_0_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6,
+						GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6)
+				.mockUpdateEnvironmentVariableValue("foobarz", "springeap6", "FOO", PUT_FOO_ENVIRONMENT_VARIABLE_FOOBARZ_SPRINGEAP6);;
+
+		// operation
+		final IApplication app = domain.getApplicationByName("springeap6");
+		IEnvironmentVariable environmentVariable = app.addEnvironmentVariable("FOO", "123");
+		assertThat(environmentVariable.getValue()).isEqualTo("123");
+		app.updateEnvironmentVariable("FOO","321");
+
+		// verification
+		assertThat(environmentVariable).isNotNull();
+		assertThat(environmentVariable.getName()).isEqualTo("FOO");
+		assertThat(environmentVariable.getValue()).isEqualTo("321");
+	}
+
+	@Test
 	public void shouldRefreshEnvironmentVariables() throws Throwable {
 		// pre-conditions
 		mockDirector
@@ -658,6 +663,18 @@ public class ApplicationResourceTest {
 		assertThat(environmentVariable).isNotNull();
 		assertThat(environmentVariable.getName()).isEqualTo("FOO");
 		assertThat(environmentVariable.getValue()).isEqualTo("123");
+	}
+
+	@Test
+	public void shouldGetEnvironmentVariableValueByNameFromApplication() throws Throwable {
+		// precondition
+		mockDirector.mockGetEnvironmentVariables("foobarz", "springeap6",
+				GET_1_ENVIRONMENT_VARIABLES_FOOBARZ_SPRINGEAP6);
+		// operation
+		final IApplication app = domain.getApplicationByName("springeap6");
+		// verification
+		assertTrue(app.hasEnvironmentVariable("FOO"));
+		assertThat(app.getEnvironmentVariableValue("FOO")).isEqualTo("123");
 	}
 
 	@Test

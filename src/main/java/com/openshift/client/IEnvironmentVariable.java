@@ -12,6 +12,7 @@ package com.openshift.client;
 
 /**
  * @author Syed Iqbal
+ * @deprecated use {@link IApplication} instead
  */
 public interface IEnvironmentVariable extends IOpenShiftResource {
 
@@ -23,6 +24,7 @@ public interface IEnvironmentVariable extends IOpenShiftResource {
 	/**
 	 * @return Value of the environment variable
 	 */
+	@Deprecated
 	public String getValue();
 
 	/**
@@ -31,14 +33,18 @@ public interface IEnvironmentVariable extends IOpenShiftResource {
 	 * @param value
 	 *            new value for this environment variable
 	 * @throws OpenShiftException
+	 * @deprecated use {@link IApplication#updateEnvironmentVariable} instead
 	 */
+	@Deprecated
 	public void update(String value) throws OpenShiftException;
 
 	/**
 	 * Destroys this environment variable
 	 * 
 	 * @throws OpenShiftException
+	 * @deprecated use {@link IApplication#removeEnvironmentVariable} instead
 	 */
+	@Deprecated
 	public void destroy() throws OpenShiftException;
 
 	

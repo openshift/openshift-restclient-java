@@ -449,6 +449,16 @@ public interface IApplication extends IOpenShiftResource {
 	public IEnvironmentVariable addEnvironmentVariable(String name, String value) throws OpenShiftException;
 
 	/**
+	 * Updates an environment variable to this application.
+	 *
+	 * @param name  key associated with the variable to update
+	 * @param value value of the new variable
+	 * @throws OpenShiftSSHOperationException - if the variable already exists
+	 */
+	public IEnvironmentVariable updateEnvironmentVariable(String name, String value) throws OpenShiftException;
+
+
+	/**
 	 * Adds a map of environment variables to the application
 	 * 
 	 * @param environmentVariables Map<String,String> of environment variables
@@ -465,6 +475,15 @@ public interface IApplication extends IOpenShiftResource {
 	 * @throws OpenShiftSSHOperationException - thrown if the key does not exist
 	 */
 	public IEnvironmentVariable getEnvironmentVariable(String name) throws OpenShiftException;
+
+	/**
+	 * Return the environment variables value for the specified name
+	 *
+	 * @param name key to be used to locate the environment variable
+	 * @return String value associated with the provided key
+	 * @throws OpenShiftSSHOperationException - thrown if the key does not exist
+	 */
+	public String getEnvironmentVariableValue(String name);
 
 	/**
 	 * Removes the environment variables with the given name from this application.
