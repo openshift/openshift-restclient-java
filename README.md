@@ -1,9 +1,9 @@
 OpenShift Java Client
 ===========================
 
-This is a client for OpenShift written in java. It pretty much offers all features that are currently available in the rhc-* command line tools 
-(create/rename a domain, create/destroy applications, list all existing applications, available cartridges, embed cartridges etc.). 
-This is the client that is used in JBoss Tools for OpenShift.
+Java client for the OpenShift.  It pretty much offers all features that are currently available in the rhc-* command line tools 
+(create/rename a domain, create/destroy applications, list applications, list available cartridges, add cartridges, etc.). 
+This client is used by JBoss Tools for OpenShift.
 
 Usage
 -----
