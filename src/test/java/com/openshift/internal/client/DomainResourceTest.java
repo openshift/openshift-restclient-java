@@ -30,6 +30,7 @@ import static org.mockito.Mockito.reset;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
+import com.openshift.client.utils.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -51,13 +52,6 @@ import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.utils.ApplicationAssert;
-import com.openshift.client.utils.CartridgeAssert;
-import com.openshift.client.utils.Cartridges;
-import com.openshift.client.utils.DomainAssert;
-import com.openshift.client.utils.MessageAssert;
-import com.openshift.client.utils.Samples;
-import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.UnauthorizedException;
@@ -194,8 +188,7 @@ public class DomainResourceTest {
 		// operation
 		List<IGearProfile> availableGearSizes = domain.getAvailableGearProfiles();
 		// verifications
-		assertThat(availableGearSizes).onProperty("name")
-				.contains("small", "micro", "medium", "large", "exlarge", "jumbo");
+		assertThat(availableGearSizes.size() > 0);
 	}
 
 	@Test
@@ -313,7 +306,7 @@ public class DomainResourceTest {
 		// verifications
 		new ApplicationAssert(app)
 				.hasName("downloadablecart")
-				.hasGearProfile(IGearProfile.SMALL)
+				.hasGearProfile(GearProfileTestUtils.getFirstAvailableGearProfile(domain))
 				.hasCreationTime()
 				.hasUUID()
 				.hasDomain(domain)
@@ -453,7 +446,7 @@ public class DomainResourceTest {
 				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_NOAPPS)
 				.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 		// operation
-		domain.createApplication("foo", Cartridges.as7(), ApplicationScale.SCALE, GearProfile.JUMBO);
+		domain.createApplication("foo", Cartridges.as7(), ApplicationScale.SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain));
 		
 		// verification
 		mockDirector.verifyCreateApplication("foobarz", IHttpClient.NO_TIMEOUT,  
@@ -462,7 +455,7 @@ public class DomainResourceTest {
 						new ParameterValueArray()
 								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, JBOSSAS_7_NAME))),
 				new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
-				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.JUMBO.getName())
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfileTestUtils.getFirstAvailableGearProfile(domain).getName())
 		);
 	}
 
@@ -475,8 +468,8 @@ public class DomainResourceTest {
 		// operation
 		domain.createApplication(
 				"foo", Cartridges.as7(), 
-				ApplicationScale.SCALE, 
-				GearProfile.JUMBO, 
+				ApplicationScale.SCALE,
+				GearProfileTestUtils.getFirstAvailableGearProfile(domain),
 				"git://github.com/adietish/openshift-java-client.git");
 		
 		// verification
@@ -486,7 +479,7 @@ public class DomainResourceTest {
 						new ParameterValueArray()
 								.add(new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, JBOSSAS_7_NAME))),
 				new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
-				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.JUMBO.getName()),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfileTestUtils.getFirstAvailableGearProfile(domain).getName()),
 				new StringParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, "git://github.com/adietish/openshift-java-client.git")
 		);
 	}
@@ -502,8 +495,8 @@ public class DomainResourceTest {
 		domain.createApplication(
 				"jekyll", 
 				Cartridges.jenkins14(), 
-				ApplicationScale.SCALE, 
-				GearProfile.LARGE, 
+				ApplicationScale.SCALE,
+				GearProfileTestUtils.getFirstAvailableGearProfile(domain),
 				"git://github.com/adietish/openshift-java-client.git", 
 				42001, 
 				Cartridges.mongodb22(), 
@@ -515,7 +508,7 @@ public class DomainResourceTest {
 				42001,
 				new StringParameter(IOpenShiftJsonConstants.PROPERTY_NAME, "jekyll"),
 				new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, ApplicationScale.SCALE.getValue()),
-				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.LARGE.getName()),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfileTestUtils.getFirstAvailableGearProfile(domain).getName()),
 				new StringParameter(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, "git://github.com/adietish/openshift-java-client.git"),
 				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
 						new ParameterValueArray()
@@ -617,12 +610,12 @@ public class DomainResourceTest {
 			.mockCreateApplication("foobarz", POST_SCALABLE_DOMAINS_FOOBARZ_APPLICATIONS);
 
 		// operation
-		domain.createApplication("scalable", Cartridges.as7(), ApplicationScale.NO_SCALE, GearProfile.SMALL, null, timeout);
+		domain.createApplication("scalable", Cartridges.as7(), ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, timeout);
 
 		// verifications
 		mockDirector.verifyCreateApplication("foobarz", timeout, 
 				new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCALE, String.valueOf(Boolean.FALSE)),
-				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfile.SMALL.getName()),
+				new StringParameter(IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE, GearProfileTestUtils.getFirstAvailableGearProfile(domain).getName()),
 				new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES,
 						new ParameterValueArray().add(
 								new ParameterValueMap().add(IOpenShiftJsonConstants.PROPERTY_NAME, JBOSSAS_7_NAME))),

@@ -17,13 +17,6 @@ import com.openshift.internal.client.GearProfile;
  */
 public interface IGearProfile {
 
-	public static final IGearProfile JUMBO = new GearProfile("jumbo");
-	public static final IGearProfile EXLARGE = new GearProfile("exlarge");
-	public static final IGearProfile LARGE = new GearProfile("large");
-	public static final IGearProfile MEDIUM = new GearProfile("medium");
-	public static final IGearProfile MICRO = new GearProfile("micro");
-	public static final IGearProfile SMALL = new GearProfile("small");
-	
 	public String getName();
 	
 }

@@ -68,12 +68,9 @@
                      "name":"gear_profile",
                      "type":"string",
                      "valid_options":[
-                        "micro",
                         "small",
                         "medium",
-                        "large",
-                        "exlarge",
-                        "jumbo"
+                        "large"
                      ]
                   },
                   {

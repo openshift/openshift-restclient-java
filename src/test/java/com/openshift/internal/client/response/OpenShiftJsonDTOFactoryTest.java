@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.openshift.client.utils.*;
+import com.openshift.internal.client.GearProfile;
 import org.fest.assertions.Condition;
 import org.junit.Test;
 
@@ -28,10 +30,6 @@ import com.openshift.client.IField;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
-import com.openshift.client.utils.Cartridges;
-import com.openshift.client.utils.MessageAssert;
-import com.openshift.client.utils.ResourcePropertyAssert;
-import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.CartridgeType;
 
 public class OpenShiftJsonDTOFactoryTest {
@@ -220,7 +218,7 @@ public class OpenShiftJsonDTOFactoryTest {
 		assertThat(applicationDTO.getInitialGitUrl())
 				.isEqualTo("git://github.com/openshift/spring-eap6-quickstart.git");
 		assertThat(applicationDTO.getUuid()).isEqualTo("523cbe15e0b8cd0a520001b6");
-		assertThat(applicationDTO.getGearProfile()).isEqualTo(IGearProfile.SMALL);
+		assertThat(applicationDTO.getGearProfile()).isEqualTo(new GearProfile("small"));
 		assertThat(applicationDTO.getAliases()).containsExactly("jbosstools.org");
 		assertThat(applicationDTO.getUuid()).isEqualTo("523cbe15e0b8cd0a520001b6");
 		assertThat(applicationDTO.getCartridges().keySet()).containsOnly(

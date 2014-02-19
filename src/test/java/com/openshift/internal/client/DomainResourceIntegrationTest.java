@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
+import com.openshift.client.utils.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,13 +36,6 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.selector.LatestVersionOf;
-import com.openshift.client.utils.ApplicationAssert;
-import com.openshift.client.utils.ApplicationTestUtils;
-import com.openshift.client.utils.Cartridges;
-import com.openshift.client.utils.DomainTestUtils;
-import com.openshift.client.utils.MessageAssert;
-import com.openshift.client.utils.StringUtils;
-import com.openshift.client.utils.TestConnectionFactory;
 
 /**
  * @author Andre Dietisheim
@@ -245,7 +239,7 @@ public class DomainResourceIntegrationTest {
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
 		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
-		IApplication application = domain.createApplication(applicationName, jbossas, IGearProfile.SMALL);
+		IApplication application = domain.createApplication(applicationName, jbossas, GearProfileTestUtils.getFirstAvailableGearProfile(domain));
 
 		// verification
 		assertThat(new ApplicationAssert(application))
@@ -271,7 +265,7 @@ public class DomainResourceIntegrationTest {
 				ApplicationTestUtils.createRandomApplicationName();
 		IStandaloneCartridge php = LatestVersionOf.php().get(user);
 		IApplication application = domain.createApplication(
-				applicationName, php, ApplicationScale.NO_SCALE, GearProfile.SMALL, QUICKSTART_REVEALJS_GITURL);
+				applicationName, php, ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), QUICKSTART_REVEALJS_GITURL);
 
 		// verification
 		new ApplicationAssert(application)
@@ -298,7 +292,7 @@ public class DomainResourceIntegrationTest {
 		
 		// operation
 		IApplication application = domain.createApplication(
-				applicationName, php, ApplicationScale.NO_SCALE, GearProfile.SMALL, null, timeout, mySql);
+				applicationName, php, ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, timeout, mySql);
 
 		// verification
 		new ApplicationAssert(application)
@@ -321,7 +315,7 @@ public class DomainResourceIntegrationTest {
 
 		// operation
 		IApplication application = domain.createApplication(
-				applicationName, jbossas, ApplicationScale.SCALE, GearProfile.SMALL);
+				applicationName, jbossas, ApplicationScale.SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain));
 
 		// verification
 		assertThat(new ApplicationAssert(application))
@@ -371,12 +365,12 @@ public class DomainResourceIntegrationTest {
 
         // operation
 		final IApplication app = domain.createApplication(
-				applicationName, Cartridges.go11(), ApplicationScale.NO_SCALE, IGearProfile.SMALL, null, CREATE_TIMEOUT);
+				applicationName, Cartridges.go11(), ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, CREATE_TIMEOUT);
 
         // verifications
         new ApplicationAssert(app)
         	.hasName(applicationName)
-        	.hasGearProfile(IGearProfile.SMALL)
+        	.hasGearProfile(GearProfileTestUtils.getFirstAvailableGearProfile(domain))
         	.hasCreationTime()
         	.hasUUID()
 			.hasValidApplicationUrl()
@@ -395,13 +389,13 @@ public class DomainResourceIntegrationTest {
 
         // operation
  		final IApplication app = domain.createApplication(
-				applicationName, jbossAs, ApplicationScale.NO_SCALE, IGearProfile.SMALL, null, CREATE_TIMEOUT, 
+				applicationName, jbossAs, ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, CREATE_TIMEOUT,
 				Cartridges.foreman063());
 
         // verifications
         new ApplicationAssert(app)
         	.hasName(applicationName)
-        	.hasGearProfile(IGearProfile.SMALL)
+        	.hasGearProfile(GearProfileTestUtils.getFirstAvailableGearProfile(domain))
         	.hasCreationTime()
         	.hasUUID()
 			.hasValidApplicationUrl()

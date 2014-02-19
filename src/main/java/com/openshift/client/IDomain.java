@@ -104,7 +104,7 @@ public interface IDomain extends IOpenShiftResource {
 	 * @param scale
 	 *            or null (will use default on openshift, ie, false)
 	 * @param gearProfile
-	 *            ("small", "micro", "medium", "large", "exlarge", "jumbo") or
+	 *            available gear sizes from openshift api  or
 	 *            null (will use default on openshift, ie, 'small')
 	 * @param initialGitUrl
 	 *            the git url for the initial template app to be used
@@ -129,7 +129,7 @@ public interface IDomain extends IOpenShiftResource {
 	 * @param scale
 	 *            or null (will use default on openshift, ie, false)
 	 * @param gearProfile
-	 *            ("small", "micro", "medium", "large", "exlarge", "jumbo") or
+	 *            available gear sizes from openshift api  or
 	 *            null (will use default on openshift, ie, 'small')
 	 * @param initialGitUrl
 	 *            the git url for the initial template app to be used
@@ -162,7 +162,7 @@ public interface IDomain extends IOpenShiftResource {
 	 * @param scale
 	 *            or null (will use default on openshift, ie, false)
 	 * @param gearProfile
-	 *            ("small", "micro", "medium", "large", "exlarge", "jumbo") or
+	 *            available gear sizes from openshift api or
 	 *            null (will use default on openshift, ie, 'small')
 	 * @param initialGitUrl
 	 *            the git url for the initial template app to be used
