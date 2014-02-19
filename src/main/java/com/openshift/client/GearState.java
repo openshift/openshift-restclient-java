@@ -21,7 +21,7 @@ public class GearState implements IGearState {
 	private String state;
 
 	public GearState(String state) {
-		this.state = state.toUpperCase();
+		this.state = getState(state);
 	}
 
 	public String getState() {
@@ -29,22 +29,15 @@ public class GearState implements IGearState {
 	}
 
 	public void setState(String state) {
-		this.state = state.toUpperCase();
+		this.state = getState(state);
 	}
 
-	public static GearState safeValueOf(String gearStateString) {
-		try {
-			if (StringUtils.isEmpty(gearStateString)) {
-				return new GearState("unknown");
-			}
-			return new GearState(gearStateString);
-		} catch (IllegalArgumentException e) {
-			return new GearState("unknown");
+	protected String getState(String state) {
+		if (StringUtils.isEmpty(state)) {
+			return UNKNOWN;
+		} else {
+			return state.toUpperCase();
 		}
-	}
-
-	public String toString() {
-		return this.state;
 	}
 
 	@Override
@@ -71,4 +64,11 @@ public class GearState implements IGearState {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "GearState [state=" + state + "]";
+	}
+
+
 }

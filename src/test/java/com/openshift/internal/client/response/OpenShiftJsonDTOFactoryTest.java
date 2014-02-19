@@ -397,7 +397,7 @@ public class OpenShiftJsonDTOFactoryTest {
 		assertThat(gearGroup.getGears()).hasSize(2);
 		final GearResourceDTO gear = gearGroup.getGears().iterator().next();
 		assertThat(gear.getUuid()).isEqualTo("514207b84382ec1fef000098");
-		assertThat(gear.getState()).isEqualToIgnoringCase(new GearState("IDLE").toString());
+		assertThat(gear.getState()).isEqualTo("idle");
 	}
 
 	@Test

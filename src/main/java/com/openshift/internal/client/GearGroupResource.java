@@ -62,7 +62,7 @@ public class GearGroupResource extends AbstractOpenShiftResource implements IGea
 		this.name = name;
 		this.gears = new ArrayList<IGear>();
 		for(GearResourceDTO dto : gearDTOs) {
-			this.gears.add(new Gear(dto.getUuid(), GearState.safeValueOf(dto.getState()), dto.getSshUrl()));
+			this.gears.add(new Gear(dto.getUuid(), new GearState(dto.getState()), dto.getSshUrl()));
 		}
 		this.cartridges = new ArrayList<ICartridge>();
 		for(Iterator<Entry<String, CartridgeResourceDTO>> iterator = cartridgeDTOs.entrySet().iterator(); iterator.hasNext();) {

@@ -25,7 +25,7 @@ public class GearTest {
 	@Test
 	public void nullShouldCreateUnknownGearState() {
 		// operation
-		GearState state = GearState.safeValueOf(null);
+		GearState state = new GearState(null);
 		// verification
 		assertThat(state).isEqualTo(new GearState("UNKNOWN"));
 	}
@@ -33,7 +33,7 @@ public class GearTest {
 	@Test
 	public void emptyShouldCreateUnknownGearState() {
 		// operation
-		GearState state = GearState.safeValueOf("");
+		GearState state = new GearState("");
 		// verification
 		assertThat(state).isEqualTo(new GearState("UNKNOWN"));
 	}
@@ -41,7 +41,7 @@ public class GearTest {
 	@Test
 	public void stateCaseShouldNotMatter() {
 		// operation
-		GearState state = GearState.safeValueOf("sTaRtEd");
+		GearState state = new GearState("sTaRtEd");
 		// verification
 		assertThat(state).isEqualTo(new GearState("STARTED"));
 	}
@@ -49,7 +49,7 @@ public class GearTest {
 	@Test
 	public void bogusStateShouldBeUnknown() {
 		// operation
-		GearState state = GearState.safeValueOf("BOGUS!");
+		GearState state = new GearState("BOGUS!");
 		// verification
 		assertThat(state).isEqualTo(new GearState("BOGUS!"));
 	}

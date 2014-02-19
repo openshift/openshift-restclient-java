@@ -15,6 +15,8 @@ package com.openshift.client;
  */
 public interface IGearState {
 
+	public static final String UNKNOWN = "UNKNOWN";
+	
 	/**
 	 * Get the gears state
 	 * @return String the gears state
