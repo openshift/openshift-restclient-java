@@ -29,10 +29,11 @@ import com.openshift.internal.client.utils.Assert;
  * 
  * @author Xavier Coulon
  * @author Andre Dietisheim
+ * @author Corey Daley
  * 
  */
 public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFactory {
-
+	private IOpenShiftConfiguration configuration = null;
 	/**
 	 * Establish a connection with the clientId along with user's password.
 	 * User's login and Server URL are retrieved from the local configuration
@@ -48,7 +49,6 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * @throws OpenShiftException
 	 */
 	public IOpenShiftConnection getConnection(final String clientId, final String password) throws OpenShiftException {
-		IOpenShiftConfiguration configuration = null;
 		try {
 			configuration = new OpenShiftConfiguration();
 		} catch (IOException e) {
@@ -75,7 +75,6 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 */
 	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password)
 			throws OpenShiftException {
-		IOpenShiftConfiguration configuration;
 		try {
 			configuration = new OpenShiftConfiguration();
 		} catch (IOException e) {
@@ -134,8 +133,16 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * @throws OpenShiftException
 	 */
 	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
-			final String authKey, final String authIV, final String serverUrl,
-			final ISSLCertificateCallback sslCertificateCallback) throws OpenShiftException {
+		final String authKey, final String authIV, final String serverUrl,
+		final ISSLCertificateCallback sslCertificateCallback) throws OpenShiftException {
+		if (configuration == null) {
+			try {
+				configuration = new OpenShiftConfiguration();
+			} catch (IOException e) {
+				throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
+			}
+		}
+
 		Assert.notNull(clientId);
 		Assert.notNull(username);
 		Assert.notNull(password);
@@ -146,6 +153,7 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 					new UrlConnectionHttpClientBuilder()
 						.setCredentials(username, password, authKey, authIV)
 						.setSSLCertificateCallback(sslCertificateCallback)
+						.setConfigTimeout(configuration.getTimeout())
 						.client();
 			return getConnection(clientId, username, password, serverUrl, httpClient);
 		} catch (IOException e) {

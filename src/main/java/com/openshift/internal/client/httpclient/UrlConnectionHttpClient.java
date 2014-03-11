@@ -32,6 +32,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import com.openshift.client.configuration.OpenShiftConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,7 @@ import com.openshift.internal.client.utils.StringUtils;
 /**
  * @author Andre Dietisheim
  * @author Nicolas Spano
+ * @author Corey Daley
  */
 public class UrlConnectionHttpClient implements IHttpClient {
 
@@ -60,6 +62,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	protected String acceptedMediaType;
 	protected String acceptedVersion;
 	protected ISSLCertificateCallback sslAuthorizationCallback;
+	protected Integer configTimeout;
 
 	public UrlConnectionHttpClient(
 			String username, String password, String userAgent, String acceptedMediaType, String version) {
@@ -68,11 +71,11 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	public UrlConnectionHttpClient(
 			String username, String password, String userAgent, String acceptedMediaType, String version, String authKey, String authIV) {
-		this(username, password, userAgent, acceptedMediaType, version, authKey, authIV, null);
+		this(username, password, userAgent, acceptedMediaType, version, authKey, authIV, null,null);
 	}
 
 	public UrlConnectionHttpClient(String username, String password, String userAgent, String acceptedMediaType,
-			String version, String authKey, String authIV, ISSLCertificateCallback callback) {
+			String version, String authKey, String authIV, ISSLCertificateCallback callback, Integer configTimeout) {
 		this.username = username;
 		this.password = password;
 		this.userAgent = userAgent;
@@ -81,6 +84,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		this.authKey = authKey;
 		this.authIV = authIV;
 		this.sslAuthorizationCallback = callback;
+		this.configTimeout = configTimeout;
 	}
 
 	@Override
@@ -297,33 +301,24 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 	
 	private void setConnectTimeout(int timeout, URLConnection connection) {
-		connection.setConnectTimeout(
-				getTimeout(
-						timeout,
-						getSystemPropertyInteger(SYSPROP_OPENSHIFT_CONNECT_TIMEOUT),
-						getSystemPropertyInteger(SYSPROP_DEFAULT_CONNECT_TIMEOUT),
-						DEFAULT_CONNECT_TIMEOUT));
+		if (getTimeout(timeout) != NO_TIMEOUT) {
+			connection.setConnectTimeout(getTimeout(timeout));
+		}
 	}
 
 	private void setReadTimeout(int timeout, URLConnection connection) {
-		connection.setReadTimeout(
-				getTimeout(
-						timeout,
-						getSystemPropertyInteger(SYSPROP_OPENSHIFT_READ_TIMEOUT),
-						getSystemPropertyInteger(SYSPROP_DEFAULT_READ_TIMEOUT),
-						DEFAULT_READ_TIMEOUT));
+		if (getTimeout(timeout) != NO_TIMEOUT) {
+			connection.setReadTimeout(getTimeout(timeout));
+		}
+
 	}
 
-	private int getTimeout(int timeout, int openShiftTimeout, int systemPropertyTimeout, int defaultTimeout) {
-		if (timeout == NO_TIMEOUT) {
-			timeout = openShiftTimeout;
+	private int getTimeout(int timeout) {
 			if (timeout == NO_TIMEOUT) {
-				timeout = systemPropertyTimeout;
-				if (timeout == NO_TIMEOUT) {
-					timeout = defaultTimeout;
+				if (configTimeout != null) {
+					timeout = this.configTimeout;
 				}
 			}
-		}
 		return timeout;
 	}
 

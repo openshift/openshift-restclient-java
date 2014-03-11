@@ -14,10 +14,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import com.openshift.client.IHttpClient;
 import com.openshift.client.OpenShiftException;
 
 /**
  * @author André Dietisheim
+ * @author Corey Daley
  */
 public class DefaultConfiguration extends AbstractOpenshiftConfiguration {
 
@@ -33,6 +35,7 @@ public class DefaultConfiguration extends AbstractOpenshiftConfiguration {
 		Properties properties = new Properties();
 	    properties.put(KEY_LIBRA_SERVER, LIBRA_SERVER);
 	    properties.put(KEY_LIBRA_DOMAIN, LIBRA_DOMAIN);
+		properties.put(KEY_TIMEOUT, "180000");
 		return properties;
 	}
 }

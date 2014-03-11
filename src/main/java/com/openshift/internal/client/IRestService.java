@@ -84,7 +84,6 @@ public interface IRestService {
 	 * @see IHttpClient#SYSPROP_DEFAULT_CONNECT_TIMEOUT
 	 * @see IHttpClient#SYSPROP_DEFAULT_READ_TIMEOUT
 	 * @see IHttpClient#SYSPROP_OPENSHIFT_CONNECT_TIMEOUT
-	 * @see IHttpClient#DEFAULT_CONNECT_TIMEOUT
 	 * @see IHttpClient#DEFAULT_READ_TIMEOUT
 	 */
 	public RestResponse request(Link link, int timeout, IMediaType mediaType, List<Parameter> urlPathParameters,
