@@ -25,19 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jcraft.jsch.JSch;
+import com.openshift.client.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.openshift.client.IApplication;
-import com.openshift.client.IApplicationPortForwarding;
-import com.openshift.client.IDomain;
-import com.openshift.client.IEnvironmentVariable;
-import com.openshift.client.IField;
-import com.openshift.client.OpenShiftEndpointException;
-import com.openshift.client.OpenShiftException;
-import com.openshift.client.OpenShiftTimeoutException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
@@ -527,11 +521,14 @@ public class ApplicationResourceTest extends TestTimer {
 				" java -> 127.7.233.1:9999",
 				" mysql -> 5190d701500446506a0000e4-foobarz.rhcloud.com:56756" };
 		ApplicationResource spy = Mockito.spy(((ApplicationResource) app));
-		Mockito.doReturn(Arrays.asList(rhcListPortsOutput)).when(spy)
-				.sshExecCmd(Mockito.anyString(), (ApplicationResource.SshStreams) Mockito.any());
+		JSch jsch = new JSch();
+		final IApplicationSSHSession ses = new ApplicationSSHSession(spy, jsch.getSession("mockuser", "mockhost", 22));
+		ApplicationSSHSession spyses = Mockito.spy(((ApplicationSSHSession) ses));
+		Mockito.doReturn(Arrays.asList(rhcListPortsOutput)).when(spyses)
+				.sshExecCmd(Mockito.anyString(), (ApplicationSSHSession.SshStreams) Mockito.any());
 
 		// operation
-		List<IApplicationPortForwarding> forwardablePorts = spy.getForwardablePorts();
+		List<IApplicationPortForwarding> forwardablePorts = spyses.getForwardablePorts();
 
 		// verification
 		assertThat(forwardablePorts).isNotEmpty().hasSize(10);
