@@ -27,7 +27,7 @@ import com.openshift.client.utils.TestConnectionFactory;
  * @author Xavier Coulon
  * @author Andre Dietisheim
  */
-public class APIResourceTest {
+public class APIResourceTest extends TestTimer {
 
 	private IOpenShiftConnection connection;
 

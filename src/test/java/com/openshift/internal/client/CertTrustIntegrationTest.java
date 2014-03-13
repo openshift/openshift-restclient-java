@@ -22,10 +22,10 @@ import com.openshift.client.OpenShiftException;
 /**
  * @author William DeCoste
  */
-public class CertTrustIntegrationTest {
+public class CertTrustIntegrationTest extends TestTimer {
 	
 	private IUser user;
-	
+
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
 //		service = new OpenShiftService(TestUser.ID, new OpenShiftConfiguration().getLibraServer());

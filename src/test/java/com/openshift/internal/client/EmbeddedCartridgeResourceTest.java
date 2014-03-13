@@ -54,7 +54,7 @@ import com.openshift.internal.client.response.CartridgeResourceProperty;
 /**
  * @author Andre Dietisheim
  */
-public class EmbeddedCartridgeResourceTest {
+public class EmbeddedCartridgeResourceTest extends TestTimer {
 
 	private IApplication application;
 	private HttpClientMockDirector mockDirector;

@@ -20,7 +20,7 @@ import com.openshift.client.GearState;
  * @author Xavier Coulon
  * @author Andre Dietisheim
  */
-public class GearTest {
+public class GearTest extends TestTimer {
 
 	@Test
 	public void nullShouldCreateUnknownGearState() {

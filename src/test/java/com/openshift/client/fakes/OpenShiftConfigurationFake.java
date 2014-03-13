@@ -13,11 +13,25 @@ import java.util.Properties;
  * @author Corey Daley
  */
 public class OpenShiftConfigurationFake extends AbstractOpenshiftConfiguration {
-	public OpenShiftConfigurationFake(final String systemConfigurationTimeout, final String userConfigurationTimeout, final String systemPropertiesTimeout) throws FileNotFoundException, IOException, OpenShiftException {
+	public OpenShiftConfigurationFake(final String systemConfigurationTimeout, final String userConfigurationTimeout, final String systemPropertiesTimeout, final String defaultConfigurationTimeout) throws FileNotFoundException, IOException, OpenShiftException {
 		super(new SystemPropertiesFake(
 				new UserConfigurationFake(
 						new SystemConfigurationFake(
-								new DefaultConfiguration()){
+								new DefaultConfigurationFake(){
+									@Override
+									protected Properties getProperties(File file, Properties defaultProperties) {
+										Properties properties = new Properties();
+										properties.put(KEY_LIBRA_SERVER, LIBRA_SERVER);
+										properties.put(KEY_LIBRA_DOMAIN, LIBRA_DOMAIN);
+										if (defaultConfigurationTimeout != null) {
+											properties.put(KEY_TIMEOUT, defaultConfigurationTimeout);
+										} else {
+											properties.put(KEY_TIMEOUT, DEFAULT_OPENSHIFT_TIMEOUT);
+										}
+
+										return properties;
+									}
+								}){
 							//SystemConfigurationFake
 							protected void init(Properties properties) {
 								if (systemConfigurationTimeout != null) {

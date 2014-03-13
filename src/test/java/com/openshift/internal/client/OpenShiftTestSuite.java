@@ -47,5 +47,5 @@ import com.openshift.internal.client.response.OpenShiftJsonDTOFactoryTest;
  * @author André Dietisheim
  */
 public class OpenShiftTestSuite {
-
+	
 }

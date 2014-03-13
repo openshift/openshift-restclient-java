@@ -27,12 +27,12 @@ import com.openshift.client.utils.TestConnectionFactory;
 /**
  * @author Syed Iqbal 
  */
-public class EnvironmentVariableResourceIntegrationTest {
+public class EnvironmentVariableResourceIntegrationTest extends TestTimer {
 
     private IUser user;
 	private IDomain domain;
 	private IApplication application;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
@@ -41,7 +41,7 @@ public class EnvironmentVariableResourceIntegrationTest {
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		this.application = ApplicationTestUtils.getOrCreateApplication(domain);
 	}
-	
+
 	@Test
 	public void shouldGetEnvironmentVariableNameAndValue() throws Throwable {
 		// operation

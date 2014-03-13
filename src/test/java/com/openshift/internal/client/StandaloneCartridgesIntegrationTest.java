@@ -31,7 +31,7 @@ import com.openshift.client.utils.TestConnectionFactory;
 /**
  * @author André Dietisheim
  */
-public class StandaloneCartridgesIntegrationTest {
+public class StandaloneCartridgesIntegrationTest extends TestTimer {
 
 	private IUser user;
 	private IDomain domain;

@@ -48,7 +48,7 @@ import com.openshift.client.utils.TestConnectionFactory;
 /**
  * @author Andre Dietisheim
  */
-public class QueryTest {
+public class QueryTest extends TestTimer {
 
 	private IOpenShiftConnection connection;
 

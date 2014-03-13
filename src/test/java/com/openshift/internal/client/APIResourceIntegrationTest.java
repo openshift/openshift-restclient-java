@@ -30,7 +30,7 @@ import com.openshift.client.utils.TestConnectionFactory;
 /**
  * @author André Dietisheim
  */
-public class APIResourceIntegrationTest {
+public class APIResourceIntegrationTest extends TestTimer {
 
 	private IOpenShiftConnection connection;
 

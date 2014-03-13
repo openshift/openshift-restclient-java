@@ -37,7 +37,7 @@ import com.openshift.internal.client.httpclient.HttpClientException;
 /**
  * @author André Dietisheim
  */
-public class UserResourceIntegrationTest {
+public class UserResourceIntegrationTest extends TestTimer {
 
 	private IUser user;
 

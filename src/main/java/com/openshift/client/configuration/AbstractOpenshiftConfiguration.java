@@ -38,6 +38,7 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	protected static final String KEY_CLIENT_ID = "client_id";
 
 	protected static final String KEY_TIMEOUT = "timeout";
+	protected static final String DEFAULT_OPENSHIFT_TIMEOUT = "180000"; //3 minutes
 
 	private static final Pattern QUOTED_REGEX = Pattern.compile("['\"]*([^'\"]+)['\"]*");
 	private static final char SINGLEQUOTE = '\'';

@@ -41,7 +41,7 @@ import com.openshift.internal.client.httpclient.HttpClientException;
 /**
  * @author Andre Dietisheim
  */
-public class OpenShiftExceptionTest {
+public class OpenShiftExceptionTest extends TestTimer {
 
 	private IUser user;
 	private IHttpClient clientMock;

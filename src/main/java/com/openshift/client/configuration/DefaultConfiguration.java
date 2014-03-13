@@ -35,7 +35,7 @@ public class DefaultConfiguration extends AbstractOpenshiftConfiguration {
 		Properties properties = new Properties();
 	    properties.put(KEY_LIBRA_SERVER, LIBRA_SERVER);
 	    properties.put(KEY_LIBRA_DOMAIN, LIBRA_DOMAIN);
-		properties.put(KEY_TIMEOUT, "180000");
+		properties.put(KEY_TIMEOUT, DEFAULT_OPENSHIFT_TIMEOUT);
 		return properties;
 	}
 }

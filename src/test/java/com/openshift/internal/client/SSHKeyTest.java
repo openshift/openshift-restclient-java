@@ -43,7 +43,7 @@ import com.openshift.internal.client.httpclient.request.StringParameter;
 /**
  * @author Andre Dietisheim
  */
-public class SSHKeyTest {
+public class SSHKeyTest extends TestTimer {
 
 	private IUser user;
 	private HttpClientMockDirector mockDirector;

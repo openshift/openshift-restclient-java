@@ -28,7 +28,7 @@ import com.openshift.client.IEnvironmentVariable;
  * @author Syed Iqbal 
  * @author Martes G Wigglesworth
  */
-public class EnvironmentVariableResourceTest {
+public class EnvironmentVariableResourceTest extends TestTimer {
 	
 	private IApplication application;
 	private HttpClientMockDirector mockDirector;
