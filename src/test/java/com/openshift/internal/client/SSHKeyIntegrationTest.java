@@ -36,10 +36,10 @@ import com.openshift.internal.client.httpclient.HttpClientException;
 /**
  * @author Andre Dietisheim
  */
-public class SSHKeyIntegrationTest {
+public class SSHKeyIntegrationTest extends TestTimer {
 
 	private IUser user;
-	
+
 	@Before
 	public void setUp() throws FileNotFoundException, IOException, OpenShiftException {
 		this.user = new TestConnectionFactory().getConnection().getUser();

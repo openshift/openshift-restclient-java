@@ -39,7 +39,7 @@ import com.openshift.internal.client.utils.UrlUtils;
 /**
  * @author André Dietisheim
  */
-public class ConfigurationTest {
+public class ConfigurationTest extends TestTimer {
 
 	private static final String USERNAME_REGEX = "[^=]+=(.+)";
 	private static final String USERNAME = "dummyUser";

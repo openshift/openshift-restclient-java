@@ -55,7 +55,7 @@ import com.openshift.internal.client.httpclient.InternalServerErrorException;
  * @author Nicolas Spano
  * @author Syed Iqbal
  */
-public class ApplicationResourceTest {
+public class ApplicationResourceTest extends TestTimer {
 
 	private IDomain domain;
 	private HttpClientMockDirector mockDirector;

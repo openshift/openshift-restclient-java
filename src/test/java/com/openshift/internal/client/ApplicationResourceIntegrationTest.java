@@ -46,13 +46,13 @@ import com.openshift.client.utils.TestConnectionFactory;
  * @author Syed Iqbal
  * @author Martes G Wigglesworth 
  */
-public class ApplicationResourceIntegrationTest {
+public class ApplicationResourceIntegrationTest extends TestTimer {
 
 	private static final long WAIT_TIMEOUT = 3 * 60 * 1000;
 
 	private IUser user;
 	private IDomain domain;
-    
+
 	@Before
 	public void setUp() throws Exception {
 		IOpenShiftConnection connection = new TestConnectionFactory().getConnection();

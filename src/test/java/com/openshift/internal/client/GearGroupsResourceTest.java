@@ -34,7 +34,7 @@ import com.openshift.client.utils.TestConnectionFactory;
  * @author Xavier Coulon
  * @author Andre Dietisheim
  */
-public class GearGroupsResourceTest {
+public class GearGroupsResourceTest extends TestTimer {
 
 	private IDomain domain;
 

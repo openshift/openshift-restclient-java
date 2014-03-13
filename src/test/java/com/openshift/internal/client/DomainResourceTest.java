@@ -65,7 +65,7 @@ import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
  * @author Xavier Coulon
  * @author Andre Dietisheim
  */
-public class DomainResourceTest {
+public class DomainResourceTest extends TestTimer {
 
 	private IUser user;
 	private IDomain domain;

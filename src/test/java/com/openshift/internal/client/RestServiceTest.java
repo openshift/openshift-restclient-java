@@ -46,7 +46,7 @@ import com.openshift.internal.client.response.RestResponse;
 /**
  * @author Andre Dietisheim
  */
-public class RestServiceTest {
+public class RestServiceTest extends TestTimer {
 
 	protected static final String KEY_PROTOCOL_VERSION = "protocol_version";
 	private IRestService service;

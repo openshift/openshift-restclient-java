@@ -25,7 +25,7 @@ import com.openshift.internal.client.httpclient.HttpClientException;
 /**
  * @author Andre Dietisheim
  */
-public class RestServicePropertiesTest {
+public class RestServicePropertiesTest extends TestTimer {
 
 	private static final String VERSION = "0.0.1";
 	private RestServiceProperties serviceProperties;

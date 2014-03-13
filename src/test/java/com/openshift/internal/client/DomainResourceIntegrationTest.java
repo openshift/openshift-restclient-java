@@ -40,7 +40,7 @@ import com.openshift.client.cartridge.selector.LatestVersionOf;
 /**
  * @author Andre Dietisheim
  */
-public class DomainResourceIntegrationTest {
+public class DomainResourceIntegrationTest extends TestTimer {
 
 	private static final String QUICKSTART_REVEALJS_GITURL = "git://github.com/openshift-quickstart/reveal.js-openshift-quickstart.git";
 	private static final String REVEALJS_INDEX = "revealjs.html";
@@ -55,7 +55,7 @@ public class DomainResourceIntegrationTest {
 		this.user = new TestConnectionFactory().getConnection().getUser();
 		this.domain = DomainTestUtils.ensureHasDomain(user);
 	}
-	
+
 	@Test
 	public void shouldSetNamespace() throws Exception {
 		// pre-condition

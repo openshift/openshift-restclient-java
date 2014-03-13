@@ -31,7 +31,7 @@ import com.openshift.client.utils.TestConnectionFactory;
 /**
  * @author Andre Dietisheim
  */
-public class EmbeddableCartridgeTest {
+public class EmbeddableCartridgeTest extends TestTimer {
 
 	private IOpenShiftConnection connection;
 

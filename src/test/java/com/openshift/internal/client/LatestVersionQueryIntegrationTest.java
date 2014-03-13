@@ -28,7 +28,7 @@ import com.openshift.client.utils.TestConnectionFactory;
 /**
  * @author Andre Dietisheim
  */
-public class LatestVersionQueryIntegrationTest {
+public class LatestVersionQueryIntegrationTest extends TestTimer {
 
 	private IUser user;
 
@@ -36,7 +36,7 @@ public class LatestVersionQueryIntegrationTest {
 	public void setUp() throws OpenShiftException, FileNotFoundException, IOException {
 		this.user = new TestConnectionFactory().getConnection().getUser();
 	}
-	
+
 	@Test
 	public void shouldSelectJBossAs() {
 		// pre-coniditions

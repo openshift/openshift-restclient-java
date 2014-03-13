@@ -26,7 +26,7 @@ import com.openshift.client.utils.TestConnectionFactory;
  * @author Xavier Coulon
  * @author Andre Dietisheim
  */
-public class UserTest {
+public class UserTest extends TestTimer {
 
 	private IUser user;
 	private static final String PASSWORD = "123490";

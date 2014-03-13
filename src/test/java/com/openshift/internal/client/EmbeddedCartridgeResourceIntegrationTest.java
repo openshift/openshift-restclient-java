@@ -45,7 +45,7 @@ import com.openshift.client.utils.TestConnectionFactory;
 /**
  * @author André Dietisheim
  */
-public class EmbeddedCartridgeResourceIntegrationTest {
+public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 
 	private IDomain domain;
 	private IUser user;

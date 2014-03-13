@@ -42,6 +42,7 @@ import javax.net.ssl.SSLSession;
 
 import com.openshift.client.configuration.*;
 import com.openshift.client.fakes.*;
+import com.openshift.internal.client.TestTimer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,7 +63,7 @@ import sun.net.www.http.HttpClient;
  * @author Nicolas Spano
  * @author Corey Daley
  */
-public class HttpClientTest {
+public class HttpClientTest extends TestTimer {
 
 	private static final String ACCEPT_APPLICATION_JSON = "Accept: application/json";
 	private static final Pattern AUTHORIZATION_PATTERN = Pattern.compile("Authorization: Basic ([^\n]*)");
@@ -74,12 +75,12 @@ public class HttpClientTest {
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-	
+
 	@Before
 	public void setUp() throws Exception {
 		this.serverFake = startHttpServerFake(null);
 		this.httpsServerFake = startHttpsServerFake(null);
-		this.configuration = new OpenShiftConfigurationFake("10000","10000","10000");
+		this.configuration = new OpenShiftConfigurationFake("10000","10000","10000",null);
 		this.httpClient = new UrlConnectionHttpClientBuilder()
 				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
 				.setUserAgent("com.openshift.client.test")
@@ -455,8 +456,8 @@ public class HttpClientTest {
 	public void shouldRespectDefaultTimeout() throws Throwable {
 		// pre-conditions
 		final int timeout = 1000;
-		final int serverDelay = timeout * 190;
-		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,null,null);
+		final int serverDelay = timeout * 10000;
+		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,null,null,"5000");
 		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
 				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
 				.setUserAgent("com.openshift.client.test")
@@ -483,7 +484,7 @@ public class HttpClientTest {
 		// pre-conditions
 		final int timeout = 1000;
 		final int serverDelay = timeout * 15;
-		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,null,"11000");
+		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,null,"2000","1000");
 		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
 				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
 				.setUserAgent("com.openshift.client.test")
@@ -510,7 +511,7 @@ public class HttpClientTest {
 		// pre-conditions
 		final int timeout = 1000;
 		final int serverDelay = timeout * 15;
-		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,"12000","11000");
+		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,"3000","2000","1000");
 		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
 				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
 				.setUserAgent("com.openshift.client.test")
@@ -537,7 +538,7 @@ public class HttpClientTest {
 		// pre-conditions
 		final int timeout = 1000;
 		final int serverDelay = timeout * 15;
-		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake("13000","12000","11000");
+		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake("4000","3000","2000","1000");
 		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
 				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
 				.setUserAgent("com.openshift.client.test")
