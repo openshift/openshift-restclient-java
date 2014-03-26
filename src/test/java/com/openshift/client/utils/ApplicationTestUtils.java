@@ -35,7 +35,7 @@ public class ApplicationTestUtils {
 	private static final long WAIT_FOR_APPLICATION = 3 * 60 * 1000;
 
 	public static String createRandomApplicationName() {
-		return String.valueOf(System.currentTimeMillis());
+		return "app" + String.valueOf(System.currentTimeMillis());
 	}
 
 	public static IApplication createApplication(IStandaloneCartridge cartridge, IDomain domain) {
@@ -99,7 +99,7 @@ public class ApplicationTestUtils {
 			}
 		}
 
-		return domain.createApplication(StringUtils.createRandomString(), cartridge);
+		return domain.createApplication("app" + StringUtils.createRandomString(), cartridge);
 	}
 
 	/**

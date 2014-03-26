@@ -155,7 +155,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
 		assertNotNull(otherDomain);
 
 		// operation
-		String applicationName = StringUtils.createRandomString();
+		String applicationName = "app" + StringUtils.createRandomString();
 		otherDomain.createApplication(applicationName, LatestVersionOf.php().get(otherUser));
 		assertThat(domain.getApplications().size()).isEqualTo(numOfApplications);
 		domain.refresh();
