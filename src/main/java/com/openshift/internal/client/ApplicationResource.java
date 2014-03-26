@@ -4,7 +4,7 @@
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
  * and is available at http://www.eclipse.org/legal/epl-v10.html 
- * 
+ *
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
+import com.openshift.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,17 +38,6 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.openshift.client.ApplicationScale;
-import com.openshift.client.IApplication;
-import com.openshift.client.IApplicationPortForwarding;
-import com.openshift.client.IDomain;
-import com.openshift.client.IEnvironmentVariable;
-import com.openshift.client.IGearGroup;
-import com.openshift.client.IGearProfile;
-import com.openshift.client.IOpenShiftConnection;
-import com.openshift.client.Messages;
-import com.openshift.client.OpenShiftException;
-import com.openshift.client.OpenShiftSSHOperationException;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
@@ -69,7 +59,7 @@ import com.openshift.internal.client.utils.StringUtils;
 /**
  * The ApplicationResource object is an implementation of com.openshift.client.IApplication, and provides 
  * a runtime model for the real application that resides on the OpenShift platform being accessed.
- * 
+ *
  * @author André Dietisheim
  * @author Syed Iqbal
  * @author Martes G Wigglesworth
@@ -78,7 +68,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	private static final long APPLICATION_WAIT_RETRY_DELAY = 2 * 1024;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationResource.class);
-	
+
 	private static final String LINK_DELETE_APPLICATION = "DELETE";
 	private static final String LINK_START_APPLICATION = "START";
 	private static final String LINK_STOP_APPLICATION = "STOP";
@@ -91,10 +81,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private static final String LINK_ADD_CARTRIDGE = "ADD_CARTRIDGE";
 	private static final String LINK_LIST_CARTRIDGES = "LIST_CARTRIDGES";
 	private static final String LINK_GET_GEAR_GROUPS = "GET_GEAR_GROUPS";
-    private static final String LINK_LIST_ENVIRONMENT_VARIABLES = "LIST_ENVIRONMENT_VARIABLES";
-    private static final String LINK_SET_UNSET_ENVIRONMENT_VARIABLES = "SET_UNSET_ENVIRONMENT_VARIABLES";
-    private static final Pattern REGEX_FORWARDED_PORT = Pattern.compile("([^ ]+) -> ([^:]+):(\\d+)");
-	
+	private static final String LINK_LIST_ENVIRONMENT_VARIABLES = "LIST_ENVIRONMENT_VARIABLES";
+	private static final String LINK_SET_UNSET_ENVIRONMENT_VARIABLES = "SET_UNSET_ENVIRONMENT_VARIABLES";
+	private static final Pattern REGEX_FORWARDED_PORT = Pattern.compile("([^ ]+) -> ([^:]+):(\\d+)");
+
 	/** The (unique) uuid of this application. */
 	private String uuid;
 
@@ -121,13 +111,13 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	/** The url to use to connect with ssh.*/
 	private String sshUrl;
-	
+
 	/** The url at which the git repo of this application may be reached. */
 	private String gitUrl;
 
 	/** the git url for the initial code and configuration for the application */
 	private String initialGitUrl;
-	
+
 	/** The aliases of this application. */
 	private List<String> aliases;
 
@@ -146,7 +136,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * operations.
 	 */
 	private Session session;
-	
+
 	private Collection<IGearGroup> gearGroups;
 	/**
 	 * The environment variables for this application
@@ -156,13 +146,13 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	protected ApplicationResource(ApplicationResourceDTO dto, DomainResource domain) {
 		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getMessages(), dto.getApplicationUrl(),
-				dto.getSshUrl(), dto.getGitUrl(), dto.getInitialGitUrl(), dto.getGearProfile(), dto.getApplicationScale(), 
-				dto.getAliases(), dto.getCartridges(), dto.getLinks(), domain);
+			dto.getSshUrl(), dto.getGitUrl(), dto.getInitialGitUrl(), dto.getGearProfile(), dto.getApplicationScale(),
+			dto.getAliases(), dto.getCartridges(), dto.getLinks(), domain);
 	}
 
 	/**
 	 * Instantiates a new application.
-	 * 
+	 *
 	 * @param name
 	 *            the name
 	 * @param uuid
@@ -188,10 +178,10 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * @throws DatatypeConfigurationException
 	 */
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
-			final Messages messages, final String applicationUrl, final String sshUrl, final String gitUrl, 
-			final String initialGitUrl, final IGearProfile gearProfile, final ApplicationScale scale, final List<String> aliases,
-			final Map<String, CartridgeResourceDTO> cartridgesByName, final Map<String, Link> links,
-			final DomainResource domain) {
+								final Messages messages, final String applicationUrl, final String sshUrl, final String gitUrl,
+								final String initialGitUrl, final IGearProfile gearProfile, final ApplicationScale scale, final List<String> aliases,
+								final Map<String, CartridgeResourceDTO> cartridgesByName, final Map<String, Link> links,
+								final DomainResource domain) {
 		super(domain.getService(), links, messages);
 		this.name = name;
 		this.uuid = uuid;
@@ -345,7 +335,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	/**
 	 * Adds the given embedded cartridge to this application.
-	 * 
+	 *
 	 * @param cartridge
 	 *            the embeddable cartridge that shall be added to this
 	 *            application
@@ -375,7 +365,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	/**
 	 * "callback" from the embeddedCartridge once it has been destroyed.
-	 * 
+	 *
 	 * @param embeddedCartridge
 	 * @throws OpenShiftException
 	 */
@@ -388,7 +378,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	/**
 	 * Queries the backend to list the embedded cartridges and adds the new ones
 	 * & update the ones that are already present
-	 * 
+	 *
 	 * @throws OpenShiftException
 	 */
 	protected void refreshEmbeddedCartridges() throws OpenShiftException {
@@ -401,19 +391,19 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private void updateCartridges(Map<String, CartridgeResourceDTO> cartridgeDTOByName) {
 		for (CartridgeResourceDTO cartridgeDTO : cartridgeDTOByName.values()) {
 			switch(cartridgeDTO.getType()) {
-			case STANDALONE:
-				createStandaloneCartrdige(cartridgeDTO);
-				break;
-			case EMBEDDED:
-				addOrUpdateEmbeddedCartridge(cartridgeDTO.getName(), cartridgeDTO);
+				case STANDALONE:
+					createStandaloneCartrdige(cartridgeDTO);
+					break;
+				case EMBEDDED:
+					addOrUpdateEmbeddedCartridge(cartridgeDTO.getName(), cartridgeDTO);
 			}
 		}
 	}
 
 	private void createStandaloneCartrdige(CartridgeResourceDTO cartridgeDTO) {
 		this.cartridge = new StandaloneCartridge(
-				cartridgeDTO.getName(), 
-				cartridgeDTO.getUrl(), 
+				cartridgeDTO.getName(),
+				cartridgeDTO.getUrl(),
 				cartridgeDTO.getDisplayName(),
 				cartridgeDTO.getDescription());
 	}
@@ -437,7 +427,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			}
 		}
 	}
-	
+
 	public List<IEmbeddedCartridge> getEmbeddedCartridges() throws OpenShiftException {
 		return Collections.unmodifiableList(new ArrayList<IEmbeddedCartridge>(this.embeddedCartridgesByName.values()));
 	}
@@ -473,7 +463,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 		return null;
 	}
-		
+
 	public void removeEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
 		Assert.notNull(cartridge);
 
@@ -502,14 +492,14 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	private Collection<IGearGroup> loadGearGroups() throws OpenShiftException {
 		List<IGearGroup> gearGroups = new ArrayList<IGearGroup>();
-		Collection<GearGroupResourceDTO> dtos = new GetGearGroupsRequest().execute(); 
+		Collection<GearGroupResourceDTO> dtos = new GetGearGroupsRequest().execute();
 		for(GearGroupResourceDTO dto : dtos) {
 			gearGroups.add(new GearGroupResource(dto, this, getService()));
 		}
-		
+
 		return this.gearGroups = gearGroups;
 	}
-	
+
 	public boolean waitForAccessible(long timeout) throws OpenShiftException {
 		try {
 			return waitForResolved(timeout, System.currentTimeMillis());
@@ -527,7 +517,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			}
 		});
 	}
-	
+
 	protected IOpenShiftConnection getConnection() {
 		return getDomain().getUser().getConnection();
 	}
@@ -549,7 +539,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	protected boolean canResolv(String url) throws MalformedURLException {
 		return HostUtils.canResolv(url);
 	}
-	
+
 	private boolean isTimeouted(long timeout, long startTime) {
 		return !(System.currentTimeMillis() < (startTime + timeout));
 	}
@@ -608,19 +598,19 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 		return openshiftProps;
 	}
-	
+
 	@Override
 	public Map<String, IEnvironmentVariable> getEnvironmentVariables() throws OpenShiftException {
 		return Collections.unmodifiableMap(new LinkedHashMap<String, IEnvironmentVariable>(getOrLoadEnvironmentVariables()));
 	}
 
-	
-  protected Map<String, IEnvironmentVariable> getOrLoadEnvironmentVariables() throws OpenShiftException {
-	if(environmentVariablesMap.isEmpty())
-	   environmentVariablesMap = loadEnvironmentVariables();		
-	return environmentVariablesMap;
+
+	protected Map<String, IEnvironmentVariable> getOrLoadEnvironmentVariables() throws OpenShiftException {
+		if(environmentVariablesMap.isEmpty())
+			environmentVariablesMap = loadEnvironmentVariables();
+		return environmentVariablesMap;
 	}
-	
+
 	private Map<String, IEnvironmentVariable> loadEnvironmentVariables() throws OpenShiftException {
 		List<EnvironmentVariableResourceDTO> environmentVariableDTOs = new ListEnvironmentVariablesRequest().execute();
 		if (environmentVariableDTOs == null) {
@@ -628,11 +618,11 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 
 		for (EnvironmentVariableResourceDTO environmentVariableResourceDTO : environmentVariableDTOs) {
-			final IEnvironmentVariable environmentVariable = 
+			final IEnvironmentVariable environmentVariable =
 					new EnvironmentVariableResource(environmentVariableResourceDTO, this);
-			
+
 			environmentVariablesMap.put(environmentVariable.getName(),environmentVariable);
-			
+
 		}
 		return environmentVariablesMap;
 	}
@@ -647,14 +637,14 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 		if (hasEnvironmentVariable(name)) {
 			throw new OpenShiftException("Environment variable with name \"{0}\" already exists.", name);
-		}		
-		
+		}
+
 		EnvironmentVariableResourceDTO environmentVariableResourceDTO =
-				new AddEnvironmentVariableRequest().execute(name, value);		
+				new AddEnvironmentVariableRequest().execute(name, value);
 		IEnvironmentVariable environmentVariable = new EnvironmentVariableResource(environmentVariableResourceDTO, this);
-		
+
 		environmentVariablesMap.put(environmentVariable.getName(), environmentVariable);
-		
+
 		return environmentVariable;
 	}
 
@@ -681,54 +671,54 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	@Override
 	public Map<String, IEnvironmentVariable> addEnvironmentVariables(Map<String, String> environmentVariables)
 			throws OpenShiftException {
-	  
-	  Map<String,String>variablesCandidateMap = new HashMap<String,String>();
-	  for(String varCandidateName:environmentVariables.keySet()){
-	    IEnvironmentVariable tempVar = environmentVariablesMap.get(varCandidateName);
-	    if(tempVar != null)
-	    {  if(tempVar.getValue() == environmentVariables.get(varCandidateName))
-	        variablesCandidateMap.put(varCandidateName,environmentVariables.get(varCandidateName));
-	    }
-	    else
-	        variablesCandidateMap.put(varCandidateName, environmentVariables.get(varCandidateName));
-	  }
-	  List<EnvironmentVariableResourceDTO> environmentVariableResourceDTOs = new AddEnvironmentVariablesRequest()
+
+		Map<String,String>variablesCandidateMap = new HashMap<String,String>();
+		for(String varCandidateName:environmentVariables.keySet()){
+			IEnvironmentVariable tempVar = environmentVariablesMap.get(varCandidateName);
+			if(tempVar != null)
+			{  if(tempVar.getValue() == environmentVariables.get(varCandidateName))
+				variablesCandidateMap.put(varCandidateName,environmentVariables.get(varCandidateName));
+			}
+			else
+				variablesCandidateMap.put(varCandidateName, environmentVariables.get(varCandidateName));
+		}
+		List<EnvironmentVariableResourceDTO> environmentVariableResourceDTOs = new AddEnvironmentVariablesRequest()
 				.execute(variablesCandidateMap);
-		
+
 		for (EnvironmentVariableResourceDTO dto : environmentVariableResourceDTOs) {
 			IEnvironmentVariable environmentVariable = new EnvironmentVariableResource(dto, this);
 			environmentVariablesMap.put(environmentVariable.getName(), environmentVariable);
 		}
-		
+
 		return environmentVariablesMap;
 	}
-    /*
-     * (non-Javadoc)
-     * @see com.openshift.client.IApplication#removeEnvironmentVariable(java.lang.String)
-     */
+	/*
+	 * (non-Javadoc)
+	 * @see com.openshift.client.IApplication#removeEnvironmentVariable(java.lang.String)
+	 */
 	@Override
 	public void removeEnvironmentVariable(String targetName) {
-		removeEnvironmentVariable(getEnvironmentVariable(targetName));		
+		removeEnvironmentVariable(getEnvironmentVariable(targetName));
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.openshift.client.IApplication#removeEnvironmentVariable(com.openshift.client.IEnvironmentVariable)
 	 */
 	@Override
-	public void removeEnvironmentVariable(IEnvironmentVariable environmentVariable){      
-      if(getEnvironmentVariable(environmentVariable.getName()) == null)
-        throw new OpenShiftException("IEnvironmentVariable with supplied name does not exist.");
-      environmentVariable.destroy();
-      environmentVariablesMap.remove(environmentVariable.getName());
-     
-    }
-	
-	
+	public void removeEnvironmentVariable(IEnvironmentVariable environmentVariable){
+		if(getEnvironmentVariable(environmentVariable.getName()) == null)
+			throw new OpenShiftException("IEnvironmentVariable with supplied name does not exist.");
+		environmentVariable.destroy();
+		environmentVariablesMap.remove(environmentVariable.getName());
+
+	}
+
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.openshift.client.IApplication#hasEnvironmentVariable(java.lang.String)
 	 */
-    @Override
+	@Override
 	public boolean hasEnvironmentVariable(String name) throws OpenShiftException {
 		if (StringUtils.isEmpty(name)) {
 			throw new OpenShiftException("Environment variable name is mandatory but none was given.");
@@ -736,18 +726,18 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return getEnvironmentVariable(name) != null;
 
 	}
-    
+
 	protected void updateEnvironmentVariables() throws OpenShiftException {
-		if (!canGetEnvironmentVariables()) 
+		if (!canGetEnvironmentVariables())
 			return;
 		else
 		{
-		  environmentVariablesMap.clear();
-		  environmentVariablesMap = loadEnvironmentVariables();
+			environmentVariablesMap.clear();
+			environmentVariablesMap = loadEnvironmentVariables();
 		}
 
 	}
-    
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.openshift.client.IApplication#getEnvironmentVariable(java.lang.String)
@@ -786,11 +776,11 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		} catch (OpenShiftException e) {
 			return false;
 		}
-	}    
-  
+	}
+
 	/**
 	 * List all forwardable ports for a given application.
-	 * 
+	 *
 	 * @param application
 	 * @return the forwardable ports in an unmodifiable collection
 	 * @throws JSchException
@@ -809,7 +799,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	/**
-	 * 
+	 *
 	 * @param command
 	 * @return
 	 * @throws OpenShiftSSHOperationException
@@ -854,7 +844,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 * Extract the named forwardable port from the 'rhc-list-ports' command
 	 * result line, with the following format:
 	 * <code>java -> 127.10.187.1:4447</code>.
-	 * 
+	 *
 	 * @param portValue
 	 * @return the forwardable port.
 	 */
@@ -924,7 +914,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.aliases = dto.getAliases();
 		updateCartridges(dto.getCartridges());
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -972,15 +962,15 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	protected enum SshStreams {
 		EXT_INPUT {
 			protected InputStream getInputStream(Channel channel) throws IOException {
-				return channel.getExtInputStream(); 
+				return channel.getExtInputStream();
 			}
 
 		}, INPUT {
 			protected InputStream getInputStream(Channel channel) throws IOException {
-				return channel.getInputStream(); 
+				return channel.getInputStream();
 			}
 		};
-		
+
 		public List<String> getLines(Channel channel) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(getInputStream(channel)));
 			List<String> lines = new ArrayList<String>();
@@ -991,11 +981,11 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			}
 			return lines;
 		}
-		
+
 		protected abstract InputStream getInputStream(Channel channel) throws IOException;
 
 	}
-	
+
 	private class DeleteApplicationRequest extends ServiceRequest {
 
 		private DeleteApplicationRequest() {
@@ -1083,7 +1073,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 		protected <DTO> DTO execute(String alias) throws OpenShiftException {
 			return super.execute(
-					new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT, IOpenShiftJsonConstants.VALUE_ADD_ALIAS), 
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT, IOpenShiftJsonConstants.VALUE_ADD_ALIAS),
 					new StringParameter(IOpenShiftJsonConstants.PROPERTY_ALIAS, alias));
 		}
 	}
@@ -1096,7 +1086,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 		protected <DTO> DTO execute(String alias) throws OpenShiftException {
 			return super.execute(
-					new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT, IOpenShiftJsonConstants.VALUE_REMOVE_ALIAS), 
+					new StringParameter(IOpenShiftJsonConstants.PROPERTY_EVENT, IOpenShiftJsonConstants.VALUE_REMOVE_ALIAS),
 					new StringParameter(IOpenShiftJsonConstants.PROPERTY_ALIAS, alias));
 		}
 	}
@@ -1122,14 +1112,14 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			return super.execute();
 		}
 	}
-	
+
 	private class GetGearGroupsRequest extends ServiceRequest {
 
 		private GetGearGroupsRequest() {
 			super(LINK_GET_GEAR_GROUPS);
 		}
 	}
-	
+
 	private class ListEnvironmentVariablesRequest extends ServiceRequest {
 		protected ListEnvironmentVariablesRequest() {
 			super(LINK_LIST_ENVIRONMENT_VARIABLES);
@@ -1148,7 +1138,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			return super.execute(parameters.toArray());
 		}
 	}
-	
+
 	private class AddEnvironmentVariablesRequest extends ServiceRequest {
 		protected AddEnvironmentVariablesRequest() {
 			super(LINK_SET_UNSET_ENVIRONMENT_VARIABLES);
@@ -1162,4 +1152,4 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
- }
+}
