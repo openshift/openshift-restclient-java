@@ -16,8 +16,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.openshift.client.*;
 import com.openshift.internal.client.ssh.ApplicationPortForwarding;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,27 +46,23 @@ public class ApplicationSSHSession implements IApplicationSSHSession {
 	/** Regex for port forwarding */
 	private static final Pattern REGEX_FORWARDED_PORT = Pattern.compile("([^ ]+) -> ([^:]+):(\\d+)");
 
-	/** Logger */
-	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationSSHSession.class);
-
 	/**
 	 * Sets the SSH session that this application will use to connect to
 	 * OpenShift to perform some operations. This SSH session must be
 	 * initialized out of the library, since the user's SSH settings may depend
 	 * on the runtime environment (Eclipse, etc.).
 	 *
-	 * @param application
-	 * @param session
-	 * @return An instance of ApplicationSSHSession used for running all methods that require an SSH session
+	 * @param application The application that this SSH session is connecting to
+	 * @param session The SSH session that is connected to the application
 	 */
-	ApplicationSSHSession(IApplication application, Session session) {
+	public ApplicationSSHSession(IApplication application, Session session) {
 		this.application = application;
 		this.session = session;
 	}
 
 	/**
 	 * Set the current SSH session
-	 * @param session
+	 * @param session A new SSH session to use for the ApplicationSSHSession object
 	 */
 	public void setSSHSession(final Session session) {this.session = session;}
 
@@ -169,11 +163,26 @@ public class ApplicationSSHSession implements IApplicationSSHSession {
 	}
 
 	/**
+	 * Get a list of properties from your OpenShift Application
+	 * @return List of properties from your OpenShift application
+	 * @throws OpenShiftSSHOperationException
+	 */
+	@Override
+	public List<String> getEnvironmentProperties() throws OpenShiftSSHOperationException {
+		List<String> openshiftProps = new ArrayList<String>();
+		List<String> allEnvProps = sshExecCmd("set", SshStreams.INPUT);
+		for (String line : allEnvProps) {
+			openshiftProps.add(line);
+		}
+		return openshiftProps;
+	}
+
+	/**
 	 * Extract the named forwardable port from the 'rhc-list-ports' command
 	 * result line, with the following format:
 	 * <code>java -> 127.10.187.1:4447</code>.
 	 *
-	 * @param portValue
+	 * @param portValue The raw port data to parse
 	 * @return the forwardable port.
 	 */
 	private ApplicationPortForwarding extractForwardablePortFrom(final String portValue) {
@@ -194,25 +203,9 @@ public class ApplicationSSHSession implements IApplicationSSHSession {
 	}
 
 	/**
-	 * Get a list of properties from your OpenShift Application
-	 * @return List of properties from your OpenShift application
-	 * @throws OpenShiftSSHOperationException
-	 */
-	@Override
-	public List<String> getEnvironmentProperties() throws OpenShiftSSHOperationException {
-		List<String> openshiftProps = new ArrayList<String>();
-		List<String> allEnvProps = sshExecCmd("set", SshStreams.INPUT);
-		for (String line : allEnvProps) {
-			openshiftProps.add(line);
-		}
-		return openshiftProps;
-	}
-
-	/**
 	 * List all forwardable ports for a given application.
 	 *
 	 * @return the forwardable ports in an unmodifiable collection
-	 * @throws JSchException
 	 * @throws OpenShiftSSHOperationException
 	 */
 	private List<IApplicationPortForwarding> loadPorts() throws OpenShiftSSHOperationException {
@@ -303,8 +296,9 @@ public class ApplicationSSHSession implements IApplicationSSHSession {
 
 	/**
 	 *
-	 * @param command
-	 * @return
+	 * @param command The remote command to run on the server
+	 * @param sshStream The ssh stream to use
+	 * @return The output of the command that is run on the server
 	 * @throws OpenShiftSSHOperationException
 	 */
 	protected List<String> sshExecCmd(final String command, final SshStreams sshStream)
@@ -316,7 +310,6 @@ public class ApplicationSSHSession implements IApplicationSSHSession {
 					application.getName());
 		}
 		Channel channel = null;
-		BufferedReader reader = null;
 		try {
 			session.openChannel("exec");
 			channel = session.openChannel("exec");
@@ -330,14 +323,6 @@ public class ApplicationSSHSession implements IApplicationSSHSession {
 			throw new OpenShiftSSHOperationException(e, "Failed to execute remote ssh command \"{0}\"",
 					application.getName());
 		} finally {
-
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					LOGGER.error("Failed to close SSH error stream reader", e);
-				}
-			}
 
 			if (channel != null && channel.isConnected()) {
 				channel.disconnect();

@@ -40,7 +40,8 @@ import com.openshift.internal.client.response.OpenShiftJsonDTOFactoryTest;
 	OpenShiftExceptionTest.class,
 	FormUrlEncodedMediaTypeTest.class,
 	JsonMediaTypeTest.class,
-	EnvironmentVariableResourceTest.class
+	EnvironmentVariableResourceTest.class,
+	ApplicationSSHSessionTest.class
 })
 
 /**
