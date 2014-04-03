@@ -8,32 +8,48 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.client.cartridge.selector;
+package com.openshift.client.cartridge.query;
+
+import java.util.List;
 
 import com.openshift.client.IApplication;
+import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.internal.client.utils.Assert;
 
 /**
- * A selector that shall select the latest version of an embedded cartidge that's given by name.
+ * A query that shall select the latest version of an embedded cartidge that's given by name.
  * 
  * @author Andre Dietisheim
  * 
  * @see IEmbeddableCartridge
  */
-public class LatestEmbeddableCartridge extends LatestVersionQuery {
+public class LatestEmbeddableCartridge {
+
+	private LatestVersionQuery query;
 
 	public LatestEmbeddableCartridge(final String name) {
-		super(name);
+		this.query = new LatestVersionQuery(name);
 	}
 	
+	public <C extends IEmbeddableCartridge> C get(List<C> cartridges) {
+		Assert.notNull(cartridges);
+		return query.get(cartridges);
+	}
+
+	public IEmbeddableCartridge get(IOpenShiftConnection connection) {
+		Assert.notNull(connection);
+		return get(connection.getEmbeddableCartridges());
+	}
+
 	public IEmbeddableCartridge get(IApplication application) {
-		return get(getConnection(application).getEmbeddableCartridges());
+		Assert.notNull(application);
+		return get(application.getDomain().getUser().getConnection());
 	}
 
 	public IEmbeddableCartridge get(IUser user) {
 		Assert.notNull(user);
-		return get(user.getConnection().getEmbeddableCartridges());
+		return get(user.getConnection());
 	}
 }

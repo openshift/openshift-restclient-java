@@ -77,6 +77,11 @@ public class CartridgeAssert<C extends ICartridge> implements AssertExtension {
 		return this;
 	}
 	
+	public CartridgeAssert<C> isDownloadable() throws OpenShiftException {
+		assertThat(cartridge.isDownloadable()).isTrue();
+		return this;
+	}
+
 	public CartridgeAssert<C> hasUrl(String url) throws OpenShiftException {
 		URL cartridgeUrl = cartridge.getUrl();
 		if (cartridgeUrl == null) {

@@ -37,6 +37,7 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_DOMAINS = "domains";
 	public static final String PROPERTY_DOMAIN_ID = "domain_id";
 	public static final String PROPERTY_EMBEDDED = "embedded";
+	public static final String PROPERTY_ENVIRONMENT_VARIABLES = "environment_variables";
 	public static final String PROPERTY_EVENT = "event";
 	public static final String PROPERTY_EXIT_CODE = "exit_code";
 	public static final String PROPERTY_FIELD = "field";
@@ -55,6 +56,7 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_KEY_TYPE = "key_type";
 	public static final String PROPERTY_KEYS = "keys";
 	public static final String PROPERTY_KEY = "key";
+	public static final String PROPERTY_LANGUAGE = "language";
 	public static final String PROPERTY_LOGIN = "login";
 	public static final String PROPERTY_LINKS = "links";
 	public static final String PROPERTY_MESSAGES = "messages";
@@ -64,8 +66,10 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_OPTIONAL_PARAMS = "optional_params";
 	public static final String PROPERTY_PROPERTIES = "properties";
 	public static final String PROPERTY_PROPERTY = "property";
+	public static final String PROPERTY_PROVIDER = "provider";
 	public static final String PROPERTY_PROXY_PORT = "proxy_port";
 	public static final String PROPERTY_PROXY_HOST = "proxy_host";
+	public static final String PROPERTY_QUICKSTART = "quickstart";
 	public static final String PROPERTY_REL = "rel";
 	public static final String PROPERTY_REQUIRED_PARAMS = "required_params";
 	public static final String PROPERTY_RESULT = "result";
@@ -79,15 +83,18 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_SSH_TYPE = "ssh_type";
 	public static final String PROPERTY_SSH_URL = "ssh_url";
 	public static final String PROPERTY_STATUS = "status";
+	public static final String PROPERTY_SUMMARY = "summary";
 	public static final String PROPERTY_SUFFIX = "suffix";
+	public static final String PROPERTY_TAGS = "tags";
 	public static final String PROPERTY_TEXT = "text";
 	public static final String PROPERTY_TYPE = "type";
+    public static final String PROPERTY_UPDATED = "updated";
     public static final String PROPERTY_URL = "url";
 	public static final String PROPERTY_USER_INFO = "user_info";
 	public static final String PROPERTY_UUID = "uuid";
 	public static final String PROPERTY_VALID_OPTIONS = "valid_options";
 	public static final String PROPERTY_VALUE = "value";
-	public static final String PROPERTY_ENVIRONMENT_VARIABLES = "environment_variables";
+	public static final String PROPERTY_WEBSITE = "website";
     
 	public static final String VALUE_STATUS_OK = "ok";
 	public static final String VALUE_STATUS_CREATED = "created";

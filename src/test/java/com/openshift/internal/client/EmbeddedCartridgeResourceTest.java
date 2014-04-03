@@ -10,7 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.Cartridges.FOREMAN_DOWNLOAD_URL;
+import static com.openshift.client.utils.CartridgeTestUtils.FOREMAN_URL;
 import static com.openshift.client.utils.Samples.GET_DOMAINS;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_2EMBEDDED;
 import static com.openshift.client.utils.Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_3EMBEDDED;
@@ -39,9 +39,9 @@ import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
-import com.openshift.client.cartridge.selector.UrlPropertyQuery;
+import com.openshift.client.cartridge.query.UrlPropertyQuery;
 import com.openshift.client.utils.CartridgeAssert;
-import com.openshift.client.utils.Cartridges;
+import com.openshift.client.utils.CartridgeTestUtils;
 import com.openshift.client.utils.EmbeddedCartridgeAssert;
 import com.openshift.client.utils.ResourcePropertyAssert;
 import com.openshift.client.utils.Samples;
@@ -99,8 +99,8 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 		// pre-coniditions
 		// operation
 		// verification
-		assertEquals(new EmbeddableCartridge(null, new URL(Cartridges.FOREMAN_DOWNLOAD_URL)),
-				new EmbeddableCartridge("redhat", new URL(Cartridges.FOREMAN_DOWNLOAD_URL)));
+		assertEquals(new EmbeddableCartridge(null, new URL(CartridgeTestUtils.FOREMAN_URL)),
+				new EmbeddableCartridge("redhat", new URL(CartridgeTestUtils.FOREMAN_URL)));
 	}
 
 	@Test
@@ -122,8 +122,8 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 	public void shouldHaveUrlProperty() throws Throwable {
 		// pre-conditions
 		// operation
-		IEmbeddedCartridge mongo = application.getEmbeddedCartridge(Cartridges.MONGODB_22_NAME);
-		IEmbeddedCartridge mysql = application.getEmbeddedCartridge(Cartridges.MYSQL_51_NAME);
+		IEmbeddedCartridge mongo = application.getEmbeddedCartridge(CartridgeTestUtils.MONGODB_22_NAME);
+		IEmbeddedCartridge mysql = application.getEmbeddedCartridge(CartridgeTestUtils.MYSQL_51_NAME);
 
 		// verifications
 		UrlPropertyQuery selector = new UrlPropertyQuery();
@@ -138,7 +138,7 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 	@Test
 	public void shouldNotHaveUrlInNonDownloadableCartridge() throws Throwable {
 		// pre-conditions
-		IEmbeddableCartridge mysql = new EmbeddableCartridge(Cartridges.MYSQL_51_NAME);
+		IEmbeddableCartridge mysql = new EmbeddableCartridge(CartridgeTestUtils.MYSQL_51_NAME);
 		assertThat(mysql.getUrl()).isNull();
 
 		// operation
@@ -161,9 +161,9 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 		IApplication downloadablecartApp = domain.getApplicationByName("downloadablecart");
 		assertThat(downloadablecartApp).isNotNull();
 
-		IEmbeddableCartridge foreman = new EmbeddableCartridge(new URL(FOREMAN_DOWNLOAD_URL));
+		IEmbeddableCartridge foreman = new EmbeddableCartridge(new URL(FOREMAN_URL));
 		new CartridgeAssert<IEmbeddableCartridge>(foreman)
-				.hasUrl(Cartridges.FOREMAN_DOWNLOAD_URL)
+				.hasUrl(CartridgeTestUtils.FOREMAN_URL)
 				.hasName(null)
 				.hasDescription(null)
 				.hasDisplayName(null);
@@ -173,7 +173,7 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 		// verifications
 		// embedded cartridge should get updated with name, description and display name
 		new EmbeddedCartridgeAssert(embeddedForeman)
-				.hasUrl(Cartridges.FOREMAN_DOWNLOAD_URL)
+				.hasUrl(CartridgeTestUtils.FOREMAN_URL)
 				.hasName("andygoldstein-foreman-0.63.0")
 				.hasDescription("Foreman TODO")
 				.hasDisplayName("Foreman");
@@ -259,8 +259,8 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 		// pre-conditions
 		// operation
 		// verifications
-		assertThat(Cartridges.go11().isDownloadable()).isTrue();
-		assertThat(Cartridges.foreman063().isDownloadable()).isTrue();
+		assertThat(CartridgeTestUtils.go11().isDownloadable()).isTrue();
+		assertThat(CartridgeTestUtils.foreman063().isDownloadable()).isTrue();
 	}
 
 	@Test

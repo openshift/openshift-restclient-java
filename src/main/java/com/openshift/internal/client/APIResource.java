@@ -12,6 +12,7 @@ package com.openshift.internal.client;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -20,9 +21,11 @@ import java.util.concurrent.Executors;
 import com.openshift.client.IDomain;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
+import com.openshift.client.IQuickstart;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
@@ -31,6 +34,8 @@ import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
 import com.openshift.internal.client.response.DomainResourceDTO;
 import com.openshift.internal.client.response.Link;
+import com.openshift.internal.client.response.QuickstartDTO;
+import com.openshift.internal.client.response.QuickstartJsonDTOFactory;
 import com.openshift.internal.client.response.UserResourceDTO;
 import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
@@ -48,12 +53,13 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 
 	private final String login;
 	private final String password;
-	private List<IDomain> domains;
 	private UserResource user;
 	//TODO: implement switch that allows to turn ssl checks on/off 
 	private boolean doSSLChecks = false;
-	private final List<IStandaloneCartridge> standaloneCartridgeNames = new ArrayList<IStandaloneCartridge>();
-	private final List<IEmbeddableCartridge> embeddedCartridgeNames = new ArrayList<IEmbeddableCartridge>();
+	private List<IDomain> domains;
+	private List<IStandaloneCartridge> standaloneCartridges;
+	private List<IEmbeddableCartridge> embeddableCartridges;
+	private Map<String, IQuickstart> quickstartsByName;
 	private final ExecutorService executorService;
 	
 	protected APIResource(final String login, final String password, final IRestService service,
@@ -72,6 +78,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		return password;
 	}
 	
+	@Override
 	public String getServer() {
 		return getService().getPlatformUrl();
 	}
@@ -101,6 +108,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		System.setProperty(SYSPROPERTY_PROXY_PORT, proxyPort);
 	}
 
+	@Override
 	public IUser getUser() throws OpenShiftException {
 		if (user == null) {
 			this.user = new UserResource(this, new GetUserRequest().execute(), this.password);
@@ -108,6 +116,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		return this.user;
 	}
 
+	@Override
 	public List<IDomain> getDomains() throws OpenShiftException {
 		if (domains == null) {
 			this.domains = loadDomains();
@@ -163,38 +172,63 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		// TODO: implement caching
 		return domain;
 	}
-
+	
+	@Override
 	public List<IStandaloneCartridge> getStandaloneCartridges() throws OpenShiftException {
-		if (standaloneCartridgeNames.isEmpty()) {
-			retrieveCartridges();
-		}
-		return standaloneCartridgeNames;
+		return CollectionUtils.toUnmodifiableCopy(getOrLoadStandaloneCartridges());
 	}
 
+	protected List<IStandaloneCartridge> getOrLoadStandaloneCartridges() throws OpenShiftException {
+		if (standaloneCartridges == null) {
+			loadCartridges();
+		}
+		return standaloneCartridges;
+	}
+
+	@Override
 	public List<IEmbeddableCartridge> getEmbeddableCartridges() throws OpenShiftException {
-		if (embeddedCartridgeNames.isEmpty()) {
-			retrieveCartridges();
+		return CollectionUtils.toUnmodifiableCopy(getOrLoadEmbeddableCartridges());
+	}
+	
+	protected List<IEmbeddableCartridge> getOrLoadEmbeddableCartridges() throws OpenShiftException {
+		if (embeddableCartridges == null) {
+			loadCartridges();
 		}
-		return CollectionUtils.toUnmodifiableCopy(embeddedCartridgeNames);
+		return embeddableCartridges;
 	}
 
-	private void retrieveCartridges() throws OpenShiftException {
+	@Override
+	public List<ICartridge> getCartridges() {
+		List<IEmbeddableCartridge> embeddableCartridges = getOrLoadEmbeddableCartridges();
+		List<IStandaloneCartridge> standaloneCartridges = getOrLoadStandaloneCartridges();
+		List<ICartridge> cartridges = new ArrayList<ICartridge>(embeddableCartridges.size() + standaloneCartridges.size());
+		cartridges.addAll(embeddableCartridges);
+		cartridges.addAll(standaloneCartridges);
+		return cartridges;
+	}
+	
+	private void loadCartridges() throws OpenShiftException {
 		final Map<String, CartridgeResourceDTO> cartridgeDTOsByName = new GetCartridgesRequest().execute();
+		this.standaloneCartridges = new ArrayList<IStandaloneCartridge>();
+		this.embeddableCartridges = new ArrayList<IEmbeddableCartridge>();
 		for (CartridgeResourceDTO cartridgeDTO : cartridgeDTOsByName.values()) {
-			// TODO replace by enum (standalone, embedded)
-			switch (cartridgeDTO.getType()) {
-			case STANDALONE:
-				this.standaloneCartridgeNames.add(
-						new StandaloneCartridge(
-								cartridgeDTO.getName(), cartridgeDTO.getDisplayName(), cartridgeDTO.getDescription()));
-				break;
-			case EMBEDDED:
-				this.embeddedCartridgeNames.add(
-						new EmbeddableCartridge(
-								cartridgeDTO.getName(), cartridgeDTO.getDisplayName(), cartridgeDTO.getDescription()));
-				break;
-			default:
-			}
+			addCartridgeCartridge(cartridgeDTO, standaloneCartridges, embeddableCartridges);
+		}
+	}
+	
+	private void addCartridgeCartridge(CartridgeResourceDTO dto, List<IStandaloneCartridge> standaloneCartridges,
+			List<IEmbeddableCartridge> embeddableCartridges) {
+		switch (dto.getType()) {
+		case STANDALONE:
+			standaloneCartridges.add(
+					new StandaloneCartridge(dto.getName(), dto.getDisplayName(), dto.getDescription()));
+			break;
+		case EMBEDDED:
+			embeddableCartridges.add(
+					new EmbeddableCartridge(dto.getName(), dto.getDisplayName(), dto.getDescription()));
+			break;
+		case UNDEFINED:
+			break;
 		}
 	}
 	
@@ -216,14 +250,29 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	protected boolean hasDomain(String name) throws OpenShiftException {
 		return getDomain(name) != null;
 	}
+	
+	public List<IQuickstart> getQuickstarts() {
+		if (quickstartsByName == null) {
+			this.quickstartsByName = loadQuickstarts();
+		}
+		return CollectionUtils.toUnmodifiableCopy(this.quickstartsByName.values());
+	}
+
+	private Map<String, IQuickstart> loadQuickstarts() throws OpenShiftException {
+		Map<String, IQuickstart> quickstarts = new HashMap<String, IQuickstart>();
+		for (QuickstartDTO quickstartDTO : new ListQuickstartsRequest().execute()) {
+			quickstarts.put(quickstartDTO.getName(), new Quickstart(quickstartDTO, this));
+		}
+		return quickstarts;
+	}
 
 	public ExecutorService getExecutorService() {
 		return executorService;
 	}
 	
 	public void disconnect() {
-		standaloneCartridgeNames.clear();
-		embeddedCartridgeNames.clear();
+		standaloneCartridges = null;
+		embeddableCartridges = null;
 		domains = null;
 		executorService.shutdownNow();
 	}
@@ -285,4 +334,16 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 					Collections.<Parameter>emptyList()); // request body parameter
 		}
 	}
+
+	private class ListQuickstartsRequest extends ServiceRequest {
+
+		private ListQuickstartsRequest() throws OpenShiftException {
+			super("LIST_QUICKSTARTS");
+		}
+
+		protected List<QuickstartDTO> execute() throws OpenShiftException {
+			return super.execute(IHttpClient.NO_TIMEOUT, new QuickstartJsonDTOFactory(), Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
+		}
+	}
+
 }

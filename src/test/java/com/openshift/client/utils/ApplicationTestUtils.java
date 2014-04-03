@@ -23,8 +23,8 @@ import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.cartridge.selector.LatestStandaloneCartridge;
-import com.openshift.client.cartridge.selector.LatestVersionOf;
+import com.openshift.client.cartridge.query.LatestStandaloneCartridge;
+import com.openshift.client.cartridge.query.LatestVersionOf;
 
 /**
  * @author André Dietisheim

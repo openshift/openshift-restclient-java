@@ -15,6 +15,7 @@ import java.net.URL;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
+import com.openshift.internal.client.CartridgeType;
 
 /**
  * A (base) cartridge for an OpenShift application.
@@ -24,18 +25,18 @@ import com.openshift.client.cartridge.StandaloneCartridge;
  * @see EmbeddableCartridge
  * @see StandaloneCartridge
  */
-public abstract class BaseCartridge implements ICartridge {
+public class BaseCartridge implements ICartridge {
 
 	private final String name;
 	private String displayName;
 	private String description;
 	private URL url;
 
-	protected BaseCartridge(final String name) {
+	public BaseCartridge(final String name) {
 		this(name, null, null, null);
 	}
 
-	protected BaseCartridge(final URL url) {
+	public BaseCartridge(final URL url) {
 		this(null, url, null, null);
 	}
 
@@ -78,7 +79,12 @@ public abstract class BaseCartridge implements ICartridge {
 	public URL getUrl() {
 		return url;
 	}
-
+	
+	@Override
+	public CartridgeType getType() {
+		return CartridgeType.UNDEFINED;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -129,5 +135,4 @@ public abstract class BaseCartridge implements ICartridge {
 				+ ", description=" + description
 				+ " ]";
 	}
-
 }

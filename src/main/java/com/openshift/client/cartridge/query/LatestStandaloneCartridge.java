@@ -8,32 +8,40 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.client.cartridge.selector;
+package com.openshift.client.cartridge.query;
 
 import com.openshift.client.IApplication;
+import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.utils.Assert;
 
 /**
- * A selector that shall select the latest version of a standalone cartidge that's given by name.
+ * A query that shall select the latest version of a standalone cartidge that's given by name.
  * 
  * @author Andre Dietisheim
  * 
  * @see IStandaloneCartridge
  */
-public class LatestStandaloneCartridge extends LatestVersionQuery {
+public class LatestStandaloneCartridge {
+
+	private LatestVersionQuery query;
 
 	public LatestStandaloneCartridge(final String name) {
-		super(name);
+		this.query = new LatestVersionQuery(name);
 	}
 	
+	public IStandaloneCartridge get(IOpenShiftConnection connection) {
+		Assert.isTrue(connection != null);
+		return query.get(connection.getStandaloneCartridges());
+	}
+
 	public IStandaloneCartridge get(IApplication application) {
-		return get(getConnection(application).getStandaloneCartridges());
+		return get(application.getDomain().getUser().getConnection());
 	}
 
 	public IStandaloneCartridge get(IUser user) {
 		Assert.notNull(user);
-		return get(user.getConnection().getStandaloneCartridges());
+		return get(user.getConnection());
 	}
 }

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 
@@ -63,6 +64,23 @@ public interface IOpenShiftConnection {
 	 * @throws OpenShiftException
 	 */
 	public List<IEmbeddableCartridge> getEmbeddableCartridges() throws OpenShiftException;
+
+	/**
+	 * Returns all the available cartridges, embeddable and standalone ones.
+	 * 
+	 * @return the all the available cartridges
+	 * @throws OpenShiftException
+	 */
+	public List<ICartridge> getCartridges() throws OpenShiftException;
+
+	/**
+	 * Returns the available quickstarts associated with the current
+	 * OpenShift connection.
+	 * 
+	 * @return the available quickstarts
+	 * @throws OpenShiftException
+	 */
+	public List<IQuickstart> getQuickstarts() throws OpenShiftException;
 
 	/**
 	 * Sets flag for enabling SSL certificate checks (i.e. self-signed SSL

@@ -10,8 +10,8 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import static com.openshift.client.utils.Cartridges.FOREMAN_DOWNLOAD_URL;
-import static com.openshift.client.utils.Cartridges.MYSQL_51_NAME;
+import static com.openshift.client.utils.CartridgeTestUtils.FOREMAN_URL;
+import static com.openshift.client.utils.CartridgeTestUtils.MYSQL_51_NAME;
 import static com.openshift.client.utils.Samples.*;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -36,7 +36,7 @@ import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.utils.CartridgeAssert;
-import com.openshift.client.utils.Cartridges;
+import com.openshift.client.utils.CartridgeTestUtils;
 import com.openshift.client.utils.EmbeddedCartridgeAssert;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.Samples;
@@ -305,7 +305,7 @@ public class ApplicationResourceTest extends TestTimer {
 		// pre-conditions
 		// operation
 		final IApplication app = domain.getApplicationByName("springeap6");
-		IEmbeddedCartridge mongo = app.getEmbeddedCartridge(Cartridges.mongodb22());
+		IEmbeddedCartridge mongo = app.getEmbeddedCartridge(CartridgeTestUtils.mongodb22());
 		// verifications
 		// embedded cartridge should get updated with name, description and
 		// display name
@@ -323,9 +323,9 @@ public class ApplicationResourceTest extends TestTimer {
 		IApplication application = domain.getApplicationByName("downloadablecart");
 		assertThat(application).isNotNull();
 
-		IEmbeddableCartridge foreman = new EmbeddableCartridge(null, new URL(FOREMAN_DOWNLOAD_URL));
+		IEmbeddableCartridge foreman = new EmbeddableCartridge(null, new URL(FOREMAN_URL));
 		new CartridgeAssert<IEmbeddableCartridge>(foreman)
-				.hasUrl(Cartridges.FOREMAN_DOWNLOAD_URL)
+				.hasUrl(CartridgeTestUtils.FOREMAN_URL)
 				.hasName(null)
 				.hasDescription(null)
 				.hasDisplayName(null);
@@ -336,7 +336,7 @@ public class ApplicationResourceTest extends TestTimer {
 		// embedded cartridge should get updated with name, description and
 		// display name
 		new EmbeddedCartridgeAssert(embeddedForeman)
-				.hasUrl(Cartridges.FOREMAN_DOWNLOAD_URL);
+				.hasUrl(CartridgeTestUtils.FOREMAN_URL);
 	}
 
 	@Test
@@ -368,7 +368,7 @@ public class ApplicationResourceTest extends TestTimer {
 		assertThat(app.getEmbeddedCartridges()).hasSize(1);
 
 		// operation
-		app.addEmbeddableCartridge(Cartridges.mysql51());
+		app.addEmbeddableCartridge(CartridgeTestUtils.mysql51());
 
 		// verifications
 		mockDirector.verifyAddEmbeddableCartridge("foobarz", "springeap6");
@@ -407,7 +407,7 @@ public class ApplicationResourceTest extends TestTimer {
 
 		// operation
 		try {
-			app.addEmbeddableCartridge(new EmbeddableCartridge(Cartridges.POSTGRESQL_84_NAME));
+			app.addEmbeddableCartridge(new EmbeddableCartridge(CartridgeTestUtils.POSTGRESQL_84_NAME));
 			fail("Expected an exception here...");
 		} catch (OpenShiftTimeoutException e) {
 			// ok
@@ -415,7 +415,7 @@ public class ApplicationResourceTest extends TestTimer {
 
 		// verifications
 		mockDirector.verifyAddEmbeddableCartridge("foobarz", "springeap6");
-		assertThat(app.getEmbeddedCartridge(Cartridges.POSTGRESQL_84_NAME)).isNull();
+		assertThat(app.getEmbeddedCartridge(CartridgeTestUtils.POSTGRESQL_84_NAME)).isNull();
 		assertThat(app.getEmbeddedCartridges()).hasSize(2);
 	}
 

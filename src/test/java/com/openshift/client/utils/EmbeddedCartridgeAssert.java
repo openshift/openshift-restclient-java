@@ -19,7 +19,7 @@ import org.fest.assertions.AssertExtension;
 
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
-import com.openshift.client.cartridge.selector.UrlPropertyQuery;
+import com.openshift.client.cartridge.query.UrlPropertyQuery;
 import com.openshift.internal.client.response.CartridgeResourceProperty;
 
 /**

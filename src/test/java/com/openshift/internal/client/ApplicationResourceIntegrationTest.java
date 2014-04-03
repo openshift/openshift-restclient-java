@@ -34,7 +34,7 @@ import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.cartridge.selector.LatestVersionOf;
+import com.openshift.client.cartridge.query.LatestVersionOf;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.GearGroupsAssert;

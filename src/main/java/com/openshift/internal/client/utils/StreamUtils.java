@@ -27,6 +27,8 @@ import java.util.List;
  */
 public class StreamUtils {
 
+	public static final String UTF_8 = "UTF-8";
+	
 	/**
 	 * Writes the content of the given input stream to the given output stream
 	 * and returns and input stream that may still be used to read from.
@@ -56,6 +58,13 @@ public class StreamUtils {
 			return null;
 		}
 		return readToString(new InputStreamReader(inputStream));
+	}
+
+	public static String readToString(InputStream inputStream, String encoding) throws IOException {
+		if (inputStream == null) {
+			return null;
+		}
+		return readToString(new InputStreamReader(inputStream, encoding));
 	}
 
 	public static String readToString(Reader reader) throws IOException {

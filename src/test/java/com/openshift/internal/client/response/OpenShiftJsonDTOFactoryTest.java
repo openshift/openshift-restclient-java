@@ -18,19 +18,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.openshift.client.utils.*;
-import com.openshift.internal.client.GearProfile;
 import org.fest.assertions.Condition;
 import org.junit.Test;
 
 import com.openshift.client.ApplicationScale;
-import com.openshift.client.GearState;
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IField;
-import com.openshift.client.IGearProfile;
 import com.openshift.client.Message;
 import com.openshift.client.Messages;
+import com.openshift.client.utils.CartridgeTestUtils;
+import com.openshift.client.utils.MessageAssert;
+import com.openshift.client.utils.ResourcePropertyAssert;
+import com.openshift.client.utils.Samples;
 import com.openshift.internal.client.CartridgeType;
+import com.openshift.internal.client.GearProfile;
 
 public class OpenShiftJsonDTOFactoryTest {
 
@@ -210,7 +211,7 @@ public class OpenShiftJsonDTOFactoryTest {
 		assertThat(applicationDTO.getCreationTime()).isEqualTo("2013-09-20T21:28:53Z");
 		assertThat(applicationDTO.getApplicationUrl()).isEqualTo("http://springeap6-foobarz.rhcloud.com/");
 		assertThat(applicationDTO.getSshUrl()).isEqualTo("ssh://523cbe15e0b8cd0a520001b6@springeap6-foobarz.rhcloud.com");
-		assertThat(applicationDTO.getFramework()).isEqualTo(Cartridges.JBOSSEAP_6_NAME);
+		assertThat(applicationDTO.getFramework()).isEqualTo(CartridgeTestUtils.JBOSSEAP_6_NAME);
 		assertThat(applicationDTO.getName()).isEqualTo("springeap6");
 		assertThat(applicationDTO.getApplicationScale()).isEqualTo(ApplicationScale.NO_SCALE);
 		assertThat(applicationDTO.getGitUrl()).isEqualTo(
@@ -222,14 +223,14 @@ public class OpenShiftJsonDTOFactoryTest {
 		assertThat(applicationDTO.getAliases()).containsExactly("jbosstools.org");
 		assertThat(applicationDTO.getUuid()).isEqualTo("523cbe15e0b8cd0a520001b6");
 		assertThat(applicationDTO.getCartridges().keySet()).containsOnly(
-				Cartridges.JBOSSEAP_6_NAME,
-				Cartridges.MONGODB_22_NAME,
-				Cartridges.MYSQL_51_NAME);
+				CartridgeTestUtils.JBOSSEAP_6_NAME,
+				CartridgeTestUtils.MONGODB_22_NAME,
+				CartridgeTestUtils.MYSQL_51_NAME);
 		CartridgeResourceDTO cartridgeResourceDTO = 
-				applicationDTO.getCartridges().get(Cartridges.MONGODB_22_NAME);
+				applicationDTO.getCartridges().get(CartridgeTestUtils.MONGODB_22_NAME);
 		assertThat(cartridgeResourceDTO).isNotNull();
 		assertThat(cartridgeResourceDTO.getType()).isEqualTo(CartridgeType.EMBEDDED);
-		assertThat(cartridgeResourceDTO.getName()).isEqualTo(Cartridges.MONGODB_22_NAME);
+		assertThat(cartridgeResourceDTO.getName()).isEqualTo(CartridgeTestUtils.MONGODB_22_NAME);
 		assertThat(cartridgeResourceDTO.getDescription()).startsWith("MongoDB is a scalable, high-performance, "); 
 		assertThat(cartridgeResourceDTO.getDisplayName()).startsWith("MongoDB NoSQL Database "); 
 		assertThat(cartridgeResourceDTO.getMessages()).isNull(); // dito
@@ -257,7 +258,7 @@ public class OpenShiftJsonDTOFactoryTest {
 		assertThat(application.getUuid()).hasSize(24);
 		assertThat(application.getCreationTime()).startsWith("2013-");
 		assertThat(application.getDomainId()).isEqualTo("foobarz");
-		assertThat(application.getFramework()).isEqualTo(Cartridges.JBOSSEAP_6_NAME);
+		assertThat(application.getFramework()).isEqualTo(CartridgeTestUtils.JBOSSEAP_6_NAME);
 		assertThat(application.getName()).isEqualTo("springeap6");
 		assertThat(application.getLinks()).hasSize(18);
 		assertThat(application.getAliases()).contains("jbosstools.org", "redhat.com");
@@ -306,7 +307,7 @@ public class OpenShiftJsonDTOFactoryTest {
 
 		assertThat(response.getDataType()).isEqualTo(EnumDataType.cartridge);
 		final CartridgeResourceDTO cartridge = response.getData();
-		assertThat(cartridge.getName()).isEqualTo(Cartridges.MYSQL_51_NAME);
+		assertThat(cartridge.getName()).isEqualTo(CartridgeTestUtils.MYSQL_51_NAME);
 		assertThat(cartridge.getDisplayName()).isEqualTo("MySQL Database 5.1");
 		assertThat(cartridge.getDescription()).isEqualTo("MySQL is a multi-user, multi-threaded SQL database server.");
 		assertThat(cartridge.getType()).isEqualTo(CartridgeType.EMBEDDED);
@@ -356,9 +357,9 @@ public class OpenShiftJsonDTOFactoryTest {
 		final Map<String, CartridgeResourceDTO> cartridges = response.getData();
 		assertThat(cartridges).hasSize(3); // mysql, mongo, jbosseap
 		assertThat(cartridges.values()).onProperty("name").containsOnly(
-				Cartridges.MONGODB_22_NAME,
-				Cartridges.MYSQL_51_NAME,
-				Cartridges.JBOSSEAP_6_NAME);
+				CartridgeTestUtils.MONGODB_22_NAME,
+				CartridgeTestUtils.MYSQL_51_NAME,
+				CartridgeTestUtils.JBOSSEAP_6_NAME);
 	}
 
 	@Test
@@ -374,9 +375,9 @@ public class OpenShiftJsonDTOFactoryTest {
 		Map<String, CartridgeResourceDTO> cartridges = response.getData();
 		assertThat(cartridges).hasSize(3);
 		assertThat(cartridges.values()).onProperty("name").containsOnly(
-				Cartridges.MONGODB_22_NAME,
-				Cartridges.MYSQL_51_NAME,
-				Cartridges.JBOSSEAP_6_NAME);
+				CartridgeTestUtils.MONGODB_22_NAME,
+				CartridgeTestUtils.MYSQL_51_NAME,
+				CartridgeTestUtils.JBOSSEAP_6_NAME);
 	}
 
 	@Test

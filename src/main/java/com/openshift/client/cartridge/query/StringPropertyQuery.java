@@ -8,14 +8,13 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.client.cartridge.selector;
+package com.openshift.client.cartridge.query;
 
 import java.util.regex.Pattern;
 
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.internal.client.cartridge.AbstractCartridgeQuery;
 import com.openshift.internal.client.utils.Assert;
 
 /**

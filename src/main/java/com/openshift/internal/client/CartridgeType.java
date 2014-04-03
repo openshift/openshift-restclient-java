@@ -13,7 +13,7 @@ package com.openshift.internal.client;
 
 public enum CartridgeType {
 
-	EMBEDDED, STANDALONE;
+	EMBEDDED, STANDALONE, UNDEFINED;
 	
 	public static CartridgeType safeValueOf(String type) {
 		try {

@@ -8,32 +8,26 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client.cartridge;
+package com.openshift.client.cartridge.query;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.cartridge.ICartridge;
-import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.internal.client.utils.Assert;
 
 /**
- * A base class for a constraint that shall match available embeddable
- * cartridges (on the platform). Among several matching ones, the one with the
- * highest version is chosen. application.
+ * A base query class for query that shall match cartridges. 
  * 
  * @author Andre Dietisheim
- * 
- * @see IEmbeddableCartridge for cartridges that have already been added and
- *      configured to an application.
  */
-public abstract class AbstractCartridgeQuery {
+public abstract class AbstractCartridgeQuery implements ICartridgeQuery {
 	
-	public <C extends ICartridge> Collection<C> getAll(Collection<C> cartridges) {
+	@Override
+	public <C extends ICartridge> List<C> getAll(List<C> cartridges) {
 		List<C> matchingCartridges = new ArrayList<C>();
 
 		if (cartridges == null) {
@@ -49,8 +43,9 @@ public abstract class AbstractCartridgeQuery {
 		return matchingCartridges;
 	}
 	
-	public <C extends ICartridge> C get(Collection<C> cartridges) {
-		 Collection<C> matchingCartridges = getAll(cartridges);
+	@Override
+	public <C extends ICartridge> C get(List<C> cartridges) {
+		List<C> matchingCartridges = getAll(cartridges);
 		 if (matchingCartridges == null
 				 || matchingCartridges.size() == 0) {
 			 return null;
@@ -58,6 +53,7 @@ public abstract class AbstractCartridgeQuery {
 		 return matchingCartridges.iterator().next();
 	}
 
+	@Override
 	public abstract <C extends ICartridge> boolean matches(C cartridge);
 
 	protected IOpenShiftConnection getConnection(IApplication application) {

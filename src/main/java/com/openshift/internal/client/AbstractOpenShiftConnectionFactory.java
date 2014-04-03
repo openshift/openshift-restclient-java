@@ -11,11 +11,14 @@
 package com.openshift.internal.client;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
 import com.openshift.client.HttpMethod;
+import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftException;
+import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.RestResponse;
 
@@ -31,7 +34,11 @@ public abstract class AbstractOpenShiftConnectionFactory {
 	@SuppressWarnings("unchecked")
 	protected IOpenShiftConnection getConnection(IRestService service, final String login, final String password) throws IOException, OpenShiftException {
 		RestResponse response =
-				(RestResponse) service.request(new Link("Get API", "/api", HttpMethod.GET));
+				(RestResponse) service.request(
+						new Link("Get API", "/api", HttpMethod.GET), 
+						IHttpClient.NO_TIMEOUT,
+						Collections.<Parameter> emptyList(), 
+						Collections.<Parameter> emptyList());
 		return new APIResource(login, password, service, (Map<String, Link>) response.getData());
 	}
 	

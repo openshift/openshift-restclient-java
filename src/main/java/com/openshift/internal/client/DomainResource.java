@@ -158,8 +158,8 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 		}
 
 		ApplicationResourceDTO applicationDTO =
-				new CreateApplicationRequest().execute(name, cartridge, scale, gearProfile, initialGitUrl, timeout,
-						null, cartridges);
+				new CreateApplicationRequest().execute(
+						name, cartridge, scale, gearProfile, initialGitUrl, timeout, null, cartridges);
 		IApplication application = new ApplicationResource(applicationDTO, this);
 
 		getOrLoadApplications().add(application);

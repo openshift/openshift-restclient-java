@@ -48,30 +48,37 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		this.application = application;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public String getDisplayName() {
 		return displayName;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
-	protected CartridgeType getType() {
+	@Override
+	public CartridgeType getType() {
 		return type;
 	}
 
+	@Override
 	public URL getUrl() {
 		return url;
 	}
 	
+	@Override
 	public boolean isDownloadable() {
 		return url != null;
 	}
 	
+	@Override
 	public IApplication getApplication() {
 		return application;
 	}
@@ -97,6 +104,7 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		application.refreshEmbeddedCartridges(); 
 	}
 
+	@Override
 	public void destroy() throws OpenShiftException {
 		new DeleteCartridgeRequest().execute();
 		application.removeEmbeddedCartridge(this);
@@ -105,13 +113,6 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	@Override
 	public CartridgeResourceProperties getProperties() {
 		return properties;
-	}
-
-	private class DeleteCartridgeRequest extends ServiceRequest {
-
-		private DeleteCartridgeRequest() {
-			super(LINK_DELETE_CARTRIDGE);
-		}
 	}
 
 	@Override
@@ -156,4 +157,10 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 				+ "]";
 	}
 
+	private class DeleteCartridgeRequest extends ServiceRequest {
+		
+		private DeleteCartridgeRequest() {
+			super(LINK_DELETE_CARTRIDGE);
+		}
+	}
 }

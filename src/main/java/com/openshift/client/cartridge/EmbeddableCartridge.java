@@ -13,6 +13,7 @@ package com.openshift.client.cartridge;
 import java.net.URL;
 
 import com.openshift.internal.client.APIResource;
+import com.openshift.internal.client.CartridgeType;
 import com.openshift.internal.client.cartridge.BaseCartridge;
 
 /**
@@ -36,6 +37,11 @@ public class EmbeddableCartridge extends BaseCartridge implements IEmbeddableCar
 
 	public EmbeddableCartridge(final String name, final URL url) {
 		super(name, url);
+	}
+
+	@Override
+	public CartridgeType getType() {
+		return CartridgeType.EMBEDDED;
 	}
 
 	/**
