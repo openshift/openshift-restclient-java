@@ -33,6 +33,10 @@ public class LatestEmbeddableCartridge {
 		this.query = new LatestVersionQuery(name);
 	}
 	
+	public boolean matches(IEmbeddableCartridge cartridge) {
+		return query.matches(cartridge);
+	}
+
 	public <C extends IEmbeddableCartridge> C get(List<C> cartridges) {
 		Assert.notNull(cartridges);
 		return query.get(cartridges);

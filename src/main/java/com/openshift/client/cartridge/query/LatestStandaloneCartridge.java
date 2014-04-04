@@ -31,6 +31,10 @@ public class LatestStandaloneCartridge {
 		this.query = new LatestVersionQuery(name);
 	}
 	
+	public boolean matches(IStandaloneCartridge cartridge) {
+		return query.matches(cartridge);
+	}
+	
 	public IStandaloneCartridge get(IOpenShiftConnection connection) {
 		Assert.isTrue(connection != null);
 		return query.get(connection.getStandaloneCartridges());
