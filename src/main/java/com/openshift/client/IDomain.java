@@ -13,6 +13,7 @@ package com.openshift.client;
 import java.util.List;
 import java.util.Map;
 
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 
@@ -115,7 +116,7 @@ public interface IDomain extends IOpenShiftResource {
 			IGearProfile gearProfile, String initialGitUrl)
 			throws OpenShiftException;
 
-    /**
+	/**
 	 * Creates a new application with the given name and the given
 	 * cartridge/framework. Optionally, adds scalability, a specific gear
 	 * profile, a git url to use for the initial template, the timeout value and
@@ -160,7 +161,7 @@ public interface IDomain extends IOpenShiftResource {
 	 *            the cartridge (the application type, ex. jbossas-7,
 	 *            jbossews-2, php.5.2, etc.
 	 * @param scale
-	 *            or null (will use default on openshift, ie, false)
+	 *            or null (will use default on openshift)
 	 * @param gearProfile
 	 *            available gear sizes from openshift api or
 	 *            null (will use default on openshift, ie, 'small')
@@ -183,6 +184,33 @@ public interface IDomain extends IOpenShiftResource {
 	        IEmbeddableCartridge... cartridges)
 			throws OpenShiftException;
 	
+	/**
+	 * Creates a new application with the given name and the given cartridges.
+	 * Optionally, adds scalability, a specific gear profile, a git url to use
+	 * for the initial template, the timeout value, environment variables. The
+	 * cartridges must contain at least 1 standalone cartridge.
+	 * 
+	 * @param name
+	 *            the application name
+	 * @param scale
+	 *            the scaling (or null for default)
+	 * @param gearProfile
+	 *            the gear profile (or null for default)
+	 * @param initialGitUrl
+	 *            the git url for the initial template code
+	 * @param timeout
+	 *            the request timeout
+	 * @param environmentVariable
+	 *            the environment variables (or null for none)
+	 * @param cartridges
+	 *            all (the standalone- and the embeddable) cartridge
+	 * @return
+	 * @throws OpenShiftException
+	 */
+	public IApplication createApplication(String name, ApplicationScale scale, IGearProfile gearProfile,
+			String initialGitUrl, int timeout, Map<String, String> environmentVariable, ICartridge... cartridges)
+			throws OpenShiftException;
+
 	public List<IApplication> getApplications() throws OpenShiftException;
 	
 	/**

@@ -11,6 +11,7 @@
 package com.openshift.internal.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
@@ -25,6 +26,7 @@ import com.openshift.client.IUser;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.httpclient.request.StringParameter;
@@ -51,9 +53,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 
 	private String id;
 	private String suffix;
-
 	private final APIResource connectionResource;
-	/** Applications for the domain. */
 	// TODO: replace by a map indexed by application names ?
 	private List<IApplication> applications = null;
 
@@ -143,33 +143,34 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 	}
 
 	@Override
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+	public IApplication createApplication(final String name, final IStandaloneCartridge standaloneCartridge,
 			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl, int timeout,
-			IEmbeddableCartridge... cartridges)
+			IEmbeddableCartridge... embeddableCartridges)
 			throws OpenShiftException {
-		if (name == null) {
-			throw new OpenShiftException("Application name is mandatory but none was given.");
-		}
-		// this would trigger lazy loading list of available applications.
-		// this is needed anyhow since we're adding the new app to the list of
-		// available apps
-		if (hasApplicationByName(name)) {
-			throw new OpenShiftException("Application with name \"{0}\" already exists.", name);
-		}
-
-		ApplicationResourceDTO applicationDTO =
-				new CreateApplicationRequest().execute(
-						name, cartridge, scale, gearProfile, initialGitUrl, timeout, null, cartridges);
-		IApplication application = new ApplicationResource(applicationDTO, this);
-
-		getOrLoadApplications().add(application);
-		return application;
+		return createApplication(name, standaloneCartridge, scale, gearProfile, initialGitUrl, timeout, null,
+				embeddableCartridges);
 	}
 
 	@Override
-	public IApplication createApplication(final String name, final IStandaloneCartridge cartridge,
+	public IApplication createApplication(final String name, final IStandaloneCartridge standaloneCartridge,
 			final ApplicationScale scale, final IGearProfile gearProfile, String initialGitUrl, int timeout,
-			Map<String, String> environmentVariables, IEmbeddableCartridge... cartridges)
+			Map<String, String> environmentVariables, IEmbeddableCartridge... embedddableCartridges)
+			throws OpenShiftException {
+		return createApplication(name, scale, gearProfile, initialGitUrl, timeout, environmentVariables,
+				CollectionUtils.<ICartridge> toList(standaloneCartridge, embedddableCartridges));
+	}
+
+	@Override
+	public IApplication createApplication(final String name, final ApplicationScale scale,
+			final IGearProfile gearProfile, String initialGitUrl, int timeout,
+			Map<String, String> environmentVariables, ICartridge... cartridges)
+			throws OpenShiftException {
+		return createApplication(name, scale, gearProfile, initialGitUrl, timeout, environmentVariables, Arrays.asList(cartridges));
+	}
+
+	protected IApplication createApplication(final String name, final ApplicationScale scale,
+			final IGearProfile gearProfile, String initialGitUrl, int timeout,
+			Map<String, String> environmentVariables, Collection<ICartridge> cartridges)
 			throws OpenShiftException {
 		if (name == null) {
 			throw new OpenShiftException("Application name is mandatory but none was given.");
@@ -183,7 +184,7 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 
 		ApplicationResourceDTO applicationDTO =
 				new CreateApplicationRequest().execute(
-						name, cartridge, scale, gearProfile, initialGitUrl, timeout, environmentVariables, cartridges);
+						name, scale, gearProfile, initialGitUrl, timeout, environmentVariables, cartridges);
 		IApplication application = new ApplicationResource(applicationDTO, this);
 
 		getOrLoadApplications().add(application);
@@ -453,18 +454,18 @@ public class DomainResource extends AbstractOpenShiftResource implements IDomain
 			super(LINK_ADD_APPLICATION);
 		}
 
-		protected ApplicationResourceDTO execute(final String name, IStandaloneCartridge cartridge,
-				final ApplicationScale scale, final IGearProfile gearProfile, final String initialGitUrl,
-				final int timeout, Map<String, String> environmentVariables,
-				final IEmbeddableCartridge... embeddableCartridges)
+		protected ApplicationResourceDTO execute(final String name, final ApplicationScale scale,
+				final IGearProfile gearProfile, final String initialGitUrl, final int timeout,
+				Map<String, String> environmentVariables, Collection<ICartridge> cartridges)
 				throws OpenShiftException {
-			if (cartridge == null) {
-				throw new OpenShiftException("Application cartridge is mandatory but was not given.");
+			if (cartridges == null
+					|| cartridges.size() == 0) {
+				throw new OpenShiftException("Cartridges are mandatory but none were provided.");
 			}
 
 			Parameters parameters = new Parameters()
 					.add(IOpenShiftJsonConstants.PROPERTY_NAME, name)
-					.addCartridges(cartridge, embeddableCartridges)
+					.addCartridges(cartridges)
 					.scale(scale)
 					.gearProfile(gearProfile)
 					.add(IOpenShiftJsonConstants.PROPERTY_INITIAL_GIT_URL, initialGitUrl)
