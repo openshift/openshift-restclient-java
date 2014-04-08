@@ -11,6 +11,7 @@
 package com.openshift.internal.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,6 @@ import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftRequestException;
 import com.openshift.client.cartridge.ICartridge;
-import com.openshift.client.cartridge.IEmbeddableCartridge;
-import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.httpclient.request.ParameterValueArray;
 import com.openshift.internal.client.httpclient.request.ParameterValueMap;
@@ -210,24 +209,21 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 				
 		private List<Parameter> parameters = new ArrayList<Parameter>();
 		
-		protected Parameters addCartridge(IEmbeddableCartridge embeddable) {
+		protected Parameters addCartridge(ICartridge embeddable) {
 			ParameterValueMap parameter = createCartridgeParameter(embeddable);
 			return add(new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, parameter));
 		}
-
-		protected Parameters addCartridges(IStandaloneCartridge standalone, IEmbeddableCartridge[] embeddables) {
+		
+		protected Parameters addCartridges(Collection<ICartridge> cartridges) {
 			ParameterValueArray parameters = new ParameterValueArray();
-			if (standalone != null) {
-				parameters.add(createCartridgeParameter(standalone));
-			}
-			if (embeddables != null
-					&& embeddables.length > 0) {
-				parameters.addAll(createCartridgeParameters(embeddables));
+			if (cartridges != null
+					&& cartridges.size() > 0) {
+				parameters.addAll(createCartridgeParameters(cartridges));
 			}
 
 			return add(new Parameter(IOpenShiftJsonConstants.PROPERTY_CARTRIDGES, parameters));
 		}
-		
+
 		protected Parameters addEnvironmentVariables(Map<String,String> environmentVariables){
 			if (environmentVariables == null 
 					|| environmentVariables.isEmpty()) {
@@ -270,10 +266,10 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 			}
 		}
 
-		private List<ParameterValueMap> createCartridgeParameters(ICartridge[] cartridges) {
+		private List<ParameterValueMap> createCartridgeParameters(Collection<ICartridge> cartridges) {
 			List<ParameterValueMap> parameters = new ArrayList<ParameterValueMap>();
 			if (cartridges == null
-					|| cartridges.length == 0) {
+					|| cartridges.size() == 0) {
 				return parameters;
 			}
 			

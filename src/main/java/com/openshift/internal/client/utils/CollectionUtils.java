@@ -20,7 +20,22 @@ import java.util.List;
  */
 public class CollectionUtils {
 
+	private CollectionUtils() {
+	}
+
 	public static <T> List<T> toUnmodifiableCopy(Collection<T> collection) {
 		return Collections.unmodifiableList(new ArrayList<T>(collection));
 	}
+
+	public static <T> List<T> toList(T element, T... elements) {
+		List<T> allElements = new ArrayList<T>();
+		if (element != null) {
+			allElements.add(element);
+		}
+		if (elements != null) {
+			Collections.addAll(allElements, elements);
+		}
+		return allElements;
+	}
+
 }
