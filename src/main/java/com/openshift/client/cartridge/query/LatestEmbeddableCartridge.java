@@ -15,6 +15,7 @@ import java.util.List;
 import com.openshift.client.IApplication;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.internal.client.utils.Assert;
 
@@ -33,7 +34,7 @@ public class LatestEmbeddableCartridge {
 		this.query = new LatestVersionQuery(name);
 	}
 	
-	public boolean matches(IEmbeddableCartridge cartridge) {
+	public boolean matches(ICartridge cartridge) {
 		return query.matches(cartridge);
 	}
 

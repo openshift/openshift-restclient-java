@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import com.openshift.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +37,17 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.openshift.client.ApplicationScale;
+import com.openshift.client.IApplication;
+import com.openshift.client.IApplicationPortForwarding;
+import com.openshift.client.IDomain;
+import com.openshift.client.IEnvironmentVariable;
+import com.openshift.client.IGearGroup;
+import com.openshift.client.IGearProfile;
+import com.openshift.client.IOpenShiftConnection;
+import com.openshift.client.Messages;
+import com.openshift.client.OpenShiftException;
+import com.openshift.client.OpenShiftSSHOperationException;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
@@ -198,6 +208,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		environmentVariablesMap = new HashMap<String, IEnvironmentVariable>();
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -212,10 +223,12 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return gearProfile;
 	}
 
+	@Override
 	public String getUUID() {
 		return uuid;
 	}
 
+	@Override
 	public IStandaloneCartridge getCartridge() {
 		return cartridge;
 	}
@@ -237,31 +250,38 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 
+	@Override
 	public Date getCreationTime() {
 		return creationTime;
 	}
 
+	@Override
 	public IDomain getDomain() {
 		return this.domain;
 	}
 
+	@Override
 	public void destroy() throws OpenShiftException {
 		new DeleteApplicationRequest().execute();
 		domain.removeApplication(this);
 	}
 
+	@Override
 	public void start() throws OpenShiftException {
 		new StartApplicationRequest().execute();
 	}
 
+	@Override
 	public void restart() throws OpenShiftException {
 		new RestartApplicationRequest().execute();
 	}
 
+	@Override
 	public void stop() throws OpenShiftException {
 		stop(false);
 	}
 
+	@Override
 	public void stop(boolean force) throws OpenShiftException {
 		if (force) {
 			new ForceStopApplicationRequest().execute();
@@ -270,18 +290,17 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
-	public void getDescriptor() {
-		throw new UnsupportedOperationException();
-	}
-
+	@Override
 	public void scaleDown() throws OpenShiftException {
 		new ScaleDownRequest().execute();
 	}
 
+	@Override
 	public void scaleUp() throws OpenShiftException {
 		new ScaleUpRequest().execute();
 	}
 
+	@Override
 	public void addAlias(String alias) throws OpenShiftException {
 		Assert.notNull(alias);
 
@@ -297,16 +316,19 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.aliases.addAll(applicationDTO.getAliases());
 	}
 
+	@Override
 	public List<String> getAliases() {
 		return Collections.unmodifiableList(this.aliases);
 	}
 
+	@Override
 	public boolean hasAlias(String name) {
 		Assert.notNull(name);
 
 		return aliases.contains(name);
 	}
 
+	@Override
 	public void removeAlias(String alias) throws OpenShiftException {
 		Assert.notNull(alias);
 
@@ -314,6 +336,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		updateAliases(applicationDTO);
 	}
 
+	@Override
 	public String getGitUrl() {
 		return gitUrl;
 	}
@@ -322,27 +345,20 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return initialGitUrl;
 	}
 
-	/**
-	 * @return the sshUrl
-	 */
+	@Override
 	public String getSshUrl() {
 		return sshUrl;
 	}
 
+	@Override
 	public String getApplicationUrl() {
 		return applicationUrl;
 	}
 
-	/**
-	 * Adds the given embedded cartridge to this application.
-	 *
-	 * @param cartridge
-	 *            the embeddable cartridge that shall be added to this
-	 *            application
-	 */
-	public IEmbeddedCartridge addEmbeddableCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
+	@Override
+	public IEmbeddedCartridge addEmbeddableCartridge(ICartridge cartridge) throws OpenShiftException {
 		Assert.notNull(cartridge);
-
+		
 		final CartridgeResourceDTO embeddedCartridgeDTO =
 				new AddEmbeddedCartridgeRequest().execute(cartridge);
 		final EmbeddedCartridgeResource embeddedCartridge = new EmbeddedCartridgeResource(embeddedCartridgeDTO, this);
@@ -350,6 +366,22 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return embeddedCartridge;
 	}
 
+	@Override
+	public List<IEmbeddedCartridge> addEmbeddableCartridges(ICartridge... cartridges) throws OpenShiftException {
+		if (cartridges == null) {
+			return Collections.<IEmbeddedCartridge> emptyList();
+		}
+		
+		final List<IEmbeddedCartridge> addedCartridge = new ArrayList<IEmbeddedCartridge>();
+		for (ICartridge cartridge : cartridges) {
+			// TODO: catch exceptions when removing cartridges, continue removing
+			// and report the exceptions that occurred
+			addedCartridge.add(addEmbeddableCartridge(cartridge));
+		}
+		return addedCartridge;
+	}
+
+	@Override
 	public List<IEmbeddedCartridge> addEmbeddableCartridges(Collection<IEmbeddableCartridge> cartridges)
 			throws OpenShiftException {
 		Assert.notNull(cartridges);
@@ -362,7 +394,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 		return addedCartridge;
 	}
-
+	
 	/**
 	 * "callback" from the embeddedCartridge once it has been destroyed.
 	 *
@@ -396,6 +428,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 					break;
 				case EMBEDDED:
 					addOrUpdateEmbeddedCartridge(cartridgeDTO.getName(), cartridgeDTO);
+					break;
+				case UNDEFINED:
+					break;
 			}
 		}
 	}
@@ -428,20 +463,24 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
+	@Override
 	public List<IEmbeddedCartridge> getEmbeddedCartridges() throws OpenShiftException {
 		return Collections.unmodifiableList(new ArrayList<IEmbeddedCartridge>(this.embeddedCartridgesByName.values()));
 	}
 
+	@Override
 	public boolean hasEmbeddedCartridge(String cartridgeName) throws OpenShiftException {
 		Assert.notNull(cartridgeName);
 
 		return getEmbeddedCartridge(cartridgeName) != null;
 	}
 
+	@Override
 	public boolean hasEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
 		return getEmbeddedCartridge(cartridge) != null;
 	}
 
+	@Override
 	public IEmbeddedCartridge getEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
 		Assert.notNull(cartridge);
 
@@ -453,17 +492,13 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return null;
 	}
 
+	@Override
 	public IEmbeddedCartridge getEmbeddedCartridge(String cartridgeName) throws OpenShiftException {
 		Assert.notNull(cartridgeName);
-
-		for (IEmbeddedCartridge embeddedCartridge : getEmbeddedCartridges()) {
-			if (cartridgeName.equals(embeddedCartridge.getName())) {
-				return embeddedCartridge;
-			}
-		}
-		return null;
+		return embeddedCartridgesByName.get(cartridgeName);
 	}
 
+	@Override
 	public void removeEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException {
 		Assert.notNull(cartridge);
 
@@ -1097,7 +1132,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 			super(LINK_ADD_CARTRIDGE);
 		}
 
-		protected <DTO> DTO execute(IEmbeddableCartridge embeddable) throws OpenShiftException {
+		protected <DTO> DTO execute(ICartridge embeddable) throws OpenShiftException {
 			return super.execute(new Parameters().addCartridge(embeddable).toArray());
 		}
 	}

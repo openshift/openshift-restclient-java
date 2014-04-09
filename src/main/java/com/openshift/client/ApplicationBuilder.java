@@ -10,23 +10,37 @@
  ******************************************************************************/
 package com.openshift.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 
 public class ApplicationBuilder {
 
 	private IDomain domain;
-	private IStandaloneCartridge cartridge;
+	private ICartridge standaloneCartridge;
 	private String name;
 	private IGearProfile gearProfile;
 	private ApplicationScale applicationScale;
 	private String initialGitUrl;
+	private int timeout = IHttpClient.NO_TIMEOUT;
+	public Collection<? extends ICartridge> embeddableCartridges;
+	public Map<String, String> environmentVariables;
 	
 	public ApplicationBuilder(IDomain domain) {
 		this.domain = domain;
 	}
 	
-	public CartridgeHolder setCartridge(IStandaloneCartridge cartridge) {
-		ApplicationBuilder.this.cartridge = cartridge;
+	public CartridgeHolder setStandaloneCartridge(IStandaloneCartridge standaloneCartridge) {
+		return setStandaloneCartridge((ICartridge) standaloneCartridge);
+	}
+
+	public CartridgeHolder setStandaloneCartridge(ICartridge standaloneCartridge) {
+		ApplicationBuilder.this.standaloneCartridge = standaloneCartridge;
 		return new CartridgeHolder();
 	}
 	
@@ -55,8 +69,42 @@ public class ApplicationBuilder {
 			return this;
 		}
 
+		public NamedCartridgeHolder setTimeout(int timeout) {
+			ApplicationBuilder.this.timeout = timeout;
+			return this;
+		}
+		
+		public NamedCartridgeHolder setEnvironmentVariables(Map<String, String> environmentVariables) {
+			ApplicationBuilder.this.environmentVariables = environmentVariables;
+			return this;
+		}
+
+		public NamedCartridgeHolder setEmbeddableCartridges(ICartridge... embeddableCartridges) {
+			if (embeddableCartridges == null) {
+				return this;
+			}
+			ApplicationBuilder.this.embeddableCartridges = Arrays.asList(embeddableCartridges);
+			return this;
+		}
+
+		public NamedCartridgeHolder setEmbeddableCartridges(Collection<? extends ICartridge> embeddableCartridges) {
+			ApplicationBuilder.this.embeddableCartridges = embeddableCartridges;
+			return this;
+		}
+		
 		public IApplication build() {
-			return domain.createApplication(name, cartridge, applicationScale, gearProfile, initialGitUrl);
+			return domain.createApplication(name, applicationScale, gearProfile, initialGitUrl, timeout, environmentVariables, 
+					createCartridges(standaloneCartridge, embeddableCartridges));
+		}
+
+		protected ICartridge[] createCartridges(ICartridge standaloneCartridge, Collection<? extends ICartridge> embeddableCartridges) {
+			List<ICartridge> cartridges = new ArrayList<ICartridge>();
+			cartridges.add(standaloneCartridge);
+			if (embeddableCartridges != null
+					&& !embeddableCartridges.isEmpty()) {
+				cartridges.addAll(embeddableCartridges);
+			}
+			return (ICartridge[]) cartridges.toArray(new ICartridge[cartridges.size()]);
 		}
 	}
 }

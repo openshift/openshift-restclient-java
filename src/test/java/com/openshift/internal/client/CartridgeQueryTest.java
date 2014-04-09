@@ -34,6 +34,8 @@ import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
+import com.openshift.client.cartridge.query.CartridgeNameQuery;
+import com.openshift.client.cartridge.query.CartridgeNameRegexQuery;
 import com.openshift.client.cartridge.query.LatestEmbeddableCartridge;
 import com.openshift.client.cartridge.query.LatestVersionOf;
 import com.openshift.client.cartridge.query.LatestVersionQuery;
@@ -416,6 +418,23 @@ public class CartridgeQueryTest extends TestTimer {
 				LatestVersionOf.rockMongo().get(connection));
 	}
 
+	@Test
+	public void shouldSelectMongoByNameSubstring() {
+		// pre-conditions
+		// operation
+		// verification
+		assertCartridge(IEmbeddedCartridge.NAME_MONGODB, 
+				new CartridgeNameQuery(IEmbeddedCartridge.NAME_MONGODB).get(connection.getEmbeddableCartridges()));
+	}
+
+	@Test
+	public void shouldSelectRockmongoByNameRegex() {
+		// pre-conditions
+		// operation
+		// verification
+		assertCartridge(IEmbeddedCartridge.NAME_MONGODB, 
+				new CartridgeNameRegexQuery(IEmbeddedCartridge.NAME_MONGODB + ".*").get(connection.getEmbeddableCartridges()));
+	}
 
 	private void assertCartridge(String expectedName, ICartridge cartridge) {
 		assertThat(cartridge).isNotNull();

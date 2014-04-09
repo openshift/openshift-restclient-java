@@ -18,6 +18,7 @@ import java.util.concurrent.Future;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
@@ -102,10 +103,18 @@ public interface IApplication extends IOpenShiftResource {
 	/**
 	 * Adds the given embeddable cartridge to this application.
 	 *
-	 * @param cartridge
+	 * @param cartridge the cartridge that shall be added
 	 * @throws OpenShiftException
 	 */
-	public IEmbeddedCartridge addEmbeddableCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException;
+	public IEmbeddedCartridge addEmbeddableCartridge(ICartridge cartridge) throws OpenShiftException;
+
+	/**
+	 * Adds the given embeddable cartridges to this application.
+	 *
+	 * @param cartridges the cartridges that shall be added
+	 * @throws OpenShiftException
+	 */
+	public List<IEmbeddedCartridge> addEmbeddableCartridges(ICartridge... cartridges) throws OpenShiftException;
 
 	/**
 	 * Adds all given embedded cartridges from this app, given their names.

@@ -19,15 +19,15 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-import com.openshift.client.utils.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.client.ApplicationBuilder;
 import com.openshift.client.ApplicationScale;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IField;
-import com.openshift.client.IGearProfile;
+import com.openshift.client.IHttpClient;
 import com.openshift.client.ISeverity;
 import com.openshift.client.IUser;
 import com.openshift.client.Message;
@@ -40,6 +40,7 @@ import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.CartridgeTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
+import com.openshift.client.utils.GearProfileTestUtils;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.StringUtils;
 import com.openshift.client.utils.TestConnectionFactory;
@@ -372,7 +373,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
 
         // operation
 		final IApplication app = domain.createApplication(
-				applicationName, CartridgeTestUtils.go11(), ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, CREATE_TIMEOUT);
+				applicationName, CartridgeTestUtils.go11(), ApplicationScale.NO_SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain), null, IHttpClient.NO_TIMEOUT);
 
         // verifications
         new ApplicationAssert(app)
@@ -411,6 +412,32 @@ public class DomainResourceIntegrationTest extends TestTimer {
         	.hasEmbeddedCartridge(CartridgeTestUtils.foreman063());
     }
 
+    @Test
+    public void shouldCreateJBossAsAndCronWithBuilder() throws Throwable {    	
+        // pre-conditions
+		ApplicationTestUtils.destroyAllApplications(domain);
+		String applicationName =
+				ApplicationTestUtils.createRandomApplicationName();
+		IStandaloneCartridge jbossAs = LatestVersionOf.jbossAs().get(user);
+		IEmbeddableCartridge cron = LatestVersionOf.cron().get(user);
+		
+        // operation
+		IApplication app = new ApplicationBuilder(domain)
+			.setStandaloneCartridge(jbossAs)
+			.setName(applicationName)
+			.setEmbeddableCartridges(cron)
+			.build();
+
+        // verifications
+        new ApplicationAssert(app)
+        	.hasName(applicationName)
+        	.hasCreationTime()
+        	.hasUUID()
+			.hasValidApplicationUrl()
+			.hasValidGitUrl()
+        	.hasCartridge(jbossAs)
+        	.hasEmbeddedCartridge(cron);
+    }
 	
 	@Test
 	public void shouldHaveCredentialsInMessage() throws Exception {
