@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.client.Messages;
-import com.openshift.client.cartridge.query.CartridgeNameQuery;
+import com.openshift.client.cartridge.query.CartridgeNameRegexQuery;
 import com.openshift.client.cartridge.query.ICartridgeQuery;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 import com.openshift.internal.client.utils.StringUtils;
@@ -155,7 +155,7 @@ public class QuickstartJsonDTOFactory extends AbstractJsonDTOFactory {
 		try {
 			return new DownloadableCartridgeSpec(new URL(cartridgeSpec));
 		} catch(MalformedURLException e) {
-			return new CartridgeNameQuery(createNamePattern(cartridgeSpec));
+			return new CartridgeNameRegexQuery(createNamePattern(cartridgeSpec));
 		}
 			
 	}

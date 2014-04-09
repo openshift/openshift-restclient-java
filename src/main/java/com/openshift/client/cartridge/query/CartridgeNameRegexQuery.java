@@ -10,36 +10,40 @@
  ******************************************************************************/
 package com.openshift.client.cartridge.query;
 
+import java.util.regex.Pattern;
+
 import com.openshift.client.cartridge.ICartridge;
-import com.openshift.internal.client.utils.Assert;
 
 /**
  * A query that returns the cartridges whose name match the given pattern.
  * 
  * @author André Dietisheim
  */
-public class CartridgeNameQuery extends AbstractCartridgeQuery {
+public class CartridgeNameRegexQuery extends AbstractCartridgeQuery {
 
-	private String nameSubstring;
+	private Pattern namePattern;
 
-	public CartridgeNameQuery(String nameSubstring) {
-		Assert.notEmpty(nameSubstring);
-		this.nameSubstring = nameSubstring;
+	public CartridgeNameRegexQuery(String namePattern) {
+		this(Pattern.compile(namePattern));
+	}
+
+	public CartridgeNameRegexQuery(Pattern namePattern) {
+		this.namePattern = namePattern;
 	}
 
 	@Override
 	public <C extends ICartridge> boolean matches(C cartridge) {
-		if (cartridge == null
-				|| cartridge.getName() == null) {
+		if (cartridge == null) {
 			return false;
 		}
-		return cartridge.getName().indexOf(nameSubstring) >= 0;
+		return namePattern.matcher(cartridge.getName()).find();
 	}
 
 	@Override
 	public String toString() {
-		return "CartridgeNameQuery ["
-				+ "nameSubstring=" + nameSubstring 
+		return "CartridgeNameRegexQuery ["
+				+ "namePattern=" + namePattern 
 				+ "]";
 	}
+
 }

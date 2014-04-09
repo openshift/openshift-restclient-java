@@ -13,6 +13,7 @@ package com.openshift.client.cartridge.query;
 import com.openshift.client.IApplication;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.utils.Assert;
 
@@ -31,7 +32,7 @@ public class LatestStandaloneCartridge {
 		this.query = new LatestVersionQuery(name);
 	}
 	
-	public boolean matches(IStandaloneCartridge cartridge) {
+	public boolean matches(ICartridge cartridge) {
 		return query.matches(cartridge);
 	}
 	
