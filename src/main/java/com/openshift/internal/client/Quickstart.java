@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.openshift.client.IQuickstart;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.query.ICartridgeQuery;
 import com.openshift.internal.client.response.QuickstartDTO;
 
@@ -81,6 +82,18 @@ public class Quickstart implements IQuickstart {
 	}
 
 	@Override
+	public List<ICartridge> getAlternativesFor(ICartridge cartridge) {
+		if (cartridge != null) {
+			for (AlternativeCartridges alternatives : alternativeCartridges) {
+				if (alternatives.get().contains(cartridge)) {
+					return alternatives.get();
+				}
+			}
+		}
+		return Collections.emptyList();
+	}
+	
+	@Override
 	public String getWebsite() {
 		return website;
 	}
@@ -103,22 +116,6 @@ public class Quickstart implements IQuickstart {
 	@Override
 	public String getProvider() {
 		return provider;
-	}
-
-	@Override
-	public String toString() {
-		return "Quickstart ["
-				+ "id=" + id
-				+ ", href=" + href
-				+ ", name=" + name
-				+ ", summary=" + summary
-				+ ", cartridges=" + alternativeCartridges
-				+ ", website=" + website
-				+ ", tags=" + tags
-				+ ", language=" + language
-				+ ", initialGitUrl=" + initialGitUrl
-				+ ", provider=" + provider
-				+ "]";
 	}
 
 	@Override
@@ -198,5 +195,21 @@ public class Quickstart implements IQuickstart {
 		} else if (!website.equals(other.website))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return "Quickstart ["
+				+ "id=" + id
+				+ ", href=" + href
+				+ ", name=" + name
+				+ ", summary=" + summary
+				+ ", cartridges=" + alternativeCartridges
+				+ ", website=" + website
+				+ ", tags=" + tags
+				+ ", language=" + language
+				+ ", initialGitUrl=" + initialGitUrl
+				+ ", provider=" + provider
+				+ "]";
 	}
 }

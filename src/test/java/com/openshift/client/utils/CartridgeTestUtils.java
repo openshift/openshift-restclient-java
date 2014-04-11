@@ -33,7 +33,6 @@ public class CartridgeTestUtils {
 
 	public static final String JBOSSAS_7_NAME = "jbossas-7";
 	public static final String JBOSSEAP_6_NAME = "jbosseap-6";
-	public static final String NODEJS_06_NAME = "nodejs-0.6";
 	public static final String JBOSSEWS_1_NAME = "jbossews-1.0";
 	public static final String JBOSSEWS_2_NAME = "jbossews-2.0";
 	public static final String JENKINS_14_NAME = "jenkins-1.4";
@@ -41,10 +40,13 @@ public class CartridgeTestUtils {
 			"http://cartreflect-claytondev.rhcloud.com/reflect?github=smarterclayton/openshift-go-cart";
 	public static final String AEROGEAR_PUSH_URL = 
 			"https://cartreflect-claytondev.rhcloud.com/reflect?github=aerogear/openshift-origin-cartridge-aerogear-push#AeroGear";
+	public static final String NODEJS_06_NAME = "nodejs-0.6";
+	public static final String PHP_53_NAME = "php-5.3";
 	public static final String WILDFLY_NAME = "wildfly";
 	public static final String WILDFLY_URL = 
 			"https://cartreflect-claytondev.rhcloud.com/reflect?github=openshift-cartridges/openshift-wildfly-cartridge#WildFly8";
-	
+	public static final String ZEND_56_NAME = "zend-5.6";
+
 	public static final String MYSQL_51_NAME = "mysql-5.1";
 	public static final String MONGODB_22_NAME = "mongodb-2.2";
 	public static final String FOREMAN_URL =
@@ -78,8 +80,16 @@ public class CartridgeTestUtils {
 		return new StandaloneCartridge(null, new URL(GO_URL));
 	}
 
+	public static IStandaloneCartridge php53() {
+		return new StandaloneCartridge(PHP_53_NAME);
+	}
+
 	public static IStandaloneCartridge wildfly8() throws MalformedURLException {
 		return new StandaloneCartridge(WILDFLY_NAME, new URL(WILDFLY_URL));
+	}
+
+	public static IStandaloneCartridge zend56() {
+		return new StandaloneCartridge(ZEND_56_NAME);
 	}
 
 	public static IEmbeddableCartridge mysql51() {

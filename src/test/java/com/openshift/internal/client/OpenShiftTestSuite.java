@@ -29,6 +29,7 @@ import com.openshift.internal.client.response.QuickstartDTOCartridgeQueryTest;
 	DomainResourceTest.class,
 	ApplicationResourceTest.class,
 	APIResourceTest.class,
+	QuickstartTest.class,
 	StandaloneCartridgeTest.class,
 	EmbeddableCartridgeTest.class,
 	EmbeddedCartridgeResourceTest.class,

@@ -16,7 +16,8 @@ import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.query.ICartridgeQuery;
 
 /**
- * A list of alternative cartridges that one can choose from.
+ * A list of alternative cartridges that one can choose from. The user
+ * may only pick 1 cartridge among the alternatives.
  * 
  * @author Andre Dietisheim
  * 
@@ -31,6 +32,12 @@ public class AlternativeCartridges {
 		this.api = api;
 	}
 
+	/**
+	 * Returns all alternative cartridges that a user may choose its cartridge
+	 * from.
+	 * 
+	 * @return the alternative cartridges
+	 */
 	public List<ICartridge> get() {
 		return query.getAll(api.getCartridges());
 	}

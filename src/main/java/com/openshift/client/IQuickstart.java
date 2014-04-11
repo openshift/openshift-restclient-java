@@ -12,7 +12,7 @@ package com.openshift.client;
 
 import java.util.List;
 
-import com.openshift.client.cartridge.query.ICartridgeQuery;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.internal.client.AlternativeCartridges;
 
 /**
@@ -70,12 +70,21 @@ public interface IQuickstart {
 	public String getLanguage();
 	
 	/**
-	 * Returns the alternative cartridges this quickstart is requiring. 
+	 * Returns the list of suitable alternatives that a user may choose from for
+	 * this quickstart.
 	 * 
 	 * @return
 	 */
 	public List<AlternativeCartridges> getSuitableCartridges();
 
+	/**
+	 * Returns the alternatives to a given cartridge.
+	 * 
+	 * @param cartridge
+	 * @return
+	 */
+	public List<ICartridge> getAlternativesFor(ICartridge cartridge);
+	
 	/**
 	 * Returns the url of the git repository that this quickstart is available at. 
 	 * 
