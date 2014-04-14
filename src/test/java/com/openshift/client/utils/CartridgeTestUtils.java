@@ -56,6 +56,10 @@ public class CartridgeTestUtils {
 	public static final String HAPROXY_14_NAME = "haproxy-1.4";
 
 
+	public static IStandaloneCartridge aerogear() throws MalformedURLException {
+		return new StandaloneCartridge(new URL(AEROGEAR_PUSH_URL));
+	}
+
 	public static IStandaloneCartridge as7() {
 		return new StandaloneCartridge(JBOSSAS_7_NAME);
 	}

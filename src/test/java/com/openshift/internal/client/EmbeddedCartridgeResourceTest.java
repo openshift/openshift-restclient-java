@@ -37,8 +37,6 @@ import com.openshift.client.IUser;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
-import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.cartridge.StandaloneCartridge;
 import com.openshift.client.cartridge.query.UrlPropertyQuery;
 import com.openshift.client.utils.CartridgeAssert;
 import com.openshift.client.utils.CartridgeTestUtils;
@@ -183,7 +181,7 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 	public void shouldHaveDisplayName() throws Throwable {
 		// pre-conditions
 		// operation
-		IEmbeddedCartridge mysql = application.getEmbeddedCartridge("mysql-5.1");
+		IEmbeddedCartridge mysql = application.getEmbeddedCartridge(CartridgeTestUtils.MYSQL_51_NAME);
 
 		// verifications
 		assertThat(mysql.getDisplayName()).isEqualTo("MySQL Database 5.1");
@@ -193,7 +191,7 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 	public void shouldHaveDescription() throws Throwable {
 		// pre-conditions
 		// operation
-		IEmbeddedCartridge mysql = application.getEmbeddedCartridge("mysql-5.1");
+		IEmbeddedCartridge mysql = application.getEmbeddedCartridge(CartridgeTestUtils.MYSQL_51_NAME);
 
 		// verifications
 		assertThat(mysql.getDescription())
@@ -240,7 +238,7 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 		// pre-conditions
 		// contains mongo and mysql
 		assertThat(application.getEmbeddedCartridges().size()).isEqualTo(2);
-		assertThat(application.getEmbeddedCartridge("mysql-5.1")).isNotNull();
+		assertThat(application.getEmbeddedCartridge(CartridgeTestUtils.MYSQL_51_NAME)).isNotNull();
 		mockDirector.mockGetCartridges(Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED);
 
 		// operation
@@ -251,30 +249,7 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 		mockDirector.verifyGetApplicationCartridges(1, application.getDomain().getId(), application.getName());
 		// mysql missing now
 		assertThat(application.getEmbeddedCartridges().size()).isEqualTo(1);
-		assertThat(application.getEmbeddedCartridge("mysql-5.1")).isNull();
-	}
-
-	@Test
-	public void shouldBeDownloadableCartridges() throws Throwable {
-		// pre-conditions
-		// operation
-		// verifications
-		assertThat(CartridgeTestUtils.go11().isDownloadable()).isTrue();
-		assertThat(CartridgeTestUtils.foreman063().isDownloadable()).isTrue();
-	}
-
-	@Test
-	public void shouldNotBeDownloadableCartridge() throws Throwable {
-		// pre-conditions
-		IStandaloneCartridge jbossAsCartridge = new StandaloneCartridge("jboss-7");
-		IStandaloneCartridge jbossEapCartridge = new StandaloneCartridge("jbosseap-6");
-
-		// operation
-		// verifications
-		assertThat(jbossAsCartridge.isDownloadable()).isFalse();
-		assertThat(jbossAsCartridge.getUrl()).isNull();
-		assertThat(jbossEapCartridge.isDownloadable()).isFalse();
-		assertThat(jbossEapCartridge.getUrl()).isNull();
+		assertThat(application.getEmbeddedCartridge(CartridgeTestUtils.MYSQL_51_NAME)).isNull();
 	}
 
 	private IEmbeddedCartridge createEmbeddedCartridgeFake(String name) {

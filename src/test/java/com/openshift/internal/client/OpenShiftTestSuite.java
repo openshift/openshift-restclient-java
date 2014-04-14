@@ -30,6 +30,7 @@ import com.openshift.internal.client.response.QuickstartDTOCartridgeQueryTest;
 	ApplicationResourceTest.class,
 	APIResourceTest.class,
 	QuickstartTest.class,
+	BaseCartridgeTest.class,
 	StandaloneCartridgeTest.class,
 	EmbeddableCartridgeTest.class,
 	EmbeddedCartridgeResourceTest.class,
