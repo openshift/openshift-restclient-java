@@ -44,32 +44,12 @@ public class StandaloneCartridgeTest extends TestTimer {
 	}
 
 	@Test
-	public void shouldNonDownloadableEqualsNonDownloadable() {
-		// pre-coniditions
-		// operation
-		// verification
-		assertThat(new StandaloneCartridge("redhat"))
-				.isEqualTo(new StandaloneCartridge("redhat"));
-		assertThat(new StandaloneCartridge("redhat"))
-				.isNotEqualTo(new StandaloneCartridge("jboss"));
-	}
-
-	@Test
-	public void shouldDownloadableEqualsDownloadable() throws MalformedURLException {
-		// pre-coniditions
-		// operation
-		// verification
-		assertThat(new StandaloneCartridge(new URL(CartridgeTestUtils.GO_URL)))
-				.isEqualTo(new StandaloneCartridge(new URL(CartridgeTestUtils.GO_URL)));
-	}
-
-	@Test
 	public void shouldDownloadableWithDifferentNameEqualsDownloadable() throws MalformedURLException {
 		// pre-coniditions
 		// operation
 		// verification
 		assertThat(new StandaloneCartridge("redhat", new URL(CartridgeTestUtils.GO_URL)))
-				.isEqualTo(new StandaloneCartridge(new URL(CartridgeTestUtils.GO_URL)));
+				.isEqualTo(new StandaloneCartridge("jboss", new URL(CartridgeTestUtils.GO_URL)));
 		// should equal if url is equal, name doesnt matter 
 		// (name is updated as soon as cartridge is deployed)
 		assertThat(new StandaloneCartridge("jboss", new URL(CartridgeTestUtils.GO_URL)))

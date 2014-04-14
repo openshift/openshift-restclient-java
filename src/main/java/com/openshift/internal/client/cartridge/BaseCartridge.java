@@ -16,6 +16,7 @@ import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
 import com.openshift.internal.client.CartridgeType;
+import com.openshift.internal.client.utils.StringUtils;
 
 /**
  * A (base) cartridge for an OpenShift application.
@@ -49,10 +50,19 @@ public class BaseCartridge implements ICartridge {
 	}
 
 	protected BaseCartridge(final String name, URL url, String displayName, String description) {
-		this.name = name;
 		this.url = url;
-		this.displayName = displayName;
+		this.name = name;
+		this.displayName = getDisplayName(displayName, url);
 		this.description = description;
+	}
+
+	protected String getDisplayName(final String displayName, URL url) {
+		if (!StringUtils.isEmpty(displayName)) {
+			return displayName;
+		} else if (url != null){
+			return url.getRef();
+		}
+		return null;
 	}
 
 	@Override
