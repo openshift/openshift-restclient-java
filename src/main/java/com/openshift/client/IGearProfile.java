@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.openshift.client;
 
-import com.openshift.internal.client.GearProfile;
-
 /**
  * @author Andre Dietisheim
  */

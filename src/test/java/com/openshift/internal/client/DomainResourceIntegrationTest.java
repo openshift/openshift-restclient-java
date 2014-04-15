@@ -423,8 +423,8 @@ public class DomainResourceIntegrationTest extends TestTimer {
 		
         // operation
 		IApplication app = new ApplicationBuilder(domain)
-			.setStandaloneCartridge(jbossAs)
 			.setName(applicationName)
+			.setStandaloneCartridge(jbossAs)
 			.setEmbeddableCartridges(cron)
 			.build();
 

@@ -27,6 +27,7 @@ import com.openshift.internal.client.response.QuickstartDTOCartridgeQueryTest;
 	RestServiceTest.class,
 	OpenShiftJsonDTOFactoryTest.class,
 	DomainResourceTest.class,
+	ApplicationBuilderTest.class,
 	ApplicationResourceTest.class,
 	APIResourceTest.class,
 	QuickstartTest.class,
