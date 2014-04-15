@@ -17,87 +17,104 @@ import java.util.List;
 import java.util.Map;
 
 import com.openshift.client.cartridge.ICartridge;
+import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.internal.client.utils.Assert;
 
 public class ApplicationBuilder {
 
 	private IDomain domain;
-	private ICartridge standaloneCartridge;
-	private String name;
-	private IGearProfile gearProfile;
-	private ApplicationScale applicationScale;
-	private String initialGitUrl;
-	private int timeout = IHttpClient.NO_TIMEOUT;
-	public Collection<? extends ICartridge> embeddableCartridges;
-	public Map<String, String> environmentVariables;
 	
 	public ApplicationBuilder(IDomain domain) {
 		this.domain = domain;
 	}
 	
-	public CartridgeHolder setStandaloneCartridge(IStandaloneCartridge standaloneCartridge) {
-		return setStandaloneCartridge((ICartridge) standaloneCartridge);
-	}
-
-	public CartridgeHolder setStandaloneCartridge(ICartridge standaloneCartridge) {
-		ApplicationBuilder.this.standaloneCartridge = standaloneCartridge;
-		return new CartridgeHolder();
+	public NamedBuilder setName(String name) {
+		return new NamedBuilder(name);
 	}
 	
-	public class CartridgeHolder {
+	public class NamedBuilder {
+		
+		private String name;
+		
+		protected NamedBuilder(String name) {
+			this.name = name;
+		}
 
-		public NamedCartridgeHolder setName(String name) {
-			ApplicationBuilder.this.name = name;
-			return new NamedCartridgeHolder();
-		};
+		public NamedTypedCartridgeBuilder setStandaloneCartridge(IStandaloneCartridge standaloneCartridge) {
+			return new NamedTypedCartridgeBuilder(name, standaloneCartridge);
+		}
+
+		public NamedUnTypedCartridgeBuilder setCartridges(Collection<ICartridge> cartridges) {
+			Assert.isTrue(cartridges != null
+					&& !cartridges.isEmpty());
+			return new NamedUnTypedCartridgeBuilder(name, cartridges);
+		}
 	}
 	
-	public class NamedCartridgeHolder {
+	protected abstract class AbstractNamedCartridgeBuilder<B> {
 		
-		public NamedCartridgeHolder setGearProfile(IGearProfile gearProfile) {
-			ApplicationBuilder.this.gearProfile = gearProfile;
-			return this;
-		}
+		protected String name;
+		protected IGearProfile gearProfile;
+		protected ApplicationScale applicationScale;
+		protected String initialGitUrl;
+		protected int timeout = IHttpClient.NO_TIMEOUT;
+		protected Map<String, String> environmentVariables;
 		
-		public NamedCartridgeHolder setApplicationScale(ApplicationScale applicationScale) {
-			ApplicationBuilder.this.applicationScale = applicationScale;
-			return this;
+		AbstractNamedCartridgeBuilder(String name) {
+			this.name = name;
 		}
 
-		public NamedCartridgeHolder setInitialGitUrl(String initialGitUrl) {
-			ApplicationBuilder.this.initialGitUrl = initialGitUrl;
-			return this;
-		}
-
-		public NamedCartridgeHolder setTimeout(int timeout) {
-			ApplicationBuilder.this.timeout = timeout;
-			return this;
+		public B setGearProfile(IGearProfile gearProfile) {
+			this.gearProfile = gearProfile;
+			return (B) this;
 		}
 		
-		public NamedCartridgeHolder setEnvironmentVariables(Map<String, String> environmentVariables) {
-			ApplicationBuilder.this.environmentVariables = environmentVariables;
-			return this;
+		public B setApplicationScale(ApplicationScale applicationScale) {
+			this.applicationScale = applicationScale;
+			return (B) this;
 		}
 
-		public NamedCartridgeHolder setEmbeddableCartridges(ICartridge... embeddableCartridges) {
+		public B setInitialGitUrl(String initialGitUrl) {
+			this.initialGitUrl = initialGitUrl;
+			return (B) this;
+		}
+
+		public B setTimeout(int timeout) {
+			this.timeout = timeout;
+			return (B) this;
+		}
+		
+		public B setEnvironmentVariables(Map<String, String> environmentVariables) {
+			this.environmentVariables = environmentVariables;
+			return (B) this;
+		}
+	}
+	
+	public class NamedTypedCartridgeBuilder extends AbstractNamedCartridgeBuilder<NamedTypedCartridgeBuilder> {
+		
+		private IStandaloneCartridge standaloneCartridge;
+		private Collection<IEmbeddableCartridge> embeddableCartridges;
+		
+		NamedTypedCartridgeBuilder(String name, IStandaloneCartridge standaloneCartridge) {
+			super(name);
+			this.standaloneCartridge = standaloneCartridge;
+		}
+
+		public NamedTypedCartridgeBuilder setEmbeddableCartridges(IEmbeddableCartridge... embeddableCartridges) {
 			if (embeddableCartridges == null) {
 				return this;
 			}
-			ApplicationBuilder.this.embeddableCartridges = Arrays.asList(embeddableCartridges);
+			this.embeddableCartridges = Arrays.asList(embeddableCartridges);
 			return this;
 		}
 
-		public NamedCartridgeHolder setEmbeddableCartridges(Collection<? extends ICartridge> embeddableCartridges) {
-			ApplicationBuilder.this.embeddableCartridges = embeddableCartridges;
-			return this;
-		}
-		
 		public IApplication build() {
 			return domain.createApplication(name, applicationScale, gearProfile, initialGitUrl, timeout, environmentVariables, 
 					createCartridges(standaloneCartridge, embeddableCartridges));
 		}
 
-		protected ICartridge[] createCartridges(ICartridge standaloneCartridge, Collection<? extends ICartridge> embeddableCartridges) {
+		protected ICartridge[] createCartridges(IStandaloneCartridge standaloneCartridge, Collection<? extends ICartridge> embeddableCartridges) {
 			List<ICartridge> cartridges = new ArrayList<ICartridge>();
 			cartridges.add(standaloneCartridge);
 			if (embeddableCartridges != null
@@ -105,6 +122,21 @@ public class ApplicationBuilder {
 				cartridges.addAll(embeddableCartridges);
 			}
 			return (ICartridge[]) cartridges.toArray(new ICartridge[cartridges.size()]);
+		}
+	}
+	
+	public class NamedUnTypedCartridgeBuilder extends AbstractNamedCartridgeBuilder<NamedUnTypedCartridgeBuilder> {
+		
+		private Collection<ICartridge> cartridges;
+		
+		NamedUnTypedCartridgeBuilder(String name, Collection<ICartridge> cartridges) {
+			super(name);
+			this.cartridges = cartridges;
+		}
+
+		public IApplication build() {
+			return domain.createApplication(name, applicationScale, gearProfile, initialGitUrl, timeout, environmentVariables, 
+					cartridges.toArray(new ICartridge[cartridges.size()]));
 		}
 	}
 }

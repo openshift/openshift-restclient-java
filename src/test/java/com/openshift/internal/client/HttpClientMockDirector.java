@@ -544,5 +544,7 @@ public class HttpClientMockDirector {
 		.thenReturn(getQuickstartsResponse.getContentAsString());
 		return this;
 	}
+	
+	
 
 }
