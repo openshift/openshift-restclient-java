@@ -35,7 +35,7 @@ public class AlternativeCartridges {
 	/**
 	 * Returns all alternative cartridges that a user may choose its cartridge
 	 * from.
-	 * 
+	 *
 	 * @return the alternative cartridges
 	 */
 	public List<ICartridge> get() {

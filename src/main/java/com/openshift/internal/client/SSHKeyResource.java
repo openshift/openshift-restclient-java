@@ -101,9 +101,9 @@ public class SSHKeyResource extends AbstractOpenShiftResource implements IOpenSh
 	@Override
 	public String toString() {
 		return "SSHKeyResource ["
-				+ "name=" + name 
-				+ ", type=" + type 
-				+ ", publicKey=" + publicKey 
+				+ "name=" + name
+				+ ", type=" + type
+				+ ", publicKey=" + publicKey
 				+ "]";
 	}
 

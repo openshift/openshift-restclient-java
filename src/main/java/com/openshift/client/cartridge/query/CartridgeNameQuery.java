@@ -39,7 +39,7 @@ public class CartridgeNameQuery extends AbstractCartridgeQuery {
 	@Override
 	public String toString() {
 		return "CartridgeNameQuery ["
-				+ "nameSubstring=" + nameSubstring 
+				+ "nameSubstring=" + nameSubstring
 				+ "]";
 	}
 }
