@@ -20,7 +20,7 @@ import com.openshift.client.cartridge.ICartridge;
 import com.openshift.internal.client.utils.Assert;
 
 /**
- * A base query class for query that shall match cartridges. 
+ * A base query class for query that shall match cartridges.
  * 
  * @author Andre Dietisheim
  */

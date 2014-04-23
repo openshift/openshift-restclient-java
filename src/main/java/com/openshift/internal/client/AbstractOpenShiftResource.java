@@ -50,7 +50,7 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 	private Map<String, Link> links;
 	
 
-   
+
 	/** The service. */
 	private final IRestService service;
 

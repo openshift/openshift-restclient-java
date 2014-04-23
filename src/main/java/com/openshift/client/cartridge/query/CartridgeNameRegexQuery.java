@@ -42,7 +42,7 @@ public class CartridgeNameRegexQuery extends AbstractCartridgeQuery {
 	@Override
 	public String toString() {
 		return "CartridgeNameRegexQuery ["
-				+ "namePattern=" + namePattern 
+				+ "namePattern=" + namePattern
 				+ "]";
 	}
 
