@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,9 +30,9 @@ import com.openshift.client.utils.QuickstartTestUtils;
 import com.openshift.client.utils.Samples;
 import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.cartridge.BaseCartridge;
+import com.openshift.internal.client.response.QuickstartDTO;
 
 /**
- * @author Xavier Coulon
  * @author Andre Dietisheim
  */
 public class QuickstartTest extends TestTimer {
@@ -199,6 +200,30 @@ public class QuickstartTest extends TestTimer {
 						Collections.<String> singletonList("cron-1.4"));
 	}
 
+	@Test
+	public void shouldHave3TagsFromCommaDelimitedItems() throws Throwable {
+		// pre-conditions
+		String tagsJson = QuickstartTestUtils.createTagsJson("redhat, jboss, adietish");
+		
+		// operation
+		QuickstartDTO quickstart = QuickstartTestUtils.getFirstQuickstartDTO(tagsJson);
+		
+		// verification
+		assertThat(quickstart.getTags()).containsExactly("redhat", "jboss", "adietish");
+	}
+	
+	@Test
+	public void shouldHave3TagsFromTagsArray() throws Throwable {
+		// pre-conditions
+		String tagsJson = QuickstartTestUtils.createTagsJson(ModelNode.fromJSONString("[ \"redhat\", \"jboss\", \"adietish\" ]"));
+		
+		// operation
+		QuickstartDTO quickstart = QuickstartTestUtils.getFirstQuickstartDTO(tagsJson);
+		
+		// verification
+		assertThat(quickstart.getTags()).containsExactly("redhat", "jboss", "adietish");
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldOfferPhpMySqlCron() throws Throwable {

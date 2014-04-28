@@ -13,6 +13,8 @@ package com.openshift.internal.client.response;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -182,11 +184,24 @@ public class QuickstartJsonDTOFactory extends AbstractJsonDTOFactory {
 	protected List<String> createTags(ModelNode tagsNode) {
 		List<String> tags = new ArrayList<String>();
 		if (isDefined(tagsNode)) {
-			String[] parts = tagsNode.asString().split("\\, ");
-			for (int i = 0; parts.length > i; i++) {
-				tags.add(parts[i]);
+			if (ModelType.LIST == tagsNode.getType()) {
+				tags.addAll(getTags(tagsNode));
+			} else if (ModelType.STRING == tagsNode.getType()){
+				tags.addAll(splitTags(tagsNode));
 			}
 		}
 		return tags;
+	}
+
+	private Collection<String> getTags(ModelNode tagsNode) {
+		List<String> tags = new ArrayList<String>();
+		for (ModelNode node : tagsNode.asList()) {
+			tags.add(node.asString());
+		}
+		return tags;
+	}
+
+	private Collection<? extends String> splitTags(ModelNode tagsNode) {
+		return Arrays.asList(tagsNode.asString().split("\\, "));
 	}
 }
