@@ -10,9 +10,22 @@
  ******************************************************************************/
 package com.openshift.client.utils;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.Property;
+
 import com.openshift.client.IQuickstart;
+import com.openshift.client.cartridge.query.ICartridgeQuery;
+import com.openshift.internal.client.response.QuickstartDTO;
+import com.openshift.internal.client.response.QuickstartJsonDTOFactory;
+import com.openshift.internal.client.response.RestResponse;
 
 /**
  * @author André Dietisheim
@@ -34,7 +47,55 @@ public class QuickstartTestUtils {
 	public static final String TEXTPRESS = "TextPress";
 	public static final String WILDFLY_8 = "WildFly 8";
 	public static final String WORDPRESS_3X = "WordPress 3.x";
-	
+
+	public static String createCartridgesJson(String... cartridgesSpecs) {
+		List<ModelNode> quickstartNodes = new ArrayList<ModelNode>();
+		for (String cartridgesSpec : cartridgesSpecs) {
+			quickstartNodes.add(new ModelNode().set("cartridges", cartridgesSpec));
+		}
+		return createJson(quickstartNodes.toArray(new ModelNode[quickstartNodes.size()]));
+	}
+
+	public static String createTagsJson(String tags) {
+		return createJson(new ModelNode().set("tags", tags));
+	}
+
+	public static String createTagsJson(ModelNode tags) {
+		return createJson(new ModelNode().set("tags", tags));
+	}
+
+	public static String createJson(ModelNode... quickstarts) {
+		ModelNode quickstartsNode = new ModelNode();
+		for (ModelNode quickstart : quickstarts) {
+			quickstartsNode.add(new ModelNode().set("quickstart", quickstart));
+		}
+		ModelNode rootNode = new ModelNode().set("data", quickstartsNode);
+		return rootNode.toJSONString(false);
+	}
+
+	public static List<ICartridgeQuery> getCartridgeQueriesForSingleQuickstart(String quickstartsJson) {
+		List<QuickstartDTO> quickstartDTOs = getQuickstartDTOs(quickstartsJson);
+		assertThat(quickstartDTOs).hasSize(1);
+
+		return quickstartDTOs.get(0).getCartridges();
+	}
+
+	public static List<QuickstartDTO> getQuickstartDTOs(String quickstartsJson) {
+		RestResponse restResponse = new QuickstartJsonDTOFactory().get(quickstartsJson);
+
+		assertThat(restResponse).isNotNull();
+		assertThat(restResponse.getData()).isInstanceOf(List.class);
+
+		return restResponse.getData();
+	}
+
+	public static QuickstartDTO getFirstQuickstartDTO(String quickstartsJson) {
+		List<QuickstartDTO> quickstartDTOs = getQuickstartDTOs(quickstartsJson);
+		assertThat(quickstartDTOs).isNotEmpty();
+		
+		return quickstartDTOs.get(0);
+	}
+
 	public static IQuickstart getByName(String name, List<IQuickstart> quickstarts) {
 		IQuickstart matchingQuickstart = null;
 		for (IQuickstart quickstart : quickstarts) {
@@ -45,6 +106,5 @@ public class QuickstartTestUtils {
 		}
 		return matchingQuickstart;
 	}
-
 
 }
