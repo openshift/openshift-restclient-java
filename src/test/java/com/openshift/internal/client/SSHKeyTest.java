@@ -34,7 +34,7 @@ import com.openshift.client.SSHKeyPair;
 import com.openshift.client.SSHKeyType;
 import com.openshift.client.SSHPublicKey;
 import com.openshift.client.utils.SSHKeyTestUtils;
-import com.openshift.client.utils.SSHKeyTestUtils.SSHPublicKeyAssertion;
+import com.openshift.client.utils.SSHPublicKeyAssertion;
 import com.openshift.client.utils.Samples;
 import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.HttpClientException;
@@ -203,7 +203,7 @@ public class SSHKeyTest extends TestTimer {
 		
 		String keyName = "somekey";
 		// operation
-		user.putSSHKey(keyName, publicKey);
+		user.addSSHKey(keyName, publicKey);
 		mockDirector.mockGetKeys(Samples.GET_USER_KEYS_1KEY);
 
 		// verifications
@@ -284,7 +284,7 @@ public class SSHKeyTest extends TestTimer {
 		// operation
 		assertThat(user.getSSHKeys()).hasSize(1);
 		String existingKeyName = user.getSSHKeys().get(0).getName();
-		user.putSSHKey(existingKeyName, publicKey);
+		user.addSSHKey(existingKeyName, publicKey);
 	}
 
 	@Test(expected = OpenShiftSSHKeyException.class)
@@ -301,7 +301,7 @@ public class SSHKeyTest extends TestTimer {
 
 		// operation
 		assertThat(user.getSSHKeys()).onProperty("name").contains(keyName);
-		user.putSSHKey(keyName, publicKey); // throws
+		user.addSSHKey(keyName, publicKey); // throws
 	}
 
 }

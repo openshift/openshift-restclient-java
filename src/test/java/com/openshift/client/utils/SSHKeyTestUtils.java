@@ -11,58 +11,34 @@
 package com.openshift.client.utils;
 
 import static com.openshift.client.utils.FileUtils.createRandomTempFile;
-import static org.junit.Assert.assertEquals;
+import static org.fest.assertions.Assertions.assertThat;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-
-import org.fest.assertions.AssertExtension;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.KeyPair;
 import com.openshift.client.IOpenShiftSSHKey;
 import com.openshift.client.IUser;
-import com.openshift.client.SSHKeyType;
+import com.openshift.client.OpenShiftException;
+import com.openshift.client.SSHPublicKey;
 
 /**
  * @author Andre Dietisheim
  */
 public class SSHKeyTestUtils {
 
+	public static final String SSH_TEST_KEY_NAME = "OSJC_SSHKEY";
+	public static final String SSH_TEST_PUBLICKEY = FileUtils.getTempDirFilePath(SSH_TEST_KEY_NAME + ".pub");
+	public static final String SSH_TEST_PRIVATEKEY = FileUtils.getTempDirFilePath(SSH_TEST_KEY_NAME);
+	
 	public static final String DEFAULT_PASSPHRASE = "12345";
 
 	public static final String SSH_RSA = "ssh-rsa";
 	public static final String SSH_DSA = "ssh-dss";
-
-	public static class SSHPublicKeyAssertion implements AssertExtension {
-
-		private IOpenShiftSSHKey sshKey;
-
-		public SSHPublicKeyAssertion(IOpenShiftSSHKey key) {
-			this.sshKey = key;
-		}
-
-		public SSHPublicKeyAssertion hasName(String name) {
-			assertEquals(name, sshKey.getName());
-			return this;
-		}
-
-		public SSHPublicKeyAssertion hasPublicKey(String publicKey) {
-			assertEquals(publicKey, sshKey.getPublicKey());
-			return this;
-		}
-
-		public SSHPublicKeyAssertion isType(String type) {
-			assertEquals(type, sshKey.getKeyType().getTypeId());
-			return this;
-		}
-
-		public SSHPublicKeyAssertion isType(SSHKeyType type) {
-			assertEquals(type, sshKey.getKeyType());
-			return this;
-		}
-	}
 
 	/**
 	 * Returns the key with the given name out of the keys in the given list of
@@ -95,11 +71,12 @@ public class SSHKeyTestUtils {
 	 * @throws IOException
 	 * @throws JSchException
 	 */
-	public static void createDsaKeyPair(String publicKeyPath, String privateKeyPath) throws IOException, JSchException {
+	public static KeyPair createDsaKeyPair(String publicKeyPath, String privateKeyPath) throws IOException, JSchException {
 		KeyPair keyPair = KeyPair.genKeyPair(new JSch(), KeyPair.DSA, 1024);
 		keyPair.setPassphrase(DEFAULT_PASSPHRASE);
 		keyPair.writePublicKey(publicKeyPath, "created by " + IUser.ID);
 		keyPair.writePrivateKey(privateKeyPath);
+		return keyPair;
 	}
 
 	public static String createDsaKeyPair() throws IOException, JSchException {
@@ -123,4 +100,18 @@ public class SSHKeyTestUtils {
 	public static String createRandomKeyName() {
 		return String.valueOf(System.currentTimeMillis());
 	}
+
+	public static KeyPair createSSHTestKeys() throws IOException, JSchException {
+		new File(SSH_TEST_PUBLICKEY).createNewFile();
+		new File(SSH_TEST_PRIVATEKEY).createNewFile();
+		return createDsaKeyPair(SSH_TEST_PUBLICKEY, SSH_TEST_PRIVATEKEY);
+	}
+
+	public static void addTestKeyToOpenShift(IUser user) throws OpenShiftException, FileNotFoundException, IOException, JSchException {
+		assertThat(user).isNotNull();
+		createSSHTestKeys();
+		user.removeSSHKey(SSH_TEST_KEY_NAME);
+		user.addSSHKey(SSH_TEST_KEY_NAME, new SSHPublicKey(SSH_TEST_PUBLICKEY));
+	}
+	
 }

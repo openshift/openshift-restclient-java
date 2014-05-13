@@ -141,7 +141,7 @@ public abstract class AbstractOpenShiftResource implements IOpenShiftResource {
 
 		protected <DTO> DTO execute(final Parameter... parameters) throws OpenShiftException {
 			return getData(getService().request(
-					getLink(linkName), 
+					getLink(linkName),
 					IHttpClient.NO_TIMEOUT,
 					Collections.<Parameter> emptyList(),
 					Collections.<Parameter> emptyList(),

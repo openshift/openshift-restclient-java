@@ -61,11 +61,18 @@ public interface IApplication extends IOpenShiftResource {
 	public String getSshUrl();
 
 	/**
-	 * Returns the git url that the application will get its initial code and configuration from.
+	 * Returns the git url that the application will get its initial code and
+	 * configuration from.
 	 *
 	 * @return the initial git url
 	 */
 	public String getInitialGitUrl();
+	
+	/**
+	 * Returns the deployment type for this application. Either "binary" or "git" currently.
+	 * @return "binary" or "git"
+	 */
+	public String getDeploymentType();
 
 	/**
 	 * Returns the url at which this application may be reached at.
@@ -103,7 +110,8 @@ public interface IApplication extends IOpenShiftResource {
 	/**
 	 * Adds the given embeddable cartridge to this application.
 	 *
-	 * @param cartridge the cartridge that shall be added
+	 * @param cartridge
+	 *            the cartridge that shall be added
 	 * @throws OpenShiftException
 	 */
 	public IEmbeddedCartridge addEmbeddableCartridge(ICartridge cartridge) throws OpenShiftException;
@@ -111,7 +119,8 @@ public interface IApplication extends IOpenShiftResource {
 	/**
 	 * Adds the given embeddable cartridges to this application.
 	 *
-	 * @param cartridges the cartridges that shall be added
+	 * @param cartridges
+	 *            the cartridges that shall be added
 	 * @throws OpenShiftException
 	 */
 	public List<IEmbeddedCartridge> addEmbeddableCartridges(ICartridge... cartridges) throws OpenShiftException;
@@ -182,8 +191,8 @@ public interface IApplication extends IOpenShiftResource {
 			throws OpenShiftException;
 
 	/**
-	 * Returns the embedded cartridge in this application. Returns <code>null</code> if none was
-	 * found.
+	 * Returns the embedded cartridge in this application. Returns
+	 * <code>null</code> if none was found.
 	 *
 	 * @param cartridge
 	 * @return the embedded cartridge
@@ -205,19 +214,19 @@ public interface IApplication extends IOpenShiftResource {
 	public void removeEmbeddedCartridge(IEmbeddableCartridge cartridge) throws OpenShiftException;
 
 	/**
-	 * Removes the given embedded cartridges in this application that are equal to the
-	 * given IEmbeddableCartridge. Does nothing if the cartridge is not present
-	 * in this application.
+	 * Removes the given embedded cartridges in this application that are equal
+	 * to the given IEmbeddableCartridge. Does nothing if the cartridge is not
+	 * present in this application.
 	 *
-	 * @param cartridges the cartridges that shall get removed
+	 * @param cartridges
+	 *            the cartridges that shall get removed
 	 * @throws OpenShiftException
 	 */
 	public void removeEmbeddedCartridges(Collection<IEmbeddableCartridge> cartridges) throws OpenShiftException;
 
-
 	/**
-	 * Returns the gear groups for this application.
-	 * The collection is never cached, so each call will trigger a request to the OpenShift Broker.
+	 * Returns the gear groups for this application. The collection is never
+	 * cached, so each call will trigger a request to the OpenShift Broker.
 	 *
 	 * @return the collection of {@link IGearGroup} for this application.
 	 * @throws OpenShiftException
@@ -322,6 +331,15 @@ public interface IApplication extends IOpenShiftResource {
 	public void scaleUp() throws OpenShiftException;
 
 	/**
+	 * Sets the deployment type for this application. Can be either "binary" or
+	 * "git" currently.
+	 * 
+	 * @param deploymentType
+	 * @return the deployment type that was set
+	 */
+	public String setDeploymentType(String deploymentType);
+
+	/**
 	 * Add application alias
 	 *
 	 * @throws OpenShiftException
@@ -359,9 +377,11 @@ public interface IApplication extends IOpenShiftResource {
 	 * initialized out of the library, since the user's SSH settings may depend
 	 * on the runtime environment (Eclipse, etc.).
 	 *
-	 * @param session the SSH session
+	 * @param session
+	 *            the SSH session
 	 *
-	 * @deprecated use {@link IApplicationSSHSession#setSSHSession(com.jcraft.jsch.Session)}
+	 * @deprecated use
+	 *             {@link IApplicationSSHSession#setSSHSession(com.jcraft.jsch.Session)}
 	 */
 	public void setSSHSession(Session session);
 
@@ -454,36 +474,45 @@ public interface IApplication extends IOpenShiftResource {
 	/**
 	 * Checks if the environment variable is present in the application.
 	 *
-	 * @param name  Name of the environment variable
-	 * @return <code>true</code> if the current instance has IEnvironmentVariables to return <br>
-	 *         <code>false</code> if the current instance has no IEnvironmentVariables to return
+	 * @param name
+	 *            Name of the environment variable
+	 * @return <code>true</code> if the current instance has
+	 *         IEnvironmentVariables to return <br>
+	 *         <code>false</code> if the current instance has no
+	 *         IEnvironmentVariables to return
 	 * @throws OpenShiftSSHOperationException
 	 */
 	public boolean hasEnvironmentVariable(String name) throws OpenShiftException;
 
 	/**
-	 * Adds an environment variable to this application. 
+	 * Adds an environment variable to this application.
 	 *
-	 * @param name  key associated with the variable to add
-	 * @param value value of the new variable
-	 * @throws OpenShiftSSHOperationException - if the variable already exists
+	 * @param name
+	 *            key associated with the variable to add
+	 * @param value
+	 *            value of the new variable
+	 * @throws OpenShiftSSHOperationException
+	 *             - if the variable already exists
 	 */
 	public IEnvironmentVariable addEnvironmentVariable(String name, String value) throws OpenShiftException;
 
 	/**
 	 * Updates an environment variable to this application.
 	 *
-	 * @param name  key associated with the variable to update
-	 * @param value value of the new variable
-	 * @throws OpenShiftSSHOperationException - if the variable already exists
+	 * @param name
+	 *            key associated with the variable to update
+	 * @param value
+	 *            value of the new variable
+	 * @throws OpenShiftSSHOperationException
+	 *             - if the variable already exists
 	 */
 	public IEnvironmentVariable updateEnvironmentVariable(String name, String value) throws OpenShiftException;
-
 
 	/**
 	 * Adds a map of environment variables to the application
 	 *
-	 * @param environmentVariables Map<String,String> of environment variables
+	 * @param environmentVariables
+	 *            Map<String,String> of environment variables
 	 * @throws OpenShiftSSHOperationException
 	 */
 	public Map<String, IEnvironmentVariable> addEnvironmentVariables(Map<String, String> environmentVariables)
@@ -492,44 +521,60 @@ public interface IApplication extends IOpenShiftResource {
 	/**
 	 * Return the environment variable for the specified name
 	 *
-	 * @param name key to be used to locate the environment variable
+	 * @param name
+	 *            key to be used to locate the environment variable
 	 * @return IEnvironmentVariable associated with the provided key
-	 * @throws OpenShiftSSHOperationException - thrown if the key does not exist
+	 * @throws OpenShiftSSHOperationException
+	 *             - thrown if the key does not exist
 	 */
 	public IEnvironmentVariable getEnvironmentVariable(String name) throws OpenShiftException;
 
 	/**
 	 * Return the environment variables value for the specified name
 	 *
-	 * @param name key to be used to locate the environment variable
+	 * @param name
+	 *            key to be used to locate the environment variable
 	 * @return String value associated with the provided key
-	 * @throws OpenShiftSSHOperationException - thrown if the key does not exist
+	 * @throws OpenShiftSSHOperationException
+	 *             - thrown if the key does not exist
 	 */
 	public String getEnvironmentVariableValue(String name);
 
 	/**
-	 * Removes the environment variables with the given name from this application.
+	 * Removes the environment variables with the given name from this
+	 * application.
 	 *
-	 * @param name key associated with the IEnvironmentVariable to be removed
+	 * @param name
+	 *            key associated with the IEnvironmentVariable to be removed
 	 * @return
-	 * @throws OpenShiftException - thrown if there is no IEnvironmentVariable associated with the explicit parameter.
+	 * @throws OpenShiftException
+	 *             - thrown if there is no IEnvironmentVariable associated with
+	 *             the explicit parameter.
 	 */
 	public void removeEnvironmentVariable(String name) throws OpenShiftException;
 
 	/**
-	 * Removes the environment variables with the given name from this application.
+	 * Removes the environment variables with the given name from this
+	 * application.
 	 *
-	 * @param environmentVariable IEnvironmentVariable instance which should be removed
+	 * @param environmentVariable
+	 *            IEnvironmentVariable instance which should be removed
 	 * @return
-	 * @throws OpenShiftException - thrown if there is no instance  of IEnvironmentVariable available to be removed
+	 * @throws OpenShiftException
+	 *             - thrown if there is no instance of IEnvironmentVariable
+	 *             available to be removed
 	 */
 	public void removeEnvironmentVariable(IEnvironmentVariable environmentVariable);
 
 	/**
-	 * Used to determine if environment variables exist and are available to be retrieved 
+	 * Used to determine if environment variables exist and are available to be
+	 * retrieved
 	 *
-	 * @return Returns <code>true</code> if this application can list its environment variables. <br>
-	 *         Returns <code>false</code> if it cannot. Internally this translates to the presence of the link to list environment variables.
+	 * @return Returns <code>true</code> if this application can list its
+	 *         environment variables. <br>
+	 *         Returns <code>false</code> if it cannot. Internally this
+	 *         translates to the presence of the link to list environment
+	 *         variables.
 	 *
 	 * @see #getEnvironmentVariablesMap()
 	 * @see #getEnvironmentVariable(String)
@@ -538,9 +583,11 @@ public interface IApplication extends IOpenShiftResource {
 	public boolean canGetEnvironmentVariables();
 
 	/**
-	 * Used to determine if the current instance is able to update environment variables.
+	 * Used to determine if the current instance is able to update environment
+	 * variables.
 	 *
-	 * @return Returns <code>true</code> if this application can augment its environment variables.<br>
+	 * @return Returns <code>true</code> if this application can augment its
+	 *         environment variables.<br>
 	 *         Returns <code>false</code> if it cannot. <br>
 	 *
 	 * @see #addEnvironmentVariable(String, String)

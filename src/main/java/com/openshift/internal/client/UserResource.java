@@ -10,8 +10,9 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.openshift.client.IDomain;
 import com.openshift.client.IOpenShiftConnection;
@@ -40,7 +41,7 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 	private final int maxGears;
 	private final int consumedGears;
 
-	private List<SSHKeyResource> sshKeys;
+	private Map<String, SSHKeyResource> sshKeys;
 	
 	public UserResource(final APIResource api, final UserResourceDTO dto, final String password) {
 		super(api.getService(), dto.getLinks(), dto.getMessages());
@@ -51,64 +52,74 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		this.password = password;
 	}
 
+	@Override
 	public IOpenShiftConnection getConnection() {
 		return api;
 	}
 
+	@Override
 	public String getRhlogin() {
 		return rhLogin;
 	}
 
+	@Override
 	public String getPassword() {
 		return password;
 	}
 	
+	@Override
 	public String getServer() {
 		return api.getServer();
 	}
 	
+	@Override
 	public int getMaxGears() {
 		return maxGears;
 	}
 	
+	@Override
 	public int getConsumedGears() {
 		return consumedGears;
 	}
 
+	@Override
 	public IDomain createDomain(String id) throws OpenShiftException {
 		Assert.notNull(id);
 		
 		return api.createDomain(id);
 	}
 
+	@Override
 	public List<IDomain> getDomains() throws OpenShiftException {
 		List<IDomain> domains = api.getDomains();
 		return domains;
 	}
 
+	@Override
 	public IDomain getDefaultDomain() throws OpenShiftException {
 		return api.getDefaultDomain();
 	}
 
+	@Override
 	public IDomain getDomain(String id) throws OpenShiftException {
 		return api.getDomain(id);
 	}
 
+	@Override
 	public boolean hasDomain() throws OpenShiftException {
 		return (api.getDomains().size() > 0);
 	}
 
+	@Override
 	public boolean hasDomain(String id) throws OpenShiftException {
 		Assert.notNull(id);
 		
 		return api.getDomain(id) != null;
 	}
 
+	@Override
 	public void refresh() throws OpenShiftException {
-		if (this.sshKeys != null) {
-			this.sshKeys = null;
-			loadKeys();
-		}
+		this.sshKeys = loadKeys();
 		
 		api.refresh();
 		DomainResource defaultDomain = (DomainResource) getDefaultDomain();
@@ -117,14 +128,15 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		}
 	}
 
+	@Override
 	public List<IOpenShiftSSHKey> getSSHKeys() throws OpenShiftUnknonwSSHKeyTypeException,
 			OpenShiftException {
-		List<IOpenShiftSSHKey> keys = new ArrayList<IOpenShiftSSHKey>();
-		keys.addAll(getCachedOrLoadSSHKeys());
-		return CollectionUtils.toUnmodifiableCopy(keys);
+		Map<String, IOpenShiftSSHKey> keys = new HashMap<String, IOpenShiftSSHKey>();
+		keys.putAll(getCachedOrLoadSSHKeys());
+		return CollectionUtils.toUnmodifiableCopy(keys.values());
 	}
 
-	private List<SSHKeyResource> getCachedOrLoadSSHKeys() throws OpenShiftException,
+	private Map<String, SSHKeyResource> getCachedOrLoadSSHKeys() throws OpenShiftException,
 			OpenShiftUnknonwSSHKeyTypeException {
 		if (sshKeys == null) {
 			this.sshKeys = loadKeys();
@@ -132,41 +144,42 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		return sshKeys;
 	}
 
-	private List<SSHKeyResource> loadKeys() throws OpenShiftException,
+	private Map<String, SSHKeyResource> loadKeys() throws OpenShiftException,
 			OpenShiftUnknonwSSHKeyTypeException {
-		List<SSHKeyResource> keys = new ArrayList<SSHKeyResource>();
+		Map<String, SSHKeyResource> keys = new HashMap<String, SSHKeyResource>();
 		List<KeyResourceDTO> keyDTOs = new GetSShKeysRequest().execute();
 		for (KeyResourceDTO keyDTO : keyDTOs) {
-			keys.add(new SSHKeyResource(keyDTO, this));
+			keys.put(keyDTO.getName(), new SSHKeyResource(keyDTO, this));
 		}
 		return keys;
 	}
 
-	public void deleteKey(String name) {
+	@Override
+	public boolean removeSSHKey(String name) {
 		IOpenShiftSSHKey key = getSSHKeyByName(name);
-		if (key != null) {
-			key.destroy();
+		if (key == null) {
+			return false;
 		}
+		key.destroy();
+		getCachedOrLoadSSHKeys().remove(name);
+		return true;
 	}
 	
+	@Deprecated
+	@Override
+	public void deleteKey(String name) {
+		removeSSHKey(name);
+	}
+	
+	@Override
 	public IOpenShiftSSHKey getSSHKeyByName(String name) 
 			throws OpenShiftUnknonwSSHKeyTypeException, OpenShiftException {
 		Assert.notNull(name);
 
-		IOpenShiftSSHKey matchingKey = null;
-		if (name == null) {
-			return null;
-		}
-
-		for (SSHKeyResource key : getCachedOrLoadSSHKeys()) {
-			if (name.equals(key.getName())) {
-				matchingKey = key;
-				break;
-			}
-		}
-		return matchingKey;
+		return getCachedOrLoadSSHKeys().get(name);
 	}
 
+	@Override
 	public IOpenShiftSSHKey getSSHKeyByPublicKey(String publicKey)
 			throws OpenShiftUnknonwSSHKeyTypeException, OpenShiftException {
 		Assert.notNull(publicKey);
@@ -176,7 +189,7 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 			return null;
 		}
 
-		for (SSHKeyResource key : getCachedOrLoadSSHKeys()) {
+		for (SSHKeyResource key : getCachedOrLoadSSHKeys().values()) {
 			if (publicKey.equals(key.getPublicKey())) {
 				matchingKey = key;
 				break;
@@ -185,6 +198,7 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		return matchingKey;
 	}
 
+	@Override
 	public boolean hasSSHKeyName(String name) throws OpenShiftUnknonwSSHKeyTypeException,
 			OpenShiftException {
 		Assert.notNull(name);
@@ -192,23 +206,23 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		return getSSHKeyByName(name) != null;
 	}
 
+	@Override
 	public boolean hasSSHPublicKey(String publicKey)
 			throws OpenShiftUnknonwSSHKeyTypeException, OpenShiftException {
 		return getSSHKeyByPublicKey(publicKey) != null;
 	}
 
-	/**
-	 * Adds the given ssh key with the given name. Key names and public keys have to be unique. Throws
-	 * OpenShiftSSHKeyException if either the key name or the public key are already used.
-	 * 
-	 * @param name
-	 *            the name to identify the key
-	 * @param key
-	 *            the key to add
-	 * @return
-	 * @throws OpenShiftException
-	 */
+	@Override
 	public IOpenShiftSSHKey putSSHKey(String name, ISSHPublicKey key) throws OpenShiftException {
+		Assert.notNull(name);
+		Assert.notNull(key);
+
+		KeyResourceDTO keyDTO = new AddSShKeyRequest().execute(key.getKeyType(), name, key.getPublicKey());
+		return put(keyDTO);
+	}
+	
+	@Override
+	public IOpenShiftSSHKey addSSHKey(String name, ISSHPublicKey key) throws OpenShiftException {
 		Assert.notNull(name);
 		Assert.notNull(key);
 
@@ -228,12 +242,12 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 
 	private SSHKeyResource put(KeyResourceDTO keyDTO) throws OpenShiftUnknonwSSHKeyTypeException {
 		SSHKeyResource sshKey = new SSHKeyResource(keyDTO, this);
-		sshKeys.add(sshKey);
+		getCachedOrLoadSSHKeys().put(keyDTO.getName(), sshKey);
 		return sshKey;
 	}
 
 	protected void removeSSHKey(SSHKeyResource key) {
-		sshKeys.remove(key);
+		sshKeys.remove(key.getName());
 	}
 
 	private class GetSShKeysRequest extends ServiceRequest {

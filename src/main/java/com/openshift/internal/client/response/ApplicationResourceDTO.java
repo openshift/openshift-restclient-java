@@ -50,12 +50,15 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	
 	/** the application's url. */
 	private final String applicationUrl;
-	
+		
 	/** the ssh url. */
 	private final String sshUrl;
 	
 	/** the application's git repository url. */
 	private final String gitUrl;
+	
+	/** the deployment type */
+	private final String deploymentType;
 	
 	/** the url for the git repo with the initial code for this application. */
 	private final String initialGitUrl;
@@ -74,7 +77,7 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 	 */
 	ApplicationResourceDTO(final String framework, final String domainId, final String creationTime,
 			final String name, final IGearProfile gearProfile, final ApplicationScale scale, final String uuid,
-			final String applicationUrl, final String sshUrl, final String gitUrl, final String initialGitUrl, final List<String> aliases,
+			final String applicationUrl, final String sshUrl, final String gitUrl, final String initialGitUrl, final String deploymentType, final List<String> aliases,
 			final Map<String, CartridgeResourceDTO> cartridgeByName, final Map<String, Link> links, Messages messages) {
 	super(links, messages);
 		this.framework = framework;
@@ -88,6 +91,7 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 		this.sshUrl = sshUrl;
 		this.gitUrl = gitUrl;
 		this.initialGitUrl = initialGitUrl;
+		this.deploymentType = deploymentType;
 		this.aliases = aliases;
 		this.cartridgesByName = cartridgeByName;
 	}
@@ -180,6 +184,13 @@ public class ApplicationResourceDTO extends BaseResourceDTO {
 		return initialGitUrl;
 	}
 
+	/**
+	 * @return the deployment type for this application. Either "binary" or "git"
+	 */
+	public String getDeploymentType() {
+		return deploymentType;
+	}
+	
 	/**
 	 * @return the aliases
 	 */
