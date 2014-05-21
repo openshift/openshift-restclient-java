@@ -32,6 +32,7 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_DEFAULT_VALUE = "default_value";
 	public static final String PROPERTY_DELETE = "delete";
 	public static final String PROPERTY_DESCRIPTION = "description";
+	public static final String PROPERTY_DEPLOYMENT_TYPE = "deployment_type";
 	public static final String PROPERTY_DISPLAY_NAME = "display_name";
 	public static final String PROPERTY_DOMAIN = "domain";
 	public static final String PROPERTY_DOMAINS = "domains";

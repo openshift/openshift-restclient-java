@@ -16,6 +16,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_CONSUMED_GEARS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_CREATION_TIME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DATA;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DEPLOYMENT_TYPE;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DESCRIPTION;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DISPLAY_NAME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DOMAIN_ID;
@@ -300,6 +301,7 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
 		final String sshUrl = getAsString(appNode, PROPERTY_SSH_URL);
 		final String gitUrl = getAsString(appNode, PROPERTY_GIT_URL);
 		final String initialGitUrl = getAsString(appNode, PROPERTY_INITIAL_GIT_URL);
+		final String deploymentType = getAsString(appNode, PROPERTY_DEPLOYMENT_TYPE);
 		final String domainId = getAsString(appNode, PROPERTY_DOMAIN_ID);
 		final Map<String, Link> links = createLinks(appNode.get(PROPERTY_LINKS));
 		final List<String> aliases = createAliases(appNode.get(PROPERTY_ALIASES));
@@ -317,6 +319,7 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
 				sshUrl,
 				gitUrl,
 				initialGitUrl,
+				deploymentType,
 				aliases,
 				cartridges,
 				links,

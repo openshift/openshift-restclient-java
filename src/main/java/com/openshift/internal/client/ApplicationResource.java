@@ -93,6 +93,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private static final String LINK_GET_GEAR_GROUPS = "GET_GEAR_GROUPS";
 	private static final String LINK_LIST_ENVIRONMENT_VARIABLES = "LIST_ENVIRONMENT_VARIABLES";
 	private static final String LINK_SET_UNSET_ENVIRONMENT_VARIABLES = "SET_UNSET_ENVIRONMENT_VARIABLES";
+	private static final String LINK_UPDATE = "UPDATE";
+	
 	private static final Pattern REGEX_FORWARDED_PORT = Pattern.compile("([^ ]+) -> ([^:]+):(\\d+)");
 
 	/** The (unique) uuid of this application. */
@@ -127,6 +129,9 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	/** the git url for the initial code and configuration for the application */
 	private String initialGitUrl;
+	
+	/** the deployment type for this application **/
+	private String deploymentType;
 
 	/** The aliases of this application. */
 	private List<String> aliases;
@@ -156,7 +161,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	protected ApplicationResource(ApplicationResourceDTO dto, DomainResource domain) {
 		this(dto.getName(), dto.getUuid(), dto.getCreationTime(), dto.getMessages(), dto.getApplicationUrl(),
-			dto.getSshUrl(), dto.getGitUrl(), dto.getInitialGitUrl(), dto.getGearProfile(), dto.getApplicationScale(),
+			dto.getSshUrl(), dto.getGitUrl(), dto.getInitialGitUrl(), dto.getDeploymentType(), dto.getGearProfile(), dto.getApplicationScale(),
 			dto.getAliases(), dto.getCartridges(), dto.getLinks(), domain);
 	}
 
@@ -189,7 +194,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	 */
 	protected ApplicationResource(final String name, final String uuid, final String creationTime,
 								final Messages messages, final String applicationUrl, final String sshUrl, final String gitUrl,
-								final String initialGitUrl, final IGearProfile gearProfile, final ApplicationScale scale, final List<String> aliases,
+								final String initialGitUrl, final String deploymentType, final IGearProfile gearProfile, final ApplicationScale scale, final List<String> aliases,
 								final Map<String, CartridgeResourceDTO> cartridgesByName, final Map<String, Link> links,
 								final DomainResource domain) {
 		super(domain.getService(), links, messages);
@@ -202,6 +207,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		this.sshUrl = sshUrl;
 		this.gitUrl = gitUrl;
 		this.initialGitUrl = initialGitUrl;
+		this.deploymentType = deploymentType;
 		this.domain = domain;
 		this.aliases = aliases;
 		updateCartridges(cartridgesByName);
@@ -341,10 +347,16 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return gitUrl;
 	}
 
+	@Override
 	public String getInitialGitUrl() {
 		return initialGitUrl;
 	}
 
+	@Override
+	public String getDeploymentType() {
+		return deploymentType;
+	}
+	
 	@Override
 	public String getSshUrl() {
 		return sshUrl;
@@ -355,6 +367,19 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return applicationUrl;
 	}
 
+	@Override
+	public String setDeploymentType(String deploymentType) {
+		Assert.isTrue(!StringUtils.isEmpty(deploymentType));
+
+		if (this.deploymentType.equals(deploymentType)) {
+			return this.deploymentType;
+		}
+	
+		final ApplicationResourceDTO applicationDTO =
+				new UpdateRequest().execute(deploymentType);
+		return this.deploymentType = applicationDTO.getDeploymentType();
+	}
+		
 	@Override
 	public IEmbeddedCartridge addEmbeddableCartridge(ICartridge cartridge) throws OpenShiftException {
 		Assert.notNull(cartridge);
@@ -727,18 +752,12 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 		return environmentVariablesMap;
 	}
-	/*
-	 * (non-Javadoc)
-	 * @see com.openshift.client.IApplication#removeEnvironmentVariable(java.lang.String)
-	 */
+
 	@Override
 	public void removeEnvironmentVariable(String targetName) {
 		removeEnvironmentVariable(getEnvironmentVariable(targetName));
 	}
 
-	/* (non-Javadoc)
-	 * @see com.openshift.client.IApplication#removeEnvironmentVariable(com.openshift.client.IEnvironmentVariable)
-	 */
 	@Override
 	public void removeEnvironmentVariable(IEnvironmentVariable environmentVariable){
 		if(getEnvironmentVariable(environmentVariable.getName()) == null)
@@ -748,11 +767,6 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 
 	}
 
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.openshift.client.IApplication#hasEnvironmentVariable(java.lang.String)
-	 */
 	@Override
 	public boolean hasEnvironmentVariable(String name) throws OpenShiftException {
 		if (StringUtils.isEmpty(name)) {
@@ -1187,4 +1201,13 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
+	private class UpdateRequest extends ServiceRequest {
+		protected UpdateRequest() {
+			super(LINK_UPDATE);
+		}
+
+		protected <DTO> DTO execute(String deploymentType) throws OpenShiftException {
+			return super.execute(new StringParameter(IOpenShiftJsonConstants.PROPERTY_DEPLOYMENT_TYPE, deploymentType));
+		}
+	}
 }

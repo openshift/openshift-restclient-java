@@ -42,7 +42,29 @@ public interface IUser extends IOpenShiftResource {
 
 	public List<IOpenShiftSSHKey> getSSHKeys() throws OpenShiftException;
 
+	/**
+	 * Deprecated, use {@link #addSSHKey(String, ISSHPublicKey)}
+	 * 
+	 * @param name key name to use
+	 * @param key the key to put/add
+	 * @return
+	 * @throws OpenShiftException
+	 */
+	@Deprecated
 	public IOpenShiftSSHKey putSSHKey(String name, ISSHPublicKey key) throws OpenShiftException;
+
+	/**
+	 * Adds the given ssh key with the given name. Key names and public keys have to be unique. Throws
+	 * OpenShiftSSHKeyException if either the key name or the public key are already used.
+	 * 
+	 * @param name
+	 *            the name to identify the key
+	 * @param key
+	 *            the key to add
+	 * @return
+	 * @throws OpenShiftException
+	 */
+	public IOpenShiftSSHKey addSSHKey(String name, ISSHPublicKey key) throws OpenShiftException;
 
 	public IOpenShiftSSHKey getSSHKeyByName(String name) throws OpenShiftUnknonwSSHKeyTypeException, OpenShiftException;
 	
@@ -52,6 +74,9 @@ public interface IUser extends IOpenShiftResource {
 	
 	public boolean hasSSHPublicKey(String publicKey) throws OpenShiftUnknonwSSHKeyTypeException, OpenShiftException;
 	
+	public boolean removeSSHKey(String name);
+	
+	@Deprecated
 	public void deleteKey(String name);
 	
 	public int getMaxGears();

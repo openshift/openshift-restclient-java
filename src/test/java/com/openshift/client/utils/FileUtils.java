@@ -20,6 +20,8 @@ import java.io.StringReader;
  */
 public class FileUtils {
 
+	private static final String JAVA_IO_TEMP = "java.io.tmpdir";
+
 	public static void writeTo(String data, String path) throws IOException {
 		writeTo(data, new File(path));
 	}
@@ -45,7 +47,24 @@ public class FileUtils {
 	}
 	
 	public static File createRandomTempFile() throws IOException {
-		return File.createTempFile(String.valueOf(System.currentTimeMillis()), null);
+		return createRandomTempFile(null);
+	}
+	
+	public static File createRandomTempFile(String suffix) throws IOException {
+		File file = File.createTempFile(createRandomFilename(), suffix);
+		file.deleteOnExit();
+		return file;
+	}
+	
+	public static File createRandomTempDirectory() throws IOException {
+		File file = File.createTempFile(null, createRandomFilename());
+		file.mkdir();
+		file.deleteOnExit();
+		return file;
+	}
+	
+	public static String createRandomFilename()  {
+		return String.valueOf(System.currentTimeMillis());
 	}
 
 	public static void silentlyDelete(File file) {
@@ -53,5 +72,17 @@ public class FileUtils {
 			return;
 		}
 		file.delete();
+	}
+	
+	public static String getTempDirectory() {
+		return System.getProperty(JAVA_IO_TEMP);
+	}
+
+	public static String getTempDirFilePath(String name) {
+		return new File(getTempDirectory(), name).getAbsolutePath();
+	}
+
+	public static String getTempDirFilePath() {
+		return getTempDirFilePath(createRandomFilename());
 	}
 }

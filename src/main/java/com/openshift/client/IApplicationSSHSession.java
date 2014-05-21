@@ -37,7 +37,7 @@ public interface IApplicationSSHSession {
 	 * @return true if the SSH session provided to the application
 	 *         is still valid (connected).
 	 */
-	public boolean isSSHSessionConnected();
+	public boolean isConnected();
 
 	/**
 	 * Returns the list of forwardable ports on OpenShift for this application.

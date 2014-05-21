@@ -18,13 +18,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.client.ApplicationScale;
+import com.openshift.client.DeploymentTypes;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IEnvironmentVariable;
@@ -38,7 +38,6 @@ import com.openshift.client.cartridge.query.LatestVersionOf;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.GearGroupsAssert;
-import com.openshift.client.utils.StringUtils;
 import com.openshift.client.utils.TestConnectionFactory;
 
 /**
@@ -456,5 +455,28 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		assertThat(application.canUpdateEnvironmentVariables()).isTrue();
 		//verify list environment variables
 		assertThat(application.canGetEnvironmentVariables()).isTrue();
+	}
+	
+	@Test
+	public void shouldGetDeploymentType() throws Throwable {
+		// pre-conditions
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+
+		// operation
+        // verifications
+		assertThat(application.getDeploymentType()).isIn(DeploymentTypes.getAll());
+	}
+
+	@Test
+	public void shouldUpdateDeploymentType() throws Throwable {
+		// pre-conditions
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		String deploymentType = application.getDeploymentType();
+		String newDeploymentType = DeploymentTypes.switchType(deploymentType);
+		
+		// operation
+		application.setDeploymentType(newDeploymentType);
+		// verifications
+		assertThat(application.getDeploymentType()).isEqualTo(newDeploymentType);
 	}
 }

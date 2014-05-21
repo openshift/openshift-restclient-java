@@ -39,7 +39,11 @@ public class ApplicationTestUtils {
 	}
 
 	public static IApplication createApplication(IStandaloneCartridge cartridge, IDomain domain) {
-		IApplication application = domain.createApplication(createRandomApplicationName(), cartridge);
+		return createApplication(createRandomApplicationName(), cartridge, domain);
+	}
+
+	public static IApplication createApplication(String name, IStandaloneCartridge cartridge, IDomain domain) {
+		IApplication application = domain.createApplication(name, cartridge);
 		assertTrue(application.waitForAccessible(WAIT_FOR_APPLICATION));
 		return application;
 	}
@@ -99,7 +103,7 @@ public class ApplicationTestUtils {
 			}
 		}
 
-		return domain.createApplication("app" + StringUtils.createRandomString(), cartridge);
+		return createApplication("app" + StringUtils.createRandomString(), cartridge, domain);
 	}
 
 	/**

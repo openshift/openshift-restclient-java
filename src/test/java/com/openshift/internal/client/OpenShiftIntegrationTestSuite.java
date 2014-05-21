@@ -18,6 +18,7 @@ import org.junit.runners.Suite;
 	APIResourceIntegrationTest.class,
 	LatestVersionQueryIntegrationTest.class,
 	SSHKeyIntegrationTest.class,
+	ApplicationSSHSessionIntegrationTest.class,
 	UserResourceIntegrationTest.class,
 	DomainResourceIntegrationTest.class,
 	ApplicationResourceIntegrationTest.class,
