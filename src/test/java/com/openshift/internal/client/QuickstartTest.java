@@ -75,7 +75,8 @@ public class QuickstartTest extends TestTimer {
 	public void shouldUnmarshallWildfly8Quickstart() throws Throwable {
 		// pre-conditions
 		// operation
-		IQuickstart wilfly8Quickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.WILDFLY_8, connection.getQuickstarts());
+		IQuickstart wilfly8Quickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.WILDFLY_8,
+				connection.getQuickstarts());
 
 		// verification
 		new QuickstartAssert(wilfly8Quickstart)
@@ -96,10 +97,11 @@ public class QuickstartTest extends TestTimer {
 	public void shouldUnmarshallDjangoQuickstart() throws Throwable {
 		// pre-conditions
 		// operation
-		IQuickstart wilfly8Quickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.DJANGO, connection.getQuickstarts());
+		IQuickstart djangoQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.DJANGO,
+				connection.getQuickstarts());
 
 		// verification
-		new QuickstartAssert(wilfly8Quickstart)
+		new QuickstartAssert(djangoQuickstart)
 				.hasId("12730")
 				.hasHref("https://www.openshift.com/quickstarts/django")
 				.hasName(QuickstartTestUtils.DJANGO)
@@ -113,14 +115,15 @@ public class QuickstartTest extends TestTimer {
 				.hasProvider("openshift")
 				// expression := python-3|python-2, availble := python-3.3 and
 				// pythong-2.6
-				.hasCartridgeNames(Arrays.<String> asList("python-3.3", "python-2.6"));
+				.hasCartridgeNames(Arrays.<String> asList("python-3.3", "python-2.6", "python-2.7"));
 	}
 
 	@Test
 	public void shouldUnmarshallDrupal8Quickstart() throws Throwable {
 		// pre-conditions
 		// operation
-		IQuickstart drupalQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.DRUPAL_8, connection.getQuickstarts());
+		IQuickstart drupalQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.DRUPAL_8,
+				connection.getQuickstarts());
 
 		// verification
 		new QuickstartAssert(drupalQuickstart)
@@ -152,7 +155,8 @@ public class QuickstartTest extends TestTimer {
 	public void shouldUnmarshallAerogearPushQuickstart() throws Throwable {
 		// pre-conditions
 		// operation
-		IQuickstart aeroGarPushQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.AEROGEAR_PUSH_0X, connection.getQuickstarts());
+		IQuickstart aeroGarPushQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.AEROGEAR_PUSH_0X,
+				connection.getQuickstarts());
 
 		// verification
 		new QuickstartAssert(aeroGarPushQuickstart)
@@ -182,66 +186,95 @@ public class QuickstartTest extends TestTimer {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldUnmarshallCactoQuickstart() throws Throwable {
+	public void shouldUnmarshallCactiQuickstart() throws Throwable {
 		// pre-conditions
 
 		// operation
-		IQuickstart cactiQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.CACTI, connection.getQuickstarts());
+		IQuickstart cactiQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.CACTI,
+				connection.getQuickstarts());
 
 		// verification
 		new QuickstartAssert(cactiQuickstart)
-				// expression := [{&quot;name&quot;:
-				// &quot;php-5.3&quot;},{&quot;name&quot;:
-				// &quot;mysql-5.1&quot;},{&quot;name&quot;:
-				// &quot;cron-1.4&quot;}]
+				// expression := [
+				// {&quot;name&quot;:&quot;php-5.3&quot;},
+				// {&quot;name&quot;:&quot;mysql-5.1&quot;},
+				// {&quot;name&quot;:&quot;cron-1.4&quot;}
+				// ]
 				.hasCartridgeNames(
-						Collections.<String> singletonList("php-5.3"),
-						Collections.<String> singletonList("mysql-5.1"),
-						Collections.<String> singletonList("cron-1.4"));
+						Collections.<String> singletonList(CartridgeTestUtils.PHP_53_NAME),
+						Collections.<String> singletonList(CartridgeTestUtils.MYSQL_51_NAME),
+						Collections.<String> singletonList(CartridgeTestUtils.CRON_14_NAME));
 	}
 
 	@Test
 	public void shouldHave3TagsFromCommaDelimitedItems() throws Throwable {
 		// pre-conditions
-		String tagsJson = QuickstartTestUtils.createTagsJson("redhat, jboss, adietish");
-		
+		String json = QuickstartTestUtils.createQuickstartJsonForTags("redhat, jboss, adietish");
+
 		// operation
-		QuickstartDTO quickstart = QuickstartTestUtils.getFirstQuickstartDTO(tagsJson);
-		
+		QuickstartDTO quickstart = QuickstartTestUtils.getFirstQuickstartDTO(json);
+
 		// verification
 		assertThat(quickstart.getTags()).containsExactly("redhat", "jboss", "adietish");
 	}
-	
+
 	@Test
-	public void shouldHave3TagsFromTagsArray() throws Throwable {
+	public void shouldHave3TagsFromArray() throws Throwable {
 		// pre-conditions
-		String tagsJson = QuickstartTestUtils.createTagsJson(ModelNode.fromJSONString("[ \"redhat\", \"jboss\", \"adietish\" ]"));
-		
+		String json = QuickstartTestUtils.createQuickstartJsonForTags(ModelNode
+				.fromJSONString("[ \"redhat\", \"jboss\", \"adietish\" ]"));
+
 		// operation
-		QuickstartDTO quickstart = QuickstartTestUtils.getFirstQuickstartDTO(tagsJson);
-		
+		QuickstartDTO quickstart = QuickstartTestUtils.getFirstQuickstartDTO(json);
+
 		// verification
 		assertThat(quickstart.getTags()).containsExactly("redhat", "jboss", "adietish");
 	}
-	
+
+	@Test
+	public void shouldHave3CartridgesFromCommaDelimitedItems() throws Throwable {
+		// pre-conditions
+		String json = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec("redhat, jboss, adietish");
+
+		// operation
+		QuickstartDTO quickstart = QuickstartTestUtils.getFirstQuickstartDTO(json);
+
+		// verification
+		assertThat(quickstart.getCartridges()).hasSize(3);
+	}
+
+	@Test
+	public void shouldHave3CartridgesFromArray() throws Throwable {
+		// pre-conditions
+		String quickstartJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec(
+				ModelNode.fromJSONString("[ \"redhat\", \"jboss\", \"adietish\" ]"));
+
+		// operation
+		QuickstartDTO dto = QuickstartTestUtils.getFirstQuickstartDTO(quickstartJson);
+
+		// verification
+		assertThat(dto.getCartridges()).hasSize(3);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldOfferPhpMySqlCron() throws Throwable {
 		// pre-conditions
 
 		// operation
-		IQuickstart cactiQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.CACTI, connection.getQuickstarts());
+		IQuickstart cactiQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.CACTI,
+				connection.getQuickstarts());
 
 		// verification
 		new QuickstartAssert(cactiQuickstart)
-				// expression := [{&quot;name&quot;:
-				// &quot;php-5.3&quot;},{&quot;name&quot;:
-				// &quot;mysql-5.1&quot;},{&quot;name&quot;:
-				// &quot;cron-1.4&quot;}]
+				// expression := [
+				// {&quot;name&quot;:&quot;php-5.3&quot;},
+				// {&quot;name&quot;:&quot;mysql-5.1&quot;},
+				// {&quot;name&quot;:&quot;cron-1.4&quot;}]
 				.hasCartridgeNames(
-						Collections.<String> singletonList("php-5.3"),
-						Collections.<String> singletonList("mysql-5.1"),
-						Collections.<String> singletonList("cron-1.4"));
+						Collections.<String> singletonList(CartridgeTestUtils.PHP_53_NAME),
+						Collections.<String> singletonList(CartridgeTestUtils.MYSQL_51_NAME),
+						Collections.<String> singletonList(CartridgeTestUtils.CRON_14_NAME));
 	}
 
 	@Test
@@ -249,7 +282,8 @@ public class QuickstartTest extends TestTimer {
 		// pre-conditions
 
 		// operation
-		IQuickstart cactiQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.JBOSS_FUSE_61, connection.getQuickstarts());
+		IQuickstart cactiQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.JBOSS_FUSE_61,
+				connection.getQuickstarts());
 
 		// verification
 		new QuickstartAssert(cactiQuickstart)
@@ -260,20 +294,21 @@ public class QuickstartTest extends TestTimer {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldOfferPhp53Php54AndHaveInitialGitUrl() throws Throwable {
+	public void shouldOfferPhp53Php54NoMysqlAndHaveInitialGitUrl() throws Throwable {
 		// pre-conditions
 
 		// operation
-		IQuickstart laravelQuickstart = QuickstartTestUtils.getByName(QuickstartTestUtils.LARAVEL_41,
-				connection.getQuickstarts());
+		IQuickstart laravelQuickstart = 
+				QuickstartTestUtils.getByName(QuickstartTestUtils.LARAVEL_41, connection.getQuickstarts());
 
 		// verification
 		new QuickstartAssert(laravelQuickstart)
 				.hasInitialGitUrl("https://github.com/muffycompo/openshift-laravel4-quickstart-app.git")
 				// expression := "php-5.3|php-5.4, mysql-5.5",
 				.hasCartridgeNames(
-						Arrays.<String> asList("php-5.3", "php-5.4"),
-						Arrays.asList("mysql-5.5"));
+						Arrays.<String> asList(CartridgeTestUtils.PHP_53_NAME),
+						// mysql-5.5 is not present in get-cartridges.json
+						Collections.<String>emptyList());
 	}
 
 	@Test
@@ -285,9 +320,9 @@ public class QuickstartTest extends TestTimer {
 				connection.getQuickstarts());
 		// expression:= php-5|zend-
 		List<ICartridge> empty = anahita.getAlternativesFor(CartridgeTestUtils.as7());
-		
+
 		// verification
-		assertThat(empty).isEmpty();; 
+		assertThat(empty).isEmpty();
 	}
 
 	@Test
@@ -299,13 +334,13 @@ public class QuickstartTest extends TestTimer {
 				connection.getQuickstarts());
 		// expression:= php-5|zend-
 		List<ICartridge> allPhp = anahita.getAlternativesFor(CartridgeTestUtils.php53());
-		
+
 		// verification
 		// we have php-5.3 and zend-5.6
-		assertThat(allPhp).hasSize(2); 
+		assertThat(allPhp).hasSize(2);
 		assertThat(allPhp)
-			.onProperty("name")
-			.contains(CartridgeTestUtils.PHP_53_NAME, CartridgeTestUtils.ZEND_56_NAME);
+				.onProperty("name")
+				.contains(CartridgeTestUtils.PHP_53_NAME, CartridgeTestUtils.ZEND_56_NAME);
 	}
 
 }

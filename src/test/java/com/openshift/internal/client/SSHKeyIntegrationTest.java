@@ -13,23 +13,21 @@ package com.openshift.internal.client;
 import static com.openshift.client.utils.FileUtils.createRandomTempFile;
 import static org.fest.assertions.Assertions.assertThat;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jcraft.jsch.JSchException;
 import com.openshift.client.IOpenShiftSSHKey;
 import com.openshift.client.ISSHPublicKey;
 import com.openshift.client.IUser;
-import com.openshift.client.OpenShiftException;
+import com.openshift.client.OpenShiftEndpointException;
+import com.openshift.client.OpenShiftSSHKeyException;
 import com.openshift.client.SSHKeyPair;
 import com.openshift.client.SSHKeyType;
 import com.openshift.client.SSHPublicKey;
 import com.openshift.client.utils.SSHKeyTestUtils;
+import com.openshift.client.utils.SSHPublicKeyAssertion;
 import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
@@ -41,7 +39,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 	private IUser user;
 
 	@Before
-	public void setUp() throws FileNotFoundException, IOException, OpenShiftException {
+	public void setUp() throws Exception {
 		this.user = new TestConnectionFactory().getConnection().getUser();
 	}
 
@@ -55,7 +53,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 	}
 
 	@Test
-	public void shouldAddKey() throws SocketTimeoutException, HttpClientException, Throwable {
+	public void shouldAddKey() throws Exception {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
@@ -65,11 +63,11 @@ public class SSHKeyIntegrationTest extends TestTimer {
 
 			// operation
 			String keyName = SSHKeyTestUtils.createRandomKeyName();
-			key = user.putSSHKey(keyName, publicKey);
+			key = user.addSSHKey(keyName, publicKey);
 
 			// verifications
 			assertThat(
-					new SSHKeyTestUtils.SSHPublicKeyAssertion(key))
+					new SSHPublicKeyAssertion(key))
 					.hasName(keyName)
 					.hasPublicKey(publicKey.getPublicKey())
 					.isType(publicKey.getKeyType());
@@ -82,8 +80,44 @@ public class SSHKeyIntegrationTest extends TestTimer {
 		}
 	}
 
+	@Test(expected=OpenShiftSSHKeyException.class)
+	public void shouldNotAddKeyTwice() throws Exception {
+		IOpenShiftSSHKey key = null;
+		try {
+			// pre-conditions
+			String keyName = SSHKeyTestUtils.createRandomKeyName();
+			ISSHPublicKey publicKey = new SSHPublicKey(SSHKeyTestUtils.createDsaKeyPair());
+			key = user.addSSHKey(keyName, publicKey);
+			
+			// operation
+			key = user.addSSHKey(keyName, publicKey);
+
+			// verifications
+		} finally {
+			SSHKeyTestUtils.silentlyDestroyKey(key);
+		}
+	}
+	
+	@Test(expected=OpenShiftEndpointException.class)
+	public void shouldNotPutKeyTwice() throws Exception {
+		IOpenShiftSSHKey key = null;
+		try {
+			// pre-conditions
+			String keyName = SSHKeyTestUtils.createRandomKeyName();
+			ISSHPublicKey publicKey = new SSHPublicKey(SSHKeyTestUtils.createDsaKeyPair());
+			key = user.putSSHKey(keyName, publicKey);
+			
+			// operation
+			key = user.putSSHKey(keyName, publicKey);
+
+			// verifications
+		} finally {
+			SSHKeyTestUtils.silentlyDestroyKey(key);
+		}
+	}
+	
 	@Test
-	public void shouldUpdatePublicKey() throws SocketTimeoutException, HttpClientException, Throwable {
+	public void shouldUpdatePublicKey() throws Exception {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
@@ -95,7 +129,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 					privateKeyPath,
 					publicKeyPath);
 			String keyName = SSHKeyTestUtils.createRandomKeyName();
-			key = user.putSSHKey(keyName, keyPair);
+			key = user.addSSHKey(keyName, keyPair);
 
 			// operation
 			String publicKey = SSHKeyPair.create(
@@ -109,7 +143,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 			assertThat(key.getPublicKey()).isEqualTo(publicKey);
 			IOpenShiftSSHKey openshiftKey = user.getSSHKeyByName(keyName);
 			assertThat(
-					new SSHKeyTestUtils.SSHPublicKeyAssertion(openshiftKey))
+					new SSHPublicKeyAssertion(openshiftKey))
 					.hasName(keyName)
 					.hasPublicKey(publicKey)
 					.isType(openshiftKey.getKeyType());
@@ -120,7 +154,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 	}
 
 	@Test
-	public void shouldReturnKeyForName() throws SocketTimeoutException, HttpClientException, Throwable {
+	public void shouldReturnKeyForName() throws Exception {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
@@ -129,7 +163,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 
 			// operation
 			String keyName = SSHKeyTestUtils.createRandomKeyName();
-			key = user.putSSHKey(keyName, publicKey);
+			key = user.addSSHKey(keyName, publicKey);
 			IOpenShiftSSHKey keyByName = user.getSSHKeyByName(keyName);
 
 			// verifications
@@ -140,7 +174,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 	}
 
 	@Test
-	public void shouldReturnKeyForPublicKey() throws SocketTimeoutException, HttpClientException, Throwable {
+	public void shouldReturnKeyForPublicKey() throws Exception {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
@@ -149,7 +183,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 
 			// operation
 			String keyName = SSHKeyTestUtils.createRandomKeyName();
-			key = user.putSSHKey(keyName, publicKey);
+			key = user.addSSHKey(keyName, publicKey);
 			IOpenShiftSSHKey keyByPublicKey = user.getSSHKeyByPublicKey(publicKey.getPublicKey());
 
 			// verifications
@@ -161,7 +195,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 	}
 
 	@Test
-	public void shouldUpdateKeyTypeAndPublicKey() throws SocketTimeoutException, HttpClientException, Throwable {
+	public void shouldUpdateKeyTypeAndPublicKey() throws Exception {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
@@ -171,7 +205,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 			ISSHPublicKey publicKey = new SSHPublicKey(publicKeyPath);
 			assertThat(publicKey.getKeyType()).isEqualTo(SSHKeyType.SSH_DSA);
 			String keyName = SSHKeyTestUtils.createRandomKeyName();
-			key = user.putSSHKey(keyName, publicKey);
+			key = user.addSSHKey(keyName, publicKey);
 			SSHKeyPair keyPair = SSHKeyPair.create(
 					SSHKeyType.SSH_RSA, SSHKeyTestUtils.DEFAULT_PASSPHRASE, privateKeyPath, publicKeyPath);
 
@@ -187,15 +221,13 @@ public class SSHKeyIntegrationTest extends TestTimer {
 	}
 
 	@Test
-	public void shouldRemoveKey() throws IOException, JSchException, OpenShiftException {
+	public void shouldDestroyKey() throws Exception {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
-			String publicKeyPath = createRandomTempFile().getAbsolutePath();
-			String privateKeyPath = createRandomTempFile().getAbsolutePath();
-			SSHKeyTestUtils.createDsaKeyPair(publicKeyPath, privateKeyPath);
+			String publicKeyPath = SSHKeyTestUtils.createDsaKeyPair();
 			String keyName = SSHKeyTestUtils.createRandomKeyName();
-			key = user.putSSHKey(keyName, new SSHPublicKey(publicKeyPath));
+			key = user.addSSHKey(keyName, new SSHPublicKey(publicKeyPath));
 			
 			// operation
 			key.destroy();
@@ -209,15 +241,13 @@ public class SSHKeyIntegrationTest extends TestTimer {
 	}
 	
 	@Test
-	public void shouldRemoveKeybyName() throws IOException, JSchException, OpenShiftException {
+	public void shouldRemoveKeyByName() throws Exception {
 		IOpenShiftSSHKey key = null;
 		try {
 			// pre-conditions
-			String publicKeyPath = createRandomTempFile().getAbsolutePath();
-			String privateKeyPath = createRandomTempFile().getAbsolutePath();
-			SSHKeyTestUtils.createDsaKeyPair(publicKeyPath, privateKeyPath);
+			String publicKeyPath = SSHKeyTestUtils.createDsaKeyPair();
 			String keyName = SSHKeyTestUtils.createRandomKeyName();
-			key = user.putSSHKey(keyName, new SSHPublicKey(publicKeyPath));
+			key = user.addSSHKey(keyName, new SSHPublicKey(publicKeyPath));
 			int numOfKeys = user.getSSHKeys().size();
 			
 			// operation
@@ -231,4 +261,26 @@ public class SSHKeyIntegrationTest extends TestTimer {
 		}
 	}
 
+	@Test
+	public void shouldRefreshKeys() throws Exception {
+		IOpenShiftSSHKey key = null;
+		int originalNumOfKeys = user.getSSHKeys().size();
+		try {
+			// pre-conditions
+			String publicKeyPath = SSHKeyTestUtils.createDsaKeyPair();
+			IUser user = new TestConnectionFactory().getConnection().getUser();
+			
+			// operation
+			int newNumOfKeys = user.getSSHKeys().size();
+			assertThat(user.getSSHKeys().size()).isEqualTo(originalNumOfKeys);
+			String newKeyName = SSHKeyTestUtils.createRandomKeyName();
+			user.addSSHKey(newKeyName, new SSHPublicKey(publicKeyPath));			
+			newNumOfKeys = user.getSSHKeys().size();
+			
+			// verification
+			assertThat(newNumOfKeys).isEqualTo(originalNumOfKeys + 1);
+		} finally {
+			SSHKeyTestUtils.silentlyDestroyKey(key);
+		}
+	}
 }

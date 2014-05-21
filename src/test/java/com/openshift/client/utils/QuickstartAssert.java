@@ -59,11 +59,13 @@ public class QuickstartAssert implements AssertExtension {
 	}
 
 	public void hasCartridgeNames(Collection<String>... assertedAlternatives) {
+		assertThat(assertedAlternatives).isNotNull();
 		assertThat(quickstart.getSuitableCartridges()).isNotNull();
-		for (Collection<String> assertedAlternative : assertedAlternatives) {
-			for (AlternativeCartridges alternative : quickstart.getSuitableCartridges()) {
-				assertCartridgeNames(assertedAlternative, alternative);
-			}
+		assertThat(assertedAlternatives.length).isEqualTo(quickstart.getSuitableCartridges().size());
+
+		for (int i = 0; i < assertedAlternatives.length; i++) {
+			assertThat(quickstart.getSuitableCartridges().get(i).get())
+					.onProperty("name").containsOnly(assertedAlternatives[i].toArray());
 		}
 	}
 
@@ -90,18 +92,6 @@ public class QuickstartAssert implements AssertExtension {
 			cartridgeId = String.valueOf(assertedCartridge.getUrl());
 		}
 		return cartridgeId;
-	}
-
-	protected boolean assertCartridgeNames(Collection<String> assertedCartridgeNames, AlternativeCartridges alternatives) {
-		assertThat(assertedCartridgeNames).isNotEmpty();
-		for (String assertedCartridgeName : assertedCartridgeNames) {
-			for (ICartridge cartridge : alternatives.get()) {
-				if (assertedCartridgeName.equals(cartridge.getName())) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	public QuickstartAssert hasWebsite(String website) {

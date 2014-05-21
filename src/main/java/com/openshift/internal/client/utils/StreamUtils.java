@@ -11,7 +11,6 @@
 package com.openshift.internal.client.utils;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,8 +18,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Andre Dietisheim
@@ -28,29 +25,23 @@ import java.util.List;
 public class StreamUtils {
 
 	public static final String UTF_8 = "UTF-8";
+
+	private static final byte[] buffer = new byte[1024];
 	
 	/**
-	 * Writes the content of the given input stream to the given output stream
-	 * and returns and input stream that may still be used to read from.
+	 * Writes the content of the given input stream to the given output stream.
 	 * 
 	 * @param outputStream
 	 *            the output stream to write to
 	 * @param inputStream
 	 *            the input stream to read from
-	 * @return a new, unread input stream
 	 * @throws IOException
 	 */
-	public static InputStream writeTo(InputStream inputStream, OutputStream outputStream) throws IOException {
-		List<Byte> data = new ArrayList<Byte>();
-		for (int character = -1; (character = inputStream.read()) != -1;) {
-			data.add((byte) character);
-			outputStream.write(character);
+	public static void writeTo(InputStream inputStream, OutputStream outputStream) throws IOException {
+		for (int bytesRead = 0; (bytesRead = inputStream.read(buffer, 0, buffer.length)) != -1; ) {
+			outputStream.write(buffer, 0, bytesRead);
 		}
-		byte[] byteArray = new byte[data.size()];
-		for (int i = byteArray.length - 1; i >= 0; i--) {
-			byteArray[i] = data.get(i);
-		}
-		return new ByteArrayInputStream(byteArray);
+		outputStream.flush();
 	}
 
 	public static String readToString(InputStream inputStream) throws IOException {
@@ -102,7 +93,7 @@ public class StreamUtils {
 			inputStream.close();
 		}
 	}
-
+	
 	public static void quietlyClose(InputStream inputStream) {
 		try {
 			close(inputStream);

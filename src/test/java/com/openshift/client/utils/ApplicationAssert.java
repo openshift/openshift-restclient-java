@@ -257,7 +257,7 @@ public class ApplicationAssert implements AssertExtension {
 		}
 	}
 	
-	public ApplicationAssert hasContent(String page, String contains) throws IOException {
+	public ApplicationAssert pageContains(String page, String contains) throws IOException {
 		URL appUrl = new URL(application.getApplicationUrl() + page);
 		assertThat(application.waitForAccessible(APPLICATION_WAIT_TIMEOUT)).isTrue();
 		String content = StreamUtils.readToString(appUrl.openConnection().getInputStream());

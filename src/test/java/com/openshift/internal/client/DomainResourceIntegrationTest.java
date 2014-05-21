@@ -285,7 +285,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
 				.hasInitialGitUrl(QUICKSTART_REVEALJS_GITURL)
 				.hasEmbeddedCartridges()
 				.hasAlias()
-				.hasContent(REVEALJS_INDEX, "Reveal.js");
+				.pageContains(REVEALJS_INDEX, "Reveal.js");
 	}
 	
 	@Test

@@ -47,7 +47,7 @@ public class SSHPublicKey extends AbstractSSHKey {
 		Matcher matcher = PUBLICKEY_PATTERN.matcher(keyWithIdAndComment);
 		if (!matcher.find()
 				|| matcher.groupCount() < 1) {
-			throw new OpenShiftException("Could not load public key from file \"{0}\"", publicKeyFile.getAbsolutePath());
+			throw new OpenShiftException("Could not load public key from file \"{0}\": unknown key format.", publicKeyFile.getAbsolutePath());
 		}
 
 		setKeyType(matcher.group(1));
