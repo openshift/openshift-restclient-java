@@ -34,7 +34,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturn1QueryForWildcardExpression() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson("php-*");
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec("php-*");
 		
 		// operation
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson);
@@ -46,7 +46,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturn2Queries() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson("php-*, mysql-*");
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec("php-*, mysql-*");
 		
 		// operation
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson);
@@ -58,7 +58,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturn1QueryForAlternativesExpression() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson("jbosseap-|jbossas-"); 
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec("jbosseap-|jbossas-"); 
 
 		// operation
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson); 
@@ -70,7 +70,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturn1QueryForNameProperty() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson(StringUtils.encodeQuotationMarks("[{ \"name\": \"mysql-5.2\" }]")); 
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec(StringUtils.encodeQuotationMarks("[{ \"name\": \"mysql-5.2\" }]")); 
 
 		// operation
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson); 
@@ -82,7 +82,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturn2QueriesForJsonArrayOfObjects() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson(StringUtils.encodeQuotationMarks("[{ \"name\": \"mysql-5.2\" }, { \"url\": \"http://www.redhat.com\" }]")); 
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec(StringUtils.encodeQuotationMarks("[{ \"name\": \"mysql-5.2\" }, { \"url\": \"http://www.redhat.com\" }]")); 
 
 		// operation
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson); 
@@ -94,7 +94,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturn2QueryForJsonArryOfObjectAndString() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson(StringUtils.encodeQuotationMarks("[{ \"name\": \"mysql-5.2\" }, \"jbosstools\"]")); 
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec(StringUtils.encodeQuotationMarks("[{ \"name\": \"mysql-5.2\" }, \"jbosstools\"]")); 
 
 		// operation
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson); 
@@ -106,7 +106,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturnNoQueryForInvalidUrl() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson(StringUtils.encodeQuotationMarks("[{ \"url\": \"bogusUrl\" }]")); 
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec(StringUtils.encodeQuotationMarks("[{ \"url\": \"bogusUrl\" }]")); 
 
 		// operation
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson); 
@@ -148,7 +148,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturn2Cartridges() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson("php-*");
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec("php-*");
 		
 		// operation
 		ICartridgeQuery query = getFirstCartridgeQuery(cartridgesJson);
@@ -161,7 +161,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturnEmptyResults() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson("jboss-8");
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec("jboss-8");
 
 		// operation
 		ICartridgeQuery query = getFirstCartridgeQuery(cartridgesJson);
@@ -174,7 +174,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturn4AlternativesAnd1SingleCartridge() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson("jboss*, mysql-*");
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec("jboss*, mysql-*");
 
 		// operation
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson);
@@ -196,7 +196,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturnExactMatchPhp() throws Throwable {
 		// pre-conditions
-		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(QuickstartTestUtils.createCartridgesJson("php-5.4")); 
+		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec("php-5.4")); 
 		assertThat(queries).hasSize(1);
 
 		// operation
@@ -213,7 +213,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturnPhpOrMysql() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson("php|mysql"); 
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec("php|mysql"); 
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson); 
 		assertThat(queries).hasSize(1);
 
@@ -231,7 +231,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturnRequiredDownloadableCartridge() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson(StringUtils
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec(StringUtils
 				.encodeQuotationMarks("[{ \"url\" : \"" + CartridgeTestUtils.AEROGEAR_PUSH_URL + "\"}]"));
 
 		// operation
@@ -249,7 +249,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturn2PhpAnd1DownloadableCartridge() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson(StringUtils.encodeQuotationMarks(
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec(StringUtils.encodeQuotationMarks(
 				"[ \"php*\", { \"url\": \"" + CartridgeTestUtils.FOREMAN_URL+ "\" }]")); 
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson); 
 		assertThat(queries).hasSize(2);
@@ -273,7 +273,7 @@ public class QuickstartDTOCartridgeQueryTest {
 	@Test
 	public void shouldReturnDownloadableCartridgeAndMysql() throws Throwable {
 		// pre-conditions
-		String cartridgesJson = QuickstartTestUtils.createCartridgesJson(StringUtils
+		String cartridgesJson = QuickstartTestUtils.createQuickstartsJsonForCartridgeSpec(StringUtils
 				.encodeQuotationMarks("[{ \"url\": \"" + CartridgeTestUtils.AEROGEAR_PUSH_URL+ "\" }, \"jboss\"]")); 
 		List<ICartridgeQuery> queries = QuickstartTestUtils.getCartridgeQueriesForSingleQuickstart(cartridgesJson); 
 		assertThat(queries).hasSize(2);

@@ -76,23 +76,29 @@ public class QuickstartJsonDTOFactory extends AbstractJsonDTOFactory {
 	}
 	
 	protected List<ICartridgeQuery> createCartridgeQueries(ModelNode cartridgesNode) {
-		if (!isDefined(cartridgesNode)
-				|| cartridgesNode.getType() != ModelType.STRING) {
+		if (!isDefined(cartridgesNode)) {
 			return null;
 		}
-		
-		String cartridgesSpecs = cartridgesNode.asString();
+
+		if (cartridgesNode.getType() == ModelType.STRING) {
+			return createCartridgesFromString(cartridgesNode.asString());
+		} else if (cartridgesNode.getType() == ModelType.LIST) {
+			return createCartridgeQueriesFromJson(cartridgesNode);
+		}
+		return null;
+	}	
+
+	private List<ICartridgeQuery> createCartridgesFromString(String cartridgesSpecs) {
 		try {
 			ModelNode cartridgesSpecsNode =
 					ModelNode.fromJSONString(StringUtils.decodeQuotationMarks(cartridgesSpecs));
 			// json array
 			return createCartridgeQueriesFromJson(cartridgesSpecsNode);
-		} catch(IllegalArgumentException e) {
-			// comma delimited list 
+		} catch (IllegalArgumentException e) {
+			// comma delimited list
 			return createCartridgeQueriesFromCommaDelimitedList(cartridgesSpecs);
 		}
 	}
-	
 
 	private List<ICartridgeQuery> createCartridgeQueriesFromJson(ModelNode cartridgesNode) {
 		if (!isDefined(cartridgesNode)) {
@@ -134,17 +140,6 @@ public class QuickstartJsonDTOFactory extends AbstractJsonDTOFactory {
 	
 	private List<ICartridgeQuery> createCartridgeQueriesFromCommaDelimitedList(String cartridgeSpecs) {
 		List<ICartridgeQuery> queries = new ArrayList<ICartridgeQuery>();
-//		Matcher matcher = CARTRIDGE_ITEMS_REGEX.matcher(cartridgeSpecs);
-//		if(matcher.matches()) {
-//			if (matcher.groupCount() >= 1) {
-//				queries.add(createCartridgeQuery(matcher.group(1)));
-//			}
-//			for (int i = 3; i <=  matcher.groupCount(); i++) {
-//				if (!StringUtils.isEmpty(matcher.group(i))) {
-//					queries.add(createCartridgeQuery(matcher.group(i)));
-//				}
-//			}
-//		}
 		if (!StringUtils.isEmpty(cartridgeSpecs)) {
 			for (String cartridgeSpec : cartridgeSpecs.split(",")) {
 				queries.add(createCartridgeQuery(cartridgeSpec.trim()));
