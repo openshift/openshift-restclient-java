@@ -91,7 +91,7 @@ public class ApplicationTestUtils {
 	}
 
 	public static IApplication getOrCreateApplication(IDomain domain) throws OpenShiftException {
-		return getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(domain.getUser()));
+		return getOrCreateApplication(domain, LatestVersionOf.php().get(domain.getUser()));
 	}
 
 	public static IApplication getOrCreateApplication(IDomain domain, IStandaloneCartridge cartridge)

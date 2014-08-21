@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -31,6 +31,7 @@ import com.openshift.client.cartridge.ICartridge;
 
 /**
  * @author André Dietisheim
+ * @author Jeff Cantrill
  */
 public class GearGroupAssert implements AssertExtension {
 
@@ -58,6 +59,11 @@ public class GearGroupAssert implements AssertExtension {
 	public GearGroupAssert hasGears() {
 		assertThat(gearGroup.getGears()).isNotNull();
 		assertThat(gearGroup.getGears().size()).isPositive();
+		return this;
+	}
+	
+	public GearGroupAssert hasAdditionalStorageSize(int size){
+		assertThat(gearGroup.getAdditionalStorage()).isEqualTo(size);
 		return this;
 	}
 	

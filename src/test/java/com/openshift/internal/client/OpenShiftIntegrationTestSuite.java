@@ -22,7 +22,7 @@ import org.junit.runners.Suite;
 	UserResourceIntegrationTest.class,
 	DomainResourceIntegrationTest.class,
 	ApplicationResourceIntegrationTest.class,
-	StandaloneCartridgesIntegrationTest.class,
+	StandaloneCartridgeResourceIntegrationTest.class,
 	EmbeddedCartridgeResourceIntegrationTest.class,
 	EnvironmentVariableResourceIntegrationTest.class,
 	AuthorizationIntegrationTest.class

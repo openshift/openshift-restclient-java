@@ -23,6 +23,7 @@ import com.openshift.internal.client.cartridge.BaseCartridge;
  * since we dont know all available types and they may change at any time.
  * 
  * @author André Dietisheim
+ * @author Jeff Cantrill
  */
 public class StandaloneCartridge extends BaseCartridge implements IStandaloneCartridge {
 
@@ -56,6 +57,10 @@ public class StandaloneCartridge extends BaseCartridge implements IStandaloneCar
 		super(name, url, displayName, description);
 	}
 
+	public StandaloneCartridge(String name, URL url, String displayName, String description) {
+		this(name, url, displayName, description, false);
+	}
+	
 	@Override
 	public CartridgeType getType() {
 		return CartridgeType.STANDALONE;

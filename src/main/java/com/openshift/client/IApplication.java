@@ -19,15 +19,16 @@ import java.util.concurrent.Future;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.openshift.client.cartridge.ICartridge;
+import com.openshift.client.cartridge.IDeployedStandaloneCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
-import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.ApplicationResource;
 
 /**
  * @author André Dietisheim
  * @author Syed Iqbal
  * @author Martes G Wigglesworth
+ * @author Jeff Cantrill
  */
 public interface IApplication extends IOpenShiftResource {
 
@@ -67,9 +68,11 @@ public interface IApplication extends IOpenShiftResource {
 	 * @return the initial git url
 	 */
 	public String getInitialGitUrl();
-	
+
 	/**
-	 * Returns the deployment type for this application. Either "binary" or "git" currently.
+	 * Returns the deployment type for this application. Either "binary" or
+	 * "git" currently.
+	 * 
 	 * @return "binary" or "git"
 	 */
 	public String getDeploymentType();
@@ -105,7 +108,7 @@ public interface IApplication extends IOpenShiftResource {
 	 * @return the cartridge of this application
 	 *
 	 */
-	public IStandaloneCartridge getCartridge();
+	public IDeployedStandaloneCartridge getCartridge();
 
 	/**
 	 * Adds the given embeddable cartridge to this application.

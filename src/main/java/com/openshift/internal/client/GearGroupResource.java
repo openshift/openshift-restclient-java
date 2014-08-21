@@ -42,6 +42,9 @@ public class GearGroupResource extends AbstractOpenShiftResource implements IGea
 	/** the gears of this gear group resource */
 	private final Collection<IGear> gears;
 	
+	/** the additional storage configured for this gear group, in gigabytes */
+	private final int additionalStorage;
+
 	/** the cartridges in this gear group resource */
 	private final Collection<ICartridge> cartridges;
 
@@ -52,15 +55,17 @@ public class GearGroupResource extends AbstractOpenShiftResource implements IGea
 	 * @param name the gear group's name
 	 * @param gearDTOs the gear group's gears
 	 * @param cartridgeDTOs the gear group's cartridges, indexed by their name
+	 * @param additionalStorage the gear group's additional storage value
 	 * @param application the gear group's parent application
 	 * @param service the underlying REST Service
 	 */
 	protected GearGroupResource(final String uuid, final String name, final Collection<GearResourceDTO> gearDTOs,
-			final Map<String, CartridgeResourceDTO> cartridgeDTOs, final ApplicationResource application, final IRestService service) {
+			final Map<String, CartridgeResourceDTO> cartridgeDTOs, final int additionalStorage, final ApplicationResource application, final IRestService service) {
 		super(service);
 		this.uuid = uuid;
 		this.name = name;
 		this.gears = new ArrayList<IGear>();
+		this.additionalStorage = additionalStorage;
 		for(GearResourceDTO dto : gearDTOs) {
 			this.gears.add(new Gear(dto.getUuid(), new GearState(dto.getState()), dto.getSshUrl()));
 		}
@@ -82,7 +87,7 @@ public class GearGroupResource extends AbstractOpenShiftResource implements IGea
 	 * @param servicethe underlying REST Service
 	 */
 	protected GearGroupResource(final GearGroupResourceDTO dto, final ApplicationResource application, final IRestService service) {
-		this(dto.getUuid(), dto.getName(), dto.getGears(), dto.getCartridges(), application, service);
+		this(dto.getUuid(), dto.getName(), dto.getGears(), dto.getCartridges(), dto.getAdditionalStorage(), application, service);
 	}
 
 	public final String getUUID() {
@@ -92,11 +97,15 @@ public class GearGroupResource extends AbstractOpenShiftResource implements IGea
 	public final String getName() {
 		return name;
 	}
-
+	
 	public Collection<IGear> getGears() {
 		return Collections.unmodifiableCollection(gears);
 	}
 
+	public int getAdditionalStorage() {
+		return additionalStorage;
+	}
+	
 	/**
 	 * @return the cartridges
 	 */

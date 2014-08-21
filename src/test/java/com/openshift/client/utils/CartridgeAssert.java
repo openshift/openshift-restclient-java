@@ -18,7 +18,6 @@ import org.fest.assertions.AssertExtension;
 
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.ICartridge;
-import com.openshift.internal.client.cartridge.BaseCartridge;
 
 /**
  * @author André Dietisheim
@@ -92,7 +91,7 @@ public class CartridgeAssert<C extends ICartridge> implements AssertExtension {
 		return this;
 	}
 
-	public CartridgeAssert<C> isEqualsTo(BaseCartridge otherCartridge) throws OpenShiftException {
+	public CartridgeAssert<C> isEqualTo(C otherCartridge) throws OpenShiftException {
 		assertThat(otherCartridge).isNotNull();
 		hasName(otherCartridge.getName());
 		hasDescription(otherCartridge.getDescription());
