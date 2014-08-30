@@ -126,11 +126,12 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
 		if (!userNode.isDefined()) {
 			return null;
 		}
+        	final String id = getAsString(userNode, PROPERTY_ID);
 		final String rhlogin = getAsString(userNode, PROPERTY_LOGIN);
 		final int maxGears = getAsInteger(userNode, PROPERTY_MAX_GEARS);
 		final int consumedGears = getAsInteger(userNode, PROPERTY_CONSUMED_GEARS);
 		final Map<String, Link> links = createLinks(userNode.get(PROPERTY_LINKS));
-		return new UserResourceDTO(rhlogin, maxGears, consumedGears, links);
+		return new UserResourceDTO(id, rhlogin, maxGears, consumedGears, links);
 	}
 
 	/**

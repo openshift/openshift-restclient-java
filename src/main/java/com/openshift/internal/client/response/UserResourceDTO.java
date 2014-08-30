@@ -14,18 +14,27 @@ import java.util.Map;
 
 public class UserResourceDTO extends BaseResourceDTO {
 
+    	private final String id;
 	/** the user's login on rhcloud. */
 	private final String rhLogin;
 	
 	private final int maxGears;
 	private final int consumedGears;
 	
-	UserResourceDTO(final String rhLogin, final int maxGears, final int consumedGears, final Map<String, Link> links) {
+	UserResourceDTO(final String id, final String rhLogin, final int maxGears, final int consumedGears, final Map<String, Link> links) {
 		super(links, null);
+        	this.id = id;
 		this.rhLogin = rhLogin;
 		this.maxGears = maxGears;
 		this.consumedGears = consumedGears;
 	}
+
+       /**
+     	* @return the id
+     	*/
+    	public String getId() {
+        	return id;
+    	}
 
 	/**
 	 * @return the rhLogin
