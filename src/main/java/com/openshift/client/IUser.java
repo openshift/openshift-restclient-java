@@ -18,8 +18,6 @@ import java.util.List;
  */
 public interface IUser extends IOpenShiftResource {
 
-	public static final String ID = "com.openshift.client";
-
      	public String getId();
 
 	public String getRhlogin();

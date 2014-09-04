@@ -24,6 +24,8 @@ import com.openshift.client.cartridge.IStandaloneCartridge;
  */
 public interface IOpenShiftConnection {
 
+    public static final String DEFAULT_CLIENT_ID = "com.openshift.client";
+
 	/**
 	 * Returns the server this connection is bound to.
 	 * 

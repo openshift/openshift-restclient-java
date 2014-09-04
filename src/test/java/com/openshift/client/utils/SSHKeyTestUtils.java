@@ -23,6 +23,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.KeyPair;
 import com.openshift.client.IOpenShiftSSHKey;
 import com.openshift.client.IUser;
+import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.SSHPublicKey;
 
@@ -74,7 +75,7 @@ public class SSHKeyTestUtils {
 	public static KeyPair createDsaKeyPair(String publicKeyPath, String privateKeyPath) throws IOException, JSchException {
 		KeyPair keyPair = KeyPair.genKeyPair(new JSch(), KeyPair.DSA, 1024);
 		keyPair.setPassphrase(DEFAULT_PASSPHRASE);
-		keyPair.writePublicKey(publicKeyPath, "created by " + IUser.ID);
+		keyPair.writePublicKey(publicKeyPath, "created by " + IOpenShiftConnection.DEFAULT_CLIENT_ID);
 		keyPair.writePrivateKey(privateKeyPath);
 		return keyPair;
 	}
