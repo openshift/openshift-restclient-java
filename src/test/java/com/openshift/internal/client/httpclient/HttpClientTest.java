@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2012-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -19,14 +19,12 @@ import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.KeyStoreException;
 import java.security.cert.X509Certificate;
-import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -40,9 +38,6 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSession;
 
-import com.openshift.client.configuration.*;
-import com.openshift.client.fakes.*;
-import com.openshift.internal.client.TestTimer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,16 +47,23 @@ import org.junit.rules.ExpectedException;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IHttpClient.ISSLCertificateCallback;
 import com.openshift.client.OpenShiftException;
+import com.openshift.client.configuration.IOpenShiftConfiguration;
+import com.openshift.client.fakes.HttpServerFake;
+import com.openshift.client.fakes.HttpsServerFake;
+import com.openshift.client.fakes.OpenShiftConfigurationFake;
+import com.openshift.client.fakes.PayLoadReturningHttpClientFake;
+import com.openshift.client.fakes.WaitingHttpServerFake;
 import com.openshift.client.utils.Base64Coder;
 import com.openshift.client.utils.ExceptionCauseMatcher;
+import com.openshift.internal.client.TestTimer;
 import com.openshift.internal.client.httpclient.request.FormUrlEncodedMediaType;
 import com.openshift.internal.client.httpclient.request.StringParameter;
-import sun.net.www.http.HttpClient;
 
 /**
  * @author Andre Dietisheim
  * @author Nicolas Spano
  * @author Corey Daley
+ * @author Sean Kavanagh
  */
 public class HttpClientTest extends TestTimer {
 
@@ -651,18 +653,6 @@ public class HttpClientTest extends TestTimer {
 		WaitingHttpServerFake serverFake = new WaitingHttpServerFake(delay);
 		serverFake.start();
 		return serverFake;
-	}
-
-	private class UserAgentClientFake extends UrlConnectionHttpClientFake {
-
-		public UserAgentClientFake(String userAgent) {
-			super(userAgent, null);
-		}
-
-		public String getUserAgent(HttpURLConnection connection) {
-			return connection.getRequestProperty(PROPERTY_USER_AGENT);
-		}
-
 	}
 
 	private class AcceptVersionClientFake extends UrlConnectionHttpClientFake {

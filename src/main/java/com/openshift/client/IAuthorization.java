@@ -11,54 +11,65 @@
 package com.openshift.client;
 
 /**
- * Operations to manage and view authorization resources 
+ * Operations to manage and view authorization resources
  * 
- * @link http://openshift.github.io/documentation/rest_api/rest-api-1-6.html#authorization
+ * @link http://openshift.github.io/documentation/rest_api/rest-api-1-6.html#
+ *       authorization
+ * 
+ * @author Sean Kavanagh
  */
 public interface IAuthorization extends IOpenShiftResource {
 
+	public static String SCOPE_SESSION = "session";
+	public static String SCOPE_SESSION_READ = "session read";
+	public static int NO_EXPIRES_IN = -1;
 
-    /**
-     * authorization id
-     *
-     * @return
-     */
-    public String getId();
+	/**
+	 * Returns the unique id for this authorization.
+	 *
+	 * @return
+	 */
+	public String getId();
 
-    /**
-     * authorization note
-     *
-     * @return
-     */
-    public String getNote();
+	/**
+	 * authorization note
+	 *
+	 * @return
+	 */
+	public String getNote();
 
+	/**
+	 * returns the scope of the authorization token to determine type of access.
+	 *
+	 * @return
+	 */
+	public String getScopes();
 
-    /**
-     * authorization scopes
-     *
-     * @return
-     */
-    public String getScopes();
+	/**
+	 * Returns authorization string that contains user credentials.
+	 *
+	 * @return
+	 */
+	public String getToken();
 
-    /**
-     * authorization token
-     *
-     * @return
-     */
-    public String getToken();
+	/**
+	 * Returns the total time in seconds before this authorization expires.
+	 * 
+	 * @return
+	 */
+	public int getExpiresIn();
 
+	/**
+	 * Destroys this authorization
+	 *
+	 * @throws OpenShiftException
+	 */
+	public void destroy() throws OpenShiftException;
 
-    /**
-     * Destroys this authorization
-     *
-     * @throws OpenShiftException
-     */
-    public void destroy() throws OpenShiftException;
-
-    /**
-     * Refresh the authorization but reloading its content from OpenShift.
-     *
-     * @throws OpenShiftException
-     */
-    public void refresh() throws OpenShiftException;
+	/**
+	 * Refreshes the authorization by reloading its content from OpenShift.
+	 *
+	 * @throws OpenShiftException
+	 */
+	public void refresh() throws OpenShiftException;
 }

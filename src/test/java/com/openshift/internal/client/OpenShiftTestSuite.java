@@ -46,7 +46,8 @@ import com.openshift.internal.client.response.QuickstartDTOCartridgeQueryTest;
 	JsonMediaTypeTest.class,
 	EnvironmentVariableResourceTest.class,
 	ApplicationSSHSessionTest.class,
-	QuickstartDTOCartridgeQueryTest.class
+	QuickstartDTOCartridgeQueryTest.class,
+	AuthorizationTest.class
 })
 
 /**

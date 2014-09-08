@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2011-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -33,6 +33,7 @@ import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
 /**
  * @author André Dietisheim
+ * @author Sean Kavanagh
  */
 public class UserResource extends AbstractOpenShiftResource implements IUser {
 

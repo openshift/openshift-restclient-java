@@ -16,100 +16,113 @@ import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.AuthorizationResourceDTO;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
-
+/**
+ * @author Sean Kavanagh
+ * @author Andre Dietisheim
+ */
 public class AuthorizationResource extends AbstractOpenShiftResource implements IAuthorization {
 
-    private static final String LINK_GET = "GET";
-    private static final String LINK_UPDATE = "UPDATE";
-    private static final String LINK_DELETE = "DELETE";
+	private static final String LINK_GET = "GET";
+	private static final String LINK_UPDATE = "UPDATE";
+	private static final String LINK_DELETE = "DELETE";
 
-    private String id;
-    private String note;
-    private String scopes;
-    private String token;
+	private String id;
+	private String note;
+	private String scopes;
+	private String token;
+	private int expiresIn;
+	private APIResource api;
 
+	protected AuthorizationResource(final APIResource api, AuthorizationResourceDTO authorizationDTO) {
+		super(api.getService(), authorizationDTO.getLinks(), authorizationDTO.getMessages());
+		this.api = api;
+		this.id = authorizationDTO.getId();
+		this.note = authorizationDTO.getNote();
+		this.scopes = authorizationDTO.getScopes();
+		this.token = authorizationDTO.getToken();
+		this.expiresIn = authorizationDTO.getExpiresIn();
+	}
 
-    protected AuthorizationResource(final APIResource api, AuthorizationResourceDTO authorizationDTO) {
-        super(api.getService(), authorizationDTO.getLinks(), authorizationDTO.getMessages());
-        this.id = authorizationDTO.getId();
-        this.note = authorizationDTO.getNote();
-        this.scopes = authorizationDTO.getScopes();
-        this.token = authorizationDTO.getToken();
-    }
+	@Override
+	public void refresh() throws OpenShiftException {
 
+		final AuthorizationResourceDTO authorizationDTO = new GetAuthorizationRequest().execute();
+		this.id = authorizationDTO.getId();
 
-    @Override
-    public void refresh() throws OpenShiftException {
+		this.note = authorizationDTO.getNote();
 
-        final AuthorizationResourceDTO authorizationDTO = new GetAuthorizationRequest().execute();
-        this.id = authorizationDTO.getId();
+		this.scopes = authorizationDTO.getScopes();
+		this.token = authorizationDTO.getToken();
+		this.expiresIn = authorizationDTO.getExpiresIn();
+	}
 
-        this.note = authorizationDTO.getNote();
+	@Override
+	public String toString() {
+		return "Authorization ["
+				+ "id=" + id + ", "
+				+ "note=" + note + ", "
+				+ "scopes=" + scopes + ", "
+				+ "token=" + token
+				+ "expiresIn=" + expiresIn
+				+ "]";
+	}
 
-        this.scopes = authorizationDTO.getScopes();
-        this.token = authorizationDTO.getToken();
+	@Override
+	public void destroy() throws OpenShiftException {
+		new DeleteAuthorizationRequest().execute();
+		this.id = null;
+		this.note = null;
+		this.scopes = null;
+		this.token = null;
+		this.expiresIn = IAuthorization.NO_EXPIRES_IN;
+		api.removeAuthorization();
+	}
 
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
+	@Override
+	public String getNote() {
+		return note;
+	}
 
-    @Override
-    public String toString() {
-        return "Authorization ["
-                + "id=" + id + ", "
-                + "note=" + note + ", "
-                + "scopes=" + scopes + ", "
-                + "token=" + token
-                + "]";
-    }
+	@Override
+	public String getScopes() {
+		return scopes;
+	}
 
+	@Override
+	public String getToken() {
+		return token;
+	}
 
-    public void destroy() throws OpenShiftException {
-        new DeleteAuthorizationRequest().execute();
-        this.id=null;
-        this.note=null;
-        this.scopes=null;
-        this.token=null;
-    }
+	@Override
+	public int getExpiresIn() {
+		return expiresIn;
+	}
 
-    public String getId() {
-        return id;
-    }
+	private class GetAuthorizationRequest extends ServiceRequest {
 
-    public String getNote() {
-        return note;
-    }
+		private GetAuthorizationRequest() throws OpenShiftException {
+			super(LINK_GET);
+		}
 
-    public String getScopes() {
-        return scopes;
-    }
+		protected AuthorizationResourceDTO execute() throws OpenShiftException {
+			return (AuthorizationResourceDTO) super.execute();
+		}
+	}
 
-    public String getToken() {
-        return token;
-    }
+	private class DeleteAuthorizationRequest extends ServiceRequest {
 
+		private DeleteAuthorizationRequest() throws OpenShiftException {
+			super(LINK_DELETE);
+		}
 
-    private class GetAuthorizationRequest extends ServiceRequest {
-
-        private GetAuthorizationRequest() throws OpenShiftException {
-            super(LINK_GET);
-        }
-
-        protected AuthorizationResourceDTO execute() throws OpenShiftException {
-            return (AuthorizationResourceDTO) super.execute();
-        }
-    }
-
-
-    private class DeleteAuthorizationRequest extends ServiceRequest {
-
-        private DeleteAuthorizationRequest() throws OpenShiftException {
-            super(LINK_DELETE);
-        }
-
-        protected void execute(boolean force) throws OpenShiftException {
-            super.execute(new StringParameter(IOpenShiftJsonConstants.PROPERTY_FORCE, String.valueOf(force)));
-        }
-    }
-
+		protected void execute(boolean force) throws OpenShiftException {
+			super.execute(new StringParameter(IOpenShiftJsonConstants.PROPERTY_FORCE, String.valueOf(force)));
+		}
+	}
 
 }

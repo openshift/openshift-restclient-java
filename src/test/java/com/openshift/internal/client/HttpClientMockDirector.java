@@ -47,7 +47,7 @@ public class HttpClientMockDirector {
 
 	private IHttpClient client;
 
-	public HttpClientMockDirector() throws SocketTimeoutException, HttpClientException {
+	public HttpClientMockDirector() throws HttpClientException, SocketTimeoutException {
 		this.client = Mockito.mock(IHttpClient.class);
 		mockGetAPI(Samples.GET_API)
 				.mockGetCartridges(Samples.GET_CARTRIDGES)

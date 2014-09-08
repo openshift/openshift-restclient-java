@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2012-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -20,6 +20,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DESCRIPTION;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DISPLAY_NAME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DOMAIN_ID;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_EXPIRES_IN;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_FRAMEWORK;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GEARS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE;
@@ -33,13 +34,16 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_MAX_GEARS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_METHOD;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_NAME;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_NOTE;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_OPTIONAL_PARAMS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROPERTIES;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REQUIRED_PARAMS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SCALABLE;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SCOPES;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SSH_URL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SUFFIX;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_TOKEN;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_TYPE;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_URL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_UUID;
@@ -77,6 +81,7 @@ import com.openshift.internal.client.utils.StringUtils;
  * 
  * @author Xavier Coulon
  * @author Andre Dietisheim
+ * @author Sean Kavanagh
  */
 public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
 
@@ -154,8 +159,9 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
         final String note = getAsString(dataNode, PROPERTY_NOTE);
         final String scopes = getAsString(dataNode, PROPERTY_SCOPES);
         final String token = getAsString(dataNode, PROPERTY_TOKEN);
+        final int expiresIn = getAsInteger(dataNode, PROPERTY_EXPIRES_IN);
         final Map<String, Link> links = createLinks(dataNode.get(PROPERTY_LINKS));
-        return new AuthorizationResourceDTO(id, note, scopes, token, links, messages);
+        return new AuthorizationResourceDTO(id, note, scopes, token, expiresIn, links, messages);
      }
 
 	/**

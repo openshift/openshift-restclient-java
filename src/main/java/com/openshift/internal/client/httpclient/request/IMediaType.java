@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.openshift.internal.client.httpclient.request;
 
-import java.io.IOException;
 import java.io.OutputStream;
 
 import com.openshift.client.IHttpClient;

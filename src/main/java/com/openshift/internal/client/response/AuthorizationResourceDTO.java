@@ -10,47 +10,54 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
-
 import com.openshift.client.Messages;
 
 import java.util.Map;
 
+/**
+ * @author Sean Kavanagh
+ * @author Andre Dietisheim
+ */
 public class AuthorizationResourceDTO extends BaseResourceDTO {
 
+	/* authorization id */
+	private final String id;
+	/* authorization note */
+	private final String note;
+	/* authorization scopes */
+	private final String scopes;
+	/* authorization token */
+	private final String token;
+	private int expiresIn;
 
-    /* authorization id */
-   	private final String id;
-    /* authorization note */
-    private final String note;
-    /* authorization scopes */
-    private final String scopes;
-    /* authorization token */
-    private final String token;
+	AuthorizationResourceDTO(final String id, String note, String scopes, String token, int expiresIn,
+			final Map<String, Link> links,
+			final Messages messages) {
+		super(links, messages);
+		this.id = id;
+		this.note = note;
+		this.scopes = scopes;
+		this.token = token;
+		this.expiresIn = expiresIn;
+	}
 
+	public String getId() {
+		return id;
+	}
 
+	public String getNote() {
+		return note;
+	}
 
-    AuthorizationResourceDTO(final String id, String note, String scopes, String token, final Map<String, Link> links, final Messages messages) {
-   		super(links, messages);
-   		this.id = id;
-        this.note=note;
-        this.scopes=scopes;
-        this.token=token;
-   	}
+	public String getScopes() {
+		return scopes;
+	}
 
+	public String getToken() {
+		return token;
+	}
 
-    public String getId() {
-        return id;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public String getScopes() {
-        return scopes;
-    }
-
-    public String getToken() {
-        return token;
-    }
+	public int getExpiresIn() {
+		return expiresIn;
+	}
 }

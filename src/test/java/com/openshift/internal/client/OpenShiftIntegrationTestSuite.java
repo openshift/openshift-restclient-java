@@ -24,7 +24,8 @@ import org.junit.runners.Suite;
 	ApplicationResourceIntegrationTest.class,
 	StandaloneCartridgesIntegrationTest.class,
 	EmbeddedCartridgeResourceIntegrationTest.class,
-	EnvironmentVariableResourceIntegrationTest.class
+	EnvironmentVariableResourceIntegrationTest.class,
+	AuthorizationIntegrationTest.class
 })
 /**
  * @author André Dietisheim
