@@ -43,6 +43,7 @@ public interface IHttpClient {
 	public static final String MEDIATYPE_APPLICATION_FORMURLENCODED = "application/x-www-form-urlencoded";
 
 	public static final String AUTHORIZATION_BASIC = "Basic";
+	public static final String AUTHORIZATION_BEARER = "Bearer";
 
 	public static final int STATUS_OK = 200;
 	public static final int STATUS_INTERNAL_SERVER_ERROR = 500;

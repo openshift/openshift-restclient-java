@@ -107,12 +107,16 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 
 	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
 			final String serverUrl, ISSLCertificateCallback sslCallback) throws OpenShiftException {
-		return getConnection(clientId, username, password, null, null, serverUrl, sslCallback);
+		return getConnection(clientId, username, password, null, null, null, serverUrl, sslCallback);
 	}
+    public IOpenShiftConnection getConnection(final String clientId, final String token,
+                                              final String serverUrl, ISSLCertificateCallback sslCallback) throws OpenShiftException {
+        return getConnection(clientId, null, null, null, null, token, serverUrl, sslCallback);
+    }
 
 	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
 			final String authKey, final String authIV, final String serverUrl) throws OpenShiftException {
-		return getConnection(clientId, username, password, null, null, serverUrl, null);
+		return getConnection(clientId, username, password, null, null, null, serverUrl, null);
 	}
 	
 	/**
@@ -125,6 +129,8 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 *            user's login.
 	 * @param password
 	 *            user's password.
+	 * @param token
+	 *            authorization token.
 	 * @param serverUrl
 	 *            the server url.
 	 * @return a valid connection
@@ -133,7 +139,7 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	 * @throws OpenShiftException
 	 */
 	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
-		final String authKey, final String authIV, final String serverUrl,
+		final String authKey, final String authIV, final String token, final String serverUrl,
 		final ISSLCertificateCallback sslCertificateCallback) throws OpenShiftException {
 		if (configuration == null) {
 			try {
@@ -144,24 +150,26 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 		}
 
 		Assert.notNull(clientId);
-		Assert.notNull(username);
-		Assert.notNull(password);
+		if (token == null || token.trim().length() == 0) {
+			Assert.notNull(username);
+			Assert.notNull(password);
+		}
 		Assert.notNull(serverUrl);
 
 		try {
 			IHttpClient httpClient =
 					new UrlConnectionHttpClientBuilder()
-						.setCredentials(username, password, authKey, authIV)
+						.setCredentials(username, password, authKey, authIV, token)
 						.setSSLCertificateCallback(sslCertificateCallback)
 						.setConfigTimeout(configuration.getTimeout())
 						.client();
-			return getConnection(clientId, username, password, serverUrl, httpClient);
+			return getConnection(clientId, username, password, token, serverUrl, httpClient);
 		} catch (IOException e) {
 			throw new OpenShiftException(e, "Failed to establish connection for user ''{0}}''", username);
 		}
 	}
 
-	protected IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
+	protected IOpenShiftConnection getConnection(final String clientId, final String username, final String password, final String token,
 			final String serverUrl, IHttpClient httpClient) throws OpenShiftException, IOException {
 		Assert.notNull(clientId);
 		Assert.notNull(serverUrl);
@@ -169,6 +177,50 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 
 		IRestService service = new RestService(serverUrl, clientId, new JsonMediaType(),
 				IHttpClient.MEDIATYPE_APPLICATION_JSON, new OpenShiftJsonDTOFactory(), httpClient);
-		return getConnection(service, username, password);
+		return getConnection(service, username, password, token);
 	}
+
+      /**
+       * Establish a connection with the clientId along with a user's authorization token
+       *
+       * @param clientId
+       *            http client id
+       * @param token
+       *            authorization token.
+       * @param serverUrl
+       *            the server url.
+       * @return a valid connection
+       * @throws FileNotFoundException
+       * @throws IOException
+       * @throws OpenShiftException
+       */
+      public IOpenShiftConnection getAuthTokenConnection(final String clientId,final String token, final String serverUrl) throws OpenShiftException {
+          return getConnection(clientId, null, null,  null, null, token, serverUrl, null);
+       }
+      /**
+       * Establish a connection with the clientId along with a user's authorization
+       * token. Server URL is retrieved from the local configuration file (in
+       * see $USER_HOME/.openshift/express.conf)
+       *
+       * @param clientId
+       *            http client id
+       * @param token
+       *            authorization token.
+       * @return a valid connection
+       * @throws FileNotFoundException
+       * @throws IOException
+       * @throws OpenShiftException
+       */
+      public IOpenShiftConnection getAuthTokenConnection(final String clientId, final String token)
+              throws OpenShiftException {
+          try {
+              configuration = new OpenShiftConfiguration();
+          } catch (IOException e) {
+              throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
+          }
+          return getConnection(clientId, null, null,  null, null, token, configuration.getLibraServer(), null);
+      }
+
+
+
 }

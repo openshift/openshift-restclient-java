@@ -679,17 +679,17 @@ public class HttpClientTest extends TestTimer {
 	private abstract class UrlConnectionHttpClientFake extends UrlConnectionHttpClient {
 		private UrlConnectionHttpClientFake(String userAgent, String acceptVersion) {
 			super("username", "password", userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
-					"authkey", "authiv", null,IHttpClient.NO_TIMEOUT);
+					"authkey", "authiv", null, null, IHttpClient.NO_TIMEOUT);
 		}
 
 		private UrlConnectionHttpClientFake(String userAgent, String acceptVersion, ISSLCertificateCallback callback) {
 			super("username", "password", userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
-					"authkey", "authiv", callback,IHttpClient.NO_TIMEOUT);
+					"authkey", "authiv", null, callback, IHttpClient.NO_TIMEOUT);
 		}
 		
 		public HttpURLConnection createConnection() throws IOException, KeyStoreException {
 			return super.createConnection(new URL("http://localhost"), username, password, authKey, authIV,
-					userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, NO_TIMEOUT);
+					token, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, NO_TIMEOUT);
 		}
 	};
 

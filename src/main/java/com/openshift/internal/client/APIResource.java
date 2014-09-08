@@ -23,6 +23,7 @@ import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IQuickstart;
 import com.openshift.client.IUser;
+import com.openshift.client.IAuthorization;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.ICartridge;
@@ -37,6 +38,7 @@ import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.QuickstartDTO;
 import com.openshift.internal.client.response.QuickstartJsonDTOFactory;
 import com.openshift.internal.client.response.UserResourceDTO;
+import com.openshift.internal.client.response.AuthorizationResourceDTO;
 import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.CollectionUtils;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
@@ -53,7 +55,9 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 
 	private final String login;
 	private final String password;
+	private final String token;
 	private UserResource user;
+	private AuthorizationResource authorization;
 	//TODO: implement switch that allows to turn ssl checks on/off 
 	private boolean doSSLChecks = false;
 	private List<IDomain> domains;
@@ -61,12 +65,22 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	private List<IEmbeddableCartridge> embeddableCartridges;
 	private Map<String, IQuickstart> quickstartsByName;
 	private final ExecutorService executorService;
-	
-	protected APIResource(final String login, final String password, final IRestService service,
+
+    protected APIResource(final String token, final IRestService service,
+                          final Map<String, Link> links) {
+        super(service, links, null);
+        this.login = null;
+        this.password = null;
+        this.token = token;
+        this.executorService = Executors.newFixedThreadPool(10);
+    }
+
+	protected APIResource(final String login, final String password, final String token, final IRestService service,
 			final Map<String, Link> links) {
 		super(service, links, null);
 		this.login = login;
 		this.password = password;
+		this.token = token;
 		this.executorService = Executors.newFixedThreadPool(10);
 	}
 
@@ -115,6 +129,38 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		}
 		return this.user;
 	}
+    
+    public IAuthorization createAuthorization(String note, String scopes) throws OpenShiftException {
+        if (authorization != null) {
+            authorization.destroy();
+        }
+        this.authorization = new AuthorizationResource(this, new AddAuthorizationRequest().execute(
+            new StringParameter(IOpenShiftJsonConstants.PROPERTY_NOTE, note),
+            new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCOPES, scopes)));
+        return this.authorization;
+    }
+    
+    public IAuthorization createAuthorization(String note, String scopes, int expiresIn) throws OpenShiftException {
+        if (authorization != null) {
+            authorization.destroy();
+        }
+        this.authorization = new AuthorizationResource(this, new AddAuthorizationRequest().execute(
+            new StringParameter(IOpenShiftJsonConstants.PROPERTY_NOTE, note),
+            new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCOPES, scopes),
+            new StringParameter(IOpenShiftJsonConstants.PROPERTY_EXPIRES_IN, Integer.toString(expiresIn))));
+        return this.authorization;
+    }
+
+    public IAuthorization getAuthorization() throws OpenShiftException {
+        if (authorization == null) {
+            if(token == null) {
+                this.authorization = new AuthorizationResource(this, new AddAuthorizationRequest().execute(new StringParameter(IOpenShiftJsonConstants.PROPERTY_SCOPES, IOpenShiftJsonConstants.PROPERTY_SESSION)));
+            } else {
+                this.authorization = new AuthorizationResource(this, new ShowAuthorizationRequest().execute(token));
+            }
+        }
+        return this.authorization;
+    }
 
 	@Override
 	public List<IDomain> getDomains() throws OpenShiftException {
@@ -345,5 +391,27 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 			return super.execute(IHttpClient.NO_TIMEOUT, new QuickstartJsonDTOFactory(), Collections.<Parameter> emptyList(), Collections.<Parameter> emptyList());
 		}
 	}
+
+    private class AddAuthorizationRequest extends ServiceRequest {
+
+        private AddAuthorizationRequest() throws OpenShiftException {
+            super("ADD_AUTHORIZATION");
+        }
+
+        protected AuthorizationResourceDTO execute(Parameter... parameters) throws OpenShiftException {
+            return super.execute(parameters);
+        }
+    }
+    private class ShowAuthorizationRequest extends ServiceRequest {
+
+        private ShowAuthorizationRequest() throws OpenShiftException {
+            super("SHOW_AUTHORIZATION");
+        }
+
+        protected AuthorizationResourceDTO execute(String id) throws OpenShiftException {
+            List<Parameter> urlPathParameter = new Parameters().add("id", id).toList();
+            return (AuthorizationResourceDTO) super.execute(IHttpClient.NO_TIMEOUT, urlPathParameter, Collections.<Parameter>emptyList());
+        }
+    }
 
 }

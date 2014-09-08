@@ -24,6 +24,7 @@ public class UrlConnectionHttpClientBuilder {
 	private String password;
 	private String authKey;
 	private String authIV;
+	private String token;
 	private String acceptedMediaType;
 	private String version;
 	private Integer configTimeout;
@@ -35,14 +36,15 @@ public class UrlConnectionHttpClientBuilder {
 	}
 
 	public UrlConnectionHttpClientBuilder setCredentials(String username, String password) {
-		return setCredentials(username, password, null, null);
+		return setCredentials(username, password, null, null, null);
 	}
 	
-	public UrlConnectionHttpClientBuilder setCredentials(String username, String password, String authKey, String authIV) {
+	public UrlConnectionHttpClientBuilder setCredentials(String username, String password, String authKey, String authIV, String token) {
 		this.username = username;
 		this.password = password;
 		this.authKey = authKey;
 		this.authIV = authIV;
+		this.token = token;
 		return this;
 	}
 	public UrlConnectionHttpClientBuilder setConfigTimeout (Integer configTimeout) {
@@ -67,6 +69,6 @@ public class UrlConnectionHttpClientBuilder {
 
 	public IHttpClient client() {
 		return new UrlConnectionHttpClient(
-				username, password, userAgent, acceptedMediaType, version, authKey, authIV, callback, configTimeout);
+				username, password, userAgent, acceptedMediaType, version, authKey, authIV, token, callback, configTimeout);
 	}
 }

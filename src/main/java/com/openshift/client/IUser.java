@@ -42,6 +42,40 @@ public interface IUser extends IOpenShiftResource {
 
 	public List<IOpenShiftSSHKey> getSSHKeys() throws OpenShiftException;
 
+    /**
+     * Returns current authorization.  Creates new authorization for user if none exists.
+     * Authorization is set by default when token is used to create API connection.
+     * 
+     * @return authorization 
+     * @throws OpenShiftException
+     */
+	public IAuthorization getAuthorization() throws OpenShiftException;
+
+    /**
+     * Creates and returns new authorization set for user 
+     *
+     * @param note 
+     *      A reminder description of what the authorization is for.
+     * @param scopes 
+     *      Scope of the authorization token to determine type of access.
+     * @return authorization
+     * @throws OpenShiftException
+     */
+	public IAuthorization createAuthorization(String note, String scopes) throws OpenShiftException;
+
+    /**
+     * Creates and returns new authorization set for user 
+     * @param note
+     *      A reminder description of what the authorization is for.
+     * @param scopes
+     *      Scope of the authorization token to determine type of access.
+     * @param expiresIn
+     *      The number of seconds before this authorization expires.
+     * @return authorization
+     * @throws OpenShiftException
+     */
+    public IAuthorization createAuthorization(String note, String scopes, int expiresIn) throws OpenShiftException;
+
 	/**
 	 * Deprecated, use {@link #addSSHKey(String, ISSHPublicKey)}
 	 * 

@@ -28,6 +28,7 @@ public enum EnumDataType {
 	domain,
 	applications,
 	application,
+    authorization,
 	/** The embedded cartridge type. */
 	embedded,
 	gear_groups,

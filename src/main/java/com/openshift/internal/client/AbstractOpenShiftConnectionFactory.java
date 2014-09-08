@@ -32,14 +32,14 @@ import com.openshift.internal.client.response.RestResponse;
 public abstract class AbstractOpenShiftConnectionFactory {
 	
 	@SuppressWarnings("unchecked")
-	protected IOpenShiftConnection getConnection(IRestService service, final String login, final String password) throws IOException, OpenShiftException {
+	protected IOpenShiftConnection getConnection(IRestService service, final String login, final String password, final String token) throws IOException, OpenShiftException {
 		RestResponse response =
 				(RestResponse) service.request(
 						new Link("Get API", "/api", HttpMethod.GET), 
 						IHttpClient.NO_TIMEOUT,
 						Collections.<Parameter> emptyList(), 
 						Collections.<Parameter> emptyList());
-		return new APIResource(login, password, service, (Map<String, Link>) response.getData());
+		return new APIResource(login, password, token, service, (Map<String, Link>) response.getData());
 	}
 	
 }

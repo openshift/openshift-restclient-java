@@ -37,6 +37,7 @@ public class TestConnectionFactory extends OpenShiftConnectionFactory {
 				, configuration.getPassword()
 				, null
 				, null
+				, null
 				, configuration.getLibraServer()
 				, new NoopSSLCertificateCallback());
 	}
@@ -47,6 +48,7 @@ public class TestConnectionFactory extends OpenShiftConnectionFactory {
 				configuration.getClientId(),
 				configuration.getRhlogin(),
 				password,
+				null,
 				server,
 				httpClient);
 	}
@@ -55,4 +57,17 @@ public class TestConnectionFactory extends OpenShiftConnectionFactory {
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
 		return getConnection(configuration.getPassword(), configuration.getLibraServer(), httpClient);
 	}
+
+
+    public IOpenShiftConnection getAuthTokenConnection(String token) throws FileNotFoundException, IOException, OpenShiftException {
+
+        OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
+        return  getConnection(
+                configuration.getClientId(),
+                token,
+                configuration.getLibraServer(),
+                new NoopSSLCertificateCallback());
+             
+    }
+
 }
