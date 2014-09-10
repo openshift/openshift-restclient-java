@@ -88,8 +88,21 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		application.destroy();
 
 		// verification
-		assertThat(domain.hasApplicationByName(application.getName())).isFalse();
+		assertThat(domain.getApplications()).excludes(application);
+	}
+	
+	@Test
+	public void shouldNotFindApplicationByNameIfApplicationIsDestroyed() throws Throwable {
+		// pre-conditions
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
+		assertThat(application).isNotNull();
+		String name = application.getName();
+		
+		// operation
+		application.destroy();
 
+		// verifications
+		assertThat(domain.getApplicationByName(name)).isNull();
 	}
 
 	@Test
