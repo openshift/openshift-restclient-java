@@ -46,6 +46,16 @@ public class UserResourceIntegrationTest extends TestTimer {
 		this.user = new TestConnectionFactory().getConnection().getUser();
 	}
 
+	@Test
+	public void shouldReturnId() throws OpenShiftException {
+		// precondition
+		DomainTestUtils.ensureHasDomain(user);
+		// operation
+		String id = user.getId();
+		// verification
+		assertThat(id).isNotEmpty();
+	}
+	
 	@Test(expected = InvalidCredentialsOpenShiftException.class)
 	public void shouldThrowIfInvalidCredentials() throws Exception {
 		// dont test on dev server

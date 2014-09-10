@@ -36,6 +36,7 @@ import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 public class UserResource extends AbstractOpenShiftResource implements IUser {
 
 	private final APIResource api;
+    	private final String id;
 	private final String rhLogin;
 	private final String password;
 	private final int maxGears;
@@ -46,6 +47,7 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 	public UserResource(final APIResource api, final UserResourceDTO dto, final String password) {
 		super(api.getService(), dto.getLinks(), dto.getMessages());
 		this.api = api;
+        	this.id = dto.getId();
 		this.rhLogin = dto.getRhLogin();
 		this.maxGears = dto.getMaxGears();
 		this.consumedGears = dto.getConsumedGears();
@@ -56,6 +58,11 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 	public IOpenShiftConnection getConnection() {
 		return api;
 	}
+
+    	@Override
+    	public String getId() {
+        	return id;
+    	}
 
 	@Override
 	public String getRhlogin() {
