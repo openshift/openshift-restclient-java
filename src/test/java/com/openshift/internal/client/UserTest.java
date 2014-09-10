@@ -71,4 +71,11 @@ public class UserTest extends TestTimer {
 		// verifications
 		assertThat(user.getMaxGears()).isEqualTo(10);
 	}
+
+	@Test
+	public void shouldHaveId() throws Throwable {
+		// pre-conditions
+		// verifications
+		assertThat(user.getId()).isEqualTo("511a780cf2cb83f4d0001b23");
+	}
 }
