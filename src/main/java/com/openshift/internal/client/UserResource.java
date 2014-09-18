@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2011-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -23,6 +23,7 @@ import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftSSHKeyException;
 import com.openshift.client.OpenShiftUnknonwSSHKeyTypeException;
 import com.openshift.client.SSHKeyType;
+import com.openshift.client.IAuthorization;
 import com.openshift.internal.client.httpclient.request.StringParameter;
 import com.openshift.internal.client.response.KeyResourceDTO;
 import com.openshift.internal.client.response.UserResourceDTO;
@@ -32,6 +33,7 @@ import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
 /**
  * @author André Dietisheim
+ * @author Sean Kavanagh
  */
 public class UserResource extends AbstractOpenShiftResource implements IUser {
 
@@ -123,6 +125,21 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 		
 		return api.getDomain(id) != null;
 	}
+
+    @Override
+    public IAuthorization createAuthorization(String note, String scopes)  throws OpenShiftException {
+        return api.createAuthorization(note, scopes);
+    }
+    
+    @Override
+    public IAuthorization createAuthorization(String note, String scopes, int expiresIn) throws OpenShiftException {
+        return api.createAuthorization(note, scopes, expiresIn); 
+    }
+
+    @Override
+    public IAuthorization getAuthorization() throws OpenShiftException {
+        return api.getAuthorization();
+    }
 
 	@Override
 	public void refresh() throws OpenShiftException {

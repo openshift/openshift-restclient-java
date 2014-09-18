@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2011-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -12,6 +12,7 @@ package com.openshift.internal.client.utils;
 
 /**
  * @author André Dietisheim
+ * @author Sean Kavanagh
  */
 public class IOpenShiftJsonConstants {
 
@@ -52,6 +53,10 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_HREF = "href";
 	public static final String PROPERTY_ID = "id";
 	public static final String PROPERTY_INFO = "info";
+	public static final String PROPERTY_NOTE= "note";
+	public static final String PROPERTY_SCOPES= "scopes";
+    public static final String PROPERTY_EXPIRES_IN= "expires_in";
+	public static final String PROPERTY_TOKEN= "token";
 	public static final String PROPERTY_INITIAL_GIT_URL = "initial_git_url";
 	public static final String PROPERTY_INTERNAL_PORT = "internal_port";
 	public static final String PROPERTY_KEY_TYPE = "key_type";
@@ -96,6 +101,9 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_VALID_OPTIONS = "valid_options";
 	public static final String PROPERTY_VALUE = "value";
 	public static final String PROPERTY_WEBSITE = "website";
+	public static final String PROPERTY_SESSION= "session";
+	public static final String PROPERTY_READ= "read";
+	public static final String PROPERTY_USERINFO= "userinfo";
 
 	public static final String VALUE_STATUS_OK = "ok";
 	public static final String VALUE_STATUS_CREATED = "created";

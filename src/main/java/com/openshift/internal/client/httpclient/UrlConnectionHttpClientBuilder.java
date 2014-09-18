@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2012-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -16,6 +16,7 @@ import com.openshift.client.IHttpClient.ISSLCertificateCallback;
 /**
  * @author André Dietisheim
  * @author Corey Daley
+ * @author Sean Kavanagh
  */
 public class UrlConnectionHttpClientBuilder {
 
@@ -24,6 +25,7 @@ public class UrlConnectionHttpClientBuilder {
 	private String password;
 	private String authKey;
 	private String authIV;
+	private String token;
 	private String acceptedMediaType;
 	private String version;
 	private Integer configTimeout;
@@ -35,14 +37,15 @@ public class UrlConnectionHttpClientBuilder {
 	}
 
 	public UrlConnectionHttpClientBuilder setCredentials(String username, String password) {
-		return setCredentials(username, password, null, null);
+		return setCredentials(username, password, null, null, null);
 	}
 	
-	public UrlConnectionHttpClientBuilder setCredentials(String username, String password, String authKey, String authIV) {
+	public UrlConnectionHttpClientBuilder setCredentials(String username, String password, String authKey, String authIV, String token) {
 		this.username = username;
 		this.password = password;
 		this.authKey = authKey;
 		this.authIV = authIV;
+		this.token = token;
 		return this;
 	}
 	public UrlConnectionHttpClientBuilder setConfigTimeout (Integer configTimeout) {
@@ -67,6 +70,6 @@ public class UrlConnectionHttpClientBuilder {
 
 	public IHttpClient client() {
 		return new UrlConnectionHttpClient(
-				username, password, userAgent, acceptedMediaType, version, authKey, authIV, callback, configTimeout);
+				username, password, userAgent, acceptedMediaType, version, authKey, authIV, token, callback, configTimeout);
 	}
 }

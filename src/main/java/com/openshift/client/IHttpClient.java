@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2011-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -25,6 +25,7 @@ import com.openshift.internal.client.httpclient.request.Parameter;
  * @author André Dietisheim
  * @author Nicolas Spano
  * @author Corey Daley
+ * @author Sean Kavanagh
  */
 public interface IHttpClient {
 	
@@ -43,6 +44,7 @@ public interface IHttpClient {
 	public static final String MEDIATYPE_APPLICATION_FORMURLENCODED = "application/x-www-form-urlencoded";
 
 	public static final String AUTHORIZATION_BASIC = "Basic";
+	public static final String AUTHORIZATION_BEARER = "Bearer";
 
 	public static final int STATUS_OK = 200;
 	public static final int STATUS_INTERNAL_SERVER_ERROR = 500;

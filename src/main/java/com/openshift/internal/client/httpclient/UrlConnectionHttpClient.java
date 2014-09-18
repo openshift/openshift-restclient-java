@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2013 Red Hat, Inc. 
+ * Copyright (c) 2013-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -48,6 +48,7 @@ import com.openshift.internal.client.utils.StringUtils;
  * @author Andre Dietisheim
  * @author Nicolas Spano
  * @author Corey Daley
+ * @author Sean Kavanagh
  */
 public class UrlConnectionHttpClient implements IHttpClient {
 
@@ -58,6 +59,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	protected String password;
 	protected String authKey;
 	protected String authIV;
+	protected String token;
 	protected String acceptedMediaType;
 	protected String acceptedVersion;
 	protected ISSLCertificateCallback sslAuthorizationCallback;
@@ -70,11 +72,11 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	public UrlConnectionHttpClient(
 			String username, String password, String userAgent, String acceptedMediaType, String version, String authKey, String authIV) {
-		this(username, password, userAgent, acceptedMediaType, version, authKey, authIV, null,null);
+		this(username, password, userAgent, acceptedMediaType, version, authKey, authIV, null, null,null);
 	}
 
 	public UrlConnectionHttpClient(String username, String password, String userAgent, String acceptedMediaType,
-			String version, String authKey, String authIV, ISSLCertificateCallback callback, Integer configTimeout) {
+			String version, String authKey, String authIV, String token, ISSLCertificateCallback callback, Integer configTimeout) {
 		this.username = username;
 		this.password = password;
 		this.userAgent = userAgent;
@@ -82,6 +84,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		this.acceptedVersion = version;
 		this.authKey = authKey;
 		this.authIV = authIV;
+		this.token = token;
 		this.sslAuthorizationCallback = callback;
 		this.configTimeout = configTimeout;
 	}
@@ -138,7 +141,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		HttpURLConnection connection = null;
 		try {
 			connection = createConnection(
-					url, username, password, authKey, authIV, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
+					url, username, password, authKey, authIV, token, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
 			// PATCH not yet supported by JVM
 			if (httpMethod == HttpMethod.PATCH) {
 				httpMethod = HttpMethod.POST;
@@ -209,14 +212,14 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 
 	protected HttpURLConnection createConnection(URL url, String username, String password, String authKey,
-			String authIV, String userAgent, String acceptedVersion, String acceptedMediaType, ISSLCertificateCallback callback, int timeout)
+			String authIV, String token, String userAgent, String acceptedVersion, String acceptedMediaType, ISSLCertificateCallback callback, int timeout)
 			throws IOException {
 		LOGGER.trace(
-				"creating connection to {} using username \"{}\" and password \"{}\"",
-				new Object[] { url, username, password });
+                "creating connection to {} using username \"{}\" and password \"{}\" or token \"{}\"",
+				new Object[] { url, username, password, token });
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		setSSLCallback(url, connection);
-		setAuthorisation(username, password, authKey, authIV, connection);
+		setAuthorization(username, password, authKey, authIV, token, connection);
 		connection.setUseCaches(false);
 		connection.setDoInput(true);
 		connection.setAllowUserInteraction(false);
@@ -252,13 +255,17 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		connection.setRequestProperty(PROPERTY_ACCEPT, builder.toString());
 	}
 
-	private void setAuthorisation(String username, String password, String authKey, String authIV,
+	private void setAuthorization(String username, String password, String authKey, String authIV, String token,
 			HttpURLConnection connection) {
 		if (username == null || username.trim().length() == 0
 				|| password == null || password.trim().length() == 0) {
 			if (authKey != null && authIV != null) {
 				connection.setRequestProperty(PROPERTY_AUTHKEY, authKey);
 				connection.setRequestProperty(PROPERTY_AUTHIV, authIV);
+			}
+			else if(token != null){
+                		connection.setRequestProperty(PROPERTY_AUTHORIZATION,
+				new StringBuilder().append(AUTHORIZATION_BEARER).append(SPACE).append(token).toString());
 			}
 		} else {
 			String credentials = Base64Coder.encode(

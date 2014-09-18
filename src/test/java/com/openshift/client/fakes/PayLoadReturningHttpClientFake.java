@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2012-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -28,6 +28,7 @@ import com.openshift.internal.client.httpclient.request.ParameterValueMap;
 /**
  * @author Andre Dietisheim
  * @author Nicolas Spano
+ * @author Sean Kavanagh
  */
 public class PayLoadReturningHttpClientFake extends UrlConnectionHttpClient {
 
@@ -42,6 +43,7 @@ public class PayLoadReturningHttpClientFake extends UrlConnectionHttpClient {
 				configuration.getClientId(),
 				mediaType,
 				version,
+				null,
 				null,
 				null,
 				null,

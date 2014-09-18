@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2012-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -27,19 +27,20 @@ import com.openshift.internal.client.response.RestResponse;
  * 
  * @author Xavier Coulon
  * @author Andre Dietisheim
+ * @author Sean Kavanagh
  * 
  */
 public abstract class AbstractOpenShiftConnectionFactory {
 	
 	@SuppressWarnings("unchecked")
-	protected IOpenShiftConnection getConnection(IRestService service, final String login, final String password) throws IOException, OpenShiftException {
+	protected IOpenShiftConnection getConnection(IRestService service, final String login, final String password, final String token) throws IOException, OpenShiftException {
 		RestResponse response =
 				(RestResponse) service.request(
 						new Link("Get API", "/api", HttpMethod.GET), 
 						IHttpClient.NO_TIMEOUT,
 						Collections.<Parameter> emptyList(), 
 						Collections.<Parameter> emptyList());
-		return new APIResource(login, password, service, (Map<String, Link>) response.getData());
+		return new APIResource(login, password, token, service, (Map<String, Link>) response.getData());
 	}
 	
 }

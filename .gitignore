@@ -4,4 +4,6 @@
 target
 bin
 .metadata
+.idea
+*.iml
 **/integrationTest.properties

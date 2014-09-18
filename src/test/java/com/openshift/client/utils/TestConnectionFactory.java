@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2012-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -23,6 +23,7 @@ import com.openshift.client.OpenShiftException;
  * User Builder, used to establish a connection and retrieve a user.
  * 
  * @author Andre Dietisheim
+ * @author Sean Kavanagh
  * 
  */
 public class TestConnectionFactory extends OpenShiftConnectionFactory {
@@ -37,6 +38,7 @@ public class TestConnectionFactory extends OpenShiftConnectionFactory {
 				, configuration.getPassword()
 				, null
 				, null
+				, null
 				, configuration.getLibraServer()
 				, new NoopSSLCertificateCallback());
 	}
@@ -47,6 +49,7 @@ public class TestConnectionFactory extends OpenShiftConnectionFactory {
 				configuration.getClientId(),
 				configuration.getRhlogin(),
 				password,
+				null,
 				server,
 				httpClient);
 	}
@@ -55,4 +58,17 @@ public class TestConnectionFactory extends OpenShiftConnectionFactory {
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
 		return getConnection(configuration.getPassword(), configuration.getLibraServer(), httpClient);
 	}
+
+
+    public IOpenShiftConnection getAuthTokenConnection(String token) throws FileNotFoundException, IOException, OpenShiftException {
+
+        OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
+        return  getConnection(
+                configuration.getClientId(),
+                token,
+                configuration.getLibraServer(),
+                new NoopSSLCertificateCallback());
+             
+    }
+
 }
