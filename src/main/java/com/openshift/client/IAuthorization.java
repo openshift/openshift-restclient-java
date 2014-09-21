@@ -21,7 +21,8 @@ package com.openshift.client;
 public interface IAuthorization extends IOpenShiftResource {
 
 	public static String SCOPE_SESSION = "session";
-	public static String SCOPE_SESSION_READ = "session read";
+	public static String SCOPE_READ = "read";
+	public static String SCOPE_USERINFO = "userinfo";
 	public static int NO_EXPIRES_IN = -1;
 
 	/**

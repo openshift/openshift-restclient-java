@@ -66,7 +66,7 @@ public class AuthorizationTest extends TestTimer {
 	@Test
 	public void shouldCreateAuthorization() throws Exception {
 		// pre-conditions
-		IAuthorization authorization = user.createAuthorization("my note", IAuthorization.SCOPE_SESSION_READ);
+		IAuthorization authorization = user.createAuthorization("my note", IAuthorization.SCOPE_SESSION);
 		assertNotNull(authorization.getToken());
 
 		// operations
@@ -75,7 +75,7 @@ public class AuthorizationTest extends TestTimer {
 		authorization = connection.getUser().getAuthorization();
 
 		// verifications
-		assertEquals(authorization.getScopes(), IAuthorization.SCOPE_SESSION_READ);
+		assertEquals(authorization.getScopes(), IAuthorization.SCOPE_SESSION);
 		assertEquals(authorization.getNote(), "my note");
 
 		authorization.destroy();
@@ -84,7 +84,7 @@ public class AuthorizationTest extends TestTimer {
 	@Test
 	public void shouldCreateAuthorizationWithExpiration() throws Exception {
 		// pre-conditions
-		IAuthorization authorization = user.createAuthorization("my note", IAuthorization.SCOPE_SESSION_READ, 600);
+		IAuthorization authorization = user.createAuthorization("my note", IAuthorization.SCOPE_SESSION, 600);
 		assertNotNull(authorization.getToken());
 
 		// operations
@@ -93,7 +93,7 @@ public class AuthorizationTest extends TestTimer {
 		authorization = connection.getUser().getAuthorization();
 
 		// verifications
-		assertEquals(authorization.getScopes(), IAuthorization.SCOPE_SESSION_READ);
+		assertEquals(authorization.getScopes(), IAuthorization.SCOPE_SESSION);
 		assertEquals(authorization.getNote(), "my note");
 
 		authorization.destroy();
@@ -102,7 +102,7 @@ public class AuthorizationTest extends TestTimer {
 	@Test
 	public void shouldDestroyAuthorization() throws Exception {
 		// pre-conditions
-		IAuthorization authorization = user.createAuthorization("my note", IAuthorization.SCOPE_SESSION_READ, 600);
+		IAuthorization authorization = user.createAuthorization("my note", IAuthorization.SCOPE_READ, 600);
 		assertNotNull(authorization.getToken());
 
 		// operations
@@ -119,7 +119,7 @@ public class AuthorizationTest extends TestTimer {
 	@Test
 	public void shouldCreateNewAuthorization() throws Exception {
 		// pre-conditions
-		IAuthorization authorization = user.createAuthorization("my note", IAuthorization.SCOPE_SESSION_READ, 600);
+		IAuthorization authorization = user.createAuthorization("my note", IAuthorization.SCOPE_READ, 600);
 		assertNotNull(authorization.getToken());
 
 		// operations

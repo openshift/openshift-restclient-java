@@ -55,7 +55,8 @@ public class IOpenShiftJsonConstants {
 	public static final String PROPERTY_INFO = "info";
 	public static final String PROPERTY_NOTE= "note";
 	public static final String PROPERTY_SCOPES= "scopes";
-    public static final String PROPERTY_EXPIRES_IN= "expires_in";
+	public static final String PROPERTY_EXPIRES_IN= "expires_in";
+	public static final String PROPERTY_EXPIRES_IN_SECONDS= "expires_in_seconds";
 	public static final String PROPERTY_TOKEN= "token";
 	public static final String PROPERTY_INITIAL_GIT_URL = "initial_git_url";
 	public static final String PROPERTY_INTERNAL_PORT = "internal_port";
