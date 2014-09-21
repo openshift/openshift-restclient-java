@@ -66,6 +66,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	private List<IDomain> domains;
 	private List<IStandaloneCartridge> standaloneCartridges;
 	private List<IEmbeddableCartridge> embeddableCartridges;
+    	private List<IAuthorization> authorizations;
 	private Map<String, IQuickstart> quickstartsByName;
 	private final ExecutorService executorService;
 
@@ -134,21 +135,26 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	}
 
 	public IAuthorization createAuthorization(String note, String scopes) throws OpenShiftException {
-		if (authorization != null) {
-			authorization.destroy();
-		}
-		return this.authorization = createAuthorization(note, scopes, null);
+		return createAuthorization(note, scopes, null);
 	}
 
 	protected AuthorizationResource createAuthorization(String note, String scopes, Integer expiresIn)
 			throws OpenShiftException {
+        	if (authorizations == null){
+            		authorizations=loadAuthorizations();
+        	}
 		Parameters parameters = new Parameters()
 				.add(IOpenShiftJsonConstants.PROPERTY_NOTE, note)
 				.add(IOpenShiftJsonConstants.PROPERTY_SCOPES, scopes)
 				.add(IOpenShiftJsonConstants.PROPERTY_EXPIRES_IN,
 						expiresIn == null ? null : Integer.toString(expiresIn));
-		return new AuthorizationResource(this,
+	    	authorization = new AuthorizationResource(this,
 				new AddAuthorizationRequest().execute(parameters.toArray()));
+        
+        	//add to cached authorizations
+        	authorizations.add(authorization);
+        
+        	return authorization;
 	}
 
 	protected void removeAuthorization() {
@@ -165,12 +171,38 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	}
 
 	public IAuthorization getAuthorization() throws OpenShiftException {
-		if (authorization == null) {
+		if (authorization == null || authorization.getId() == null) {
 			// TODO: if the given token is expired we get an exception here
 			this.authorization = getOrCreateAuthorization(token);
 		}
 		return this.authorization;
 	}
+
+    public IAuthorization getAuthorization(String id) throws OpenShiftException {
+
+        for (IAuthorization authorization: getAuthorizations()) {
+            if (authorization.getId().equals(id) || authorization.getToken().equals(id)) {
+                return authorization;
+            }
+        }
+        return null;
+        
+    }
+
+    public List<IAuthorization> getAuthorizations() throws OpenShiftException {
+        if (authorizations == null) {
+            this.authorizations = loadAuthorizations();
+        }
+        return CollectionUtils.toUnmodifiableCopy(this.authorizations);
+    }
+
+    private List<IAuthorization> loadAuthorizations() throws OpenShiftException {
+        List<IAuthorization> authorizations = new ArrayList<IAuthorization>();
+        for (AuthorizationResourceDTO authorizationDTO : new ListAuthorizationsRequest().execute()) {
+            authorizations.add(new AuthorizationResource(this, authorizationDTO));
+        }
+        return authorizations;
+    }
 
 	@Override
 	public List<IDomain> getDomains() throws OpenShiftException {
@@ -323,6 +355,7 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 	@Override
 	public void refresh() throws OpenShiftException {
 		this.domains = null;
+        	this.authorizations = null;
 	}
 
 	/**
@@ -459,4 +492,15 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 					Collections.<Parameter> emptyList());
 		}
 	}
+
+    private class ListAuthorizationsRequest extends ServiceRequest {
+
+        private ListAuthorizationsRequest() throws OpenShiftException {
+            super("LIST_AUTHORIZATIONS");
+        }
+
+        protected List<AuthorizationResourceDTO> execute() throws OpenShiftException {
+            return super.execute();
+        }
+    }
 }

@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.client;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
 	public UserResource(final APIResource api, final UserResourceDTO dto, final String password) {
 		super(api.getService(), dto.getLinks(), dto.getMessages());
 		this.api = api;
-        	this.id = dto.getId();
+		this.id = dto.getId();
 		this.rhLogin = dto.getRhLogin();
 		this.maxGears = dto.getMaxGears();
 		this.consumedGears = dto.getConsumedGears();
@@ -141,6 +142,32 @@ public class UserResource extends AbstractOpenShiftResource implements IUser {
         return api.getAuthorization();
     }
 
+    @Override
+    public IAuthorization getAuthorization(String id) throws OpenShiftException {
+        Assert.notNull(id);
+        return api.getAuthorization(id);
+    }
+
+    @Override
+    public Collection<IAuthorization> getAuthorizations() throws OpenShiftException {
+        return api.getAuthorizations();
+    }
+
+    @Override
+    public boolean removeAuthorization(String id) {
+        Assert.notNull(id);
+        IAuthorization auth = getAuthorization(id);
+        if (auth == null) {
+            return false;
+        }
+        auth.destroy();
+        api.removeAuthorization();
+        //sets authorization list to null so next get/create will reload
+        api.refresh();
+        return true;
+    }
+
+    
 	@Override
 	public void refresh() throws OpenShiftException {
 		this.sshKeys = loadKeys();

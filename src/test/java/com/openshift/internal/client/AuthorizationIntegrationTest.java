@@ -13,22 +13,22 @@ package com.openshift.internal.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
-import org.junit.internal.matchers.StringContains;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import java.util.List;
+import org.junit.internal.matchers.StringContains;
 
 import com.openshift.client.IAuthorization;
 import com.openshift.client.IOpenShiftConnection;
-import com.openshift.client.IUser;
-import com.openshift.client.OpenShiftException;
-import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.IOpenShiftSSHKey;
+import com.openshift.client.IUser;
+import com.openshift.client.OpenShiftEndpointException;
+import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.TestConnectionFactory;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
@@ -170,7 +170,6 @@ public class AuthorizationIntegrationTest extends TestTimer {
         }
 	//clean up
 	authorization.destroy();
-
     }
 
     @Test
