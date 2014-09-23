@@ -269,20 +269,20 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		this.standaloneCartridges = new ArrayList<IStandaloneCartridge>();
 		this.embeddableCartridges = new ArrayList<IEmbeddableCartridge>();
 		for (CartridgeResourceDTO cartridgeDTO : cartridgeDTOsByName.values()) {
-			addCartridgeCartridge(cartridgeDTO, standaloneCartridges, embeddableCartridges);
+			addCartridge(cartridgeDTO, standaloneCartridges, embeddableCartridges);
 		}
 	}
 
-	private void addCartridgeCartridge(CartridgeResourceDTO dto, List<IStandaloneCartridge> standaloneCartridges,
+	private void addCartridge(CartridgeResourceDTO dto, List<IStandaloneCartridge> standaloneCartridges,
 			List<IEmbeddableCartridge> embeddableCartridges) {
 		switch (dto.getType()) {
 		case STANDALONE:
 			standaloneCartridges.add(
-					new StandaloneCartridge(dto.getName(), dto.getDisplayName(), dto.getDescription()));
+					new StandaloneCartridge(dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getObsolete()));
 			break;
 		case EMBEDDED:
 			embeddableCartridges.add(
-					new EmbeddableCartridge(dto.getName(), dto.getDisplayName(), dto.getDescription()));
+					new EmbeddableCartridge(dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getObsolete()));
 			break;
 		case UNDEFINED:
 			break;

@@ -21,8 +21,11 @@ import org.junit.Test;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.cartridge.EmbeddableCartridge;
+import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
+import com.openshift.client.cartridge.query.CartridgeNameQuery;
+import com.openshift.client.cartridge.query.LatestVersionQuery;
 import com.openshift.client.utils.CartridgeAssert;
 import com.openshift.client.utils.CartridgeTestUtils;
 import com.openshift.client.utils.Samples;
@@ -99,4 +102,17 @@ public class EmbeddableCartridgeTest extends TestTimer {
 				.hasDescription("MongoDB is a scalable, high-performance, open source NoSQL database.");
 	}
 
+	@Test
+	public void shouldHaveObsoleteCartridges() throws MalformedURLException {
+		// pre-coniditions
+		// operation
+		ICartridge metrics = new CartridgeNameQuery("metrics").get(connection.getCartridges());
+		ICartridge zend = new CartridgeNameQuery("zend-5.6").get(connection.getCartridges());
+		ICartridge php = new LatestVersionQuery("php").get(connection.getCartridges());
+		
+		// verification
+		assertThat(metrics.isObsolete()).isTrue();
+		assertThat(zend.isObsolete()).isTrue();
+		assertThat(php.isObsolete()).isFalse();
+	}
 }

@@ -247,7 +247,8 @@ public class CartridgeQueryTest extends TestTimer {
 				new StandaloneCartridge("nodejs-0.6", null,
 						"Node.js is a platform built on Chrome's JavaScript runtime for easily building fast, "
 								+ "scalable network applications. Node.js is perfect for data-intensive real-time "
-								+ "applications that run across distributed devices.")
+								+ "applications that run across distributed devices."
+								, false)
 				);
 		StringPropertyQuery query = new StringPropertyQuery(".+platform built on Chrome's JavaScript runtime.+") {
 

@@ -12,6 +12,8 @@ package com.openshift.client.cartridge;
 
 import java.net.URL;
 
+import com.openshift.internal.client.APIResource;
+import com.openshift.internal.client.ApplicationResource;
 import com.openshift.internal.client.CartridgeType;
 import com.openshift.internal.client.cartridge.BaseCartridge;
 
@@ -36,11 +38,21 @@ public class StandaloneCartridge extends BaseCartridge implements IStandaloneCar
 		super(name, url);
 	}
 
-	public StandaloneCartridge(String name, String displayName, String description) {
-		super(name, null, displayName, description);
+	/**
+	 * Constructor used when available cartridges are loaded from OpenShift
+	 * 
+	 * @see APIResource#getEmbeddableCartridges()
+	 */
+	public StandaloneCartridge(String name, String displayName, String description, boolean obsolete) {
+		super(name, null, displayName, description, obsolete);
 	}
 
-	public StandaloneCartridge(String name, URL url, String displayName, String description) {
+	/**
+	 * Constructor used when cartridges are reported within application
+	 * 
+	 * @see ApplicationResource#updateCartridges
+	 */
+	public StandaloneCartridge(String name, URL url, String displayName, String description, boolean obsolete) {
 		super(name, url, displayName, description);
 	}
 
