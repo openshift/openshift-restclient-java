@@ -258,4 +258,28 @@ public class ConfigurationTest extends TestTimer {
 		assertTrue(configuration.getLibraServer().contains(DefaultConfiguration.LIBRA_SERVER));
 		assertNull(configuration.getRhlogin());
 	}
+
+	@Test
+	public void canReadPassword() throws OpenShiftException, IOException {
+		UserConfigurationFake userConfiguration = new UserConfigurationFake() {
+
+			protected void initFile(Writer writer) throws IOException {
+				writer.append(KEY_PASSWORD).append('=').append("somePassword").append('\n');
+			}
+
+		};
+		assertEquals("somePassword", userConfiguration.getPassword());
+	}
+
+	@Test
+	public void canStripQuotesOfPassword() throws OpenShiftException, IOException {
+		UserConfigurationFake userConfiguration = new UserConfigurationFake() {
+
+			protected void initFile(Writer writer) throws IOException {
+				writer.append(KEY_PASSWORD).append('=').append("'somePassword'").append('\n');
+			}
+
+		};
+		assertEquals("somePassword", userConfiguration.getPassword());
+	}
 }

@@ -166,7 +166,7 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	}
 	
 	public String getPassword() {
-		return properties.getProperty(KEY_PASSWORD);
+		return removeQuotes(properties.getProperty(KEY_PASSWORD));
 	}
 
 	public String getClientId() {
