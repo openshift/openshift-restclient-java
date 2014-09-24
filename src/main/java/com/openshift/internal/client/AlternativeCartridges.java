@@ -39,7 +39,7 @@ public class AlternativeCartridges {
 	 * @return the alternative cartridges
 	 */
 	public List<ICartridge> get() {
-		return query.getAll(api.getCartridges());
+		return query.getAll(api.getCartridges(true)); // include obsolete cartridges
 	}
 
 	@Override

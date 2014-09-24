@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2012-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -36,7 +36,7 @@ public class APIResourceTest extends TestTimer {
 	@Before
 	public void setup() throws Throwable {
 		this.mockDirector = new HttpClientMockDirector();
-		connection = new TestConnectionFactory().getConnection(mockDirector.client());
+		this.connection = new TestConnectionFactory().getConnection(mockDirector.client());
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class APIResourceTest extends TestTimer {
 		final List<IStandaloneCartridge> cartridges = connection.getStandaloneCartridges();
 		// verifications
 		assertThat(cartridges)
-				.hasSize(15)
+				.hasSize(15) // 16 - 1 obsolete (zend-5.6)
 				.onProperty("name")
 				.contains(CartridgeTestUtils.NODEJS_06_NAME
 						, CartridgeTestUtils.JBOSSAS_7_NAME
@@ -58,6 +58,29 @@ public class APIResourceTest extends TestTimer {
 						, CartridgeTestUtils.SWITCHYARD_06_NAME);
 	}
 
+	public void shouldNotListObsoleteStandaloneCartridges() throws Throwable {
+		// pre-conditions
+		// operation
+		final List<IStandaloneCartridge> cartridges = connection.getStandaloneCartridges();
+		// verifications
+		assertThat(cartridges)
+				.hasSize(14) // 15 - 1 obsolete (zend-5.6)
+				.onProperty("name")
+				.contains(CartridgeTestUtils.JBOSSAS_7_NAME)
+				.excludes(CartridgeTestUtils.ZEND_56_NAME);
+	}
+	
+	public void shouldListObsoleteStandaloneCartridges() throws Throwable {
+		// pre-conditions
+		// operation
+		final List<IStandaloneCartridge> cartridges = connection.getStandaloneCartridges(true);
+		// verifications
+		assertThat(cartridges)
+				.hasSize(15)
+				.onProperty("name")
+				.contains(CartridgeTestUtils.ZEND_56_NAME);
+	}
+	
 	@Test
 	public void shouldListEmbeddableCartridges() throws Throwable {
 		// pre-conditions
@@ -65,7 +88,7 @@ public class APIResourceTest extends TestTimer {
 		final List<IEmbeddableCartridge> cartridges = connection.getEmbeddableCartridges();
 		// verifications
 		assertThat(cartridges)
-				.hasSize(11)
+				.hasSize(10) // // 11 - 1 obsolete (metrics-0.1)
 				.onProperty("name")
 				.excludes(CartridgeTestUtils.NODEJS_06_NAME
 						, CartridgeTestUtils.JBOSSAS_7_NAME
@@ -77,6 +100,29 @@ public class APIResourceTest extends TestTimer {
 						, CartridgeTestUtils.SWITCHYARD_06_NAME);
 	}
 
+	public void shouldNotListObsoleteEmbeddableCartridges() throws Throwable {
+		// pre-conditions
+		// operation
+		final List<IStandaloneCartridge> cartridges = connection.getStandaloneCartridges();
+		// verifications
+		assertThat(cartridges)
+				.hasSize(15)
+				.onProperty("name")
+				.contains(CartridgeTestUtils.MYSQL_55_NAME)
+				.excludes(CartridgeTestUtils.METRICS_01_NAME);
+	}
+	
+	public void shouldListObsoleteEmbeddableCartridges() throws Throwable {
+		// pre-conditions
+		// operation
+		final List<IStandaloneCartridge> cartridges = connection.getStandaloneCartridges(true);
+		// verifications
+		assertThat(cartridges)
+				.hasSize(15)
+				.onProperty("name")
+				.contains(CartridgeTestUtils.METRICS_01_NAME);
+	}
+	
 	@Test
 	public void shouldListCartridges() throws Throwable {
 		// pre-conditions
@@ -84,7 +130,7 @@ public class APIResourceTest extends TestTimer {
 		final List<ICartridge> cartridges = connection.getCartridges();
 		// verifications
 		assertThat(cartridges)
-				.hasSize(26)
+				.hasSize(25) // 26 - 1 obsolete
 				.onProperty("name")
 				.contains(CartridgeTestUtils.NODEJS_06_NAME
 						, CartridgeTestUtils.JBOSSAS_7_NAME
@@ -94,5 +140,31 @@ public class APIResourceTest extends TestTimer {
 						, CartridgeTestUtils.MONGODB_22_NAME
 						, CartridgeTestUtils.MYSQL_51_NAME
 						, CartridgeTestUtils.SWITCHYARD_06_NAME);
+	}
+
+	@Test
+	public void shouldNotListObsoleteCartridges() throws Throwable {
+		// pre-conditions
+		// operation
+		final List<ICartridge> cartridges = connection.getCartridges();
+		// verifications
+		assertThat(cartridges)
+				.hasSize(25) // 26 - 1 obsolete (zend-5.6)
+				.onProperty("name")
+				.excludes(CartridgeTestUtils.METRICS_01_NAME
+						, CartridgeTestUtils.ZEND_56_NAME);
+	}
+
+	@Test
+	public void shouldListObsoleteCartridges() throws Throwable {
+		// pre-conditions
+		// operation
+		final List<ICartridge> cartridges = connection.getCartridges(true);
+		// verifications
+		assertThat(cartridges)
+				.hasSize(27) // includes obsolete zend-5.6
+				.onProperty("name")
+				.contains(CartridgeTestUtils.METRICS_01_NAME
+						, CartridgeTestUtils.ZEND_56_NAME);
 	}
 }

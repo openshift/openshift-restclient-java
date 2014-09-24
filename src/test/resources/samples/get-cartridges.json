@@ -197,6 +197,33 @@
       },
       {
          "current_scale":0,
+         "description":"A PHP server by Zend for applications that require performance, reliability and security. Zend Server combined with Zend Studio offers code optimization, debugging, and code assist.",
+         "display_name":"Zend Server 6.1",
+         "help_topics":{
+            "Developer Center":"https://openshift.redhat.com/community/developers"
+         },
+         "license":"Commercial",
+         "license_url":"http://static.zend.com/topics/Zend-License-EULA-2010-09-2.pdf",
+         "name":"zend-6.1",
+         "scales_from":1,
+         "scales_to":1,
+         "scales_with":"haproxy-1.4",
+         "supported_scales_from":1,
+         "supported_scales_to":1,
+         "tags":[
+            "service",
+            "php",
+            "web_framework"
+         ],
+         "type":"standalone",
+         "usage_rates":[
+
+         ],
+         "version":6.1,
+         "website":"http://www.zend.com"
+      },
+      {
+         "current_scale":0,
          "description":"Ruby is a dynamic, reflective, general-purpose object-oriented programming language. Popular development frameworks include Ruby on Rails and Sinatra.",
          "display_name":"Ruby 1.9",
          "help_topics":{
