@@ -28,19 +28,20 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 	private String description;
 	private final CartridgeType type;
 	private URL url;
+	private boolean obsolete;
 	private CartridgeResourceProperties properties;
 
-	protected CartridgeResourceDTO(final String name, final CartridgeType type, final CartridgeResourceProperties properties) {
-		this(name, null, null, type, null, properties, null, null);
+	protected CartridgeResourceDTO(final String name, final CartridgeType type, boolean obsolete, final CartridgeResourceProperties properties) {
+		this(name, null, null, type, null, obsolete, properties, null, null);
 	}
 
 	protected CartridgeResourceDTO(final String name, final String displayName, final String description,
-			final String type, URL url, CartridgeResourceProperties properties, final Map<String, Link> links, final Messages messages) {
-		this(name, displayName, description, CartridgeType.safeValueOf(type), url, properties, links, messages);
+			final String type, URL url, boolean obsolete, CartridgeResourceProperties properties, final Map<String, Link> links, final Messages messages) {
+		this(name, displayName, description, CartridgeType.safeValueOf(type), url, obsolete, properties, links, messages);
 	}
 
 	CartridgeResourceDTO(final String name, final String displayName, final String description,
-			final CartridgeType type, URL url, CartridgeResourceProperties properties, final Map<String, Link> links,
+			final CartridgeType type, URL url, boolean obsolete, CartridgeResourceProperties properties, final Map<String, Link> links,
 			final Messages messages) {
 		super(links, messages);
 		this.name = name;
@@ -48,6 +49,7 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 		this.description = description;
 		this.type = type;
 		this.url = url;
+		this.obsolete = obsolete;
 		this.properties = properties;
 	}
 
@@ -71,6 +73,10 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 		return url;
 	}
 
+	public boolean getObsolete() {
+		return obsolete;
+	}
+	
 	public CartridgeResourceProperties getProperties() {
 		return properties;
 	}
@@ -83,6 +89,7 @@ public class CartridgeResourceDTO extends BaseResourceDTO {
 				+ ", displayName=" + displayName
 				+ ", type=" + type
 				+ ", url=" + url
+				+ ", obsolete=" + obsolete
 				+ "]";
 	}
 

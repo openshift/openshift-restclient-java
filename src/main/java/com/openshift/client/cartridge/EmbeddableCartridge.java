@@ -49,8 +49,8 @@ public class EmbeddableCartridge extends BaseCartridge implements IEmbeddableCar
 	 * 
 	 * @see APIResource#getEmbeddableCartridges()
 	 */
-	public EmbeddableCartridge(final String name, String displayName, String description) {
-		super(name, displayName, description);
+	public EmbeddableCartridge(final String name, String displayName, String description, boolean obsolete) {
+		super(name, displayName, description, obsolete);
 	}
 
 	@Override

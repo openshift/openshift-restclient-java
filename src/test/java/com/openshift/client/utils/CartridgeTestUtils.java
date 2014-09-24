@@ -122,6 +122,25 @@ public class CartridgeTestUtils {
 		return new EmbeddableCartridge("andygoldstein-foreman-0.63.0", new URL(FOREMAN_URL));
 	}
 	
+	public static IEmbeddableCartridge createObsoleteEmbeddableCartridge(boolean obsolete) {
+		return new EmbeddableCartridge(
+				obsolete == true ? "obsolete-0.1" : "non-obsolete-0.1"
+				, obsolete == true ? "Obsolete 0.1" : "Non-Obsolete 0.1"
+				, obsolete == true ? "Obsolete Cartridge 0.1" : "Non-Obsolete Cartridge 0.1"
+				, obsolete) {
+		};
+	}
+	
+	public static IStandaloneCartridge createObsoleteStandaloneCartridge(boolean obsolete) {
+		return new StandaloneCartridge(
+				obsolete == true ? "obsolete-0.1" : "non-obsolete-0.1"
+				, obsolete == true ? "Obsolete 0.1" : "Non-Obsolete 0.1"
+				, obsolete == true ? "Obsolete Cartridge 0.1" : "Non-Obsolete Cartridge 0.1"
+				, obsolete) {
+
+		};
+	}
+	
 	public static List<ICartridge> createCartridges(String... names) {
 		List<ICartridge> cartridges = new ArrayList<ICartridge>();
 		for (String name : names) {
@@ -143,5 +162,4 @@ public class CartridgeTestUtils {
 		}
 		return mocks;
 	}
-	
 }

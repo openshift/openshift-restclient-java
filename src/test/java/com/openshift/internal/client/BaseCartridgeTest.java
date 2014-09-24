@@ -115,6 +115,17 @@ public class BaseCartridgeTest extends TestTimer {
 		assertThat(CartridgeTestUtils.foreman063().isDownloadable()).isTrue();
 	}
 	
+	@Test
+	public void shouldBeObsoleteCartridges() throws Throwable {
+		// pre-conditions
+		// operation
+		// verifications
+		assertThat(CartridgeTestUtils.createObsoleteStandaloneCartridge(false).isObsolete()).isFalse();
+		assertThat(CartridgeTestUtils.createObsoleteStandaloneCartridge(true).isObsolete()).isTrue();
+		assertThat(CartridgeTestUtils.createObsoleteEmbeddableCartridge(false).isObsolete()).isFalse();
+		assertThat(CartridgeTestUtils.createObsoleteEmbeddableCartridge(true).isObsolete()).isTrue();
+	}
+	
 	private class CartridgeFake extends BaseCartridge {
 
 		CartridgeFake(String name, URL url, String displayName) {

@@ -35,6 +35,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_METHOD;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_NAME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_NOTE;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_OBSOLETE;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_OPTIONAL_PARAMS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_PROPERTIES;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_REL;
@@ -436,9 +437,10 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
 		final String description = getAsString(cartridgeNode, PROPERTY_DESCRIPTION);
 		final String type = getAsString(cartridgeNode, PROPERTY_TYPE);
 		final URL url = createUrl(getAsString(cartridgeNode, PROPERTY_URL), name);
+		final boolean obsolete = getAsBoolean(cartridgeNode, PROPERTY_OBSOLETE);
 		final CartridgeResourceProperties properties = createProperties(cartridgeNode.get(PROPERTY_PROPERTIES));
 		final Map<String, Link> links = createLinks(cartridgeNode.get(PROPERTY_LINKS));
-		return new CartridgeResourceDTO(name, displayName, description, type, url, properties, links, messages);
+		return new CartridgeResourceDTO(name, displayName, description, type, url, obsolete, properties, links, messages);
 	}
 
 	private URL createUrl(String url, String name) {

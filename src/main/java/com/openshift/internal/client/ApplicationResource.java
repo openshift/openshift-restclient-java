@@ -465,7 +465,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 				cartridgeDTO.getName(),
 				cartridgeDTO.getUrl(),
 				cartridgeDTO.getDisplayName(),
-				cartridgeDTO.getDescription());
+				cartridgeDTO.getDescription(),
+				cartridgeDTO.getObsolete());
 	}
 
 	private void addOrUpdateEmbeddedCartridge(String name, CartridgeResourceDTO cartridgeDTO) {

@@ -32,6 +32,7 @@ public class BaseCartridge implements ICartridge {
 	private String displayName;
 	private String description;
 	private URL url;
+	private boolean obsolete;
 
 	public BaseCartridge(final String name) {
 		this(name, null, null, null);
@@ -45,15 +46,25 @@ public class BaseCartridge implements ICartridge {
 		this(name, url, null, null);
 	}
 
-	protected BaseCartridge(final String name, String displayName, String description) {
-		this(name, null, displayName, description);
+	/**
+	 * Constructor used when available cartridges are loaded from OpenShift
+	 * 
+	 * @see APIResource#getEmbeddableCartridges()
+	 */
+	protected BaseCartridge(final String name, String displayName, String description, boolean obsolete) {
+		this(name, null, displayName, description, obsolete);
 	}
 
 	protected BaseCartridge(final String name, URL url, String displayName, String description) {
+		this(name, url, displayName, description, false);
+	}
+	
+	protected BaseCartridge(final String name, URL url, String displayName, String description, boolean obsolete) {
 		this.url = url;
 		this.name = name;
 		this.displayName = getDisplayName(displayName, url);
 		this.description = description;
+		this.obsolete = obsolete;
 	}
 
 	protected String getDisplayName(final String displayName, URL url) {
@@ -93,6 +104,11 @@ public class BaseCartridge implements ICartridge {
 	@Override
 	public CartridgeType getType() {
 		return CartridgeType.UNDEFINED;
+	}
+	
+	@Override
+	public boolean isObsolete() {
+		return obsolete;
 	}
 	
 	@Override
@@ -143,6 +159,7 @@ public class BaseCartridge implements ICartridge {
 				+ ", url=" + url
 				+ ", displayName = " + displayName
 				+ ", description=" + description
+				+ ", obsolete=" + obsolete
 				+ " ]";
 	}
 }

@@ -72,4 +72,11 @@ public interface ICartridge {
 	
 	public CartridgeType getType();
 
+	/**
+	 * Returns <code>true</code> if this cartridge is obsolete, <code>false</code> otherwise.
+	 * 
+	 * @return true if this cartridge is obsolete
+	 */
+	boolean isObsolete();
+
 }

@@ -34,6 +34,7 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	private String description;
 	private final CartridgeType type;
 	private URL url;
+	private boolean obsolete;
 	private final ApplicationResource application;
 	private CartridgeResourceProperties properties;
 
@@ -44,6 +45,7 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 		this.description = dto.getDescription();
 		this.type = CartridgeType.EMBEDDED;
 		this.url = dto.getUrl();
+		this.obsolete = dto.getObsolete();
 		this.properties = dto.getProperties();
 		this.application = application;
 	}
@@ -76,6 +78,11 @@ public class EmbeddedCartridgeResource extends AbstractOpenShiftResource impleme
 	@Override
 	public boolean isDownloadable() {
 		return url != null;
+	}
+	
+	@Override
+	public boolean isObsolete() {
+		return obsolete;
 	}
 	
 	@Override

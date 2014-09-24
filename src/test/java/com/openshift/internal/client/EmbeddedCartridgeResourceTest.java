@@ -254,7 +254,7 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 
 	private IEmbeddedCartridge createEmbeddedCartridgeFake(String name) {
 		ApplicationResource applicationResourceMock = Mockito.mock(ApplicationResource.class);
-		CartridgeResourceDTO cartridgeDTO = new CartridgeResourceDTO(name, null, null) {
+		CartridgeResourceDTO cartridgeDTO = new CartridgeResourceDTO(name, null, false, null) {
 		};
 		return new EmbeddedCartridgeResource(cartridgeDTO, applicationResourceMock);
 	}
