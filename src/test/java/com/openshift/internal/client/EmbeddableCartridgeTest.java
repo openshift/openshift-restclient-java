@@ -106,9 +106,12 @@ public class EmbeddableCartridgeTest extends TestTimer {
 	public void shouldHaveObsoleteCartridges() throws MalformedURLException {
 		// pre-coniditions
 		// operation
-		ICartridge metrics = new CartridgeNameQuery("metrics").get(connection.getCartridges());
-		ICartridge zend = new CartridgeNameQuery("zend-5.6").get(connection.getCartridges());
-		ICartridge php = new LatestVersionQuery("php").get(connection.getCartridges());
+		ICartridge metrics = new CartridgeNameQuery("metrics").get(connection.getCartridges(true));
+		assertThat(metrics).isNotNull();
+		ICartridge zend = new CartridgeNameQuery("zend-5.6").get(connection.getCartridges(true));
+		assertThat(zend).isNotNull();
+		ICartridge php = new LatestVersionQuery("php").get(connection.getCartridges(true));
+		assertThat(php).isNotNull();
 		
 		// verification
 		assertThat(metrics.isObsolete()).isTrue();

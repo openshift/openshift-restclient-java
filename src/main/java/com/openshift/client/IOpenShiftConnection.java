@@ -51,7 +51,7 @@ public interface IOpenShiftConnection {
 
 	/**
 	 * Returns the available standalone cartridges associated with the current
-	 * OpenShift connection.
+	 * OpenShift connection. Obsolete cartridges are not reported.
 	 * 
 	 * @return the available standalone cartridges
 	 * @throws OpenShiftException
@@ -59,8 +59,19 @@ public interface IOpenShiftConnection {
 	public List<IStandaloneCartridge> getStandaloneCartridges() throws OpenShiftException;
 
 	/**
-	 * Returns the available embeddable cartridges associated with the current
+	 * Returns the available standalone cartridges associated with the current
 	 * OpenShift connection.
+	 * 
+	 * @param includeObsolete
+	 *            include obsolete cartridges
+	 * @return the available standalone cartridges
+	 * @throws OpenShiftException
+	 */
+	public List<IStandaloneCartridge> getStandaloneCartridges(boolean includeObsolete) throws OpenShiftException;
+	
+	/**
+	 * Returns the available embeddable cartridges associated with the current
+	 * OpenShift connection. Obsolete cartridges are not reported.
 	 * 
 	 * @return the available embeddable cartridges
 	 * @throws OpenShiftException
@@ -68,13 +79,36 @@ public interface IOpenShiftConnection {
 	public List<IEmbeddableCartridge> getEmbeddableCartridges() throws OpenShiftException;
 
 	/**
+	 * Returns the available embeddable cartridges associated with the current
+	 * OpenShift connection.
+	 * 
+	 * @param includeObsolete include obsolete cartridges
+	 * 
+	 * @return the available embeddable cartridges
+	 * @throws OpenShiftException
+	 */
+	public List<IEmbeddableCartridge> getEmbeddableCartridges(boolean includeObsolete) throws OpenShiftException;
+	
+	/**
 	 * Returns all the available cartridges, embeddable and standalone ones.
+	 * Obsolete cartridges are not reported.
 	 * 
 	 * @return the all the available cartridges
 	 * @throws OpenShiftException
 	 */
 	public List<ICartridge> getCartridges() throws OpenShiftException;
 
+	/**
+	 * Returns all the available cartridges, embeddable and standalone ones.
+	 * 
+	 * @param includeObsolete
+	 *            whether to include obsolete cartridges or not.
+	 * 
+	 * @return the all the available cartridges
+	 * @throws OpenShiftException
+	 */
+	public List<ICartridge> getCartridges(boolean includeObsolete) throws OpenShiftException;
+	
 	/**
 	 * Returns the available quickstarts associated with the current
 	 * OpenShift connection.

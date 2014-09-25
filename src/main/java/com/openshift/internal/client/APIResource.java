@@ -231,7 +231,12 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 
 	@Override
 	public List<IStandaloneCartridge> getStandaloneCartridges() throws OpenShiftException {
-		return CollectionUtils.toUnmodifiableCopy(getOrLoadStandaloneCartridges());
+		return getStandaloneCartridges(false);
+	}
+
+	@Override
+	public List<IStandaloneCartridge> getStandaloneCartridges(boolean includeObsolete) throws OpenShiftException {
+		return CollectionUtils.toUnmodifiableCopy(filterObsolete(includeObsolete, getOrLoadStandaloneCartridges()));
 	}
 
 	protected List<IStandaloneCartridge> getOrLoadStandaloneCartridges() throws OpenShiftException {
@@ -243,7 +248,12 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 
 	@Override
 	public List<IEmbeddableCartridge> getEmbeddableCartridges() throws OpenShiftException {
-		return CollectionUtils.toUnmodifiableCopy(getOrLoadEmbeddableCartridges());
+		return getEmbeddableCartridges(false);
+	}
+	
+	@Override
+	public List<IEmbeddableCartridge> getEmbeddableCartridges(boolean includeObsolete) throws OpenShiftException {
+		return CollectionUtils.toUnmodifiableCopy(filterObsolete(includeObsolete, getOrLoadEmbeddableCartridges()));
 	}
 
 	protected List<IEmbeddableCartridge> getOrLoadEmbeddableCartridges() throws OpenShiftException {
@@ -253,14 +263,35 @@ public class APIResource extends AbstractOpenShiftResource implements IOpenShift
 		return embeddableCartridges;
 	}
 
+	protected <C extends ICartridge> List<C> filterObsolete(boolean includeObsolete, List<C> allCartridges) {
+		if (includeObsolete) {
+			return allCartridges;
+		}
+
+		List<C> filteredList = new ArrayList<C>(allCartridges.size());
+		for (C cartridge : allCartridges) {
+			if (!cartridge.isObsolete()) {
+				filteredList.add(cartridge);
+			}
+		}
+		return filteredList;
+	}
+	
 	@Override
 	public List<ICartridge> getCartridges() {
+		return getCartridges(false);
+	}
+
+	
+	@Override
+	public List<ICartridge> getCartridges(boolean includeObsolete) {
 		List<IEmbeddableCartridge> embeddableCartridges = getOrLoadEmbeddableCartridges();
 		List<IStandaloneCartridge> standaloneCartridges = getOrLoadStandaloneCartridges();
-		List<ICartridge> cartridges = new ArrayList<ICartridge>(embeddableCartridges.size()
-				+ standaloneCartridges.size());
-		cartridges.addAll(embeddableCartridges);
-		cartridges.addAll(standaloneCartridges);
+		List<ICartridge> cartridges = 
+				new ArrayList<ICartridge>(embeddableCartridges.size() + standaloneCartridges.size());
+		
+		cartridges.addAll(filterObsolete(includeObsolete, embeddableCartridges));
+		cartridges.addAll(filterObsolete(includeObsolete, standaloneCartridges));
 		return cartridges;
 	}
 

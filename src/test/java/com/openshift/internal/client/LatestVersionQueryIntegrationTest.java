@@ -135,14 +135,6 @@ public class LatestVersionQueryIntegrationTest extends TestTimer {
 	}
 
 	@Test
-	public void shouldSelectMetrics() {
-		// pre-coniditions
-		// operation
-		// verification
-		assertCartridge(IEmbeddedCartridge.NAME_METRICS, LatestVersionOf.metrics().get(user)); 
-	}
-
-	@Test
 	public void shouldSelectMongoDb() {
 		// pre-coniditions
 		// operation

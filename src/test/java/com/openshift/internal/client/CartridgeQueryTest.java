@@ -366,15 +366,6 @@ public class CartridgeQueryTest extends TestTimer {
 	}
 
 	@Test
-	public void shouldSelectMetrics() {
-		// pre-conditions
-		// operation
-		// verification
-		assertCartridge(IEmbeddedCartridge.NAME_METRICS, 
-				LatestVersionOf.metrics().get(connection));
-	}
-
-	@Test
 	public void shouldSelectMongoDb() {
 		// pre-conditions
 		// operation

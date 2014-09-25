@@ -336,11 +336,11 @@ public class QuickstartTest extends TestTimer {
 		List<ICartridge> allPhp = anahita.getAlternativesFor(CartridgeTestUtils.php53());
 
 		// verification
-		// we have php-5.3 and zend-5.6
-		assertThat(allPhp).hasSize(2);
+		// we have php-5.3 and zend-6.1, zend-5.3 (obsolete ones included)
+		assertThat(allPhp).hasSize(3);
 		assertThat(allPhp)
 				.onProperty("name")
-				.contains(CartridgeTestUtils.PHP_53_NAME, CartridgeTestUtils.ZEND_56_NAME);
+				.contains(CartridgeTestUtils.PHP_53_NAME, CartridgeTestUtils.ZEND_61_NAME);
 	}
 
 }

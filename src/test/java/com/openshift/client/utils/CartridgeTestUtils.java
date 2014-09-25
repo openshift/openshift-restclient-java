@@ -46,8 +46,10 @@ public class CartridgeTestUtils {
 	public static final String WILDFLY_URL = 
 			"https://cartreflect-claytondev.rhcloud.com/reflect?github=openshift-cartridges/openshift-wildfly-cartridge#WildFly8";
 	public static final String ZEND_56_NAME = "zend-5.6";
-
+	public static final String ZEND_61_NAME = "zend-6.1";
+	
 	public static final String CRON_14_NAME = "cron-1.4";
+	public static final String METRICS_01_NAME = "metrics-0.1";
 	public static final String MYSQL_51_NAME = "mysql-5.1";
 	public static final String MYSQL_55_NAME = "mysql-5.5";
 	public static final String MONGODB_22_NAME = "mongodb-2.2";
