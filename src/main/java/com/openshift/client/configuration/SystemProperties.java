@@ -37,6 +37,7 @@ public class SystemProperties extends AbstractOpenshiftConfiguration {
 		copySystemProperty(KEY_PASSWORD, properties);
 		copySystemProperty(KEY_CLIENT_ID, properties);
 		copySystemProperty(KEY_OPENSHIFT_TIMEOUT, properties);
+		copySystemProperty(KEY_DISABLE_BAD_SSL_CIPHERS, properties);
 		return properties;
 	}
 
