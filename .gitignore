@@ -7,3 +7,4 @@ bin
 .idea
 *.iml
 **/integrationTest.properties
+/target/

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Red Hat, Inc.
+ * Copyright (c) 2011-2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -33,25 +33,41 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	protected static final String KEY_LIBRA_SERVER = "libra_server";
 	protected static final String KEY_LIBRA_DOMAIN = "libra_domain";
 
-
 	protected static final String KEY_PASSWORD = "rhpassword";
 	protected static final String KEY_CLIENT_ID = "client_id";
 
 	protected static final String KEY_TIMEOUT = "timeout";
-	protected static final String DEFAULT_OPENSHIFT_TIMEOUT = "180000"; //3 minutes
+	protected static final String DEFAULT_OPENSHIFT_TIMEOUT = "180000"; // 3mins
+
+	protected static final String KEY_DISABLE_BAD_SSL_CIPHERS = "disable_bad_sslciphers";
 
 	private static final Pattern QUOTED_REGEX = Pattern.compile("['\"]*([^'\"]+)['\"]*");
 	private static final char SINGLEQUOTE = '\'';
-		
+
 	private static final String SYSPROPERTY_PROXY_PORT = "proxyPort";
 	private static final String SYSPROPERTY_PROXY_HOST = "proxyHost";
 	private static final String SYSPROPERTY_PROXY_SET = "proxySet";
 
 	private Properties properties;
 	private File file;
-	
-	// TODO: implement
+
 	private boolean doSSLChecks = false;
+
+	public enum ConfigurationOptions {
+		YES, NO, AUTO;
+		
+		private static ConfigurationOptions safeValueOf(String string) {
+			if (string == null) {
+				return NO;
+			}
+			
+			try {
+				return valueOf(string.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				return NO;
+			}
+		}
+	}
 
 	protected AbstractOpenshiftConfiguration() throws FileNotFoundException, IOException {
 		this(null, null);
@@ -164,7 +180,7 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 			return value;
 		}
 	}
-	
+
 	public String getPassword() {
 		return removeQuotes(properties.getProperty(KEY_PASSWORD));
 	}
@@ -172,26 +188,37 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	public String getClientId() {
 		return properties.getProperty(KEY_CLIENT_ID);
 	}
+
+	public ConfigurationOptions getDisableBadSSLCiphers() {
+		return ConfigurationOptions.safeValueOf(
+				removeQuotes(properties.getProperty(KEY_DISABLE_BAD_SSL_CIPHERS)));
+	}
+
+	public void setDisableBadSSLCiphers(ConfigurationOptions option) {
+		properties.setProperty(KEY_DISABLE_BAD_SSL_CIPHERS, option.toString());
+	}
 	
 	public void setEnableSSLCertChecks(boolean doSSLChecks) {
 		this.doSSLChecks = doSSLChecks;
 	}
-	
+
 	public boolean getProxySet() {
-		String set = properties.getProperty(SYSPROPERTY_PROXY_SET);
-		
-		if (set != null)
-			return Boolean.parseBoolean(removeQuotes(set));
-		else 
-			return false;
+		return toBoolean(removeQuotes(properties.getProperty(SYSPROPERTY_PROXY_SET)));
 	}
-	
+
 	public String getProxyHost() {
 		return removeQuotes(properties.getProperty(SYSPROPERTY_PROXY_HOST));
 	}
-	
+
 	public String getProxyPort() {
 		return removeQuotes(properties.getProperty(SYSPROPERTY_PROXY_PORT));
 	}
 
+	private boolean toBoolean(String string) {
+		if (string != null) {
+			return Boolean.parseBoolean(string);
+		} else {
+			return false;
+		}
+	}
 }

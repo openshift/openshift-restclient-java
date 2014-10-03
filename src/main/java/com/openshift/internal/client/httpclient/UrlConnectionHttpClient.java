@@ -12,9 +12,13 @@ package com.openshift.internal.client.httpclient;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.ProtocolException;
+import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -27,6 +31,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -38,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.utils.Base64Coder;
+import com.openshift.client.utils.SSLUtils;
 import com.openshift.internal.client.httpclient.request.IMediaType;
 import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.httpclient.request.ParameterValueMap;
@@ -64,6 +70,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	protected String acceptedVersion;
 	protected ISSLCertificateCallback sslAuthorizationCallback;
 	protected Integer configTimeout;
+	private String excludedSSLCipherRegex;
 
 	public UrlConnectionHttpClient(
 			String username, String password, String userAgent, String acceptedMediaType, String version) {
@@ -72,11 +79,11 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	public UrlConnectionHttpClient(
 			String username, String password, String userAgent, String acceptedMediaType, String version, String authKey, String authIV) {
-		this(username, password, userAgent, acceptedMediaType, version, authKey, authIV, null, null,null);
+		this(username, password, userAgent, acceptedMediaType, version, authKey, authIV, null,null, null, null);
 	}
 
 	public UrlConnectionHttpClient(String username, String password, String userAgent, String acceptedMediaType,
-			String version, String authKey, String authIV, String token, ISSLCertificateCallback callback, Integer configTimeout) {
+			String version, String authKey, String authIV, String token, ISSLCertificateCallback callback, Integer configTimeout, String excludedSSLCipherRegex) {
 		this.username = username;
 		this.password = password;
 		this.userAgent = userAgent;
@@ -87,6 +94,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		this.token = token;
 		this.sslAuthorizationCallback = callback;
 		this.configTimeout = configTimeout;
+		this.excludedSSLCipherRegex = excludedSSLCipherRegex;
 	}
 
 	@Override
@@ -143,11 +151,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			connection = createConnection(
 					url, username, password, authKey, authIV, token, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
 			// PATCH not yet supported by JVM
-			if (httpMethod == HttpMethod.PATCH) {
-				httpMethod = HttpMethod.POST;
-				connection.setRequestProperty("X-Http-Method-Override", "PATCH");
-			}
-			connection.setRequestMethod(httpMethod.toString());
+			setRequestMethod(httpMethod, connection);
 			if (!parameters.isEmpty()) {
 				connection.setDoOutput(true);
 				setRequestMediaType(requestMediaType, connection);
@@ -161,6 +165,14 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		} finally {
 			disconnect(connection);
 		}
+	}
+
+	private void setRequestMethod(HttpMethod httpMethod, HttpURLConnection connection) throws ProtocolException {
+		if (httpMethod == HttpMethod.PATCH) {
+			httpMethod = HttpMethod.POST;
+			connection.setRequestProperty("X-Http-Method-Override", "PATCH");
+		}
+		connection.setRequestMethod(httpMethod.toString());
 	}
 	
 	private void disconnect(HttpURLConnection connection) {
@@ -218,7 +230,11 @@ public class UrlConnectionHttpClient implements IHttpClient {
                 "creating connection to {} using username \"{}\" and password \"{}\" or token \"{}\"",
 				new Object[] { url, username, password, token });
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		setSSLCallback(url, connection);
+		if (isHttps(url)) {
+			HttpsURLConnection httpsConnection = (HttpsURLConnection) connection;
+			SSLContext sslContext = setSSLCallback(sslAuthorizationCallback, url, httpsConnection);
+			setFilteredCiphers(excludedSSLCipherRegex, sslContext, httpsConnection);
+		}
 		setAuthorization(username, password, authKey, authIV, token, connection);
 		connection.setUseCaches(false);
 		connection.setDoInput(true);
@@ -275,37 +291,71 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		}
 	}
 
-	private void setSSLCallback(URL url, HttpURLConnection connection) {
-		if (isHttps(url)
-				&& sslAuthorizationCallback != null) {
-			HttpsURLConnection httpsConnection = (HttpsURLConnection) connection;
-			httpsConnection.setHostnameVerifier(new CallbackHostnameVerifier());
-			setupTrustManagerCallback(httpsConnection);;
+	private SSLContext setSSLCallback(ISSLCertificateCallback sslAuthorizationCallback, URL url, HttpsURLConnection connection) {
+		X509TrustManager trustManager = null;
+		if (sslAuthorizationCallback != null) {
+			connection.setHostnameVerifier(new CallbackHostnameVerifier());
+			trustManager = createCallbackTrustManager(sslAuthorizationCallback, connection);
+		}
+
+		try {
+			SSLContext sslContext = SSLUtils.getSSLContext(trustManager);
+			connection.setSSLSocketFactory(sslContext.getSocketFactory());
+			return sslContext;
+		} catch (GeneralSecurityException e) {
+			LOGGER.warn("Could not install trust manager callback", e);;
+			return null;
 		}
 	}
 
 	/**
-	 * Sets the trust manager callbacks to the given connection
+	 * Returns the callback trustmanager or <code>null</code> if it could not be created.
 	 * 
 	 * @see ISSLCertificateCallback
 	 */
-	private void setupTrustManagerCallback(HttpsURLConnection connection) {
+	private X509TrustManager createCallbackTrustManager(ISSLCertificateCallback sslAuthorizationCallback,HttpsURLConnection connection) {
+		X509TrustManager trustManager = null;
 		try {
-			SSLContext sslContext = SSLContext.getInstance("SSL");
-			X509TrustManager trustManager = getCurrentTrustManager();
+			trustManager = getCurrentTrustManager();
 			if (trustManager == null) {
 				LOGGER.warn("Could not install trust manager callback, no trustmanager was found.", trustManager);
 			} else {
-				sslContext.init(null, new TrustManager[] { 
-						new CallbackTrustManager(trustManager, sslAuthorizationCallback) }, null);
-				SSLSocketFactory socketFactory = sslContext.getSocketFactory();
-				((HttpsURLConnection) connection).setSSLSocketFactory(socketFactory);
+				trustManager = new CallbackTrustManager(trustManager, sslAuthorizationCallback);
 			}
 		} catch (GeneralSecurityException e) {
-			LOGGER.warn("Could not install trust manager callback", e);;
+			LOGGER.warn("Could not install trust manager callback.", e);;
 		}
+		return trustManager;
 	}
-	
+		
+	/**
+	 * Sets a ssl socket factory that sets a filtered list of ciphers based on
+	 * the #excludedSSLCipherRegex to the given connection.
+	 * 
+	 * @param sslContext
+	 * 
+	 * @param sslContext
+	 *            the ssl context that shall be used
+	 * @param url
+	 *            the url we are connecting to
+	 * @param connection
+	 *            the connection that the cipher filter shall be applied to
+	 */
+	protected SSLContext setFilteredCiphers(String excludedSSLCipherRegex, SSLContext sslContext, HttpsURLConnection connection) {
+		if (excludedSSLCipherRegex != null) {
+			connection.setSSLSocketFactory(
+					new EnabledCiphersSSLSocketFactory(
+							SSLUtils.filterCiphers(
+									excludedSSLCipherRegex, getSupportedCiphers(sslContext)), sslContext
+									.getSocketFactory()));
+		}
+		return sslContext;
+	}
+
+	protected String[] getSupportedCiphers(SSLContext sslContext) {
+		return sslContext.getSupportedSSLParameters().getCipherSuites();
+	}
+
 	private void setConnectTimeout(int timeout, URLConnection connection) {
 		if (getTimeout(timeout) != NO_TIMEOUT) {
 			connection.setConnectTimeout(getTimeout(timeout));
@@ -316,7 +366,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		if (getTimeout(timeout) != NO_TIMEOUT) {
 			connection.setReadTimeout(getTimeout(timeout));
 		}
-
 	}
 
 	private int getTimeout(int timeout) {
@@ -336,14 +385,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 							MEDIATYPE_APPLICATION_FORMURLENCODED));
 		}
 		connection.setRequestProperty(PROPERTY_CONTENT_TYPE, mediaType.getType());	
-	}
-	
-	private int getSystemPropertyInteger(String key) {
-		try {
-			return Integer.parseInt(System.getProperty(key));
-		} catch (NumberFormatException e) {
-			return NO_TIMEOUT;
-		}
 	}
 	
 	private X509TrustManager getCurrentTrustManager() throws NoSuchAlgorithmException, KeyStoreException {
@@ -381,7 +422,8 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		private X509TrustManager trustManager;
 		private ISSLCertificateCallback callback;
 
-		private CallbackTrustManager(X509TrustManager currentTrustManager, ISSLCertificateCallback callback) throws NoSuchAlgorithmException, KeyStoreException {
+		private CallbackTrustManager(X509TrustManager currentTrustManager, ISSLCertificateCallback callback) 
+				throws NoSuchAlgorithmException, KeyStoreException {
 			this.trustManager = currentTrustManager; 
 			this.callback = callback;
 		}
@@ -411,7 +453,71 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		public boolean verify(String hostname, SSLSession session) {
 			return sslAuthorizationCallback.allowHostname(hostname, session);
 		}
+	}
+	
+	/**
+	 * SSL socket factory that wraps a given socket factory and sets given ciphers
+	 * to the socket that the wrapped factory creates.
+	 * 
+	 * @see http://stackoverflow.com/questions/6851461/java-why-does-ssl-handshake-give-could-not-generate-dh-keypair-exception/16686994#16686994
+	 */
+	private static class EnabledCiphersSSLSocketFactory extends SSLSocketFactory {
 		
+		private String[] enabledCiphers;
+		private SSLSocketFactory socketFactory;
+
+		EnabledCiphersSSLSocketFactory(String[] enabledCiphers, SSLSocketFactory socketFactory) {
+			this.enabledCiphers = enabledCiphers;
+			this.socketFactory = socketFactory;
+		}
+
+		@Override
+		public Socket createSocket(InetAddress host, int port, InetAddress localHost, int localPort) throws IOException {
+			return setEnabledCiphers((SSLSocket) socketFactory.createSocket(host, port, localHost, localPort));
+		}
+		
+		@Override
+		public Socket createSocket(String host, int port, InetAddress localHost, int localPort) 
+				throws IOException, UnknownHostException {
+			return setEnabledCiphers((SSLSocket) socketFactory.createSocket(host, port, localHost, localPort));
+		}
+		
+		@Override
+		public Socket createSocket(InetAddress host, int port) throws IOException {
+			return setEnabledCiphers((SSLSocket) socketFactory.createSocket(host, port));
+		}
+		
+		@Override
+		public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+			return setEnabledCiphers((SSLSocket) socketFactory.createSocket(host, port));
+		}
+		
+		@Override
+		public String[] getSupportedCipherSuites() {
+			if (enabledCiphers == null) {
+				return socketFactory.getSupportedCipherSuites();
+			} else {
+				return enabledCiphers;
+			}
+		}
+		
+		@Override
+		public String[] getDefaultCipherSuites() {
+			return socketFactory.getDefaultCipherSuites();
+		}
+		
+		@Override
+		public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
+			 return setEnabledCiphers((SSLSocket) socketFactory.createSocket(socket, host, port, autoClose));
+		}
+		
+		private SSLSocket setEnabledCiphers(SSLSocket socket) {
+			if (enabledCiphers == null) {
+				return socket;
+			}
+			socket.setEnabledCipherSuites(enabledCiphers);
+			return socket;
+		}
 	}
 	
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Red Hat, Inc.
+ * Copyright (c) 2011-2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,25 +12,31 @@ package com.openshift.client.configuration;
 
 import java.util.Properties;
 
+import com.openshift.client.configuration.AbstractOpenshiftConfiguration.ConfigurationOptions;
+
 /**
  * @author André Dietisheim
  * @author Corey Daley
  */
 public interface IOpenShiftConfiguration {
 
-	public abstract String getRhlogin();
+	public String getRhlogin();
 
-	public abstract void setRhlogin(String rhlogin);
+	public void setRhlogin(String rhlogin);
 
-	public abstract String getLibraServer();
+	public String getLibraServer();
 
-	public abstract void setLibraServer(String libraServer);
+	public void setLibraServer(String libraServer);
 
-	public abstract String getLibraDomain();
+	public String getLibraDomain();
 
 	public Integer getTimeout();
 
-	public abstract void setLibraDomain(String libraDomain);
+	public void setLibraDomain(String libraDomain);
 
+	public ConfigurationOptions getDisableBadSSLCiphers();
+	
+	public void setDisableBadSSLCiphers(ConfigurationOptions option);
+	
 	public Properties getProperties();
 }

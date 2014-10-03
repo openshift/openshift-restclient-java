@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Red Hat, Inc.
+ * Copyright (c) 2011-2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.openshift.client.IHttpClient;
 import com.openshift.client.OpenShiftException;
 
 /**
@@ -36,6 +35,7 @@ public class DefaultConfiguration extends AbstractOpenshiftConfiguration {
 	    properties.put(KEY_LIBRA_SERVER, LIBRA_SERVER);
 	    properties.put(KEY_LIBRA_DOMAIN, LIBRA_DOMAIN);
 		properties.put(KEY_TIMEOUT, DEFAULT_OPENSHIFT_TIMEOUT);
+		properties.put(KEY_DISABLE_BAD_SSL_CIPHERS, ConfigurationOptions.NO.toString());
 		return properties;
 	}
 }

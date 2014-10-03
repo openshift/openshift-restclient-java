@@ -47,6 +47,7 @@ public class PayLoadReturningHttpClientFake extends UrlConnectionHttpClient {
 				null,
 				null,
 				null,
+				null,
 				null);
 	}
 
