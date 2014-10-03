@@ -1,0 +1,16 @@
+{
+	"data":{
+		"ALINK":{
+			"href":"https://openshift.redhat.com/broker/rest/post1",
+			"method":"MadeUpMethodName",
+			"optional_params":[
+	
+			],
+			"rel":"Post1",
+			"required_params":[
+		    ]
+		}
+	},
+   "type":"links",
+   "version":"1.2"
+}

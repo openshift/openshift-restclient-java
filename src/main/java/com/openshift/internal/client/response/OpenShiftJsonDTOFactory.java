@@ -69,6 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.client.ApplicationScale;
+import com.openshift.client.HttpMethod;
 import com.openshift.client.IGearProfile;
 import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
@@ -227,7 +228,10 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
 				final String linkName = linkNode.asProperty().getName();
 				final ModelNode valueNode = linkNode.asProperty().getValue();
 				if (valueNode.isDefined()) {
-					links.put(linkName, createLink(valueNode));
+					Link link = createLink(valueNode);
+					if(link != null){
+						links.put(linkName, link);
+					}
 				}
 			}
 		}
@@ -235,9 +239,12 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
 	}
 
 	private Link createLink(final ModelNode valueNode) {
+		final String method = valueNode.get(PROPERTY_METHOD).asString();
+		if(!HttpMethod.hasValue(method)){
+			return null;
+		}
 		final String rel = getAsString(valueNode, PROPERTY_REL);
 		final String href = valueNode.get(PROPERTY_HREF).asString();
-		final String method = valueNode.get(PROPERTY_METHOD).asString();
 		final List<LinkParameter> requiredParams =
 				createLinkParameters(valueNode.get(PROPERTY_REQUIRED_PARAMS));
 		final List<LinkParameter> optionalParams =

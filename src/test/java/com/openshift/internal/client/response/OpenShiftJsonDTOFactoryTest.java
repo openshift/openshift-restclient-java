@@ -428,7 +428,7 @@ public class OpenShiftJsonDTOFactoryTest {
 	}
 
 	@Test
-	public void shouldUnmarshallLinksUnknwonLinkParameterType() throws Throwable {
+	public void shouldUnmarshallLinksUnknownLinkParameterType() throws Throwable {
 		// pre-conditions
 		String content = Samples.LINKS_UNKNOWN_LINKPARAMETERTYPE.getContentAsString();
 		assertNotNull(content);
@@ -448,6 +448,16 @@ public class OpenShiftJsonDTOFactoryTest {
 		assertThat(linkParameter.getName()).isEqualTo("post1Required1Name");
 		assertThat(linkParameter.getDescription()).isEqualTo("post1Required1Description");
 		assertThat(linkParameter.getType()).isNotNull().isEqualTo(new LinkParameterType("unknown"));
+	}
+	
+	@Test
+	public void shouldSkipLinksWithUnknownVerbsWithoutError() {
+		String content = Samples.LINKS_UNKNOWN_VERB.getContentAsString();
+		assertNotNull(content);
+		
+		RestResponse response = factory.get(content);
+		final Map<String, Link> links = response.getData();
+		assertThat(links.size()).isEqualTo(0);
 	}
 
 }
