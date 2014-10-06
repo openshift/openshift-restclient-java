@@ -28,7 +28,7 @@ import com.openshift.client.IGearGroup;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IUser;
 import com.openshift.client.utils.GearGroupsAssert;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author Xavier Coulon
@@ -46,7 +46,7 @@ public class GearGroupsResourceTest extends TestTimer {
 			.mockGetApplication("foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED)
 			.mockGetGearGroups("foobarz", "springeap6", GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS)
 			.client();
-		IUser user = new TestConnectionFactory().getConnection(client).getUser();
+		IUser user = new TestConnectionBuilder().defaultCredentials().create(client).getUser();
 		this.domain = user.getDomain("foobarz");
 	}
 

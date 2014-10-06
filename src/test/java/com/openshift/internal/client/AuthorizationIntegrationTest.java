@@ -17,7 +17,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,11 +24,10 @@ import org.junit.internal.matchers.StringContains;
 
 import com.openshift.client.IAuthorization;
 import com.openshift.client.IOpenShiftConnection;
-import com.openshift.client.IOpenShiftSSHKey;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
 /**
@@ -42,8 +40,7 @@ public class AuthorizationIntegrationTest extends TestTimer {
 
 	@Before
 	public void setUp() throws HttpClientException, OpenShiftException, IOException {
-		final IOpenShiftConnection connection =
-				new TestConnectionFactory().getConnection();
+		final IOpenShiftConnection connection = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create();
 		this.user = connection.getUser();
 	}
 	
@@ -56,7 +53,7 @@ public class AuthorizationIntegrationTest extends TestTimer {
 
 		// operations
 		IOpenShiftConnection connection =
-				new TestConnectionFactory().getAuthTokenConnection(authorization.getToken());
+				new TestConnectionBuilder().token(authorization.getToken()).disableSSLCertificateChecks().create();
 		authorization = connection.getUser().getAuthorization();
 		
 		// verifications
@@ -74,7 +71,7 @@ public class AuthorizationIntegrationTest extends TestTimer {
 
 		// operations
 		IOpenShiftConnection connection =
-				new TestConnectionFactory().getAuthTokenConnection(authorization.getToken());
+				new TestConnectionBuilder().token(authorization.getToken()).disableSSLCertificateChecks().create();
 		authorization = connection.getUser().getAuthorization();
 
 		// verifications
@@ -93,7 +90,7 @@ public class AuthorizationIntegrationTest extends TestTimer {
 
 		// operations
 		IOpenShiftConnection connection =
-				new TestConnectionFactory().getAuthTokenConnection(authorization.getToken());
+				new TestConnectionBuilder().token(authorization.getToken()).disableSSLCertificateChecks().create();
 
 		authorization = connection.getUser().getAuthorization();
 
@@ -139,7 +136,7 @@ public class AuthorizationIntegrationTest extends TestTimer {
         try {
         //read scope should not be allowed to create new authorizations
         IOpenShiftConnection connection = 
-                new TestConnectionFactory().getAuthTokenConnection(authorization.getToken());
+        		new TestConnectionBuilder().token(authorization.getToken()).disableSSLCertificateChecks().create();
         connection.getUser().createAuthorization("shouldn't be allowed", IAuthorization.SCOPE_SESSION, 600);
         //should never get here 
         assertTrue(false);
@@ -160,9 +157,9 @@ public class AuthorizationIntegrationTest extends TestTimer {
 
         try {
             //userinfo scope should not be allowed to obtain SSH keys
-            IOpenShiftConnection connection =
-                    new TestConnectionFactory().getAuthTokenConnection(authorization.getToken());
-            List<IOpenShiftSSHKey> sshKeyList=connection.getUser().getSSHKeys();
+			IOpenShiftConnection connection =
+					new TestConnectionBuilder().token(authorization.getToken()).disableSSLCertificateChecks().create();
+			connection.getUser().getSSHKeys();
             //should never get here 
             assertTrue(false);
         } catch (OpenShiftEndpointException ex){
@@ -184,7 +181,7 @@ public class AuthorizationIntegrationTest extends TestTimer {
         try {
             //an expired token should fail getting user info
             IOpenShiftConnection connection =
-                    new TestConnectionFactory().getAuthTokenConnection(authorization.getToken());
+            		new TestConnectionBuilder().token(authorization.getToken()).disableSSLCertificateChecks().create();
             connection.getUser();
             //should never get here 
             assertTrue(false);

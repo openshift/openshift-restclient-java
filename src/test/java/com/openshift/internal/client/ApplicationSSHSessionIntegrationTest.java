@@ -44,7 +44,7 @@ import com.openshift.client.utils.FileUtils;
 import com.openshift.client.utils.SSHKeyTestUtils;
 import com.openshift.client.utils.StringUtils;
 import com.openshift.client.utils.TarFileTestUtils;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.utils.StreamUtils;
 
 /**
@@ -59,7 +59,7 @@ public class ApplicationSSHSessionIntegrationTest extends TestTimer {
 
 	@BeforeClass
 	public static void createSSHKeys() throws IOException, JSchException {
-		user = new TestConnectionFactory().getConnection().getUser();
+		user = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		SSHKeyTestUtils.addTestKeyToOpenShift(user);
 	}
 

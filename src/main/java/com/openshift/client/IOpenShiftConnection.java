@@ -119,41 +119,6 @@ public interface IOpenShiftConnection {
 	public List<IQuickstart> getQuickstarts() throws OpenShiftException;
 
 	/**
-	 * Sets flag for enabling SSL certificate checks (i.e. self-signed SSL
-	 * certificates)
-	 * 
-	 * @param doSSLChecks
-	 */
-	public void setEnableSSLCertChecks(boolean doSSLChecks);
-
-	/**
-	 * Sets flag for using an HTTP proxy
-	 * 
-	 * @param proxySet
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setProxySet(boolean proxySet);
-
-	/**
-	 * Sets the HTTP proxy hostname
-	 * 
-	 * @param proxyHost
-	 * @deprecated
-	 */
-	@Deprecated
-	public void setProxyHost(String proxyHost);
-
-	/**
-	 * Sets the HTTP proxy port
-	 * 
-	 * @param proxyPort
-	 * @deprecated 
-	 */
-	@Deprecated
-	public void setProxyPort(String proxyPort);
-
-	/**
 	 * Returns the executor service instance that's available in this
 	 * connection.
 	 * 

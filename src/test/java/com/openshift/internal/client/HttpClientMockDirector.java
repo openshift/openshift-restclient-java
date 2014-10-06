@@ -33,7 +33,7 @@ import com.openshift.client.IHttpClient;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.Samples;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.httpclient.EncodingException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.request.IMediaType;
@@ -498,7 +498,7 @@ public class HttpClientMockDirector {
 	}
 
 	public IDomain getDomain(String string) throws OpenShiftException, FileNotFoundException, IOException {
-		IUser user = new TestConnectionFactory().getConnection(client).getUser();
+		IUser user = new TestConnectionBuilder().defaultCredentials().create(client).getUser();
 		return user.getDomain("foobarz");
 	}
 	

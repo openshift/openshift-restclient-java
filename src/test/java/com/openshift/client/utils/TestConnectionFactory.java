@@ -25,10 +25,12 @@ import com.openshift.client.OpenShiftException;
  * @author Andre Dietisheim
  * @author Sean Kavanagh
  * 
+ * @deprecated use TestConnectionBuilder
  */
+@Deprecated
 public class TestConnectionFactory extends OpenShiftConnectionFactory {
 
-	public IOpenShiftConnection getConnection() throws FileNotFoundException, IOException, OpenShiftException {
+	public IOpenShiftConnection getConnection() throws IOException, OpenShiftException {
 
 		OpenShiftTestConfiguration configuration = new OpenShiftTestConfiguration();
 		

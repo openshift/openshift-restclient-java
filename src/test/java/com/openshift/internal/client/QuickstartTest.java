@@ -28,7 +28,7 @@ import com.openshift.client.utils.CartridgeTestUtils;
 import com.openshift.client.utils.QuickstartAssert;
 import com.openshift.client.utils.QuickstartTestUtils;
 import com.openshift.client.utils.Samples;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.cartridge.BaseCartridge;
 import com.openshift.internal.client.response.QuickstartDTO;
 
@@ -44,7 +44,7 @@ public class QuickstartTest extends TestTimer {
 	public void setup() throws Throwable {
 		this.mockDirector = new HttpClientMockDirector();
 		mockDirector.mockGetQuickstarts(Samples.GET_API_QUICKSTARTS);
-		connection = new TestConnectionFactory().getConnection(mockDirector.client());
+		connection = new TestConnectionBuilder().defaultCredentials().create(mockDirector.client());
 	}
 
 	@Test

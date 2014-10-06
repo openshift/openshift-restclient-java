@@ -34,9 +34,13 @@ import com.openshift.internal.client.utils.Assert;
  * @author Corey Daley
  * @author Sean Kavanagh
  * 
+ * @deprecated use ConnectionBuilder instead
+ * 
  */
+@Deprecated
 public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFactory {
 	private IOpenShiftConfiguration configuration;
+
 	/**
 	 * Establish a connection with the clientId along with user's password.
 	 * User's login and Server URL are retrieved from the local configuration
@@ -103,25 +107,28 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 			final String serverUrl, ISSLCertificateCallback sslCallback) throws OpenShiftException {
 		return getConnection(clientId, username, password, null, null, null, serverUrl, sslCallback);
 	}
-    public IOpenShiftConnection getConnection(final String clientId, final String token,
-                                              final String serverUrl, ISSLCertificateCallback sslCallback) throws OpenShiftException {
-        return getConnection(clientId, null, null, null, null, token, serverUrl, sslCallback);
-    }
+
+	public IOpenShiftConnection getConnection(final String clientId, final String token,
+			final String serverUrl, ISSLCertificateCallback sslCallback) throws OpenShiftException {
+		return getConnection(clientId, null, null, null, null, token, serverUrl, sslCallback);
+	}
 
 	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
 			final String authKey, final String authIV, final String serverUrl) throws OpenShiftException {
 		return getConnection(clientId, username, password, null, null, null, serverUrl, null);
 	}
-	
+
 	public IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
 			final String authKey, final String authIV, final String token, final String serverUrl,
 			final ISSLCertificateCallback sslCertificateCallback) throws OpenShiftException {
-		return getConnection(clientId, username, password, authKey, authIV, token, serverUrl, sslCertificateCallback, createCipherExclusionRegex(getConfiguration()));
+		return getConnection(clientId, username, password, authKey, authIV, token, serverUrl, sslCertificateCallback,
+				createCipherExclusionRegex(getConfiguration()));
 	}
-	
+
 	protected String createCipherExclusionRegex(IOpenShiftConfiguration configuration) {
-		if(configuration.getDisableBadSSLCiphers() == ConfigurationOptions.YES
-				|| (configuration.getDisableBadSSLCiphers() == ConfigurationOptions.AUTO) && !SSLUtils.supportsDHECipherKeysOf(1024 + 64)) {
+		if (configuration.getDisableBadSSLCiphers() == ConfigurationOptions.YES
+				|| (configuration.getDisableBadSSLCiphers() == ConfigurationOptions.AUTO)
+				&& !SSLUtils.supportsDHECipherKeysOf(1024 + 64)) {
 			// jdk < 1.8 only support DHE cipher keys <= 1024 bit
 			// https://issues.jboss.org/browse/JBIDE-18454
 			return SSLUtils.CIPHER_DHE_REGEX;
@@ -162,7 +169,8 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 		Assert.notNull(serverUrl);
 
 		IHttpClient httpClient = createClient(
-				clientId, username, password, authKey, authIV, token, serverUrl, sslCertificateCallback, exludeSSLCipherRegex);
+				clientId, username, password, authKey, authIV, token, serverUrl, sslCertificateCallback,
+				exludeSSLCipherRegex);
 		try {
 			return getConnection(clientId, username, password, token, serverUrl, httpClient);
 		} catch (IOException e) {
@@ -173,12 +181,12 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 	protected IHttpClient createClient(final String clientId, final String username, final String password,
 			final String authKey, final String authIV, final String token, final String serverUrl,
 			final ISSLCertificateCallback sslCertificateCallback, String exludeSSLCipherRegex) {
-			return new UrlConnectionHttpClientBuilder()
-						.setCredentials(username, password, authKey, authIV, token)
-						.setSSLCertificateCallback(sslCertificateCallback)
-						.setConfigTimeout(getConfiguration().getTimeout())
-						.excludeSSLCipher(exludeSSLCipherRegex)
-						.client();
+		return new UrlConnectionHttpClientBuilder()
+				.setCredentials(username, password, authKey, authIV, token)
+				.setSSLCertificateCallback(sslCertificateCallback)
+				.setConfigTimeout(getConfiguration().getTimeout())
+				.excludeSSLCipher(exludeSSLCipherRegex)
+				.client();
 	}
 
 	protected IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
@@ -245,5 +253,4 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 			throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
 		}
 	}
-
 }

@@ -30,7 +30,6 @@ import static org.mockito.Mockito.reset;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-import com.openshift.client.utils.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -52,6 +51,14 @@ import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IStandaloneCartridge;
+import com.openshift.client.utils.ApplicationAssert;
+import com.openshift.client.utils.CartridgeAssert;
+import com.openshift.client.utils.CartridgeTestUtils;
+import com.openshift.client.utils.DomainAssert;
+import com.openshift.client.utils.GearProfileTestUtils;
+import com.openshift.client.utils.MessageAssert;
+import com.openshift.client.utils.Samples;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.UnauthorizedException;
@@ -82,7 +89,7 @@ public class DomainResourceTest extends TestTimer {
 	public void setup() throws Throwable {
 		this.mockDirector = new HttpClientMockDirector();
 		this.clientMock = mockDirector.mockGetDomains(Samples.GET_DOMAINS).client();
-		this.user = new TestConnectionFactory().getConnection(clientMock).getUser();
+		this.user = new TestConnectionBuilder().defaultCredentials().create(clientMock).getUser();
 		this.domain = user.getDomain("foobarz");
 	}
 
@@ -91,7 +98,7 @@ public class DomainResourceTest extends TestTimer {
 		// pre-conditions
 		HttpClientMockDirector mockBuilder = new HttpClientMockDirector();
 		IHttpClient clientMock =  mockBuilder.mockGetDomains(GET_DOMAINS_EMPTY).client();
-		IUser user = new TestConnectionFactory().getConnection(clientMock).getUser();
+		IUser user = new TestConnectionBuilder().defaultCredentials().create(clientMock).getUser();
 		// operation
 		final List<IDomain> domains = user.getDomains();
 		// verifications
@@ -651,7 +658,7 @@ public class DomainResourceTest extends TestTimer {
 	@Test
 	public void shouldEqualDomainFromOtherUser() throws Throwable {
 		// pre-conditions
-		IUser user = new TestConnectionFactory().getConnection(clientMock).getUser();
+		IUser user = new TestConnectionBuilder().defaultCredentials().create(clientMock).getUser();
 
 		// operation
 		final IDomain domain = user.getDomain("foobarz");

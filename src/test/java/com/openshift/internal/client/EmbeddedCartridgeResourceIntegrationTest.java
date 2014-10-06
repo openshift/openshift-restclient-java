@@ -40,7 +40,7 @@ import com.openshift.client.utils.CartridgeTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.EmbeddedCartridgeAssert;
 import com.openshift.client.utils.EmbeddedCartridgeTestUtils;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author André Dietisheim
@@ -52,7 +52,7 @@ public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
-		this.user = new TestConnectionFactory().getConnection().getUser();
+		this.user = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		this.domain = DomainTestUtils.ensureHasDomain(user);
 	}
 
@@ -127,7 +127,7 @@ public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 				LatestVersionOf.jbossAs(), domain);
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(LatestVersionOf.mySQL(), application);
 		// verify using user instance that's not the one used to create
-		IUser user2 = new TestConnectionFactory().getConnection().getUser();
+		IUser user2 = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(application.getName());
 		assertThat(new ApplicationAssert(user2Application))
 				.hasEmbeddedCartridge(LatestVersionOf.mySQL());
@@ -171,7 +171,7 @@ public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(
 				LatestVersionOf.mySQL(), application);
 		// verify using user instance that's not the one used to create
-		IUser user2 = new TestConnectionFactory().getConnection().getUser();
+		IUser user2 = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(application.getName());
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(
 				LatestVersionOf.mySQL(), user2Application);
@@ -212,7 +212,7 @@ public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 		EmbeddedCartridgeTestUtils.ensureHasEmbeddedCartridges(
 				LatestVersionOf.postgreSQL(), application);
 		// verify using user instance that's not the one used to create
-		IUser user2 = new TestConnectionFactory().getConnection().getUser();
+		IUser user2 = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(application.getName());
 		assertThat(new ApplicationAssert(user2Application)).hasEmbeddedCartridge(
 				LatestVersionOf.postgreSQL());
@@ -258,7 +258,7 @@ public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 		new EmbeddedCartridgeAssert(jbossAs.getEmbeddedCartridge(LatestVersionOf.mongoDB().get(user)))
 				.hasUrlProperty();
 		// verify using user instance that's not the one used to create
-		IUser user2 = new TestConnectionFactory().getConnection().getUser();
+		IUser user2 = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(jbossAs.getName());
 		IEmbeddableCartridge mongo = LatestVersionOf.mongoDB().get(user2);
 		new EmbeddedCartridgeAssert(user2Application.getEmbeddedCartridge(mongo))
@@ -307,7 +307,7 @@ public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 		new EmbeddedCartridgeAssert(jbossAs.getEmbeddedCartridge(rockMongo))
 				.hasUrlProperty();
 		// verify using user instance that's not the one used to create
-		IUser user2 = new TestConnectionFactory().getConnection().getUser();
+		IUser user2 = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(jbossAs.getName());
 		assertThat(new ApplicationAssert(user2Application)).hasEmbeddedCartridges(
 				LatestVersionOf.mongoDB(), LatestVersionOf.rockMongo());
@@ -356,7 +356,7 @@ public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 		new EmbeddedCartridgeAssert(jbossAs.getEmbeddedCartridge(phpMyadmin))
 				.hasUrlProperty();
 		// verify using user instance that's not the one used to create
-		IUser user2 = new TestConnectionFactory().getConnection().getUser();
+		IUser user2 = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(jbossAs.getName());
 		IEmbeddableCartridge phpMyAdmin = LatestVersionOf.phpMyAdmin().get(user2);
 		new EmbeddedCartridgeAssert(user2Application.getEmbeddedCartridge(phpMyAdmin))
@@ -404,7 +404,7 @@ public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 		new EmbeddedCartridgeAssert(jbossAs.getEmbeddedCartridge(LatestVersionOf.jenkinsClient().get(user)))
 				.hasUrlProperty();
 		// verify using user instance that's not the one used to create
-		IUser user2 = new TestConnectionFactory().getConnection().getUser();
+		IUser user2 = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(jbossAs.getName());
 		IEmbeddableCartridge jenkinsClient =
 				LatestVersionOf.jenkinsClient().get(user2);
@@ -487,7 +487,7 @@ public class EmbeddedCartridgeResourceIntegrationTest extends TestTimer {
 
 		// operation
 		// use user instance that's not the one used to create
-		IUser user2 = new TestConnectionFactory().getConnection().getUser();
+		IUser user2 = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		IApplication user2Application = user2.getDefaultDomain().getApplicationByName(application.getName());
 		user2Application.removeEmbeddedCartridge(LatestVersionOf.mySQL().get(user2));
 		assertThat(new ApplicationAssert(user2Application)

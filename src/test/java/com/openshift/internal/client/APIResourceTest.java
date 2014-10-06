@@ -22,7 +22,7 @@ import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.CartridgeTestUtils;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author Xavier Coulon
@@ -36,7 +36,7 @@ public class APIResourceTest extends TestTimer {
 	@Before
 	public void setup() throws Throwable {
 		this.mockDirector = new HttpClientMockDirector();
-		this.connection = new TestConnectionFactory().getConnection(mockDirector.client());
+		this.connection = new TestConnectionBuilder().defaultCredentials().create(mockDirector.client());
 	}
 
 	@Test

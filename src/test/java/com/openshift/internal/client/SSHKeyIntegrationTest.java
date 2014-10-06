@@ -28,7 +28,7 @@ import com.openshift.client.SSHKeyType;
 import com.openshift.client.SSHPublicKey;
 import com.openshift.client.utils.SSHKeyTestUtils;
 import com.openshift.client.utils.SSHPublicKeyAssertion;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
 /**
@@ -40,7 +40,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 
 	@Before
 	public void setUp() throws Exception {
-		this.user = new TestConnectionFactory().getConnection().getUser();
+		this.user = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 	}
 
 	@Test
@@ -268,7 +268,7 @@ public class SSHKeyIntegrationTest extends TestTimer {
 		try {
 			// pre-conditions
 			String publicKeyPath = SSHKeyTestUtils.createDsaKeyPair();
-			IUser user = new TestConnectionFactory().getConnection().getUser();
+			IUser user = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 			
 			// operation
 			int newNumOfKeys = user.getSSHKeys().size();

@@ -38,7 +38,7 @@ public class OpenShiftTestConfiguration extends AbstractOpenshiftConfiguration {
 	private static final String INTEGRATION_TEST_PROPERTIES = "/integrationTest.properties";
 	private static final String DEVSERVER_PREFIX = "https://ec2-";
 
-	public OpenShiftTestConfiguration() throws FileNotFoundException, IOException, OpenShiftException {
+	public OpenShiftTestConfiguration() throws IOException, OpenShiftException {
 		super(new SystemPropertiesFake(
 				new IntegrationTestConfiguration(
 						new UserConfigurationFake(

@@ -25,7 +25,7 @@ import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.DomainAssert;
 import com.openshift.client.utils.DomainTestUtils;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author André Dietisheim
@@ -36,7 +36,7 @@ public class APIResourceIntegrationTest extends TestTimer {
 
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
-		this.connection = new TestConnectionFactory().getConnection();
+		this.connection = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create();
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class APIResourceIntegrationTest extends TestTimer {
 		assertThat(domain).isNotNull();
 		String domainId = domain.getId();
 		assertThat(domainId).isNotEmpty();
-		IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
+		IOpenShiftConnection connection = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create();
 		APIResource api = ((APIResource) connection);
 		
 		// operation
