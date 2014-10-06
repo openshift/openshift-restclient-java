@@ -33,6 +33,7 @@ public enum EnumDataType {
 	applications,
 	application,
     authorization,
+    authorizations,
 	/** The embedded cartridge type. */
 	embedded,
 	gear_groups,

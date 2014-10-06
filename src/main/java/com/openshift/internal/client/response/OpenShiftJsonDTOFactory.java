@@ -110,6 +110,8 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
 			return createApplication(dataNode, messages);
 		case authorization:
 			return createAuthorization(dataNode, messages);
+        	case authorizations: 
+            		return createAuthorizations(dataNode);
 		case gear_groups:
 			return createGearGroups(dataNode);
 		case cartridges:
@@ -165,6 +167,28 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
         final Map<String, Link> links = createLinks(dataNode.get(PROPERTY_LINKS));
         return new AuthorizationResourceDTO(id, note, scopes, token, expiresIn, links, messages);
      }
+    /**
+     * Creates a list of authorization DTO objects.
+     *
+     * @param dataNode
+     *            the root node
+     * @return the list< authorization dto>
+     * @throws OpenShiftException
+     *             the open shift exception
+     */
+     private List<AuthorizationResourceDTO> createAuthorizations(final ModelNode dataNode) throws OpenShiftException {
+        final List<AuthorizationResourceDTO> authorizationDtos = new ArrayList<AuthorizationResourceDTO>();
+        for (ModelNode authorizationNode : dataNode.asList()) {
+            if (authorizationNode.getType() == ModelType.OBJECT) {
+                AuthorizationResourceDTO dto = createAuthorization(authorizationNode, null);
+                if (dto != null) {
+                    authorizationDtos.add(dto);
+                }
+            }
+        }
+
+        return authorizationDtos;
+    }
 
 	/**
 	 * Creates a new ResourceDTO object.

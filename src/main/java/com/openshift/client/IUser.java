@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.client;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -52,6 +53,24 @@ public interface IUser extends IOpenShiftResource {
 	 */
 	public IAuthorization getAuthorization() throws OpenShiftException;
 
+    /**
+     * Returns authorization using a token or id
+     *
+     * @param id
+     *      authorization token or id
+     * @return authorization
+     * @throws OpenShiftException
+     */
+    public IAuthorization getAuthorization(String id) throws OpenShiftException;
+
+    /**
+     * Returns all current authorizations for a user 
+     *
+     * @return all authorizations
+     * @throws OpenShiftException
+     */
+    public Collection<IAuthorization> getAuthorizations() throws OpenShiftException;
+
 	/**
 	 * Creates and returns new authorization set for user
 	 *
@@ -77,6 +96,16 @@ public interface IUser extends IOpenShiftResource {
 	 * @throws OpenShiftException
 	 */
 	public IAuthorization createAuthorization(String note, String scopes, int expiresIn) throws OpenShiftException;
+
+    /**
+     * Removes authorization using a token or id
+     *
+     * @param id
+     *      authorization token or id
+     * @return success or fail 
+     * @throws OpenShiftException
+     */
+    public boolean removeAuthorization(String id) throws OpenShiftException;
 
 	/**
 	 * Deprecated, use {@link #addSSHKey(String, ISSHPublicKey)}
