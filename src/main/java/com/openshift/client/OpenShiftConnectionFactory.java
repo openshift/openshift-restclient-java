@@ -181,21 +181,6 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 						.client();
 	}
 
-	protected IOpenShiftConfiguration getConfiguration() throws OpenShiftException {
-		if (this.configuration == null) {
-			this.configuration = createConfiguration();
-		}
-		return this.configuration;
-	}
-	
-	protected IOpenShiftConfiguration createConfiguration() throws OpenShiftException {
-		try {
-			return new OpenShiftConfiguration();
-		} catch (IOException e) {
-			throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
-		}
-	}
-
 	protected IOpenShiftConnection getConnection(final String clientId, final String username, final String password,
 			final String token, final String serverUrl, IHttpClient httpClient) throws OpenShiftException, IOException {
 		Assert.notNull(clientId);
@@ -207,45 +192,58 @@ public class OpenShiftConnectionFactory extends AbstractOpenShiftConnectionFacto
 		return getConnection(service, username, password, token);
 	}
 
-      /**
-       * Establish a connection with the clientId along with a user's authorization token
-       *
-       * @param clientId
-       *            http client id
-       * @param token
-       *            authorization token.
-       * @param serverUrl
-       *            the server url.
-       * @return a valid connection
-       * @throws FileNotFoundException
-       * @throws IOException
-       * @throws OpenShiftException
-       */
-      public IOpenShiftConnection getAuthTokenConnection(final String clientId,final String token, final String serverUrl) throws OpenShiftException {
-          return getConnection(clientId, null, null,  null, null, token, serverUrl, null);
-       }
-      /**
-       * Establish a connection with the clientId along with a user's authorization
-       * token. Server URL is retrieved from the local configuration file (in
-       * see $USER_HOME/.openshift/express.conf)
-       *
-       * @param clientId
-       *            http client id
-       * @param token
-       *            authorization token.
-       * @return a valid connection
-       * @throws FileNotFoundException
-       * @throws IOException
-       * @throws OpenShiftException
-       */
-      public IOpenShiftConnection getAuthTokenConnection(final String clientId, final String token)
-              throws OpenShiftException {
-          try {
-              configuration = new OpenShiftConfiguration();
-          } catch (IOException e) {
-              throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
-          }
-          return getConnection(clientId, null, null,  null, null, token, configuration.getLibraServer(), null);
-      }
+	/**
+	 * Establish a connection with the clientId along with a user's
+	 * authorization token
+	 *
+	 * @param clientId
+	 *            http client id
+	 * @param token
+	 *            authorization token.
+	 * @param serverUrl
+	 *            the server url.
+	 * @return a valid connection
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws OpenShiftException
+	 */
+	public IOpenShiftConnection getAuthTokenConnection(final String clientId, final String token, final String serverUrl)
+			throws OpenShiftException {
+		return getConnection(clientId, null, null, null, null, token, serverUrl, null);
+	}
+
+	/**
+	 * Establish a connection with the clientId along with a user's
+	 * authorization token. Server URL is retrieved from the local configuration
+	 * file (in see $USER_HOME/.openshift/express.conf)
+	 *
+	 * @param clientId
+	 *            http client id
+	 * @param token
+	 *            authorization token.
+	 * @return a valid connection
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws OpenShiftException
+	 */
+	public IOpenShiftConnection getAuthTokenConnection(final String clientId, final String token)
+			throws OpenShiftException {
+		return getConnection(clientId, null, null, null, null, token, getConfiguration().getLibraServer(), null);
+	}
+
+	protected IOpenShiftConfiguration getConfiguration() throws OpenShiftException {
+		if (this.configuration == null) {
+			this.configuration = createConfiguration();
+		}
+		return this.configuration;
+	}
+
+	protected IOpenShiftConfiguration createConfiguration() throws OpenShiftException {
+		try {
+			return new OpenShiftConfiguration();
+		} catch (IOException e) {
+			throw new OpenShiftException(e, "Failed to load OpenShift configuration file.");
+		}
+	}
 
 }
