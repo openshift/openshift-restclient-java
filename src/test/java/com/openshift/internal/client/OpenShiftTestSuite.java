@@ -13,6 +13,7 @@ package com.openshift.internal.client;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import com.openshift.client.HttpMethodTest;
 import com.openshift.internal.client.httpclient.HttpClientTest;
 import com.openshift.internal.client.httpclient.request.FormUrlEncodedMediaTypeTest;
 import com.openshift.internal.client.httpclient.request.JsonMediaTypeTest;
@@ -23,6 +24,7 @@ import com.openshift.internal.client.response.QuickstartDTOCartridgeQueryTest;
 @Suite.SuiteClasses({
 	ConfigurationTest.class,
 	HttpClientTest.class,
+	HttpMethodTest.class,
 	RestServicePropertiesTest.class,
 	RestServiceTest.class,
 	OpenShiftJsonDTOFactoryTest.class,

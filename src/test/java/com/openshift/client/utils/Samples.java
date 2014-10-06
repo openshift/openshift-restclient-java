@@ -78,7 +78,8 @@ public enum Samples {
 	GET_CARTRIDGES("get-cartridges.json"), // 1.2
 	
 	// links
-	LINKS_UNKNOWN_LINKPARAMETERTYPE("links-unknown-linkparametertype.json"); // 1.2
+	LINKS_UNKNOWN_LINKPARAMETERTYPE("links-unknown-linkparametertype.json"), // 1.2
+	LINKS_UNKNOWN_VERB("links-unknown-verb.json");
 	
 	private static final String SAMPLES_FOLDER = "/samples/";
 
