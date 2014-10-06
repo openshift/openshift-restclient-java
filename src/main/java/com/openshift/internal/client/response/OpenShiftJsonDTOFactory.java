@@ -20,7 +20,7 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DESCRIPTION;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DISPLAY_NAME;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_DOMAIN_ID;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_EXPIRES_IN;
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_EXPIRES_IN_SECONDS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_FRAMEWORK;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GEARS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_GEAR_PROFILE;
@@ -161,7 +161,7 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
         final String note = getAsString(dataNode, PROPERTY_NOTE);
         final String scopes = getAsString(dataNode, PROPERTY_SCOPES);
         final String token = getAsString(dataNode, PROPERTY_TOKEN);
-        final int expiresIn = getAsInteger(dataNode, PROPERTY_EXPIRES_IN);
+        final int expiresIn = getAsInteger(dataNode, PROPERTY_EXPIRES_IN_SECONDS);
         final Map<String, Link> links = createLinks(dataNode.get(PROPERTY_LINKS));
         return new AuthorizationResourceDTO(id, note, scopes, token, expiresIn, links, messages);
      }

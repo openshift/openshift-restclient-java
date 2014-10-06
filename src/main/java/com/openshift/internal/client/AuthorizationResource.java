@@ -62,7 +62,7 @@ public class AuthorizationResource extends AbstractOpenShiftResource implements 
 				+ "id=" + id + ", "
 				+ "note=" + note + ", "
 				+ "scopes=" + scopes + ", "
-				+ "token=" + token
+				+ "token=" + token + ", "
 				+ "expiresIn=" + expiresIn
 				+ "]";
 	}
