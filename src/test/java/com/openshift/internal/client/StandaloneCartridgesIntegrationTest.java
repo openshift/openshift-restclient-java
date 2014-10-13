@@ -26,7 +26,7 @@ import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.StandaloneCartridgeAssert;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author André Dietisheim
@@ -39,7 +39,7 @@ public class StandaloneCartridgesIntegrationTest extends TestTimer {
 
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
-		this.user = new TestConnectionFactory().getConnection().getUser();
+		this.user = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		this.domain = DomainTestUtils.ensureHasDomain(user);
 		this.application = ApplicationTestUtils.getOrCreateApplication(domain);
 	}

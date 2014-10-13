@@ -20,7 +20,7 @@ import org.junit.Test;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author Xavier Coulon
@@ -40,7 +40,7 @@ public class UserTest extends TestTimer {
 		this.clientMock = mockDirector.client();
 
 		final IOpenShiftConnection connection = 
-				new TestConnectionFactory().getConnection(PASSWORD, SERVER, clientMock);
+				new TestConnectionBuilder(SERVER).credentials(PASSWORD).create(clientMock);
 		this.user = connection.getUser();
 	}
 

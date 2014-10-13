@@ -23,7 +23,7 @@ import com.openshift.client.cartridge.IEmbeddedCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.query.LatestVersionOf;
 import com.openshift.client.utils.CartridgeAssert;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author Andre Dietisheim
@@ -34,7 +34,7 @@ public class LatestVersionQueryIntegrationTest extends TestTimer {
 
 	@Before
 	public void setUp() throws OpenShiftException, FileNotFoundException, IOException {
-		this.user = new TestConnectionFactory().getConnection().getUser();
+		this.user = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 	}
 
 	@Test

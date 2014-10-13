@@ -43,7 +43,7 @@ import com.openshift.client.utils.CartridgeTestUtils;
 import com.openshift.client.utils.EmbeddedCartridgeAssert;
 import com.openshift.client.utils.ResourcePropertyAssert;
 import com.openshift.client.utils.Samples;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
 import com.openshift.internal.client.response.CartridgeResourceProperties;
@@ -211,7 +211,7 @@ public class EmbeddedCartridgeResourceTest extends TestTimer {
 						"foobarz", "springeap6",
 						GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_3EMBEDDED)
 				.client();
-		IUser user = new TestConnectionFactory().getConnection(client).getUser();
+		IUser user = new TestConnectionBuilder().defaultCredentials().create(client).getUser();
 		IDomain domain = user.getDomain("foobarz");
 		IApplication application = domain.getApplicationByName("springeap6");
 		assertThat(application.getEmbeddedCartridges()).onProperty("name").contains("switchyard-0");

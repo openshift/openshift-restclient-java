@@ -84,6 +84,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	public UrlConnectionHttpClient(String username, String password, String userAgent, String acceptedMediaType,
 			String version, String authKey, String authIV, String token, ISSLCertificateCallback callback, Integer configTimeout, String excludedSSLCipherRegex) {
+		// TODO: separate auth strategies in UrlConnectionHttpClient
 		this.username = username;
 		this.password = password;
 		this.userAgent = userAgent;
@@ -224,7 +225,8 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 
 	protected HttpURLConnection createConnection(URL url, String username, String password, String authKey,
-			String authIV, String token, String userAgent, String acceptedVersion, String acceptedMediaType, ISSLCertificateCallback callback, int timeout)
+			String authIV, String token, String userAgent, String acceptedVersion, String acceptedMediaType,
+			ISSLCertificateCallback callback, int timeout)
 			throws IOException {
 		LOGGER.trace(
                 "creating connection to {} using username \"{}\" and password \"{}\" or token \"{}\"",

@@ -43,7 +43,7 @@ import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.GearProfileTestUtils;
 import com.openshift.client.utils.MessageAssert;
 import com.openshift.client.utils.StringUtils;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author Andre Dietisheim
@@ -60,7 +60,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
 
 	@Before
 	public void setUp() throws OpenShiftException, IOException {
-		this.user = new TestConnectionFactory().getConnection().getUser();
+		this.user = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		this.domain = DomainTestUtils.ensureHasDomain(user);
 	}
 
@@ -158,7 +158,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
 		IDomain domain = DomainTestUtils.ensureHasDomain(user);
 		int numOfApplications = domain.getApplications().size();
 
-		IUser otherUser = new TestConnectionFactory().getConnection().getUser();
+		IUser otherUser = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		IDomain otherDomain = otherUser.getDomain(domain.getId());
 		assertNotNull(otherDomain);
 
@@ -178,7 +178,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
 		IDomain domain = DomainTestUtils.ensureHasDomain(user);
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 		assertThat(application).isNotNull();
-		IUser otherUser = new TestConnectionFactory().getConnection().getUser();
+		IUser otherUser = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		IDomain otherDomain = otherUser.getDomain(domain.getId());
 		assertNotNull(otherDomain);
 		IApplication otherDomainApplication = otherDomain.getApplicationByName(application.getName());

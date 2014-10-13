@@ -26,7 +26,7 @@ import com.openshift.client.cartridge.StandaloneCartridge;
 import com.openshift.client.utils.CartridgeAssert;
 import com.openshift.client.utils.CartridgeTestUtils;
 import com.openshift.client.utils.Samples;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author Andre Dietisheim
@@ -40,7 +40,7 @@ public class StandaloneCartridgeTest extends TestTimer {
 		IHttpClient client = new HttpClientMockDirector()
 				.mockGetCartridges(Samples.GET_CARTRIDGES)
 				.client();
-		this.connection = new TestConnectionFactory().getConnection(client);
+		this.connection = new TestConnectionBuilder().defaultCredentials().create(client);
 	}
 
 	@Test

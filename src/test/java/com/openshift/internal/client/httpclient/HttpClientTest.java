@@ -54,7 +54,8 @@ import com.openshift.client.fakes.HttpServerFake;
 import com.openshift.client.fakes.HttpsServerFake;
 import com.openshift.client.fakes.OpenShiftConfigurationFake;
 import com.openshift.client.fakes.PayLoadReturningHttpClientFake;
-import com.openshift.client.fakes.SSLCipherOpenShiftConnectionFactoryFake;
+import com.openshift.client.fakes.SSLCiphersConnectionBuilderFake;
+import com.openshift.client.fakes.SSLCiphersConnectionBuilderFake.SSLCipherConnection;
 import com.openshift.client.fakes.WaitingHttpServerFake;
 import com.openshift.client.utils.Base64Coder;
 import com.openshift.client.utils.ExceptionCauseMatcher;
@@ -204,12 +205,12 @@ public class HttpClientTest extends TestTimer {
 		.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
 		.setUserAgent("com.openshift.client.test")
 		.setSSLCertificateCallback(new ISSLCertificateCallback() {
-			
+
 			@Override
 			public boolean allowHostname(String hostname, SSLSession session) {
 				return true;
 			}
-			
+
 			@Override
 			public boolean allowCertificate(X509Certificate[] chain) {
 				return false;
@@ -633,20 +634,26 @@ public class HttpClientTest extends TestTimer {
 	public void shouldFilterBadSSLCiphers() throws Throwable {
 		// pre-conditions
 		// operations
-		SSLCipherOpenShiftConnectionFactoryFake factory = 
-				new SSLCipherOpenShiftConnectionFactoryFake(ConfigurationOptions.YES);
+		SSLCipherConnection connection = (SSLCipherConnection) new SSLCiphersConnectionBuilderFake()
+				.sslCiphersConnection()
+				.disableBadSSLCiphers(ConfigurationOptions.YES)
+				.create();
+
 		// verification
-		assertThat(factory.getFilteredCiphers()).satisfies(new NoDHECiphersCondition());
+		assertThat(connection.getFilteredCiphers()).satisfies(new NoDHECiphersCondition());
 	}
 	
 	@Test
 	public void shouldNotFilterBadSSLCiphers() throws Throwable {
 		// pre-conditions
 		// operations
-		SSLCipherOpenShiftConnectionFactoryFake factory = 
-				new SSLCipherOpenShiftConnectionFactoryFake(ConfigurationOptions.NO);
+		SSLCipherConnection connection = (SSLCipherConnection) new SSLCiphersConnectionBuilderFake()
+		.sslCiphersConnection()
+		.disableBadSSLCiphers(ConfigurationOptions.NO)
+		.create();
+
 		// verification
-		assertThat(factory.getSupportedCiphers()).isEqualTo(factory.getFilteredCiphers());
+		assertThat(connection.getSupportedCiphers()).isEqualTo(connection.getFilteredCiphers());
 	}
 	
 	private HttpServerFake startHttpServerFake(String statusLine) throws Exception {

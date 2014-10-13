@@ -31,7 +31,7 @@ import com.openshift.client.InvalidCredentialsOpenShiftException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.OpenShiftTestConfiguration;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
 /**
@@ -43,7 +43,7 @@ public class UserResourceIntegrationTest extends TestTimer {
 
 	@Before
 	public void setUp() throws OpenShiftException, DatatypeConfigurationException, IOException {
-		this.user = new TestConnectionFactory().getConnection().getUser();
+		this.user = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 	}
 
 	@Test
@@ -64,8 +64,8 @@ public class UserResourceIntegrationTest extends TestTimer {
 			throw new InvalidCredentialsOpenShiftException(null, new HttpClientException(""), null);
 		}
 
-		new TestConnectionFactory().getConnection(
-				configuration.getClientId(), "bogus-password").getUser();	
+		new TestConnectionBuilder()
+			.credentials(configuration.getClientId(), "bogus-password").create().getUser();	
 	}
 
 	@Test
@@ -184,7 +184,7 @@ public class UserResourceIntegrationTest extends TestTimer {
 		IDomain domain = DomainTestUtils.ensureHasDomain(user);
 		assertNotNull(domain);
 
-		IUser otherUser = new TestConnectionFactory().getConnection().getUser();
+		IUser otherUser = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create().getUser();
 		DomainTestUtils.destroyAllDomains(otherUser);
 		assertNull(otherUser.getDefaultDomain());
 		

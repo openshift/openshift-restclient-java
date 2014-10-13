@@ -24,7 +24,7 @@ import com.openshift.client.IAuthorization;
 import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
 /**
@@ -39,7 +39,7 @@ public class AuthorizationTest extends TestTimer {
 	public void setUp() throws HttpClientException, OpenShiftException, IOException {
 		this.mockDirector = new HttpClientMockDirector();
 		final IOpenShiftConnection connection =
-				new TestConnectionFactory().getConnection();
+				new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create();
 		this.user = connection.getUser();
 	}
 
@@ -53,7 +53,7 @@ public class AuthorizationTest extends TestTimer {
 
 		// operations
 		IOpenShiftConnection connection =
-				new TestConnectionFactory().getAuthTokenConnection(authorization.getToken());
+				new TestConnectionBuilder().token(authorization.getToken()).create();
 		authorization = connection.getUser().getAuthorization();
 
 		// verifications
@@ -71,7 +71,7 @@ public class AuthorizationTest extends TestTimer {
 
 		// operations
 		IOpenShiftConnection connection =
-				new TestConnectionFactory().getAuthTokenConnection(authorization.getToken());
+				new TestConnectionBuilder().token(authorization.getToken()).create();
 		authorization = connection.getUser().getAuthorization();
 
 		// verifications
@@ -89,7 +89,7 @@ public class AuthorizationTest extends TestTimer {
 
 		// operations
 		IOpenShiftConnection connection =
-				new TestConnectionFactory().getAuthTokenConnection(authorization.getToken());
+				new TestConnectionBuilder().token(authorization.getToken()).create();
 		authorization = connection.getUser().getAuthorization();
 
 		// verifications

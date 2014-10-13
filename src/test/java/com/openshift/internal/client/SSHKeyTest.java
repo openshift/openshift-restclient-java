@@ -36,7 +36,7 @@ import com.openshift.client.SSHPublicKey;
 import com.openshift.client.utils.SSHKeyTestUtils;
 import com.openshift.client.utils.SSHPublicKeyAssertion;
 import com.openshift.client.utils.Samples;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.request.StringParameter;
 
@@ -52,7 +52,7 @@ public class SSHKeyTest extends TestTimer {
 	public void setUp() throws SocketTimeoutException, HttpClientException, Throwable {
 		this.mockDirector = new HttpClientMockDirector();
 		final IOpenShiftConnection connection =
-				new TestConnectionFactory().getConnection(mockDirector.client());
+				new TestConnectionBuilder().defaultCredentials().create(mockDirector.client());
 		this.user = connection.getUser();
 	}
 

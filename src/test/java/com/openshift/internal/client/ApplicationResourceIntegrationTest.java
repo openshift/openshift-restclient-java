@@ -38,7 +38,7 @@ import com.openshift.client.cartridge.query.LatestVersionOf;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
 import com.openshift.client.utils.GearGroupsAssert;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author André Dietisheim
@@ -54,7 +54,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 
 	@Before
 	public void setUp() throws Exception {
-		IOpenShiftConnection connection = new TestConnectionFactory().getConnection();
+		IOpenShiftConnection connection = new TestConnectionBuilder().defaultCredentials().disableSSLCertificateChecks().create();
 		this.user = connection.getUser();
 		this.domain = DomainTestUtils.ensureHasDomain(user);
 	}

@@ -34,7 +34,7 @@ import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.utils.MessageAssert;
-import com.openshift.client.utils.TestConnectionFactory;
+import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.httpclient.BadRequestException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 
@@ -61,7 +61,7 @@ public class OpenShiftExceptionTest extends TestTimer {
 				.mockGetDomains(GET_DOMAINS)
 				.mockGetApplications("foobarz", GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED)
 				.client();
-		this.user = new TestConnectionFactory().getConnection(clientMock).getUser();
+		this.user = new TestConnectionBuilder().defaultCredentials().create(clientMock).getUser();
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class OpenShiftExceptionTest extends TestTimer {
 			mockDirector.mockGetAPI(
 					new HttpClientException(new ConnectException("java.net.ConnectException: Connection timed out")));
 			// operation
-			new TestConnectionFactory().getConnection(clientMock);
+			new TestConnectionBuilder().defaultCredentials().create(clientMock);
 			// verification
 			fail("exception expected");
 		} catch (OpenShiftEndpointException e) {
