@@ -43,13 +43,13 @@ public class StandaloneCartridgeResource extends AbstractOpenShiftResource imple
 	protected StandaloneCartridgeResource(final CartridgeResourceDTO dto, final ApplicationResource application) {
 		super(application.getService(), dto.getLinks(), dto.getMessages());
 		Assert.isTrue(dto.getType().equals(CartridgeType.STANDALONE));
-		this.application = application;
 		this.name = dto.getName();
 		this.displayName = dto.getDisplayName();
 		this.description = dto.getDescription();
 		this.url = dto.getUrl();
 		this.cartridgeType = dto.getType();
 		this.obsolete = dto.getObsolete();
+		this.application = application;
 	}
 
 	/**
@@ -71,14 +71,14 @@ public class StandaloneCartridgeResource extends AbstractOpenShiftResource imple
 			return IGearGroup.NO_ADDITIONAL_GEAR_STORAGE;
 		}
 		return gearGroup.getAdditionalStorage();
-		
+
 	}
-	
+
 	@Override
 	public IGearGroup getGearGroup() {
 		return application.getGearGroup(this);
 	}
-	
+
 	/**
 	 * Refreshes the content of this embedded cartridge. Causes all embedded
 	 * cartridges of the same application to get updated.
@@ -122,31 +122,30 @@ public class StandaloneCartridgeResource extends AbstractOpenShiftResource imple
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (!(IDeployedStandaloneCartridge.class.isAssignableFrom(obj.getClass()))) {
+			return false;
+		}
+
+		IDeployedStandaloneCartridge otherCartridge = (IDeployedStandaloneCartridge) obj;
+		// shortcut: downloadable cartridges get their name only when
+		// they're deployed thus should equal on url only
+		if (getName() == null) {
+			if (otherCartridge.getName() != null) {
+				return false;
+			}
+		} else if (!getName().equals(otherCartridge.getName())) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!IStandaloneCartridge.class.isAssignableFrom(obj.getClass()))
-			return false;
-		IStandaloneCartridge other = (IStandaloneCartridge) obj;
-		if (name == null) {
-			if (other.getName() != null) {
-				return false;
-			}
-		}
-		if (!name.equals(other.getName())) {
-			return false;
-		}
-		return true;
 	}
 
 	private class UpdateCartridgeRequest extends ServiceRequest {
@@ -158,5 +157,18 @@ public class StandaloneCartridgeResource extends AbstractOpenShiftResource imple
 	@Override
 	public boolean isObsolete() {
 		return obsolete;
+	}
+
+	@Override
+	public String toString() {
+		return "StandaloneCartridgeResource ["
+				+ "application=" + application
+				+ ", name=" + name
+				+ ", displayName=" + displayName
+				+ ", description=" + description
+				+ ", url=" + url
+				+ ", cartridgeType=" + cartridgeType
+				+ ", obsolete=" + obsolete
+				+ "]";
 	}
 }

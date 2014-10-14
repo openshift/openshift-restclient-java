@@ -11,7 +11,7 @@
 package com.openshift.internal.client;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -66,7 +66,7 @@ public class StandaloneCartridgeTest extends TestTimer {
 		assertThat(new StandaloneCartridge(new URL(CartridgeTestUtils.GO_URL)))
 				.isNotEqualTo(new EmbeddableCartridge(new URL(CartridgeTestUtils.FOREMAN_URL)));
 	}
-	
+
 	@Test
 	public void shouldHaveNameDisplaynameDescription() throws Throwable {
 		// pre-condition

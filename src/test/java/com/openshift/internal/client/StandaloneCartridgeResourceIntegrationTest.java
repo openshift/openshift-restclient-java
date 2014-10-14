@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.openshift.client.IApplication;
@@ -54,79 +55,81 @@ public class StandaloneCartridgeResourceIntegrationTest extends TestTimer {
 
 		// operation
 		IStandaloneCartridge cartridge = application.getCartridge();
-		
+
 		// verification
 		assertThat(cartridge).isNotNull();
 		assertThat(cartridge.getName()).isNotEmpty();
-		IStandaloneCartridge availableCartridge = new CartridgeNameQuery(cartridge.getName()).get(user.getConnection().getStandaloneCartridges());
+		IStandaloneCartridge availableCartridge = new CartridgeNameQuery(cartridge.getName()).get(user.getConnection()
+				.getStandaloneCartridges());
 		new StandaloneCartridgeAssert(cartridge).equals(availableCartridge);
 	}
-	
+
 	@Test
 	public void shouldReportGearGroup() throws OpenShiftException, URISyntaxException {
 		// precondition
 		IDeployedStandaloneCartridge cartridge = application.getCartridge();
 		assertThat(cartridge).isNotNull();
-		
+
 		// operation
 		IGearGroup gearGroup = cartridge.getGearGroup();
-		
+
 		// verification
 		assertThat(gearGroup).isNotNull();
 		assertThat(gearGroup.getCartridges()).contains(cartridge);
 	}
-	
+
 	@Test
 	public void shouldGetGearStorage() throws OpenShiftException, URISyntaxException, IOException {
 		// precondition
 		IDeployedStandaloneCartridge cartridge = application.getCartridge();
 		assertThat(cartridge).isNotNull();
-		
+
 		// operation
 		int additionalGearStorage = cartridge.getAdditionalGearStorage();
-		
+
 		// verification
 		// reload user info to ensure the storage info isnt cached
 		assertThat(additionalGearStorage).isNotEqualTo(IGearGroup.NO_ADDITIONAL_GEAR_STORAGE);
 	}
-	
+
+	@Ignore("This application is not allowed to have additional gear storage")
 	@Test
 	public void shouldSetGearStorage() throws OpenShiftException, URISyntaxException, IOException {
 		// precondition
 		IDeployedStandaloneCartridge cartridge = application.getCartridge();
 		assertThat(cartridge).isNotNull();
-		int additionalGearStorage = cartridge.getAdditionalGearStorage();
 		int newAdditionalGearStorage = 3;
 
 		// operation
 		cartridge.setAdditionalGearStorage(newAdditionalGearStorage);
-		
+
 		// verification
 		// reload user info to ensure the storage info isnt cached
 		assertThat(cartridge.getAdditionalGearStorage()).isEqualTo(newAdditionalGearStorage);
 	}
-	
+
+	@Ignore("This application is not allowed to have additional gear storage")
 	@Test
-	public void shouldSeeNewAdditionalGearStorageInNewConnection() throws OpenShiftException, URISyntaxException, IOException {
+	public void shouldSeeNewAdditionalGearStorageInNewConnection() throws OpenShiftException, URISyntaxException,
+			IOException {
 		// precondition
 		IDeployedStandaloneCartridge cartridge = application.getCartridge();
 		assertThat(cartridge).isNotNull();
 		int additionalGearStorage = 4;
-		
+
 		// operation
 		cartridge.setAdditionalGearStorage(additionalGearStorage);
-		
+
 		// verification
 		// reload user info to ensure the storage info isnt cached
 		IUser newUser = new TestConnectionBuilder()
-			.defaultCredentials()
-			.disableSSLCertificateChecks()
-			.create()
-			.getUser();
+				.defaultCredentials()
+				.disableSSLCertificateChecks()
+				.create()
+				.getUser();
 		IApplication newApplication = newUser.getDefaultDomain().getApplicationByName(application.getName());
 		IDeployedStandaloneCartridge newCartridge = newApplication.getCartridge();
 		new StandaloneCartridgeAssert(newCartridge).isEqualTo(cartridge);
 		assertThat(newCartridge.getAdditionalGearStorage()).isEqualTo(additionalGearStorage);
-		
 	}
 }

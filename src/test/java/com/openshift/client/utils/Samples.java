@@ -21,7 +21,8 @@ public enum Samples {
 
 	// gear groups
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS("get-domains-foobarz-applications-springeap6-geargroups.json"), // 1.2
-
+	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS_12ADDITIONALGEARSTORAGE("get-domains-foobarz-applications-springeap6-geargroups-12additionalgearstorage.json"), // 1.2
+	
 	// cartridges
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_1EMBEDDED("get-domains-foobarz-applications-springeap6-cartridges_1embedded.json"), // 1.2
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_CARTRIDGES_2EMBEDDED("get-domains-foobarz-applications-springeap6-cartridges_2embedded.json"), // 1.2

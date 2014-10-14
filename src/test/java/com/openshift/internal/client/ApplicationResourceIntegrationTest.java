@@ -177,7 +177,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-				ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.NO_SCALE);
+				ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.php().get(user), ApplicationScale.NO_SCALE);
 
 		// operation
 		application.scaleDown();
@@ -191,7 +191,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.NO_SCALE);
+		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.php().get(user), ApplicationScale.NO_SCALE);
 
 		// operation
 		application.scaleUp();
@@ -204,7 +204,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.SCALE);
+		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.php().get(user), ApplicationScale.SCALE);
 
 		// operation
 		application.scaleUp();
@@ -218,7 +218,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.SCALE);
+		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.php().get(user), ApplicationScale.SCALE);
 		application.scaleUp();
 
 		// operation
@@ -276,7 +276,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		// pre-condition
 		ApplicationTestUtils.destroyIfMoreThan(2, domain);
 		long startTime = System.currentTimeMillis();
-		IApplication application = domain.createApplication(ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.jbossAs().get(user));
+		IApplication application = domain.createApplication(ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.php().get(user));
 
 		// operation
 		boolean successfull = application.waitForAccessible(WAIT_TIMEOUT);

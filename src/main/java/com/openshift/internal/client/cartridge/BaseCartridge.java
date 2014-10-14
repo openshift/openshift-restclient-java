@@ -128,11 +128,11 @@ public class BaseCartridge implements ICartridge {
 		if (obj == null) {
 			return false;
 		}
-		if (!(BaseCartridge.class.isAssignableFrom(obj.getClass()))) {
+		if (!(ICartridge.class.isAssignableFrom(obj.getClass()))) {
 			return false;
 		}
 
-		BaseCartridge other = (BaseCartridge) obj;
+		ICartridge other = (ICartridge) obj;
 		// shortcut: downloadable cartridges get their name only when
 		// they're deployed thus should equal on url only
 		if (isDownloadable()) {

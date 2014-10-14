@@ -22,16 +22,24 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
+import com.openshift.client.IGearGroup;
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IUser;
+import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IDeployedStandaloneCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
+import com.openshift.client.utils.CartridgeTestUtils;
+import com.openshift.client.utils.Samples;
 import com.openshift.client.utils.TestConnectionBuilder;
 import com.openshift.internal.client.httpclient.request.JsonMediaType;
 import com.openshift.internal.client.httpclient.request.Parameter;
@@ -45,17 +53,40 @@ import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
  */
 public class StandaloneCartridgeResourceTest {
 
-	private ApplicationResource app = mock(ApplicationResource.class);
+	private ApplicationResource application = mock(ApplicationResource.class);
 	private CartridgeResourceDTO dto = mock(CartridgeResourceDTO.class);
-	private IStandaloneCartridge cartridge = mock(IStandaloneCartridge.class);
-	private StandaloneCartridgeResource cartridgeResource;
+	private IStandaloneCartridge as7Cartridge = new StandaloneCartridge(CartridgeTestUtils.JBOSSAS_7_NAME);
+	private IStandaloneCartridge phpCartridge = new StandaloneCartridge(CartridgeTestUtils.PHP_53_NAME);
+	private IDeployedStandaloneCartridge deployedPhpCartridge;
+
+	private IUser user;
+	private IDomain domain;
+	private IApplication springeap6Application;
+	private IHttpClient client;
+	private HttpClientMockDirector mockDirector;
 
 	@Before
-	public void setup() {
-		when(dto.getName()).thenReturn("cartridgeName");
+	public void setup() throws Throwable {
+		when(dto.getName()).thenReturn(CartridgeTestUtils.PHP_53_NAME);
 		when(dto.getType()).thenReturn(CartridgeType.STANDALONE);
-		when(cartridge.getName()).thenReturn("cartridgeName");
-		this.cartridgeResource = new StandaloneCartridgeResource(dto, app);
+		this.deployedPhpCartridge = new StandaloneCartridgeResource(dto, application);
+		this.mockDirector = new HttpClientMockDirector();
+		this.client = mockDirector
+				.mockGetDomains(GET_DOMAINS)
+				.mockGetApplications(
+						"foobarz", Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_1EMBEDDED)
+				.mockGetApplication(
+						"foobarz", "springeap6", Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_1EMBEDDED)
+				.mockGetGearGroups(
+						"foobarz", "springeap6", Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS)
+				// ATTENTION: nothing changed in the mocked response (works
+				// since application is not caching geargroups)
+				.mockSetGearGroups(
+						"foobarz", "springeap6", Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS)
+				.client();
+		this.user = new TestConnectionBuilder().defaultCredentials().create(client).getUser();
+		this.domain = user.getDomain("foobarz");
+		this.springeap6Application = domain.getApplicationByName("springeap6");
 	}
 
 	@Test
@@ -82,14 +113,12 @@ public class StandaloneCartridgeResourceTest {
 	}
 
 	@Test
-	public void standaloneCartridgeResourceShouldEqualStandAloneCartridge() {
+	public void standaloneCartridgeShouldEqualStandaloneCartridgeResource() {
 		// pre-conditions
 		// operation
 		// verification
-		assertThat(cartridgeResource).isEqualTo(cartridge);
-
-		when(cartridge.getName()).thenReturn("other");
-		assertThat(cartridgeResource).isNotEqualTo(cartridge);
+		assertThat(phpCartridge).isEqualTo(deployedPhpCartridge);
+		assertThat(as7Cartridge).isNotEqualTo(deployedPhpCartridge);
 	}
 
 	@Test
@@ -98,6 +127,50 @@ public class StandaloneCartridgeResourceTest {
 
 		// operation
 		// verification
-		assertThat(cartridgeResource.hashCode()).isEqualTo(new StandaloneCartridge("cartridgeName").hashCode());
+		assertThat(deployedPhpCartridge.hashCode()).isEqualTo(phpCartridge.hashCode());
+	}
+
+	@Test
+	public void shouldReportGearGroup() throws OpenShiftException, URISyntaxException {
+		// precondition
+		IDeployedStandaloneCartridge cartridge = springeap6Application.getCartridge();
+		assertThat(cartridge).isNotNull();
+
+		// operation
+		IGearGroup gearGroup = cartridge.getGearGroup();
+
+		// verification
+		assertThat(gearGroup).isNotNull();
+		assertThat(gearGroup.getCartridges()).contains(cartridge);
+	}
+
+	@Test
+	public void shouldGetGearStorage() throws OpenShiftException, IOException {
+		// precondition
+		IDeployedStandaloneCartridge cartridge = springeap6Application.getCartridge();
+		assertThat(cartridge).isNotNull();
+
+		// operation
+		int additionalGearStorage = cartridge.getAdditionalGearStorage();
+
+		// verification
+		// reload user info to ensure the storage info isnt cached
+		assertThat(additionalGearStorage).isNotEqualTo(IGearGroup.NO_ADDITIONAL_GEAR_STORAGE);
+	}
+
+	@Test
+	public void shouldSetGearStorage() throws OpenShiftException, IOException {
+		// precondition
+		IDeployedStandaloneCartridge cartridge = springeap6Application.getCartridge();
+		assertThat(cartridge).isNotNull();
+		int newAdditionalGearStorage = 12;
+
+		// operation
+		cartridge.setAdditionalGearStorage(newAdditionalGearStorage);
+
+		// verification
+		// reload user info to ensure the storage info isnt cached
+		mockDirector.mockGetGearGroups("foobarz", "springeap6", Samples.GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS_12ADDITIONALGEARSTORAGE);
+		assertThat(cartridge.getAdditionalGearStorage()).isEqualTo(newAdditionalGearStorage);
 	}
 }
