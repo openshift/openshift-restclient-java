@@ -17,6 +17,7 @@ import java.util.Map;
  * The DTO for a gear groups
  * 
  * @author Andre Dietisheim
+ * @author Jeff Cantrill
  */
 public class GearGroupResourceDTO extends BaseResourceDTO {
 
@@ -33,6 +34,11 @@ public class GearGroupResourceDTO extends BaseResourceDTO {
 	private final Map<String, CartridgeResourceDTO> cartridges;
 	
 	/**
+	 * The additional storage configured for this gear group in gigabytes
+	 */
+	private int additionalStorage;
+	
+	/**
 	 * Instantiates a new gears resource dto.
 	 * 
 	 * @param uuid
@@ -43,14 +49,17 @@ public class GearGroupResourceDTO extends BaseResourceDTO {
 	 *            the gears in this group
 	 * @param cartridges
 	 *            the cartridges in this group
+	 * @param additionalStorage
+	 *            the additional storage in gigabytes for this gear group           
 	 *            
 	 */
-	GearGroupResourceDTO(final String uuid, final String name, final Collection<GearResourceDTO> gears, final Map<String, CartridgeResourceDTO> cartridges) {
+	GearGroupResourceDTO(final String uuid, final String name, final int additionalStorage, final Collection<GearResourceDTO> gears, final Map<String, CartridgeResourceDTO> cartridges) {
 		super();
 		this.uuid = uuid;
 		this.name = name;
 		this.gears = gears;
 		this.cartridges = cartridges;
+		this.additionalStorage = additionalStorage;
 	}
 
 	/**
@@ -94,6 +103,15 @@ public class GearGroupResourceDTO extends BaseResourceDTO {
 	 */
 	public CartridgeResourceDTO getCartridge(final String name) {
 		return cartridges.get(name);
+	}
+
+	/**
+	 * Returns the additional storage configured for this gear group in gigabytes
+	 *
+	 * @return the additional storage value
+	 */
+	public int getAdditionalStorage(){
+		return this.additionalStorage;
 	}
 
 }

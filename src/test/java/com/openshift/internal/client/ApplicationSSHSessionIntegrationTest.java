@@ -36,7 +36,6 @@ import com.openshift.client.DeploymentTypes;
 import com.openshift.client.IApplication;
 import com.openshift.client.IDomain;
 import com.openshift.client.IUser;
-import com.openshift.client.cartridge.query.LatestVersionOf;
 import com.openshift.client.utils.ApplicationAssert;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
@@ -66,7 +65,7 @@ public class ApplicationSSHSessionIntegrationTest extends TestTimer {
 	@Before
 	public void setUp() throws Exception {
 		IDomain domain = DomainTestUtils.ensureHasDomain(user);
-		this.application = ApplicationTestUtils.getOrCreateApplication(domain, LatestVersionOf.php().get(user));
+		this.application = ApplicationTestUtils.getOrCreateApplication(domain);
 		this.session = createSSHSession(application.getSshUrl());
 	}
 

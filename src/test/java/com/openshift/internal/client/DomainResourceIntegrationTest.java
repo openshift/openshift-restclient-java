@@ -197,7 +197,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
 	public void shouldGetApplicationByNameCaseInsensitive() throws OpenShiftException, FileNotFoundException, IOException {
 		// pre-condition
 		IDomain domain = DomainTestUtils.ensureHasDomain(user);
-		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(LatestVersionOf.jbossAs(), domain);
+		IApplication application = ApplicationTestUtils.ensureHasExactly1Application(domain);
 		assertThat(application).isNotNull();
 		String name = application.getName();
 		assertThat(name).isNotNull();
@@ -221,16 +221,16 @@ public class DomainResourceIntegrationTest extends TestTimer {
 		// operation
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
-		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
+		IStandaloneCartridge php = LatestVersionOf.php().get(user);
 		IApplication application =
-				domain.createApplication(applicationName, jbossas);
+				domain.createApplication(applicationName, php);
 
 		// verification
 		assertThat(new ApplicationAssert(application))
 				.hasName(applicationName)
 				.hasUUID()
 				.hasCreationTime()
-				.hasCartridge(jbossas)
+				.hasCartridge(php)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
 				.hasNoInitialGitUrl()
@@ -246,15 +246,15 @@ public class DomainResourceIntegrationTest extends TestTimer {
 		// operation
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
-		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
-		IApplication application = domain.createApplication(applicationName, jbossas, GearProfileTestUtils.getFirstAvailableGearProfile(domain));
+		IStandaloneCartridge php = LatestVersionOf.php().get(user);
+		IApplication application = domain.createApplication(applicationName, php, GearProfileTestUtils.getFirstAvailableGearProfile(domain));
 
 		// verification
 		assertThat(new ApplicationAssert(application))
 				.hasName(applicationName)
 				.hasUUID()
 				.hasCreationTime()
-				.hasCartridge(jbossas)
+				.hasCartridge(php)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
 				.hasNoInitialGitUrl()
@@ -319,18 +319,18 @@ public class DomainResourceIntegrationTest extends TestTimer {
 		ApplicationTestUtils.destroyAllApplications(domain);
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
-		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);
+		IStandaloneCartridge php = LatestVersionOf.php().get(user);
 
 		// operation
 		IApplication application = domain.createApplication(
-				applicationName, jbossas, ApplicationScale.SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain));
+				applicationName, php, ApplicationScale.SCALE, GearProfileTestUtils.getFirstAvailableGearProfile(domain));
 
 		// verification
 		assertThat(new ApplicationAssert(application))
 				.hasName(applicationName)
 				.hasUUID()
 				.hasCreationTime()
-				.hasCartridge(jbossas)
+				.hasCartridge(php)
 				.hasValidApplicationUrl()
 				.hasValidGitUrl()
 				.hasNoInitialGitUrl()
@@ -388,12 +388,12 @@ public class DomainResourceIntegrationTest extends TestTimer {
     }
 
     @Test
-    public void shouldCreateApplicationWithJBossAsAndDownloadableCartridge() throws Throwable {    	
+    public void shouldCreateApplicationWithPhpAndDownloadableCartridge() throws Throwable {    	
         // pre-conditions
 		ApplicationTestUtils.destroyAllApplications(domain);
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
-		IStandaloneCartridge jbossAs = LatestVersionOf.jbossAs().get(user);
+		IStandaloneCartridge jbossAs = LatestVersionOf.php().get(user);
 
         // operation
  		final IApplication app = domain.createApplication(
@@ -413,18 +413,18 @@ public class DomainResourceIntegrationTest extends TestTimer {
     }
 
     @Test
-    public void shouldCreateJBossAsAndCronWithBuilder() throws Throwable {    	
+    public void shouldCreatePhpAndCronWithBuilder() throws Throwable {    	
         // pre-conditions
 		ApplicationTestUtils.destroyAllApplications(domain);
 		String applicationName =
 				ApplicationTestUtils.createRandomApplicationName();
-		IStandaloneCartridge jbossAs = LatestVersionOf.jbossAs().get(user);
+		IStandaloneCartridge php = LatestVersionOf.php().get(user);
 		IEmbeddableCartridge cron = LatestVersionOf.cron().get(user);
 		
         // operation
 		IApplication app = new ApplicationBuilder(domain)
 			.setName(applicationName)
-			.setStandaloneCartridge(jbossAs)
+			.setStandaloneCartridge(php)
 			.setEmbeddableCartridges(cron)
 			.build();
 
@@ -435,7 +435,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
         	.hasUUID()
 			.hasValidApplicationUrl()
 			.hasValidGitUrl()
-        	.hasCartridge(jbossAs)
+        	.hasCartridge(php)
         	.hasEmbeddedCartridge(cron);
     }
 	
@@ -462,7 +462,7 @@ public class DomainResourceIntegrationTest extends TestTimer {
 		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 
 		// operation
-		domain.createApplication(application.getName(), LatestVersionOf.jbossAs().get(user));
+		domain.createApplication(application.getName(), LatestVersionOf.php().get(user));
 	}
 
 	@Test(expected = OpenShiftException.class)
@@ -472,6 +472,6 @@ public class DomainResourceIntegrationTest extends TestTimer {
 		String name = application.getName();
 		
 		// operation
-		domain.createApplication(name.toUpperCase(), LatestVersionOf.jbossAs().get(user));
+		domain.createApplication(name.toUpperCase(), LatestVersionOf.php().get(user));
 	}
 }

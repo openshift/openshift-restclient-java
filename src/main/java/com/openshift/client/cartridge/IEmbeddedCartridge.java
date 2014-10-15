@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.openshift.client.cartridge;
 
-import java.net.URL;
-
 import com.openshift.client.IApplication;
 import com.openshift.client.IOpenShiftResource;
 import com.openshift.client.OpenShiftException;
@@ -19,18 +17,12 @@ import com.openshift.internal.client.response.CartridgeResourceProperties;
 
 /**
  * Interface to designate a cartridge that has been added and configured
+ * 
  * @author André Dietisheim
+ * @author Jeff Cantrill
  */
 public interface IEmbeddedCartridge extends IOpenShiftResource, IEmbeddableCartridge {
 
-	/**
-	 * The url at which this cartridge may be reached
-	 * 
-	 * @return the url for this cartridge
-	 * @throws OpenShiftException
-	 */
-	public URL getUrl() throws OpenShiftException;
-	
 	/**
 	 * Destroys this cartridge (and removes it from the list of existing cartridges)
 	 * 
@@ -52,4 +44,13 @@ public interface IEmbeddedCartridge extends IOpenShiftResource, IEmbeddableCartr
 	 * @return the resource properties
 	 */
 	public CartridgeResourceProperties getProperties();
+	
+	/**
+	 * set the additional gear storage for the cartridge to the given
+	 * size.
+	 * 
+	 * @param size  The total additional gear storage for the cartridge
+	 *              in gigabytes
+	 */
+	public void setAdditionalGearStorage(int size);
 }

@@ -60,6 +60,7 @@ public class GearGroupsResourceTest extends TestTimer {
 		assertThat(new GearGroupsAssert(gearGroups)).hasSize(2);
 		assertThat(new GearGroupsAssert(gearGroups)).assertGroup("514207b84382ec1fef0000ab")
 				.hasUUID("514207b84382ec1fef0000ab")
+				.hasAdditionalStorageSize(8)
 				.assertGear("514207b84382ec1fef000098").inState(new GearState("idle"))
 				.assertGear("514207b84382ec1fef000098").hasSshUrl("ssh://52380549e0b8cd1e0e000032@springeap6-foobarz.rhcloud.com")
 				.assertGear("5146f047500446f12d00002e").inState(new GearState("building"))

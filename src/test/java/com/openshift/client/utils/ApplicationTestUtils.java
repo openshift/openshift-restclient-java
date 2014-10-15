@@ -43,6 +43,9 @@ public class ApplicationTestUtils {
 	}
 
 	public static IApplication createApplication(String name, IStandaloneCartridge cartridge, IDomain domain) {
+		if (cartridge == null) {
+			cartridge = getDefaultCartridge(domain);
+		}
 		IApplication application = domain.createApplication(name, cartridge);
 		assertTrue(application.waitForAccessible(WAIT_FOR_APPLICATION));
 		return application;
@@ -91,14 +94,15 @@ public class ApplicationTestUtils {
 	}
 
 	public static IApplication getOrCreateApplication(IDomain domain) throws OpenShiftException {
-		return getOrCreateApplication(domain, LatestVersionOf.jbossAs().get(domain.getUser()));
+		return getOrCreateApplication(domain, null);
 	}
 
 	public static IApplication getOrCreateApplication(IDomain domain, IStandaloneCartridge cartridge)
 			throws OpenShiftException {
 		for (Iterator<IApplication> it = domain.getApplications().iterator(); it.hasNext();) {
 			IApplication application = it.next();
-			if (cartridge.equals(application.getCartridge())) {
+			if (cartridge == null 
+					|| cartridge.equals(application.getCartridge())) {
 				return application;
 			}
 		}
@@ -188,6 +192,10 @@ public class ApplicationTestUtils {
 		return domain.getApplications().get(0);
 	}
 
+	public static IApplication ensureHasExactly1Application(IDomain domain) {
+		return ensureHasExactly1Application(getDefaultCartridge(domain), domain);
+	}
+	
 	public static IApplication ensureHasExactly1Application(LatestStandaloneCartridge selector, IDomain domain) {
 		IStandaloneCartridge cartridge = selector.get(domain.getUser());
 		ensureHasExactly(1, cartridge, domain);
@@ -239,4 +247,7 @@ public class ApplicationTestUtils {
 		return application;
 	}
 
+	private static IStandaloneCartridge getDefaultCartridge(IDomain domain) {
+		return LatestVersionOf.php().get(domain.getUser());
+	}
 }

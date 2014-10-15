@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2013 Red Hat, Inc. 
+ * Copyright (c) 2013-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -11,6 +11,7 @@
 package com.openshift.internal.client;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,6 +31,7 @@ import com.openshift.client.utils.TestConnectionBuilder;
 
 /**
  * @author Andre Dietisheim
+ * @author Jeff Cantrill
  */
 public class StandaloneCartridgeTest extends TestTimer {
 
@@ -64,7 +66,7 @@ public class StandaloneCartridgeTest extends TestTimer {
 		assertThat(new StandaloneCartridge(new URL(CartridgeTestUtils.GO_URL)))
 				.isNotEqualTo(new EmbeddableCartridge(new URL(CartridgeTestUtils.FOREMAN_URL)));
 	}
-	
+
 	@Test
 	public void shouldHaveNameDisplaynameDescription() throws Throwable {
 		// pre-condition
@@ -81,6 +83,13 @@ public class StandaloneCartridgeTest extends TestTimer {
 						+ "scalable network applications. Node.js is perfect for data-intensive real-time "
 						+ "applications that run across distributed devices.");
 	}
-
-
+	
+	@Test
+	public void standaloneCartridgeResourceShouldEqualStandAloneCartridgeWithoutName() throws MalformedURLException {
+		// pre-coniditions
+		// operation
+		// verification
+		assertEquals(new StandaloneCartridge(new URL(CartridgeTestUtils.FOREMAN_URL)),
+				new StandaloneCartridge("redhat", new URL(CartridgeTestUtils.FOREMAN_URL)));
+	}
 }

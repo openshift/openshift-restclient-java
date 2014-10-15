@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.client.response;
 
+import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_ADDITIONAL_GEAR_STORAGE;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_ALIASES;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_APP_URL;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_CARTRIDGES;
@@ -50,9 +51,6 @@ import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPER
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_UUID;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_VALID_OPTIONS;
 import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_VALUE;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_NOTE;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_SCOPES;
-import static com.openshift.internal.client.utils.IOpenShiftJsonConstants.PROPERTY_TOKEN;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -84,6 +82,7 @@ import com.openshift.internal.client.utils.StringUtils;
  * @author Xavier Coulon
  * @author Andre Dietisheim
  * @author Sean Kavanagh
+ * @author Jeff Cantrill
  */
 public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
 
@@ -415,9 +414,10 @@ public class OpenShiftJsonDTOFactory extends AbstractJsonDTOFactory {
 		}
 		final String uuid = getAsString(gearGroupNode, PROPERTY_UUID);
 		final String name = getAsString(gearGroupNode, PROPERTY_NAME);
+		final int additionalStorage = getAsInteger(gearGroupNode, PROPERTY_ADDITIONAL_GEAR_STORAGE);
 		final Collection<GearResourceDTO> gears = createGears(gearGroupNode.get(PROPERTY_GEARS));
 		final Map<String, CartridgeResourceDTO> cartridges = createCartridges(gearGroupNode.get(PROPERTY_CARTRIDGES));
-		return new GearGroupResourceDTO(uuid, name, gears, cartridges);
+		return new GearGroupResourceDTO(uuid, name, additionalStorage, gears, cartridges);
 	}
 
 	private Collection<GearResourceDTO> createGears(ModelNode gearsNode) {

@@ -15,6 +15,7 @@ import java.net.URL;
 import com.openshift.client.cartridge.EmbeddableCartridge;
 import com.openshift.client.cartridge.ICartridge;
 import com.openshift.client.cartridge.StandaloneCartridge;
+import com.openshift.internal.client.APIResource;
 import com.openshift.internal.client.CartridgeType;
 import com.openshift.internal.client.utils.StringUtils;
 
@@ -127,11 +128,11 @@ public class BaseCartridge implements ICartridge {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof BaseCartridge)) {
+		if (!(ICartridge.class.isAssignableFrom(obj.getClass()))) {
 			return false;
 		}
 
-		BaseCartridge other = (BaseCartridge) obj;
+		ICartridge other = (ICartridge) obj;
 		// shortcut: downloadable cartridges get their name only when
 		// they're deployed thus should equal on url only
 		if (isDownloadable()) {

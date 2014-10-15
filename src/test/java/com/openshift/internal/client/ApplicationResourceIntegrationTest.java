@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2013 Red Hat, Inc. 
+ * Copyright (c) 2013-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -33,7 +33,6 @@ import com.openshift.client.IOpenShiftConnection;
 import com.openshift.client.IUser;
 import com.openshift.client.OpenShiftEndpointException;
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.client.cartridge.query.LatestVersionOf;
 import com.openshift.client.utils.ApplicationTestUtils;
 import com.openshift.client.utils.DomainTestUtils;
@@ -44,6 +43,7 @@ import com.openshift.client.utils.TestConnectionBuilder;
  * @author André Dietisheim
  * @author Syed Iqbal
  * @author Martes G Wigglesworth 
+ * @author Jeff Cantrill
  */
 public class ApplicationResourceIntegrationTest extends TestTimer {
 
@@ -60,24 +60,20 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 	}
 
 	@Test
-	public void shouldReturnGears() throws Exception {
+	public void shouldReturnGearGroups() throws Exception {
 		// pre-conditions
-		ApplicationTestUtils.destroyIfMoreThan(2, domain);
+		IApplication application = ApplicationTestUtils.getOrCreateApplication(domain);
 
 		// operation
-		String applicationName =
-				ApplicationTestUtils.createRandomApplicationName();
-		IStandaloneCartridge jbossas = LatestVersionOf.jbossAs().get(user);		
-		IApplication application =
-				domain.createApplication(applicationName, jbossas);
-
 		Collection<IGearGroup> gearGroups = application.getGearGroups();
-		assertThat(new GearGroupsAssert(gearGroups)).hasSize(1);
+
+		// verification
+		assertThat(gearGroups.size()).isGreaterThanOrEqualTo(1);
 		assertThat(new GearGroupsAssert(gearGroups))
 				.assertGroup(0).hasUUID().hasGears()
 				.assertGear(0).hasId().hasState();
 	}
-
+	
 	@Test
 	public void shouldDestroyApplication() throws Exception {
 		// pre-condition
@@ -181,7 +177,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-				ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.NO_SCALE);
+				ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.php().get(user), ApplicationScale.NO_SCALE);
 
 		// operation
 		application.scaleDown();
@@ -195,7 +191,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.NO_SCALE);
+		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.php().get(user), ApplicationScale.NO_SCALE);
 
 		// operation
 		application.scaleUp();
@@ -208,7 +204,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.SCALE);
+		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.php().get(user), ApplicationScale.SCALE);
 
 		// operation
 		application.scaleUp();
@@ -222,7 +218,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		// pre-condition
 		ApplicationTestUtils.silentlyDestroyAllApplications(domain);
 		IApplication application = domain.createApplication(
-		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.jbossAs().get(user), ApplicationScale.SCALE);
+		        ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.php().get(user), ApplicationScale.SCALE);
 		application.scaleUp();
 
 		// operation
@@ -280,7 +276,7 @@ public class ApplicationResourceIntegrationTest extends TestTimer {
 		// pre-condition
 		ApplicationTestUtils.destroyIfMoreThan(2, domain);
 		long startTime = System.currentTimeMillis();
-		IApplication application = domain.createApplication(ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.jbossAs().get(user));
+		IApplication application = domain.createApplication(ApplicationTestUtils.createRandomApplicationName(), LatestVersionOf.php().get(user));
 
 		// operation
 		boolean successfull = application.waitForAccessible(WAIT_TIMEOUT);

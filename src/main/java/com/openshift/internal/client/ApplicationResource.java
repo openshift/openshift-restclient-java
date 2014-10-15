@@ -49,10 +49,9 @@ import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.OpenShiftSSHOperationException;
 import com.openshift.client.cartridge.ICartridge;
+import com.openshift.client.cartridge.IDeployedStandaloneCartridge;
 import com.openshift.client.cartridge.IEmbeddableCartridge;
 import com.openshift.client.cartridge.IEmbeddedCartridge;
-import com.openshift.client.cartridge.IStandaloneCartridge;
-import com.openshift.client.cartridge.StandaloneCartridge;
 import com.openshift.client.utils.HostUtils;
 import com.openshift.client.utils.RFC822DateUtils;
 import com.openshift.internal.client.httpclient.request.StringParameter;
@@ -73,6 +72,7 @@ import com.openshift.internal.client.utils.StringUtils;
  * @author André Dietisheim
  * @author Syed Iqbal
  * @author Martes G Wigglesworth
+ * @author Jeff Cantrill
  */
 public class ApplicationResource extends AbstractOpenShiftResource implements IApplication {
 
@@ -107,7 +107,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	private Date creationTime;
 
 	/** The cartridge (application type/framework) of this application. */
-	private IStandaloneCartridge cartridge;
+	private IDeployedStandaloneCartridge cartridge;
 
 	/** The scalability enablement. */
 	private ApplicationScale scale;
@@ -235,7 +235,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 	}
 
 	@Override
-	public IStandaloneCartridge getCartridge() {
+	public IDeployedStandaloneCartridge getCartridge() {
 		return cartridge;
 	}
 
@@ -449,7 +449,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		for (CartridgeResourceDTO cartridgeDTO : cartridgeDTOByName.values()) {
 			switch(cartridgeDTO.getType()) {
 				case STANDALONE:
-					createStandaloneCartrdige(cartridgeDTO);
+					createStandaloneCartridge(cartridgeDTO);
 					break;
 				case EMBEDDED:
 					addOrUpdateEmbeddedCartridge(cartridgeDTO.getName(), cartridgeDTO);
@@ -460,13 +460,8 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
-	private void createStandaloneCartrdige(CartridgeResourceDTO cartridgeDTO) {
-		this.cartridge = new StandaloneCartridge(
-				cartridgeDTO.getName(),
-				cartridgeDTO.getUrl(),
-				cartridgeDTO.getDisplayName(),
-				cartridgeDTO.getDescription(),
-				cartridgeDTO.getObsolete());
+	private void createStandaloneCartridge(CartridgeResourceDTO dto) {
+		this.cartridge = new StandaloneCartridgeResource(dto,this);
 	}
 
 	private void addOrUpdateEmbeddedCartridge(String name, CartridgeResourceDTO cartridgeDTO) {
@@ -544,6 +539,7 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		}
 	}
 
+	@Override
 	public Collection<IGearGroup> getGearGroups() throws OpenShiftException {
 		// this collection is not cached so we always have the latest info 
 		// about the gear groups consumed by this application.
@@ -551,6 +547,29 @@ public class ApplicationResource extends AbstractOpenShiftResource implements IA
 		return gearGroups;
 	}
 
+	public IGearGroup getGearGroup(ICartridge cartridge) throws OpenShiftException {
+		// this collection is not cached so we always have the latest info 
+		// about the gear groups consumed by this application.
+		loadGearGroups();
+		return getGearGroup(cartridge, gearGroups);
+	}
+
+	public IGearGroup getGearGroup(ICartridge cartridge, Collection<IGearGroup> gearGroups) {
+		if (cartridge == null
+				|| gearGroups == null) {
+			return null;
+		}
+		
+		for (IGearGroup gearGroup : gearGroups) {
+			for (ICartridge groupCartridge : gearGroup.getCartridges()) {
+				if (cartridge.equals(cartridge)) {
+					return gearGroup;
+				}
+			}
+		}
+		return null;
+	}
+	
 	private Collection<IGearGroup> loadGearGroups() throws OpenShiftException {
 		List<IGearGroup> gearGroups = new ArrayList<IGearGroup>();
 		Collection<GearGroupResourceDTO> dtos = new GetGearGroupsRequest().execute();

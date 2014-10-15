@@ -17,12 +17,12 @@ import com.openshift.internal.client.ApplicationResource;
 import com.openshift.internal.client.CartridgeType;
 import com.openshift.internal.client.cartridge.BaseCartridge;
 
-
 /**
  * A cartridge that is available on the openshift server. This class is no enum
  * since we dont know all available types and they may change at any time.
  * 
  * @author André Dietisheim
+ * @author Jeff Cantrill
  */
 public class StandaloneCartridge extends BaseCartridge implements IStandaloneCartridge {
 
@@ -56,8 +56,39 @@ public class StandaloneCartridge extends BaseCartridge implements IStandaloneCar
 		super(name, url, displayName, description);
 	}
 
+	public StandaloneCartridge(String name, URL url, String displayName, String description) {
+		this(name, url, displayName, description, false);
+	}
+
 	@Override
 	public CartridgeType getType() {
 		return CartridgeType.STANDALONE;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(IStandaloneCartridge.class.isAssignableFrom(obj.getClass()))) {
+			return super.equals(obj);
+		}
+
+		IStandaloneCartridge otherCartridge = (IStandaloneCartridge) obj;
+		// shortcut: downloadable cartridges get their name only when
+		// they're deployed thus should equal on url only
+		if (isDownloadable()) {
+			if (otherCartridge.isDownloadable()) {
+				if (getUrl() == null) {
+					return otherCartridge.getUrl() == null;
+				}
+				return getUrl().equals(otherCartridge.getUrl());
+			}
+		}
+		if (getName() == null) {
+			if (otherCartridge.getName() != null) {
+				return false;
+			}
+		} else if (!getName().equals(otherCartridge.getName())) {
+			return false;
+		}
+		return true;
 	}
 }
