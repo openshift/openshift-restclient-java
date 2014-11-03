@@ -11,13 +11,16 @@
 package com.openshift.internal.client;
 
 import java.net.URL;
+import java.util.Map;
 
 import com.openshift.client.IGearGroup;
+import com.openshift.client.Messages;
 import com.openshift.client.OpenShiftException;
 import com.openshift.client.cartridge.IDeployedStandaloneCartridge;
 import com.openshift.client.cartridge.IStandaloneCartridge;
 import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.response.CartridgeResourceDTO;
+import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.utils.Assert;
 import com.openshift.internal.client.utils.IOpenShiftJsonConstants;
 
@@ -41,14 +44,21 @@ public class StandaloneCartridgeResource extends AbstractOpenShiftResource imple
 	private boolean obsolete;
 
 	protected StandaloneCartridgeResource(final CartridgeResourceDTO dto, final ApplicationResource application) {
-		super(application.getService(), dto.getLinks(), dto.getMessages());
-		Assert.isTrue(dto.getType().equals(CartridgeType.STANDALONE));
-		this.name = dto.getName();
-		this.displayName = dto.getDisplayName();
-		this.description = dto.getDescription();
-		this.url = dto.getUrl();
-		this.cartridgeType = dto.getType();
-		this.obsolete = dto.getObsolete();
+		this(dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getUrl(), dto.getType(), dto.getObsolete(),
+				application, application.getService(), dto.getLinks(), dto.getMessages());
+	}
+
+	protected StandaloneCartridgeResource(String name, String displayName, String description, URL url,
+			CartridgeType cartridgeType, boolean obsolete, final ApplicationResource application,
+			final IRestService service, Map<String, Link> links, Messages messages) {
+		super(service, links, messages);
+		Assert.isTrue(cartridgeType != null && cartridgeType.equals(CartridgeType.STANDALONE));
+		this.name = name;
+		this.displayName = displayName;
+		this.description = description;
+		this.url = url;
+		this.cartridgeType = cartridgeType;
+		this.obsolete = obsolete;
 		this.application = application;
 	}
 
@@ -98,27 +108,27 @@ public class StandaloneCartridgeResource extends AbstractOpenShiftResource imple
 
 	@Override
 	public String getDisplayName() {
-		return this.displayName;
+		return displayName;
 	}
 
 	@Override
 	public String getDescription() {
-		return this.description;
+		return description;
 	}
 
 	@Override
 	public boolean isDownloadable() {
-		return this.url != null;
+		return url != null;
 	}
 
 	@Override
 	public URL getUrl() {
-		return this.url;
+		return url;
 	}
 
 	@Override
 	public CartridgeType getType() {
-		return this.cartridgeType;
+		return cartridgeType;
 	}
 
 	@Override
