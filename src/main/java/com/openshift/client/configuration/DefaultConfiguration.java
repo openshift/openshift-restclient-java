@@ -22,8 +22,8 @@ import com.openshift.client.OpenShiftException;
  */
 public class DefaultConfiguration extends AbstractOpenshiftConfiguration {
 
-	public static final String LIBRA_SERVER = "openshift.redhat.com";
-	public static final String LIBRA_DOMAIN = "rhcloud.com";
+	public static final String LIBRA_SERVER = System.getenv("OPENSHIFT_BROKER_HOST") != null ? System.getenv("OPENSHIFT_BROKER_HOST") : "openshift.redhat.com";
+	public static final String LIBRA_DOMAIN = System.getenv("OPENSHIFT_CLOUD_DOMAIN") != null ? System.getenv("OPENSHIFT_CLOUD_DOMAIN") : "rhcloud.com";
 	
 	public DefaultConfiguration() throws OpenShiftException, IOException {
 		super();

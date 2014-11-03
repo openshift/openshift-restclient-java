@@ -43,7 +43,7 @@ public class ConnectionBuilder {
 		this(null);
 	}
 
-	protected ConnectionBuilder(String serverUrl) throws OpenShiftException, IOException {
+	public ConnectionBuilder(String serverUrl) throws OpenShiftException, IOException {
 		this.configuration = createConfiguration();
 		if (serverUrl == null) {
 			serverUrl = configuration.getLibraServer();
