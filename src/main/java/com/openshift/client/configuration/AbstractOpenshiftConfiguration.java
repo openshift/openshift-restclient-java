@@ -36,6 +36,9 @@ public abstract class AbstractOpenshiftConfiguration implements IOpenShiftConfig
 	protected static final String KEY_PASSWORD = "rhpassword";
 	protected static final String KEY_CLIENT_ID = "client_id";
 
+	protected static final String KEY_OPENSHIFT_CLOUD_DOMAIN = "OPENSHIFT_CLOUD_DOMAIN";
+	protected static final String KEY_OPENSHIFT_BROKER_HOST = "OPENSHIFT_BROKER_HOST";
+	
 	protected static final String KEY_TIMEOUT = "timeout";
 	protected static final String DEFAULT_OPENSHIFT_TIMEOUT = "180000"; // 3mins
 
