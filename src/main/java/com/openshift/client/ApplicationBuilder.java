@@ -110,7 +110,7 @@ public class ApplicationBuilder {
 		}
 
 		public IApplication build() {
-			return domain.createApplication(name, applicationScale, gearProfile, initialGitUrl, timeout, environmentVariables, 
+			return domain.createApplication(name, applicationScale, gearProfile, initialGitUrl, timeout, environmentVariables,
 					createCartridges(standaloneCartridge, embeddableCartridges));
 		}
 
@@ -135,7 +135,7 @@ public class ApplicationBuilder {
 		}
 
 		public IApplication build() {
-			return domain.createApplication(name, applicationScale, gearProfile, initialGitUrl, timeout, environmentVariables, 
+			return domain.createApplication(name, applicationScale, gearProfile, initialGitUrl, timeout, environmentVariables,
 					cartridges.toArray(new ICartridge[cartridges.size()]));
 		}
 	}
