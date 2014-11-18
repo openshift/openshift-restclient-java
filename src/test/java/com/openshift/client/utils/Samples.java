@@ -18,7 +18,7 @@ import com.openshift.internal.client.utils.StreamUtils;
  * @author Andre Dietisheim
  */
 public enum Samples {
-
+	
 	// gear groups
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS("get-domains-foobarz-applications-springeap6-geargroups.json"), // 1.2
 	GET_DOMAINS_FOOBARZ_APPLICATIONS_SPRINGEAP6_GEARGROUPS_12ADDITIONALGEARSTORAGE("get-domains-foobarz-applications-springeap6-geargroups-12additionalgearstorage.json"), // 1.2
@@ -80,7 +80,12 @@ public enum Samples {
 	
 	// links
 	LINKS_UNKNOWN_LINKPARAMETERTYPE("links-unknown-linkparametertype.json"), // 1.2
-	LINKS_UNKNOWN_VERB("links-unknown-verb.json");
+	LINKS_UNKNOWN_VERB("links-unknown-verb.json"),
+	
+	//kubernetes samples
+	BUILD_CONFIG_MINIMAL("kube/build_config_v1beta1_minimal.json"),
+	DEPLOYMENT_CONFIG_MINIMAL("kube/deployment_config_v1beta1_minimal.json"), 
+	IMAGE_REPOSITORY_MINIMAL("kube/image_repo_v1beta1_minimal.json"); 
 	
 	private static final String SAMPLES_FOLDER = "/samples/";
 
@@ -88,6 +93,10 @@ public enum Samples {
 
 	Samples(String fileName) {
 		this.filePath = SAMPLES_FOLDER + fileName;
+	}
+	
+	Samples(String root, String filename){
+		this.filePath = root + filename;
 	}
 
 	public String getContentAsString() {

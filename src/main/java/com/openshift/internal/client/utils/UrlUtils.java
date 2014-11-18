@@ -22,8 +22,10 @@ public class UrlUtils {
 			.compile("(https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 
 	private static final String HTTPS = "https";
+	private static final String HTTP = "http";
 	private static final String SCHEMA_SEPARATOR = "://";
 
+	public static final String SCHEME_HTTP = HTTP + SCHEMA_SEPARATOR;
 	public static final String SCHEME_HTTPS = HTTPS + SCHEMA_SEPARATOR;
 	public static final char USERNAME_SEPARATOR = '@';
 

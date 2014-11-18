@@ -11,6 +11,8 @@
 package com.openshift.internal.client.httpclient;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.ProtocolException;
@@ -49,6 +51,7 @@ import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.httpclient.request.ParameterValueMap;
 import com.openshift.internal.client.utils.StreamUtils;
 import com.openshift.internal.client.utils.StringUtils;
+import com.openshift.internal.kube.Resource;
 
 /**
  * @author Andre Dietisheim
@@ -119,6 +122,11 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			throws HttpClientException, SocketTimeoutException, EncodingException {
 		return request(HttpMethod.POST, url, mediaType, timeout, parameters);
 	}
+	
+	@Override
+	public String post(URL url, int timeout, Resource resource) throws HttpClientException, SocketTimeoutException, EncodingException {
+		return request(HttpMethod.POST, url, timeout, resource);
+	}
 
 	@Override
 	public String patch(URL url, IMediaType mediaType, int timeout, Parameter... parameters)
@@ -157,6 +165,30 @@ public class UrlConnectionHttpClient implements IHttpClient {
 				connection.setDoOutput(true);
 				setRequestMediaType(requestMediaType, connection);
 				requestMediaType.writeTo(parameters, connection.getOutputStream());
+			}
+			return StreamUtils.readToString(connection.getInputStream(), StreamUtils.UTF_8);
+		} catch (SocketTimeoutException e) {
+			throw e;
+		} catch (IOException e) {
+			throw createException(e, connection);
+		} finally {
+			disconnect(connection);
+		}
+	}
+	
+	protected String request(HttpMethod httpMethod, URL url, int timeout, Resource resource)
+			throws SocketTimeoutException, HttpClientException {
+		HttpURLConnection connection = null;
+		try {
+			connection = createConnection(
+					url, username, password, authKey, authIV, token, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
+			// PATCH not yet supported by JVM
+			setRequestMethod(httpMethod, connection);
+			if(resource != null){
+				connection.setDoOutput(true);
+				PrintWriter writer = new PrintWriter(connection.getOutputStream());
+				writer.write(resource.toString());
+				writer.flush();
 			}
 			return StreamUtils.readToString(connection.getInputStream(), StreamUtils.UTF_8);
 		} catch (SocketTimeoutException e) {

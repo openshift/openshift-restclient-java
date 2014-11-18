@@ -1,0 +1,57 @@
+{
+    "apiVersion": "v1beta1",
+    "kind": "DeploymentConfig",
+    "metadata" : {
+        "namespace" : "hello-openshift-project",
+        "name" : "javaparks",
+    },
+    "triggers" : [
+        {
+            "type" : "ImageChange",
+            "imageChangeParams" : {
+                "automatic" : true,
+                "containerNames" : [
+                    "javaparks"
+                ],
+                "repositoryName" : "172.30.17.59:5001/jcantrill/javaparks",
+                "tag" : "latest"
+            }
+        },
+        {
+            "type" : "ConfigChange"
+        }
+    ],
+    "template" : {
+        "strategy" : {
+            "type" : "Recreate"
+        },
+        "controllerTemplate" : {
+            "replicas" : 1,
+            "replicaSelector" : {
+                "name" : "javaparks"
+            },
+            "podTemplate": {
+                "desiredState": {
+                    "manifest": {
+                        "version": "v1beta1",
+                        "containers": [
+                            {
+                                "name": "javaparks",
+                                "image": "172.30.17.59:5001/jcantrill/javaparks:latest",
+                                "ports": [
+                                    {
+                                        "containerPort": 8080,
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                },
+                "labels": {
+                    "name": "javaparks"
+                }
+            }
+        }
+    },
+    "labels" : {"name" : "javaparks"}
+}

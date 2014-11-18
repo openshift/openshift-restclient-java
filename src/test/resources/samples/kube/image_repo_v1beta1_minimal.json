@@ -1,0 +1,12 @@
+{
+    "apiVersion": "v1beta1",
+    "kind": "ImageRepository",
+    "metadata": {
+        "name": "javaparks",
+        "namespace": "hello-openshift-project",
+    },
+    "dockerImageRepository": "172.30.17.59:5001/jcantrill/javaparks:latest",
+    "labels" : {
+        "name" : "javaparks"
+    }
+}
