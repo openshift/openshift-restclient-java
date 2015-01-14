@@ -29,6 +29,7 @@ public class OpenShiftKubeClient implements Client{
 	private IHttpClient client;
 	private ResourceFactory factory;
 	private Map<Class<? extends Capability>, Capability> capabilities = new HashMap<Class<? extends Capability>, Capability>();
+	private boolean capabilitiesInitialized = false;
 	
 	private static final String apiEndpoint = "api/v1beta1";
 	private static final String osApiEndpoint = "osapi/v1beta1";
@@ -147,9 +148,12 @@ public class OpenShiftKubeClient implements Client{
 		}
 	}
 
-	public void initializeCapabilities(){
+	public synchronized void initializeCapabilities(){
+		if(capabilitiesInitialized) return;
 		new CapabilityInitializer().populate(capabilities, this);
+		capabilitiesInitialized = true;
 	}
+	
 	@Override
 	public AuthorizationContext authorize() {
 		try {
@@ -171,6 +175,9 @@ public class OpenShiftKubeClient implements Client{
 
 	@Override
 	public  boolean isCapableOf(Class<? extends Capability> capability) {
+		if(!capabilitiesInitialized ){
+			initializeCapabilities();
+		}
 		return capabilities.containsKey(capability);
 	}
 
