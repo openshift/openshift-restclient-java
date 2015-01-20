@@ -83,9 +83,10 @@ public enum Samples {
 	LINKS_UNKNOWN_VERB("links-unknown-verb.json"),
 	
 	//kubernetes samples
-	BUILD_CONFIG_MINIMAL("kube/build_config_v1beta1_minimal.json"),
-	DEPLOYMENT_CONFIG_MINIMAL("kube/deployment_config_v1beta1_minimal.json"), 
-	IMAGE_REPOSITORY_MINIMAL("kube/image_repo_v1beta1_minimal.json"); 
+	BUILD_CONFIG_MINIMAL("openshift3/build_config_v1beta1_minimal.json"),
+	DEPLOYMENT_CONFIG_MINIMAL("openshift3/deployment_config_v1beta1_minimal.json"), 
+	IMAGE_REPOSITORY_MINIMAL("openshift3/image_repo_v1beta1_minimal.json"), 
+	V1BETA1_SERVICE("openshift3/v1beta1_service.json"); 
 	
 	private static final String SAMPLES_FOLDER = "/samples/";
 

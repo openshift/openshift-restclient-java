@@ -103,9 +103,11 @@
 						</systemPropertyVariables>
 						<excludes>
 							<exclude>**/OpenShiftIntegrationTestSuite.java</exclude>
+							<exclude>**/openshift3/**/*Integration*.java</exclude>
 						</excludes>
 						<includes>
 							<include>**/OpenShiftTestSuite.java</include>
+							<include>**/openshift3/**/*Test.java</include>
 						</includes>
 						<!--excludes> <exclude>**/OpenShiftTestSuite.java</exclude> </excludes> 
 							<includes> <include>**/OpenShiftIntegrationTestSuite.java</include> </includes -->

@@ -11,7 +11,6 @@
 package com.openshift.internal.client.httpclient;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -51,7 +50,7 @@ import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.httpclient.request.ParameterValueMap;
 import com.openshift.internal.client.utils.StreamUtils;
 import com.openshift.internal.client.utils.StringUtils;
-import com.openshift.internal.kube.Resource;
+import com.openshift3.client.model.IResource;
 
 /**
  * @author Andre Dietisheim
@@ -124,7 +123,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 	
 	@Override
-	public String post(URL url, int timeout, Resource resource) throws HttpClientException, SocketTimeoutException, EncodingException {
+	public String post(URL url, int timeout, IResource resource) throws HttpClientException, SocketTimeoutException, EncodingException {
 		return request(HttpMethod.POST, url, timeout, resource);
 	}
 
@@ -176,7 +175,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		}
 	}
 	
-	protected String request(HttpMethod httpMethod, URL url, int timeout, Resource resource)
+	protected String request(HttpMethod httpMethod, URL url, int timeout, IResource resource)
 			throws SocketTimeoutException, HttpClientException {
 		HttpURLConnection connection = null;
 		try {
