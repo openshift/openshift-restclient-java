@@ -9,6 +9,7 @@
 package com.openshift3.client;
 
 import java.util.List;
+import java.util.Map;
 
 import com.openshift3.client.capability.Capability;
 import com.openshift3.client.model.IResource;
@@ -36,6 +37,16 @@ public interface IClient {
 	 * @return
 	 */
 	<T extends IResource> List<T> list(ResourceKind kind, String namespace);
+	
+	/**
+	 * list the given given resource kind scoping it to a specific namespace
+	 * 
+	 * @param kind
+	 * @param namespace    The namespace to scope the possible results of this list
+	 * @param labels             The label used to filter the resource
+	 * @return
+	 */
+	<T extends IResource> List<T> list(ResourceKind kind, String namespace, Map<String, String> labels);
 
 	/**
 	 * 
