@@ -11,13 +11,23 @@ package com.openshift3.client.model;
 import java.util.Map;
 
 import com.openshift3.client.ResourceKind;
+import com.openshift3.client.capability.ICapability;
+import com.openshift3.client.capability.ICapable;
 
 
 /**
  * IResource is a representation of a Kubernetes resource (e.g. Service, Pod, ReplicationController) 
  */
-public interface IResource {
+public interface IResource extends ICapable{
 
+	/**
+	 * Determine if the client supports the desired capability
+	 *  
+	 * @param capability
+	 * @return true if the client is able to offer this capability
+	 */
+	boolean supports(Class<? extends ICapability> capability);
+	
 	/**
 	 * The resource kind
 	 * @return
@@ -68,4 +78,19 @@ public interface IResource {
 	Map<String, String> getLabels();
 	
 	void addLabel(String key, String value);
+	
+	/**
+	 * Return true if the resource is annotated with
+	 * the given key
+	 * @param key
+	 * @return true if the annotation key exists
+	 */
+	boolean isAnnotatedWith(String key);
+	
+	/**
+	 * Retrieve the annotated value for the given key
+	 * @param key
+	 * @return
+	 */
+	String getAnnotation(String key);
 }

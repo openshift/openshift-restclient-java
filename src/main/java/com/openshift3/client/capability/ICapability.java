@@ -8,23 +8,20 @@
  ******************************************************************************/
 package com.openshift3.client.capability;
 
-import java.util.Map;
-
-/**
- * Convenience class to initialize capabilies.  Only adds entry
- * to underlying map if the capability is supported 
- */
-public class CapabilityInitializer {
-
+public interface ICapability {
+	
 	/**
-	 * Register the capability if it is supported
-	 * @param capabilities
-	 * @param capability
-	 * @param impl
+	 * Allow the implementation of the capability to determine
+	 * if it is supported on the OpenShift server.  Implementations
+	 * should return false if they can not
+	 * 
+	 * @return true if the capability exists
 	 */
-	public static void initializeCapability(Map<Class<? extends ICapability>, ICapability> capabilities, Class<? extends ICapability> capability, ICapability impl){
-		if(impl.isSupported()){
-			capabilities.put(capability, impl);
-		}
-	}
+	boolean isSupported();
+	
+	/**
+	 * Well known name of the capability
+	 * @return
+	 */
+	String getName();
 }

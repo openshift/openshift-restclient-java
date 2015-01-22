@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.openshift3.internal.client;
 
+import static com.openshift3.client.capability.CapabilityInitializer.initializeCapability;;
+
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,9 +26,10 @@ import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
 import com.openshift3.client.IClient;
 import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.capability.Capability;
-import com.openshift3.client.capability.CapabilityInitializer;
+import com.openshift3.client.capability.ICapability;
+import com.openshift3.client.capability.server.IImageRegistryHosting;
 import com.openshift3.client.model.IResource;
+import com.openshift3.internal.client.capability.server.DefaultImageRegistryHosting;
 import com.openshift3.internal.client.model.Status;
 
 public class DefaultClient implements IClient{
@@ -35,7 +38,7 @@ public class DefaultClient implements IClient{
 	private URL baseUrl;
 	private IHttpClient client;
 	private IResourceFactory factory;
-	private Map<Class<? extends Capability>, Capability> capabilities = new HashMap<Class<? extends Capability>, Capability>();
+	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
 	private boolean capabilitiesInitialized = false;
 	
 	private static final String apiEndpoint = "api/v1beta1";
@@ -178,7 +181,7 @@ public class DefaultClient implements IClient{
 
 	public synchronized void initializeCapabilities(){
 		if(capabilitiesInitialized) return;
-		new CapabilityInitializer().populate(capabilities, this);
+		initializeCapability(capabilities, IImageRegistryHosting.class, new DefaultImageRegistryHosting(this));
 		capabilitiesInitialized = true;
 	}
 	
@@ -197,12 +200,12 @@ public class DefaultClient implements IClient{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Capability> T getCapability(Class<T> capability) {
+	public <T extends ICapability> T getCapability(Class<T> capability) {
 		return  (T) capabilities.get(capability);
 	}
 
 	@Override
-	public  boolean isCapableOf(Class<? extends Capability> capability) {
+	public  boolean supports(Class<? extends ICapability> capability) {
 		if(!capabilitiesInitialized ){
 			initializeCapabilities();
 		}

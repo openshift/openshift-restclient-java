@@ -6,16 +6,16 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.capability;
+package com.openshift3.internal.client.capability.server;
 
 import com.openshift3.client.IClient;
 import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.capability.ImageRegistryHosting;
+import com.openshift3.client.capability.server.IImageRegistryHosting;
 import com.openshift3.internal.client.model.KubernetesResource;
 import com.openshift3.internal.client.model.Service;
 
-public class DefaultImageRegistryHosting implements ImageRegistryHosting {
+public class DefaultImageRegistryHosting implements IImageRegistryHosting {
 
 	private IClient client;
 	private Service service;
@@ -35,7 +35,7 @@ public class DefaultImageRegistryHosting implements ImageRegistryHosting {
 	}
 
 	@Override
-	public boolean exists() {
+	public boolean isSupported() {
 		KubernetesResource resource;
 		try{
 			resource = client.get(ResourceKind.Service, "docker-registry", "");
