@@ -26,6 +26,7 @@ import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
 import com.openshift3.client.IClient;
 import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
+import com.openshift3.client.capability.CapabilityInitializer;
 import com.openshift3.client.capability.ICapability;
 import com.openshift3.client.capability.server.IImageRegistryHosting;
 import com.openshift3.client.model.IResource;
@@ -181,7 +182,9 @@ public class DefaultClient implements IClient{
 
 	public synchronized void initializeCapabilities(){
 		if(capabilitiesInitialized) return;
-		initializeCapability(capabilities, IImageRegistryHosting.class, new DefaultImageRegistryHosting(this));
+		CapabilityInitializer initializer = new CapabilityInitializer();
+		initializer.register(IImageRegistryHosting.class, new DefaultImageRegistryHosting(this));
+		capabilities = initializer.getCapabilities();
 		capabilitiesInitialized = true;
 	}
 	
