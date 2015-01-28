@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.openshift3.internal.client;
 
-import static com.openshift3.client.capability.CapabilityInitializer.initializeCapability;;
+import static com.openshift3.client.capability.CapabilityInitializer.initializeCapability;
 
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +27,11 @@ import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
 import com.openshift3.client.IClient;
 import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.capability.CapabilityInitializer;
 import com.openshift3.client.capability.ICapability;
 import com.openshift3.client.capability.server.IImageRegistryHosting;
 import com.openshift3.client.model.IResource;
 import com.openshift3.internal.client.capability.server.DefaultImageRegistryHosting;
+import com.openshift3.internal.client.model.ResourcePropertiesRegistry;
 import com.openshift3.internal.client.model.Status;
 
 public class DefaultClient implements IClient{
@@ -42,24 +43,13 @@ public class DefaultClient implements IClient{
 	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
 	private boolean capabilitiesInitialized = false;
 	
-	private static final String apiEndpoint = "api/v1beta1";
-	private static final String osApiEndpoint = "osapi/v1beta1";
+	private static final String apiEndpoint = "api";
+	private static final String osApiEndpoint = "osapi";
 	
-	private static final Map<ResourceKind, String> TYPE_MAPPING = new HashMap<ResourceKind, String>();
+	private final Map<ResourceKind, String> typeMappings = new HashMap<ResourceKind, String>();
+	private OpenShiftAPIVersion openShiftVersion;
+	private KubernetesAPIVersion kubernetesVersion;
 	
-	static {
-		//OpenShift endpoints
-		TYPE_MAPPING.put(ResourceKind.BuildConfig, osApiEndpoint);
-		TYPE_MAPPING.put(ResourceKind.DeploymentConfig, osApiEndpoint);
-		TYPE_MAPPING.put(ResourceKind.ImageRepository, osApiEndpoint);
-		TYPE_MAPPING.put(ResourceKind.Project, osApiEndpoint);
-		
-		//Kubernetes endpoints
-		TYPE_MAPPING.put(ResourceKind.Pod, apiEndpoint);
-		TYPE_MAPPING.put(ResourceKind.Service, apiEndpoint);
-		
-	}
-
 	public DefaultClient(URL baseUrl){
 		this(baseUrl, null);
 	}
@@ -95,10 +85,10 @@ public class DefaultClient implements IClient{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends IResource> List<T> list(ResourceKind kind, String namespace, Map<String, String> labels) {
-		if(!TYPE_MAPPING.containsKey(kind))
+		if(!getTypeMappings().containsKey(kind))
 			throw new RuntimeException("No OpenShift resource endpoint for type: " + kind);
 		try {
-			URLBuilder builder = new URLBuilder(this.baseUrl, TYPE_MAPPING)
+			URLBuilder builder = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(kind)
 				.namespace(namespace);
 			final URL endpoint = builder.build();
@@ -128,7 +118,7 @@ public class DefaultClient implements IClient{
 	@Override
 	public <T extends IResource> T create(T resource) {
 		try {
-			final URL endpoint = new URLBuilder(this.baseUrl, TYPE_MAPPING)
+			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(resource.getKind())
 				.addParmeter("namespace", resource.getNamespace())
 				.build();
@@ -146,10 +136,11 @@ public class DefaultClient implements IClient{
 	@Override
 	public <T extends IResource> void delete(T resource) {
 		try {
-			final URL endpoint = new URLBuilder(this.baseUrl, TYPE_MAPPING)
+			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.resource(resource)
 				.addParmeter("namespace", resource.getNamespace())
 				.build();
+			LOGGER.debug(String.format("Deleting resource: %s", endpoint));
 			String response = client.delete(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT);
 			LOGGER.debug(response);
 			//TODO return response object here
@@ -164,7 +155,7 @@ public class DefaultClient implements IClient{
 	@Override
 	public <T extends IResource> T get(ResourceKind kind, String name, String namespace) {
 		try {
-			final URL endpoint = new URLBuilder(this.baseUrl, TYPE_MAPPING)
+			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(kind)
 				.name(name)
 				.addParmeter("namespace", namespace)
@@ -182,9 +173,7 @@ public class DefaultClient implements IClient{
 
 	public synchronized void initializeCapabilities(){
 		if(capabilitiesInitialized) return;
-		CapabilityInitializer initializer = new CapabilityInitializer();
-		initializer.register(IImageRegistryHosting.class, new DefaultImageRegistryHosting(this));
-		capabilities = initializer.getCapabilities();
+		initializeCapability(capabilities, IImageRegistryHosting.class, new DefaultImageRegistryHosting(this));
 		capabilitiesInitialized = true;
 	}
 	
@@ -215,6 +204,75 @@ public class DefaultClient implements IClient{
 		return capabilities.containsKey(capability);
 	}
 
+	public List<KubernetesAPIVersion> getKubernetesVersions() {
+		return getVersion(KubernetesAPIVersion.class, apiEndpoint);
+	}
+
+	public List<OpenShiftAPIVersion> getOpenShiftVersions() {
+		return getVersion(OpenShiftAPIVersion.class, osApiEndpoint);
+	}
+
+	public KubernetesAPIVersion getKubernetesVersion() {
+		if(kubernetesVersion == null){
+			List<KubernetesAPIVersion> versions = getKubernetesVersions();
+			kubernetesVersion = ResourcePropertiesRegistry.getInstance().getMaxSupportedKubernetesVersion();
+			if(!versions.contains(kubernetesVersion)){
+				throw new RuntimeException(String.format("Kubernetes API version '%s' is not supported by this client"));
+			}
+		}
+		return kubernetesVersion; 
+	}
+
+	public OpenShiftAPIVersion getOpenShiftVersion() {
+		if(openShiftVersion == null){
+			List<OpenShiftAPIVersion> versions = getOpenShiftVersions();
+			openShiftVersion = ResourcePropertiesRegistry.getInstance().getMaxSupportedOpenShiftVersion();
+			if(!versions.contains(openShiftVersion)){
+				throw new RuntimeException(String.format("OpenShift API version '%s' is not supported by this client"));
+			}
+		}
+		return openShiftVersion; 
+	}
+	
+	private <T extends Enum<T>> List<T> getVersion(Class<T> klass, String endpoint) {
+		try {
+			final URL url = new URL(this.baseUrl, endpoint);
+			LOGGER.debug(url.toString());
+			String response = client.get(url, IHttpClient.DEFAULT_READ_TIMEOUT);
+			LOGGER.debug(response);
+			ModelNode json = ModelNode.fromJSONString(response);
+			List<ModelNode> versionNodes = json.get("versions").asList();
+			List<T> versions = new ArrayList<T>(versionNodes.size());
+			for (ModelNode node : versionNodes) {
+				try{
+					versions.add(Enum.valueOf(klass, node.asString()));
+				}catch(IllegalArgumentException e){
+					LOGGER.warn(String.format("Unsupported server version '%s' for '%s'",  node.asString(), klass.getSimpleName()));
+				}
+			}
+			return versions;
+		} catch (Exception e) {
+			LOGGER.error("Exception", e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Map<ResourceKind, String> getTypeMappings(){
+		if(typeMappings.isEmpty()){
+			//OpenShift endpoints
+			final String osEndpoint = String.format("%s/%s", osApiEndpoint, getOpenShiftVersion());
+			typeMappings.put(ResourceKind.BuildConfig, osEndpoint);
+			typeMappings.put(ResourceKind.DeploymentConfig, osEndpoint);
+			typeMappings.put(ResourceKind.ImageRepository, osEndpoint);
+			typeMappings.put(ResourceKind.Project, osEndpoint);
+			
+			//Kubernetes endpoints
+			final String k8eEndpoint = String.format("%s/%s", apiEndpoint, getKubernetesVersion());
+			typeMappings.put(ResourceKind.Pod, k8eEndpoint);
+			typeMappings.put(ResourceKind.Service, k8eEndpoint);
+		}
+		return typeMappings;
+	}
 
 
 }

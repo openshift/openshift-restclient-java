@@ -25,27 +25,29 @@ public class DefaultClientTest {
 	private ModelNode response;
 	private Pod podFrontEnd;
 	private Pod podBackEnd;
+	private IResourceFactory factory;
+	private URL baseUrl; 
 	
 	private void givenAPodList(){
-		
-		podFrontEnd = new Pod();
+		podFrontEnd = factory.create("v1beta1", ResourceKind.Pod);
 		podFrontEnd.setName("frontend");
 		podFrontEnd.setNamespace("aNamespace");
 		podFrontEnd.addLabel("name", "frontend");
 		podFrontEnd.addLabel("env", "production");
 		
-		podBackEnd = new Pod();
+		podBackEnd = factory.create("v1beta1", ResourceKind.Pod);
 		podBackEnd.setName("backend");
 		podBackEnd.setNamespace("aNamespace");
 		podBackEnd.addLabel("name", "backend");
 		podBackEnd.addLabel("env", "production");
 		
-		Pod otherPod = new Pod();
+		Pod otherPod = factory.create("v1beta1", ResourceKind.Pod);
 		otherPod.setName("other");
 		otherPod.setNamespace("aNamespace");
 		otherPod.addLabel("env", "production");
 		
 		response = new ModelNode();
+		response.get("apiVersion").set("v1beta1");
 		response.get("kind").set("PodList");
 		ModelNode items = response.get("items");
 		items.add(podFrontEnd.getNode());
@@ -55,16 +57,23 @@ public class DefaultClientTest {
 	
 	private void givenAClient() throws MalformedURLException{
 		httpClient = mock(IHttpClient.class);
-		client = new DefaultClient(new URL("http://myopenshift"), httpClient);
+		client = new DefaultClient(baseUrl, httpClient);
+		factory = new ResourceFactory(client);
 	}
 	
 	@Before
 	public void setUp() throws Exception{
+		baseUrl = new URL("http://myopenshift");
+		URL kubeApi = new URL(baseUrl, "api");
+		URL osApi = new URL(baseUrl, "osapi");
 		givenAClient();
 		givenAPodList();
 		when(httpClient.get(any(URL.class), anyInt()))
 			.thenReturn(response.toJSONString(false));
-		
+		when(httpClient.get(eq(kubeApi), anyInt()))
+			.thenReturn("{\"versions\": [ \"v1beta1\"]}");
+		when(httpClient.get(eq(osApi), anyInt()))
+			.thenReturn("{\"versions\": [ \"v1beta1\"]}");
 	}
 	@SuppressWarnings("serial")
 	@Test

@@ -18,7 +18,6 @@ import org.jboss.dmr.ModelType;
 
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.capability.CapabilityInitializer;
 import com.openshift3.client.capability.ICapability;
 import com.openshift3.client.capability.resources.IDeploymentConfigTraceability;
 import com.openshift3.client.capability.resources.IDeploymentTraceability;
@@ -32,20 +31,15 @@ import com.openshift3.internal.client.capability.resources.AnnotationTemplateTra
  * Resource is an abstract representation of a Kubernetes resource
  *
  */
-public class KubernetesResource implements IResource{
-	
-	private static final String [] ANNOTATIONS = {"annotations"};
-	private static final String [] CREATION_TIMESTAMP = {"creationTimestamp"};
-	private static final String [] LABELS = {"labels"};
-	private static final String [] NAME = {"id"};
-	private static final String [] NAMESPACE = {"namespace"};
+public class KubernetesResource implements IResource, ResourcePropertyKeys{
 	
 	private ModelNode node;
 	private IClient client;
 	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
+	private Map<String, String []> propertyKeys;
 	
 	public KubernetesResource(){
-		this(new ModelNode(), null);
+		this(new ModelNode(), null, null);
 	}
 	
 	public KubernetesResource(String json){
@@ -53,11 +47,10 @@ public class KubernetesResource implements IResource{
 		initializeCapabilities();
 	}
 	
-	public KubernetesResource(ModelNode node, IClient client){
+	public KubernetesResource(ModelNode node, IClient client, Map<String, String []> propertyKeys){
 		this.node = node;
 		this.client = client;
-		//TODO figure out how to handle version changes
-		setApiVersion("v1beta1");
+		this.propertyKeys = propertyKeys;
 		initializeCapabilities();
 	}
 	
@@ -114,11 +107,7 @@ public class KubernetesResource implements IResource{
 	
 	@Override
 	public String getApiVersion(){
-		return node.get("apiVersion").asString();
-	}
-	
-	public void setApiVersion(String version){
-		node.get("apiVersion").set(version);
+		return asString(APIVERSION);
 	}
 	
 	@Override
@@ -127,22 +116,22 @@ public class KubernetesResource implements IResource{
 	}
 	@Override
 	public String getName(){
-		return node.get(NAME).asString();
+		return asString(NAME);
 	}
 	
 	@Override
 	public void setName(String name) {
-		node.get(NAME).set(name);
+		set(NAME, name);
 	}
 	
 	@Override
 	public String getNamespace(){
-		return node.get(NAMESPACE).asString();
+		return asString(NAMESPACE);
 	}
 	
 	@Override
 	public void setNamespace(String namespace){
-		node.get(NAMESPACE).set(namespace);
+		set(NAMESPACE, namespace);
 	}
 
 	@Override
@@ -158,27 +147,23 @@ public class KubernetesResource implements IResource{
 	}
 	
 	/*---------- utility methods ------*/
-	protected ModelNode get(String path){
-		return node.get(path);
+	protected ModelNode get(String key){
+		String [] property = propertyKeys.get(key);
+		return node.get(property);
 	}
 	
-	protected ModelNode get(String [] path){
-		return node.get(path);
-	}
-	
-	protected void set(String property, String value) {
+	protected void set(String key, int value) {
+		String [] property = propertyKeys.get(key);
 		node.get(property).set(value);
 	}
 	
-	protected void set(String propery, int value) {
-		node.get(propery).set(value);
-	}
-	
-	protected void set(String [] property, String value){
+	protected void set(String key, String value){
+		String [] property = propertyKeys.get(key);
 		node.get(property).set(value);
 	}
 	
-	protected Map<String, String> asMap(String [] path){
+	protected Map<String, String> asMap(String property){
+		String [] path = propertyKeys.get(property);
 		ModelNode node = this.node.get(path);
 		HashMap<String, String> map = new HashMap<String, String>();
 		if( ModelType.UNDEFINED == node.getType())
@@ -189,19 +174,14 @@ public class KubernetesResource implements IResource{
 		return map;
 	}
 	
-	protected int asInt(String property){
+	protected int asInt(String key){
+		String [] property = propertyKeys.get(key);
 		return node.get(property).asInt();
 	}
 	
-	protected int asInt(String [] path){
-		return node.get(path).asInt();
-	}
-	
 	protected String asString(String property){
-		return node.get(property).asString();
-	}
-	protected String asString(String [] property){
-		return node.get(property).asString();
+		String [] path = propertyKeys.get(property);
+		return node.get(path).asString();
 	}
 
 	@Override

@@ -21,7 +21,8 @@ import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.capability.server.IImageRegistryHosting;
 import com.openshift3.client.model.IService;
-import com.openshift3.internal.client.model.Service;
+import com.openshift3.internal.client.IResourceFactory;
+import com.openshift3.internal.client.ResourceFactory;
 import com.openshift3.internal.client.model.Status;
 
 public class DefaultImageRegistryHostingTest {
@@ -33,7 +34,8 @@ public class DefaultImageRegistryHostingTest {
 	@Before
 	public void setUp(){
 		client = mock(IClient.class);
-		service = new Service(client);
+		IResourceFactory factory = new ResourceFactory(client);
+		service = factory.create("v1beta1", ResourceKind.Service);
 		capability = new DefaultImageRegistryHosting(client);
 		
 	}

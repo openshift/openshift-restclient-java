@@ -17,21 +17,18 @@ import com.openshift3.client.model.IReplicationController;
 
 public class ReplicationController extends KubernetesResource implements IReplicationController{
 
-	private static final String DESIRED_STATE = "desiredState";
-	private static final String [] DESIRED_REPLICA_COUNT = {DESIRED_STATE, "replicas"};
-	private static final String [] REPLICA_SELECTOR = {DESIRED_STATE, "replicaSelector"};
-	public ReplicationController(ModelNode node, IClient client) {
-		super(node, client);
+	public ReplicationController(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
+		super(node, client, propertyKeys);
 	}
 
 	@Override
 	public int getReplicaCount() {
-		return asInt(DESIRED_REPLICA_COUNT);
+		return asInt(REPLICATION_CONTROLLER_REPLICA_COUNT);
 	}
 
 	@Override
 	public Map<String, String> getSelector() {
-		return asMap(REPLICA_SELECTOR);
+		return asMap(REPLICATION_CONTROLLER_REPLICA_SELECTOR);
 	}
 
 }

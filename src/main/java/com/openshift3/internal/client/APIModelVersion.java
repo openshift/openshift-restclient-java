@@ -6,27 +6,22 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.internal.client;
 
-import java.util.Map;
+import java.util.Comparator;
 
-import org.jboss.dmr.ModelNode;
+public interface APIModelVersion {
 
-import com.openshift3.client.IClient;
-import com.openshift3.client.model.IStatus;
-
-public class Status extends KubernetesResource implements IStatus{
-
-	public Status(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
-	}
-
-	public Status(String json) {
-		super(json);
-	}
+	int getOrder();
 	
-	public String getMessage(){
-		return asString(STATUS_MESSAGE);
-	}
-
+	static class VersionComparitor implements Comparator<APIModelVersion> {
+		@Override
+		public int compare(APIModelVersion v1, APIModelVersion v2) {
+			if(v2 == null) return 1;
+			if(v1 == null) return -1;
+			if(v1.getOrder() < v2.getOrder()) return -1;
+			if(v1.getOrder() > v2.getOrder()) return 1;
+			return 0;
+		}
+	};
 }

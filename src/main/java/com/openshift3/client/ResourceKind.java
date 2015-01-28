@@ -34,5 +34,4 @@ public enum ResourceKind {
 	public String pluralize() {
 		return plural;
 	}
-	
 }

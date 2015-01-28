@@ -34,4 +34,14 @@ public interface IResourceFactory {
 	 * @return
 	 */
 	<T extends IResource> T create(String response) ;
+
+	/**
+	 * Create a resource for a given version and kind
+	 * @param version
+	 * @param kind
+	 * @return
+	 */
+	<T extends IResource> T create(String version, ResourceKind kind);
+	
+	
 }
