@@ -8,20 +8,25 @@
  ******************************************************************************/
 package com.openshift3.client.capability;
 
-public interface Capability {
-	
+/**
+ * ICapable allows a source to be queried and identify its
+ * capabilities
+ */
+public interface ICapable {
+
 	/**
-	 * Allow the implementation of the capability to determine
-	 * if it is supported on the OpenShift server.  Implementations
-	 * should return false if they can not
+	 * Get the capability of the desired type
 	 * 
-	 * @return true if the capability exists
+	 * @param capability
+	 * @return an implementation of the given capability
 	 */
-	boolean exists();
+	<T extends ICapability> T getCapability(Class<T> capability);
 	
 	/**
-	 * Well known name of the capability
-	 * @return
+	 * Determine if the client supports the desired capability
+	 *  
+	 * @param capability
+	 * @return true if the client is able to offer this capability
 	 */
-	String getName();
+	boolean supports(Class<? extends ICapability> capability);
 }

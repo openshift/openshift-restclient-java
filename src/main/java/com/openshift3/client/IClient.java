@@ -11,7 +11,7 @@ package com.openshift3.client;
 import java.util.List;
 import java.util.Map;
 
-import com.openshift3.client.capability.Capability;
+import com.openshift3.client.capability.ICapable;
 import com.openshift3.client.model.IResource;
 
 /**
@@ -19,7 +19,7 @@ import com.openshift3.client.model.IResource;
  * master server.
  *
  */
-public interface IClient {
+public interface IClient extends ICapable{
 	
 	/**
 	 * List all possible resources of the given kind in the default namespace
@@ -66,22 +66,6 @@ public interface IClient {
 	 * @param resource
 	 */
 	<T extends IResource> void delete(T resource);
-
-	/**
-	 * Get the capability of the desired type
-	 * 
-	 * @param capability
-	 * @return an implementation of the given capability
-	 */
-	<T extends Capability> T getCapability(Class<T> capability);
-	
-	/**
-	 * Determine if the client supports the desired capability
-	 *  
-	 * @param capability
-	 * @return true if the client is able to offer this capability
-	 */
-	boolean isCapableOf(Class<? extends Capability> capability);
 	
 	/**
 	 * Connect to the OpenShift server and potentially

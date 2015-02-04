@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.capability;
+package com.openshift3.internal.client.capability.server;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -19,9 +19,8 @@ import org.junit.Test;
 import com.openshift3.client.IClient;
 import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.capability.ImageRegistryHosting;
+import com.openshift3.client.capability.server.IImageRegistryHosting;
 import com.openshift3.client.model.IService;
-import com.openshift3.internal.client.capability.DefaultImageRegistryHosting;
 import com.openshift3.internal.client.model.Service;
 import com.openshift3.internal.client.model.Status;
 
@@ -29,7 +28,7 @@ public class DefaultImageRegistryHostingTest {
 
 	private IClient client;
 	private IService service;
-	private ImageRegistryHosting capability;
+	private IImageRegistryHosting capability;
 	
 	@Before
 	public void setUp(){
@@ -42,7 +41,7 @@ public class DefaultImageRegistryHostingTest {
 	@Test
 	public void testExistsWhenServiceExists() throws MalformedURLException {
 		when(client.get(any(ResourceKind.class), anyString(), anyString())).thenReturn(service);
-		assertTrue("Exp. capability to be enabled", capability.exists());
+		assertTrue("Exp. capability to be enabled", capability.isSupported());
 	}
 	
 	@Test
@@ -50,7 +49,7 @@ public class DefaultImageRegistryHostingTest {
 		OpenShiftException e = mock(OpenShiftException.class);
 		when(e.getStatus()).thenReturn(mock(Status.class));
 		when(client.get(any(ResourceKind.class), anyString(), anyString())).thenThrow(e);
-		assertFalse("Exp. capability to be disabled", capability.exists());
+		assertFalse("Exp. capability to be disabled", capability.isSupported());
 	}
 	
 
