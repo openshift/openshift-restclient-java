@@ -12,16 +12,19 @@ import static com.openshift3.client.capability.CapabilityInitializer.initializeC
 
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.net.ssl.SSLSession;
 
 import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.client.IHttpClient;
+import com.openshift.client.IHttpClient.ISSLCertificateCallback;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
 import com.openshift3.client.IClient;
@@ -69,6 +72,18 @@ public class DefaultClient implements IClient{
 	private IHttpClient newIHttpClient(){
 		return  new UrlConnectionHttpClientBuilder()
 		.setAcceptMediaType("application/json")
+		.setSSLCertificateCallback(new ISSLCertificateCallback() {
+			
+			@Override
+			public boolean allowHostname(String hostname, SSLSession session) {
+				return true;
+			}
+			
+			@Override
+			public boolean allowCertificate(X509Certificate[] chain) {
+				return true;
+			}
+		})
 		.client();
 	}
 	

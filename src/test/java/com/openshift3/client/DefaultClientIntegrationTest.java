@@ -36,8 +36,6 @@ public class DefaultClientIntegrationTest {
 	public void testResourceLifeCycle() throws MalformedURLException {
 		
 		DefaultClient client = new DefaultClient(new URL("http://localhost:8080"));
-		LOG.debug(String.format("Supported Kubernetes Versions: %s", client.getKubernetesVersions()));
-		LOG.debug(String.format("Supported OpenShift Versions: %s", client.getOpenShiftVersions()));
 		IResourceFactory factory = new ResourceFactory(client);
 		
 		IProject project = factory.create("v1beta1", ResourceKind.Project);
