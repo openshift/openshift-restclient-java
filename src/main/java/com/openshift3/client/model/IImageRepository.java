@@ -6,9 +6,8 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.client.model;
 
-import com.openshift3.client.model.IResource;
 
 public interface IImageRepository extends IResource{
 

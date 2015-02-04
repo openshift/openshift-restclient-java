@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift3.client;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +67,12 @@ public interface IClient extends ICapable{
 	 * @param resource
 	 */
 	<T extends IResource> void delete(T resource);
+
+	/**
+	 * 
+	 * @return the base URL of this endpoint
+	 */
+	URL getBaseURL();
 	
 	/**
 	 * Connect to the OpenShift server and potentially

@@ -15,7 +15,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	public BuildConfig(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
 		//TODO add check to kind here
-		set("kind",ResourceKind.BuildConfig.toString());
 	}
 
 	//TODO delete me...require construction through factory

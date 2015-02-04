@@ -57,9 +57,6 @@ public class ResourceFactory implements IResourceFactory{
 	public List<IResource> createList(String json, ResourceKind kind){
 		ModelNode data = ModelNode.fromJSONString(json);
 		final String dataKind = data.get(KIND).asString();
-		if(ResourceKind.Project.toString().equals(dataKind)){
-			return buildProjectListForSingleProject(json);
-		}
 		if(!(kind.toString() + "List").equals(dataKind)){
 			throw new RuntimeException(String.format("Unexpected container type '%s' for desired kind: %s", dataKind, kind));
 		}
@@ -70,16 +67,6 @@ public class ResourceFactory implements IResourceFactory{
 		}catch(Exception e){
 			throw new RuntimeException(e);
 		}
-	}
-	
-	/*
-	 * Project is apparently special as query for project with namespace returns a singular
-	 * project
-	 */
-	private List<IResource> buildProjectListForSingleProject(String data) {
-		ArrayList<IResource> projects = new ArrayList<IResource>(1);
-		projects.add(create(data));
-		return projects;
 	}
 
 	private List<IResource> buildList(final String version, List<ModelNode> items, ResourceKind kind) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -98,15 +85,14 @@ public class ResourceFactory implements IResourceFactory{
 	}
 
 	public <T extends IResource> T create(String version, ResourceKind kind) {
-		ModelNode node = new ModelNode();
-		node.get(APIVERSION).set(version);
-		node.get(KIND).set(kind.toString());
-		return create(node, version, kind);
+		return create(new ModelNode(), version, kind);
 	}
 
 	@SuppressWarnings("unchecked")
 	private  <T extends IResource> T create(ModelNode node, String version, ResourceKind kind) {
 		try {
+			node.get(APIVERSION).set(version);
+			node.get(KIND).set(kind.toString());
 			Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind);
 			Constructor<? extends IResource> constructor =  IMPL_MAP.get(kind).getConstructor(ModelNode.class, IClient.class, Map.class);
 			return (T) constructor.newInstance(node, client, properyKeyMap);
