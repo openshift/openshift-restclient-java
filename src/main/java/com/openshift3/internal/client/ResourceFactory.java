@@ -23,10 +23,10 @@ import com.openshift3.client.model.IResource;
 import com.openshift3.internal.client.model.BuildConfig;
 import com.openshift3.internal.client.model.DeploymentConfig;
 import com.openshift3.internal.client.model.ImageRepository;
-import com.openshift3.internal.client.model.KubernetesResource;
 import com.openshift3.internal.client.model.Pod;
 import com.openshift3.internal.client.model.Project;
 import com.openshift3.internal.client.model.ReplicationController;
+import com.openshift3.internal.client.model.ResourcePropertiesRegistry;
 import com.openshift3.internal.client.model.Service;
 import com.openshift3.internal.client.model.Status;
 
@@ -35,6 +35,8 @@ import com.openshift3.internal.client.model.Status;
  */
 public class ResourceFactory implements IResourceFactory{
 	
+	private static final String KIND = "kind";
+	private static final String APIVERSION = "apiVersion";
 	private static final Map<ResourceKind, Class<? extends IResource>> IMPL_MAP = new HashMap<ResourceKind, Class<? extends IResource>>();
 	static {
 		IMPL_MAP.put(ResourceKind.BuildConfig, BuildConfig.class);
@@ -54,16 +56,17 @@ public class ResourceFactory implements IResourceFactory{
 
 	public List<IResource> createList(String json, ResourceKind kind){
 		ModelNode data = ModelNode.fromJSONString(json);
-		String dataKind = data.get("kind").asString();
+		final String dataKind = data.get(KIND).asString();
 		if(ResourceKind.Project.toString().equals(dataKind)){
-			return buildProjectListForSingleProject(data);
+			return buildProjectListForSingleProject(json);
 		}
 		if(!(kind.toString() + "List").equals(dataKind)){
 			throw new RuntimeException(String.format("Unexpected container type '%s' for desired kind: %s", dataKind, kind));
 		}
 		
 		try{
-			return buildList(data.get("items").asList(), IMPL_MAP.get(kind));
+			final String version = data.get(APIVERSION).asString();
+			return buildList(version, data.get("items").asList(), kind);
 		}catch(Exception e){
 			throw new RuntimeException(e);
 		}
@@ -73,30 +76,43 @@ public class ResourceFactory implements IResourceFactory{
 	 * Project is apparently special as query for project with namespace returns a singular
 	 * project
 	 */
-	private List<IResource> buildProjectListForSingleProject(ModelNode data) {
+	private List<IResource> buildProjectListForSingleProject(String data) {
 		ArrayList<IResource> projects = new ArrayList<IResource>(1);
-		projects.add(new Project(data, client));
+		projects.add(create(data));
 		return projects;
 	}
 
-	private <T extends IResource> List<IResource> buildList(List<ModelNode> items, Class<T> kind) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Constructor<T> constructor = kind.getConstructor(ModelNode.class, IClient.class);
+	private List<IResource> buildList(final String version, List<ModelNode> items, ResourceKind kind) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		List<IResource> resources = new ArrayList<IResource>(items.size());
 		for (ModelNode item : items) {
-			resources.add(constructor.newInstance(item, client));
+			resources.add(create(item, version, kind));
 		}
 		return resources;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T extends IResource> T create(String response) {
-		KubernetesResource resource = new KubernetesResource(response);
+		ModelNode node = ModelNode.fromJSONString(response);
+		String version = node.get(APIVERSION).asString();
+		ResourceKind kind = ResourceKind.valueOf(node.get(KIND).asString());
+		return create(node, version, kind);
+	}
+
+	public <T extends IResource> T create(String version, ResourceKind kind) {
+		ModelNode node = new ModelNode();
+		node.get(APIVERSION).set(version);
+		node.get(KIND).set(kind.toString());
+		return create(node, version, kind);
+	}
+
+	@SuppressWarnings("unchecked")
+	private  <T extends IResource> T create(ModelNode node, String version, ResourceKind kind) {
 		try {
-			Constructor<? extends IResource> constructor = IMPL_MAP.get(resource.getKind()).getConstructor(ModelNode.class, IClient.class);
-			return (T) constructor.newInstance(resource.getNode(), client);
+			Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind);
+			Constructor<? extends IResource> constructor =  IMPL_MAP.get(kind).getConstructor(ModelNode.class, IClient.class, Map.class);
+			return (T) constructor.newInstance(node, client, properyKeyMap);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
 	}
+	
 }

@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.openshift.client.utils.Samples;
 import com.openshift3.client.IClient;
+import com.openshift3.client.ResourceKind;
 import com.openshift3.client.model.IService;
 
 /**
@@ -27,7 +28,7 @@ public class V1Beta1ServiceTest{
 	public void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_SERVICE.getContentAsString());
-		service = new Service(node, client);
+		service = new Service(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Service));
 	}
 	
 	@Test

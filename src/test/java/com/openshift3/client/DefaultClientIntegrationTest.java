@@ -23,6 +23,8 @@ import com.openshift3.client.model.IProject;
 import com.openshift3.client.model.IResource;
 import com.openshift3.client.model.IService;
 import com.openshift3.internal.client.DefaultClient;
+import com.openshift3.internal.client.IResourceFactory;
+import com.openshift3.internal.client.ResourceFactory;
 import com.openshift3.internal.client.model.Project;
 import com.openshift3.internal.client.model.Service;
 
@@ -33,16 +35,20 @@ public class DefaultClientIntegrationTest {
 	@Test
 	public void testResourceLifeCycle() throws MalformedURLException {
 		
-		IClient client = new DefaultClient(new URL("http://localhost:8080"));
-		IProject project = new Project();
+		DefaultClient client = new DefaultClient(new URL("http://localhost:8080"));
+		LOG.debug(String.format("Supported Kubernetes Versions: %s", client.getKubernetesVersions()));
+		LOG.debug(String.format("Supported OpenShift Versions: %s", client.getOpenShiftVersions()));
+		IResourceFactory factory = new ResourceFactory(client);
+		
+		IProject project = factory.create("v1beta1", ResourceKind.Project);
 		project.setName("firstproject");
 		LOG.debug(String.format("Stubbing project: %s", project));
 		
-		IProject other =  new Project();
+		IProject other = factory.create("v1beta1", ResourceKind.Project);
 		other.setName("other");
 		LOG.debug(String.format("Stubbing project: %s", project));
 		
-		IService service = new Service(client);
+		IService service = factory.create("v1beta1", ResourceKind.Service);
 		service.setNamespace(project.getName()); //this will be the project's namespace
 		service.setName("some-service");
 		service.setContainerPort(6767);
@@ -50,7 +56,7 @@ public class DefaultClientIntegrationTest {
 		service.setSelector("name", "barpod");
 		LOG.debug(String.format("Stubbing service: %s", service));
 
-		Service otherService = new Service(client);
+		Service otherService = factory.create("v1beta1", ResourceKind.Service);
 		otherService.setNamespace("someothernamespace"); //this will be the project's namespace
 		otherService.setName("some-other-service");
 		otherService.setContainerPort(8787);

@@ -6,27 +6,25 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.internal.client;
 
-import java.util.Map;
 
-import org.jboss.dmr.ModelNode;
 
-import com.openshift3.client.IClient;
-import com.openshift3.client.model.IStatus;
 
-public class Status extends KubernetesResource implements IStatus{
-
-	public Status(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
-	}
-
-	public Status(String json) {
-		super(json);
+/**
+ * This list of supported OpenShift API Models
+ * by this client
+ */
+public enum OpenShiftAPIVersion implements APIModelVersion{
+	v1beta1(1);
+	
+	private int order;
+	OpenShiftAPIVersion(int order){
+		this.order = order;
 	}
 	
-	public String getMessage(){
-		return asString(STATUS_MESSAGE);
+	@Override
+	public int getOrder(){
+		return order;
 	}
-
 }

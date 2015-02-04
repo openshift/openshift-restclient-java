@@ -10,6 +10,7 @@ package com.openshift3.internal.client.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 
@@ -17,24 +18,18 @@ import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.model.IProject;
 
-public class Project extends OpenShiftResource implements IProject{
+public class Project extends KubernetesResource implements IProject{
 
-
-	public Project() {
-		this(new ModelNode(), null);
-		set("kind", ResourceKind.Project.toString());
-	}
-	
-	public Project(ModelNode node, IClient client) {
-		super(node, client);
+	public Project(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
+		super(node, client, propertyKeys);
 	}
 	
 	public String getDisplayName(){
-		return asString("displayName");
+		return asString(PROJECT_DISPLAY_NAME);
 	}
 	
 	public void setDisplayName(String name) {
-		get("displayName").set(name);
+		set(PROJECT_DISPLAY_NAME, name);
 	}
 
 	public <T extends KubernetesResource> List<T> getResources(ResourceKind kind){

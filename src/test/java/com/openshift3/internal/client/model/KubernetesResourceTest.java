@@ -14,6 +14,7 @@ import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift3.client.ResourceKind;
 import com.openshift3.client.capability.resources.IDeploymentTraceability;
 import com.openshift3.client.capability.resources.ITemplateTraceability;
 
@@ -30,7 +31,7 @@ public class KubernetesResourceTest {
 		node = new ModelNode();
 		node.get("annotations").set(annotations);
 		
-		resource = new KubernetesResource(node, null);
+		resource = new KubernetesResource(node, null, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Service));
 		
 	}
 	@Test

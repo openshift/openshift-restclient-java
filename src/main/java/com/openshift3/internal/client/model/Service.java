@@ -9,7 +9,6 @@
 package com.openshift3.internal.client.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,31 +22,23 @@ import com.openshift3.client.model.IService;
 
 public class Service extends KubernetesResource implements IService {
 
-	private static String [] SELECTOR = {"selector"};
-	
-	public Service (IClient client) {
-		this(new ModelNode(), client);
-		setApiVersion("v1beta1");
-		set("kind", ResourceKind.Service.toString());
-	}
-	
-	public Service(ModelNode node, IClient client) {
-		super(node, client);
+	public Service(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
+		super(node, client, propertyKeys);
 	}
 	
 	@Override
 	public void setPort(int port){
-		set("port", port);
+		set(SERVICE_PORT, port);
 	}
 	
 	@Override
 	public int getPort(){
-		return asInt("port");
+		return asInt(SERVICE_PORT);
 	}
 	
 	@Override
 	public Map<String, String> getSelector(){
-		return asMap(SELECTOR);
+		return asMap(SERVICE_SELECTOR);
 	}
 	
 	@Override
@@ -56,30 +47,28 @@ public class Service extends KubernetesResource implements IService {
 		for (Map.Entry<String, String> entry : selector.entrySet()) {
 			node.get(entry.getKey()).set(entry.getValue());
 		}
-		getNode().get(SELECTOR).set(node);
+		get(SERVICE_SELECTOR).set(node);
 	}
 	
 	
 	@Override
 	public void setSelector(String key, String value) {
-		String[] path = Arrays.copyOf(SELECTOR, SELECTOR.length + 1);
-		path[SELECTOR.length] = key;
-		getNode().get(path).set(value);
+		get(SERVICE_SELECTOR).get(key).set(value);
 	}
 
 	@Override
 	public void setContainerPort(int port){
-		set("containerPort", port);
+		set(SERVICE_CONTAINER_PORT, port);
 	}
 	
 	@Override
 	public int getContainerPort(){
-		return asInt("containerPort");
+		return asInt(SERVICE_CONTAINER_PORT);
 	}
 
 	@Override
 	public String getPortalIP() {
-		return asString("portalIP");
+		return asString(SERVICE_PORTALIP);
 	}
 
 	@Override
