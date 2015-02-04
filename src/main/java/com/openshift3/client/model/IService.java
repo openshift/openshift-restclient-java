@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift3.client.model;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,6 +70,11 @@ public interface IService  extends IResource{
 	 * @return
 	 */
 	String getPortalIP();
-
+	
+	/**
+	 * Retrieve the pods for this service
+	 * @return
+	 */
+	List<IPod> getPods();
 
 }

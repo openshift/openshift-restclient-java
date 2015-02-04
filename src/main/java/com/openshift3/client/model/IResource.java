@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.openshift3.client.model;
 
+import java.util.Map;
+
 import com.openshift3.client.ResourceKind;
 
 
@@ -59,4 +61,11 @@ public interface IResource {
 	 */
 	void setNamespace(String namespace);
 	
+	/**
+	 * Retrieve the labels associated with the resource
+	 * @return
+	 */
+	Map<String, String> getLabels();
+	
+	void addLabel(String key, String value);
 }

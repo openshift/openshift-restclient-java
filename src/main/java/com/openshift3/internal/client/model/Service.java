@@ -8,13 +8,16 @@
  ******************************************************************************/
 package com.openshift3.internal.client.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
+import com.openshift3.client.model.IPod;
 import com.openshift3.client.model.IService;
 
 
@@ -77,5 +80,11 @@ public class Service extends KubernetesResource implements IService {
 	@Override
 	public String getPortalIP() {
 		return asString("portalIP");
+	}
+
+	@Override
+	public List<IPod> getPods() {
+		if(getClient() == null) return new ArrayList<IPod>();
+		return getClient().list(ResourceKind.Pod, getNamespace(), getSelector());
 	}
 }

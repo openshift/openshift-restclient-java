@@ -14,7 +14,12 @@ import com.openshift.client.utils.Samples;
 import com.openshift3.client.IClient;
 import com.openshift3.client.model.IService;
 
-public class V1Beta1ServiceTest<K> {
+/**
+ * Test to validate the lookup paths are correct for the version
+ * @author jeff.cantrill
+ *
+ */
+public class V1Beta1ServiceTest{
 
 	private IService service;
 	

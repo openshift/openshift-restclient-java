@@ -10,6 +10,7 @@ package com.openshift3.internal.client;
 
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,11 +57,25 @@ public class DefaultClient implements IClient{
 	}
 
 	public DefaultClient(URL baseUrl){
+		this(baseUrl, null);
+	}
+	
+	/*
+	 * Testing constructor
+	 */
+	DefaultClient(URL baseUrl,  IHttpClient httpClient){
 		this.baseUrl = baseUrl;
-		client = new UrlConnectionHttpClientBuilder()
-			.setAcceptMediaType("application/json")
-			.client();
+		client = httpClient != null ? httpClient : newIHttpClient();
 		factory = new ResourceFactory(this);
+	}
+	
+	/*
+	 * Factory method for testing
+	 */
+	private IHttpClient newIHttpClient(){
+		return  new UrlConnectionHttpClientBuilder()
+		.setAcceptMediaType("application/json")
+		.client();
 	}
 	
 	@Override
@@ -68,9 +83,14 @@ public class DefaultClient implements IClient{
 		return list(kind,""); //assumes namespace=default
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends IResource> List<T> list(ResourceKind kind, String namespace) {
+		return list(kind, namespace, new HashMap<String, String>());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends IResource> List<T> list(ResourceKind kind, String namespace, Map<String, String> labels) {
 		if(!TYPE_MAPPING.containsKey(kind))
 			throw new RuntimeException("No OpenShift resource endpoint for type: " + kind);
 		try {
@@ -79,14 +99,26 @@ public class DefaultClient implements IClient{
 				.namespace(namespace);
 			final URL endpoint = builder.build();
 			String response = client.get(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT);
-			LOGGER.debug(response);
-			return (List<T>) factory.createList(response, kind);
+			LOGGER.debug(String.format("List Response: %s:", response));
+			List<T> items = (List<T>) factory.createList(response, kind);
+			return filterItems(items, labels); //client filter until we can figure out how to restrict with a server call
 		} catch (HttpClientException e){
 			throw new OpenShiftException("Exception listing the resources", e, factory.<Status>create(e.getMessage()));
 		} catch (Exception e) {
 			LOGGER.error("Exception", e);
 			throw new RuntimeException(e);
 		}
+	}
+	
+	private <T extends IResource> List<T> filterItems(List<T> items, Map<String, String> labels){
+		if(labels.isEmpty()) return items;
+		List<T> filtered = new ArrayList<T>();
+		for (T item : items) {
+			if( item.getLabels().entrySet().containsAll(labels.entrySet())){
+				filtered.add(item);
+			}
+		}
+		return filtered;
 	}
 
 	@Override
