@@ -8,6 +8,19 @@
  ******************************************************************************/
 package com.openshift3.client.model;
 
+import java.util.List;
+
+import com.openshift3.client.ResourceKind;
+
 public interface IProject extends IResource {
 
+	/**
+	 * Retrieve resource of the given kind that are scoped to
+	 * this project
+	 * @param kind
+	 * @return List<IResources>
+	 */
+	<T extends IResource> List<T> getResources(ResourceKind kind);
+
+	String getDisplayName();
 }

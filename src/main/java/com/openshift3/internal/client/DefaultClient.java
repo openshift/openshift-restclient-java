@@ -112,11 +112,12 @@ public class DefaultClient implements IClient{
 			List<T> items = (List<T>) factory.createList(response, kind);
 			return filterItems(items, labels); //client filter until we can figure out how to restrict with a server call
 		} catch (HttpClientException e){
+			LOGGER.debug("Exception while trying to list resource.", e);
+			//TODO handle case where there is no status response
 			throw new OpenShiftException("Exception listing the resources", e, factory.<Status>create(e.getMessage()));
-		} catch (Exception e) {
-			LOGGER.error("Exception", e);
-			throw new RuntimeException(e);
-		}
+		} catch (SocketTimeoutException e) {
+			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout listing resources");
+		} 
 	}
 	
 	private <T extends IResource> List<T> filterItems(List<T> items, Map<String, String> labels){
@@ -142,9 +143,8 @@ public class DefaultClient implements IClient{
 			return factory.create(response);
 		} catch (HttpClientException e){
 			throw new OpenShiftException("Exception creating the resource", e, factory.<Status>create(e.getMessage()));
-		} catch (Exception e) {
-			LOGGER.error("Exception", e);
-			throw new RuntimeException(e);
+		} catch (SocketTimeoutException e) {
+			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout creating resource %", resource.getName());
 		}
 	}
 
@@ -161,10 +161,9 @@ public class DefaultClient implements IClient{
 			//TODO return response object here
 		} catch (HttpClientException e){
 			throw new OpenShiftException("Exception deleting the resource", e, factory.<Status>create(e.getMessage()));
-		} catch (Exception e) {
-			LOGGER.error("Exception", e);
-			throw new RuntimeException(e);
-		}
+		} catch (SocketTimeoutException e) {
+			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout deleting resource %", resource.getName());
+		} 
 	}
 
 	@Override
@@ -180,10 +179,9 @@ public class DefaultClient implements IClient{
 			return factory.create(response);
 		} catch (HttpClientException e){
 			throw new OpenShiftException("Exception getting the resource", e, factory.<Status>create(e.getMessage()));
-		} catch (Exception e) {
-			LOGGER.error("Exception", e);
-			throw new RuntimeException(e);
-		}
+		} catch (SocketTimeoutException e) {
+			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout getting resource %", name);
+		} 
 	}
 
 	public synchronized void initializeCapabilities(){
@@ -276,6 +274,7 @@ public class DefaultClient implements IClient{
 		if(typeMappings.isEmpty()){
 			//OpenShift endpoints
 			final String osEndpoint = String.format("%s/%s", osApiEndpoint, getOpenShiftVersion());
+			typeMappings.put(ResourceKind.Build, osEndpoint);
 			typeMappings.put(ResourceKind.BuildConfig, osEndpoint);
 			typeMappings.put(ResourceKind.DeploymentConfig, osEndpoint);
 			typeMappings.put(ResourceKind.ImageRepository, osEndpoint);
@@ -285,8 +284,14 @@ public class DefaultClient implements IClient{
 			final String k8eEndpoint = String.format("%s/%s", apiEndpoint, getKubernetesVersion());
 			typeMappings.put(ResourceKind.Pod, k8eEndpoint);
 			typeMappings.put(ResourceKind.Service, k8eEndpoint);
+			typeMappings.put(ResourceKind.ReplicationController, k8eEndpoint);
 		}
 		return typeMappings;
+	}
+
+	@Override
+	public URL getBaseURL() {
+		return this.baseUrl;
 	}
 
 

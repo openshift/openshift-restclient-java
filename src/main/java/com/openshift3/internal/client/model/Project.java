@@ -17,6 +17,7 @@ import org.jboss.dmr.ModelNode;
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.model.IProject;
+import com.openshift3.client.model.IResource;
 
 public class Project extends KubernetesResource implements IProject{
 
@@ -24,6 +25,7 @@ public class Project extends KubernetesResource implements IProject{
 		super(node, client, propertyKeys);
 	}
 	
+	@Override
 	public String getDisplayName(){
 		return asString(PROJECT_DISPLAY_NAME);
 	}
@@ -32,8 +34,9 @@ public class Project extends KubernetesResource implements IProject{
 		set(PROJECT_DISPLAY_NAME, name);
 	}
 
-	public <T extends KubernetesResource> List<T> getResources(ResourceKind kind){
+	@Override
+	public <T extends IResource> List<T> getResources(ResourceKind kind){
 		if(getClient() == null) return new ArrayList<T>();
-		return getClient().list(kind, getNamespace());
+		return getClient().list(kind, getName());
 	}
 }

@@ -15,7 +15,6 @@ public class DeploymentConfig extends KubernetesResource implements IDeploymentC
 	
 	public DeploymentConfig(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
-		set("kind", ResourceKind.DeploymentConfig.toString());
 	}
 	
 	public DeploymentConfig(){

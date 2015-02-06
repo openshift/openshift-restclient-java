@@ -15,6 +15,7 @@ package com.openshift3.client;
  */
 public enum ResourceKind {
 	
+	Build("builds"),
 	BuildConfig("buildConfigs"),
 	DeploymentConfig("deploymentConfigs"),
 	ImageRepository("imageRepositories"),
