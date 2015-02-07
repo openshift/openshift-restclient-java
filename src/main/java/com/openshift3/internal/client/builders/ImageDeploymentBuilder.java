@@ -3,7 +3,7 @@ package com.openshift3.internal.client.builders;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.openshift3.client.images.ImageUri;
+import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.internal.client.model.DeploymentConfig;
 import com.openshift3.internal.client.model.KubernetesResource;
 
@@ -15,10 +15,10 @@ import com.openshift3.internal.client.model.KubernetesResource;
 public class ImageDeploymentBuilder {
 
 	private String namespace;
-	private ImageUri imageTag;
+	private DockerImageURI imageTag;
 	private int containerPort;
 	
-	public ImageDeploymentBuilder(String namespace, ImageUri tag, int containerPort){
+	public ImageDeploymentBuilder(String namespace, DockerImageURI tag, int containerPort){
 		this.namespace = namespace;
 		this.imageTag = tag;
 		this.containerPort = containerPort;
@@ -29,7 +29,7 @@ public class ImageDeploymentBuilder {
 		return this;
 	}
 	
-	public ImageDeploymentBuilder imageTag(ImageUri imageTag){
+	public ImageDeploymentBuilder imageTag(DockerImageURI imageTag){
 		this.imageTag = imageTag;
 		return this;
 	}
@@ -46,11 +46,12 @@ public class ImageDeploymentBuilder {
 	}
 
 	private DeploymentConfig buildDeploymentConfig() {
-		DeploymentConfig config = new DeploymentConfig();
-		config.setNamespace(namespace);
-		config.setName(imageTag.getName());
-		config.addContainer(imageTag, this.containerPort);
-		config.addLabel("name", imageTag.getName());
-		return config;
+		return null;
+//		DeploymentConfig config = new DeploymentConfig();
+//		config.setNamespace(namespace);
+//		config.setName(imageTag.getName());
+//		config.addContainer(imageTag, this.containerPort);
+//		config.addLabel("name", imageTag.getName());
+//		return config;
 	}
 }

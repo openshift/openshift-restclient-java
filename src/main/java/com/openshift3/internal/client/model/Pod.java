@@ -12,6 +12,11 @@ public class Pod extends KubernetesResource implements IPod {
 	public Pod(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
 	}
+
+	@Override
+	public String getIP() {
+		return asString(POD_IP);
+	}
 	
 	
 }

@@ -10,4 +10,9 @@ package com.openshift3.client.model;
 
 public interface IPod extends IResource {
 
+	/**
+	 * Get the IP of the Pod
+	 * @return
+	 */
+	String getIP();
 }

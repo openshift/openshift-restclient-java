@@ -126,7 +126,11 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 	
 	@Override
 	public String getNamespace(){
-		return asString(NAMESPACE);
+		ModelNode node = get(NAMESPACE);
+		if(node.getType() == ModelType.UNDEFINED){
+			return "";
+		}
+		return node.asString();
 	}
 	
 	@Override

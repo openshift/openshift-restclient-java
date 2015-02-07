@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.openshift.client.utils.Samples;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.images.ImageUri;
+import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.internal.client.builders.ImageDeploymentBuilder;
 import com.openshift3.internal.client.model.DeploymentConfig;
 import com.openshift3.internal.client.model.KubernetesResource;
@@ -19,7 +19,7 @@ public class ImageDeploymentBuilderTest {
 	
 //	@Test
 	public void test() {
-		ImageUri tag = new ImageUri("172.30.17.59:5001/jcantrill/javaparks:latest");
+		DockerImageURI tag = new DockerImageURI("172.30.17.59:5001/jcantrill/javaparks:latest");
 		ImageDeploymentBuilder builder = new ImageDeploymentBuilder("hello-openshift-project", tag, 8080);
 		List<KubernetesResource> resources = builder.build();
 		assertEquals("Exp. only one resource", 1, resources.size());

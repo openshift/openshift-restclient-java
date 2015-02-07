@@ -10,4 +10,9 @@ package com.openshift3.client.model;
 
 public interface IBuildConfig extends IResource {
 
+	/**
+	 * Return the source URL for a build
+	 * @return
+	 */
+	String getSourceURI();
 }

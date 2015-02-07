@@ -27,7 +27,7 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	}
 
 	@Override
-	public Map<String, String> getSelector() {
+	public Map<String, String> getReplicaSelector() {
 		return asMap(REPLICATION_CONTROLLER_REPLICA_SELECTOR);
 	}
 

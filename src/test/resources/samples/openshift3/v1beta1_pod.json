@@ -1,0 +1,90 @@
+{
+    "kind": "Pod",
+    "id": "database-1-pyj26",
+    "uid": "c8d4ec3c-ae2f-11e4-b5fb-080027c5bfa9",
+    "creationTimestamp": "2015-02-06T18:41:38Z",
+    "selfLink": "/api/v1beta1/pods/database-1-pyj26?namespace=default",
+    "resourceVersion": 69,
+    "apiVersion": "v1beta1",
+    "namespace": "default",
+    "generateName": "database-1-",
+    "labels": {
+        "deployment": "database-1",
+        "deploymentconfig": "database",
+        "name": "database"
+    },
+    "desiredState": {
+        "manifest": {
+            "version": "v1beta2",
+            "id": "",
+            "volumes": null,
+            "containers": [
+                {
+                    "name": "ruby-helloworld-database",
+                    "image": "mysql",
+                    "ports": [
+                        {
+                            "containerPort": 3306,
+                            "protocol": "TCP"
+                        }
+                    ],
+                    "env": [
+                        {
+                            "name": "MYSQL_ROOT_PASSWORD",
+                            "key": "MYSQL_ROOT_PASSWORD",
+                            "value": "${MYSQL_ROOT_PASSWORD}"
+                        },
+                        {
+                            "name": "MYSQL_DATABASE",
+                            "key": "MYSQL_DATABASE",
+                            "value": "${MYSQL_DATABASE}"
+                        }
+                    ],
+                    "resources": {},
+                    "imagePullPolicy": "PullIfNotPresent",
+                    "capabilities": {}
+                }
+            ],
+            "restartPolicy": {
+                "always": {}
+            },
+            "dnsPolicy": "ClusterFirst"
+        }
+    },
+    "currentState": {
+        "manifest": {
+            "version": "",
+            "id": "",
+            "volumes": null,
+            "containers": null,
+            "restartPolicy": {}
+        },
+        "status": "Running",
+        "host": "openshiftdev.local",
+        "hostIP": "127.0.0.1",
+        "podIP": "172.17.0.5",
+        "info": {
+            "POD": {
+                "state": {
+                    "running": {
+                        "startedAt": "2015-02-06T18:41:38Z"
+                    }
+                },
+                "restartCount": 0,
+                "podIP": "172.17.0.5",
+                "image": "openshift/origin-pod:v0.2.2",
+                "containerID": "docker://e9c0d61802a98a027042003d641d8693f164334b1a77d40280df555243d9f906"
+            },
+            "ruby-helloworld-database": {
+                "state": {
+                    "running": {
+                        "startedAt": "2015-02-06T18:46:14Z"
+                    }
+                },
+                "restartCount": 0,
+                "image": "mysql",
+                "containerID": "docker://6f081a808870dab67d4c4620960546ec6a4674d793dd179fcbb2a3ab7e7ca650"
+            }
+        }
+    }
+}

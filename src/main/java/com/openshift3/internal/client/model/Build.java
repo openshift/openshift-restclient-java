@@ -13,30 +13,23 @@ import java.util.Map;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift3.client.IClient;
-import com.openshift3.client.images.DockerImageURI;
-import com.openshift3.client.model.IImageRepository;
+import com.openshift3.client.model.IBuild;
 
-public class ImageRepository extends KubernetesResource implements IImageRepository {
+public class Build extends KubernetesResource implements IBuild{
 
-	public ImageRepository(){
-		this(new ModelNode(), null, null);
-	}
-	
-	public ImageRepository(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
+	public Build(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
 	}
 
-	public ImageRepository(String json) {
-		super(json);
-	}
-
-	public void setDockerImageRepository(DockerImageURI uri) {
-		set(IMAGEREPO_DOCKER_IMAGE_REPO, uri.getAbsoluteUri());		
+	@Override
+	public String getStatus() {
+		return asString(BUILD_STATUS);
 	}
 
 	@Override
-	public DockerImageURI getDockerImageRepository() {
-		return new DockerImageURI(asString(IMAGEREPO_DOCKER_IMAGE_REPO));
+	public String getMessage() {
+		return asString(BUILD_MESSAGE);
 	}
 
+	
 }

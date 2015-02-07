@@ -1,0 +1,84 @@
+{
+    "kind": "ReplicationController",
+    "id": "database-1",
+    "uid": "a882f449-ae49-11e4-b5fb-080027c5bfa9",
+    "creationTimestamp": "2015-02-06T21:46:51Z",
+    "selfLink": "/api/v1beta1/replicationControllers/database-1?namespace=test",
+    "resourceVersion": 133,
+    "apiVersion": "v1beta1",
+    "namespace": "test",
+    "annotations": {
+        "deploymentConfig": "database",
+        "deploymentStatus": "Pending",
+        "deploymentVersion": "1",
+        "encodedDeploymentConfig": "{\"kind\":\"DeploymentConfig\",\"apiVersion\":\"v1beta1\",\"metadata\":{\"name\":\"database\",\"namespace\":\"test\",\"selfLink\":\"/osapi/v1beta1/deploymentConfigs/database\",\"uid\":\"a87388fb-ae49-11e4-b5fb-080027c5bfa9\",\"resourceVersion\":\"122\",\"creationTimestamp\":\"2015-02-06T21:46:50Z\"},\"triggers\":[{\"type\":\"ConfigChange\"}],\"template\":{\"strategy\":{\"type\":\"Recreate\"},\"controllerTemplate\":{\"replicas\":1,\"replicaSelector\":{\"name\":\"database\"},\"podTemplate\":{\"desiredState\":{\"manifest\":{\"version\":\"v1beta2\",\"id\":\"\",\"volumes\":null,\"containers\":[{\"name\":\"ruby-helloworld-database\",\"image\":\"mysql\",\"ports\":[{\"containerPort\":3306,\"protocol\":\"TCP\"}],\"env\":[{\"name\":\"MYSQL_ROOT_PASSWORD\",\"key\":\"MYSQL_ROOT_PASSWORD\",\"value\":\"${MYSQL_ROOT_PASSWORD}\"},{\"name\":\"MYSQL_DATABASE\",\"key\":\"MYSQL_DATABASE\",\"value\":\"${MYSQL_DATABASE}\"}],\"resources\":{},\"imagePullPolicy\":\"PullIfNotPresent\",\"capabilities\":{}}],\"restartPolicy\":{\"always\":{}},\"dnsPolicy\":\"ClusterFirst\"}},\"labels\":{\"name\":\"database\"}}}},\"latestVersion\":1,\"details\":{\"causes\":[{\"type\":\"ConfigChange\"}]}}",
+        "pod": "deploy-database-1-y4vgr"
+    },
+    "desiredState": {
+        "replicas": 1,
+        "replicaSelector": {
+            "deployment": "database-1",
+            "deploymentconfig": "database",
+            "name": "database"
+        },
+        "podTemplate": {
+            "desiredState": {
+                "manifest": {
+                    "version": "v1beta2",
+                    "id": "",
+                    "volumes": null,
+                    "containers": [
+                        {
+                            "name": "ruby-helloworld-database",
+                            "image": "mysql",
+                            "ports": [
+                                {
+                                    "containerPort": 3306,
+                                    "protocol": "TCP"
+                                }
+                            ],
+                            "env": [
+                                {
+                                    "name": "MYSQL_ROOT_PASSWORD",
+                                    "key": "MYSQL_ROOT_PASSWORD",
+                                    "value": "${MYSQL_ROOT_PASSWORD}"
+                                },
+                                {
+                                    "name": "MYSQL_DATABASE",
+                                    "key": "MYSQL_DATABASE",
+                                    "value": "${MYSQL_DATABASE}"
+                                }
+                            ],
+                            "resources": {},
+                            "imagePullPolicy": "PullIfNotPresent",
+                            "capabilities": {}
+                        }
+                    ],
+                    "restartPolicy": {
+                        "always": {}
+                    },
+                    "dnsPolicy": "ClusterFirst"
+                }
+            },
+            "labels": {
+                "deployment": "database-1",
+                "deploymentconfig": "database",
+                "name": "database"
+            }
+        }
+    },
+    "currentState": {
+        "replicas": 1,
+        "podTemplate": {
+            "desiredState": {
+                "manifest": {
+                    "version": "",
+                    "id": "",
+                    "volumes": null,
+                    "containers": null,
+                    "restartPolicy": {}
+                }
+            }
+        }
+    }
+}

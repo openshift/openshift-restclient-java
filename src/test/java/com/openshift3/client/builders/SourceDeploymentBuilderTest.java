@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.openshift.client.utils.Samples;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.images.ImageUri;
+import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.internal.client.builders.SourceDeploymentBuilder;
 import com.openshift3.internal.client.model.BuildConfig;
 import com.openshift3.internal.client.model.DeploymentConfig;
@@ -21,7 +21,7 @@ public class SourceDeploymentBuilderTest {
 
 //	@Test
 	public void test() {
-		ImageUri baseImage = new ImageUri("openshift/wildfly-8-centos");
+		DockerImageURI baseImage = new DockerImageURI("openshift/wildfly-8-centos");
 		SourceDeploymentBuilder builder = new SourceDeploymentBuilder("hello-openshift-project", "git@github.com:jcantrill/javaparks.git", "jcantrill",baseImage, "172.30.17.59:5001");
 		List<KubernetesResource> resources = builder.build();
 		assertEquals("Exp. multiple resources", 3, resources.size());
