@@ -29,10 +29,15 @@ public interface ResourcePropertyKeys {
 	
 	static final String STATUS_MESSAGE = "status.message";
 	
+	static final String BUILD_STATUS	= "build.status";
+	static final String BUILD_MESSAGE	= "build.message";
 	static final String BUILDCONFIG_SOURCE_URI = "buildconfig.sourceuri";
 	static final String DEPLOYMENTCONFIG_CONTAINERS = "deploymentconfig.containers";
 	static final String DEPLOYMENTCONFIG_REPLICAS = "deploymentconfig.replicas";
+	static final String DEPLOYMENTCONFIG_REPLICA_SELECTOR = "deploymentconfig.replica.selector";
 	static final String DEPLOYMENTCONFIG_TRIGGERS = "deploymentconfig.triggers";
 	static final String IMAGEREPO_DOCKER_IMAGE_REPO = "imagerepo.dockerimagerepo";
 	static final String PROJECT_DISPLAY_NAME = "project.displayname";
+	
+	static final String POD_IP = "pod.ip";
 }

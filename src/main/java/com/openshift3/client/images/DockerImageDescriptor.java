@@ -3,9 +3,9 @@ package com.openshift3.client.images;
 public class DockerImageDescriptor{
 	
 	private final String description;
-	private final ImageUri name;
+	private final DockerImageURI name;
 
-	public DockerImageDescriptor(ImageUri name, String description){
+	public DockerImageDescriptor(DockerImageURI name, String description){
 		this.name = name;		
 		this.description = description;
 	}
@@ -14,7 +14,7 @@ public class DockerImageDescriptor{
 		return description;
 	}
 	
-	public ImageUri getImageUri() {
+	public DockerImageURI getImageUri() {
 		return name;
 	}
 	

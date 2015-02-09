@@ -20,6 +20,7 @@ import org.jboss.dmr.ModelNode;
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.model.IResource;
+import com.openshift3.internal.client.model.Build;
 import com.openshift3.internal.client.model.BuildConfig;
 import com.openshift3.internal.client.model.DeploymentConfig;
 import com.openshift3.internal.client.model.ImageRepository;
@@ -39,6 +40,7 @@ public class ResourceFactory implements IResourceFactory{
 	private static final String APIVERSION = "apiVersion";
 	private static final Map<ResourceKind, Class<? extends IResource>> IMPL_MAP = new HashMap<ResourceKind, Class<? extends IResource>>();
 	static {
+		IMPL_MAP.put(ResourceKind.Build, Build.class);
 		IMPL_MAP.put(ResourceKind.BuildConfig, BuildConfig.class);
 		IMPL_MAP.put(ResourceKind.DeploymentConfig, DeploymentConfig.class);
 		IMPL_MAP.put(ResourceKind.ImageRepository, ImageRepository.class);

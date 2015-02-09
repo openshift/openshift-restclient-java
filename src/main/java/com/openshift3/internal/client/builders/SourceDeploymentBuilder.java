@@ -3,7 +3,7 @@ package com.openshift3.internal.client.builders;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.openshift3.client.images.ImageUri;
+import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.client.model.BuildTrigger;
 import com.openshift3.internal.client.model.BuildConfig;
 import com.openshift3.internal.client.model.DeploymentConfig;
@@ -20,16 +20,16 @@ public class SourceDeploymentBuilder {
 
 	private String namespace;
 	private String sourceUri;
-	private ImageUri baseUri;
-	private ImageUri outputUri;
+	private DockerImageURI baseUri;
+	private DockerImageURI outputUri;
 	private String name;
 	
-	public SourceDeploymentBuilder(String namespace, String sourceUri,  String username, ImageUri baseUri, String outputRepoHost){
+	public SourceDeploymentBuilder(String namespace, String sourceUri,  String username, DockerImageURI baseUri, String outputRepoHost){
 		this.namespace = namespace;
 		this.sourceUri = sourceUri;
 		this.baseUri = baseUri;
 		this.name = getNameFromGitUrl();
-		this.outputUri = new ImageUri(outputRepoHost, username, name);
+		this.outputUri = new DockerImageURI(outputRepoHost, username, name);
 	}
 
 	public List<KubernetesResource> build(){

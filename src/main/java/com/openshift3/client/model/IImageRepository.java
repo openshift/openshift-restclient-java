@@ -8,7 +8,15 @@
  ******************************************************************************/
 package com.openshift3.client.model;
 
+import com.openshift3.client.images.DockerImageURI;
+
 
 public interface IImageRepository extends IResource{
 
+	/**
+	 * Retrieve the docker image URI for which this image repository
+	 * is responsible
+	 * @return
+	 */
+	DockerImageURI getDockerImageRepository();
 }

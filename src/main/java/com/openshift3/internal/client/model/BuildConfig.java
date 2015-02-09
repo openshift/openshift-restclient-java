@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * All rights reserved. This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Red Hat, Inc.
+ ******************************************************************************/
 package com.openshift3.internal.client.model;
 
 import java.util.Map;
@@ -5,8 +13,7 @@ import java.util.Map;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift3.client.IClient;
-import com.openshift3.client.ResourceKind;
-import com.openshift3.client.images.ImageUri;
+import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.client.model.BuildTrigger;
 import com.openshift3.client.model.IBuildConfig;
 
@@ -22,7 +29,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		this(new ModelNode(), null, null);
 	}
 
-	public String getSourceUri() {
+	public String getSourceURI() {
 		return asString(BUILDCONFIG_SOURCE_URI);
 	}
 
@@ -48,7 +55,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 //		strategy.get(new String[]{"stiStrategy","image"}).set(baseImage);
 	}
 	
-	public void setOutput(ImageUri imageUri){
+	public void setOutput(DockerImageURI imageUri){
 		//FIXME
 //		ModelNode output = getNode().get(new String []{"parameters","output"});
 //		output.get("imageTag").set(imageUri.getUriWithoutHost());

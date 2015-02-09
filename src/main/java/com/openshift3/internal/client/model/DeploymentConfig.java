@@ -8,7 +8,7 @@ import org.jboss.dmr.ModelNode;
 
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.images.ImageUri;
+import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.client.model.IDeploymentConfig;
 
 public class DeploymentConfig extends KubernetesResource implements IDeploymentConfig{
@@ -17,9 +17,11 @@ public class DeploymentConfig extends KubernetesResource implements IDeploymentC
 		super(node, client, propertyKeys);
 	}
 	
-	public DeploymentConfig(){
-		this(new ModelNode(), null, null);
+	@Override
+	public Map<String, String> getReplicaSelector(){
+		return asMap(DEPLOYMENTCONFIG_REPLICA_SELECTOR);
 	}
+	
 	public List<String> getTriggerTypes(){
 		List<String> types = new ArrayList<String>();
 		ModelNode triggers = get(DEPLOYMENTCONFIG_TRIGGERS);
@@ -41,13 +43,13 @@ public class DeploymentConfig extends KubernetesResource implements IDeploymentC
 		return asInt(DEPLOYMENTCONFIG_REPLICAS);
 	}
 	
-	public void addContainer(ImageUri tag,  int containerPort){
+	public void addContainer(DockerImageURI tag,  int containerPort){
 		addImageChangeTrigger(tag);
 		buildTemplate(tag, containerPort);
 	}
 	
 	//FIXME
-	private void addImageChangeTrigger(ImageUri imageTag){
+	private void addImageChangeTrigger(DockerImageURI imageTag){
 		ModelNode triggers = get(DEPLOYMENTCONFIG_TRIGGERS);
 		ModelNode imageChange = new ModelNode();
 		imageChange.get("type").set("ImageChange");
@@ -64,7 +66,7 @@ public class DeploymentConfig extends KubernetesResource implements IDeploymentC
 	}
 	
 	//FIXME
-	private void buildTemplate(ImageUri imageTag, int containerPort) {
+	private void buildTemplate(DockerImageURI imageTag, int containerPort) {
 		ModelNode template = getNode().get("template");
 		template.get(new String[]{"strategy","type"}).set( "Recreate");
 		template.get(new String[]{"controllerTemplate","replicas"}).set(1);

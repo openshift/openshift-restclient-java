@@ -14,6 +14,6 @@ public interface IReplicationController  extends IResource{
 	
 	int getReplicaCount();
 	
-	Map<String, String> getSelector();
+	Map<String, String> getReplicaSelector();
 	
 }

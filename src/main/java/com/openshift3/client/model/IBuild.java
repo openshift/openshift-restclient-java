@@ -8,22 +8,17 @@
  ******************************************************************************/
 package com.openshift3.client.model;
 
-import java.util.Map;
-
-public interface IDeploymentConfig extends IResource {
+public interface IBuild extends IResource {
 
 	/**
-	 * Return the number of replicas to be created by the replication
-	 * controller generated from this deployment config
+	 * The status of the buld
 	 * @return
 	 */
-	int getReplicas();
+	String getStatus();
 	
 	/**
-	 * Return the replica selector to be used by the replication
-	 * controller generated from this deployment config
-	 * 
-	 * @return java.util.Map<String, String>
+	 * Details about the status of this build
+	 * @return
 	 */
-	Map<String, String> getReplicaSelector();
+	String getMessage();
 }

@@ -1,0 +1,14 @@
+{
+    "apiVersion": "v1beta1",
+    "kind": "Build",
+    "metadata": {
+        "namespace": "hello-openshift-project",
+        "name": "somebuildname",
+    },
+    "status": "Running",
+    "message": "Some status message",
+    "labels" : {
+        "name" : "javaparks"
+    }
+    
+}
