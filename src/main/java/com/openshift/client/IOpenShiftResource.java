@@ -1,7 +1,7 @@
 package com.openshift.client;
 
 
-public interface IOpenShiftResource extends Refreshable{
+public interface IOpenShiftResource extends IRefreshable{
 
 	/**
 	 * Returns
