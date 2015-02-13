@@ -93,4 +93,11 @@ public interface IResource extends ICapable{
 	 * @return
 	 */
 	String getAnnotation(String key);
+	
+	/**
+	 * Retrieve the annotations associated with the resource
+	 * @return
+	 */
+	Map<String, String> getAnnotations();
+
 }

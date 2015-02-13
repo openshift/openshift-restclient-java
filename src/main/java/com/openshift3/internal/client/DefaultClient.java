@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.net.ssl.SSLSession;
 
 import org.jboss.dmr.ModelNode;
@@ -30,6 +31,7 @@ import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
 import com.openshift3.client.IClient;
 import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
+import com.openshift3.client.UnsupportedVersionException;
 import com.openshift3.client.capability.ICapability;
 import com.openshift3.client.capability.server.IImageRegistryHosting;
 import com.openshift3.client.model.IResource;
@@ -236,12 +238,17 @@ public class DefaultClient implements IClient{
 		return kubernetesVersion; 
 	}
 
+	@Override
+	public String getOpenShiftAPIVersion() throws UnsupportedVersionException{
+		return getOpenShiftVersion().toString();
+	}
+	
 	public OpenShiftAPIVersion getOpenShiftVersion() {
 		if(openShiftVersion == null){
 			List<OpenShiftAPIVersion> versions = getOpenShiftVersions();
 			openShiftVersion = ResourcePropertiesRegistry.getInstance().getMaxSupportedOpenShiftVersion();
 			if(!versions.contains(openShiftVersion)){
-				throw new RuntimeException(String.format("OpenShift API version '%s' is not supported by this client"));
+				throw new UnsupportedVersionException(openShiftVersion.toString());
 			}
 		}
 		return openShiftVersion; 

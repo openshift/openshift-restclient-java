@@ -71,15 +71,22 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 		return capabilities.containsKey(capability);
 	}
 	
+	
+	@Override
+	public Map<String, String> getAnnotations() {
+		return asMap(ANNOTATIONS);
+	}
+
 	@Override
 	public String getAnnotation(String key) {
 		//TODO make efficient
-		Map<String, String> annotations = asMap(ANNOTATIONS);
+		Map<String, String> annotations = getAnnotations();
 		return annotations.get(key);
 	}
+	
 	@Override
 	public boolean isAnnotatedWith(String key) {
-		Map<String, String> annotations = asMap(ANNOTATIONS);
+		Map<String, String> annotations = getAnnotations();
 		return annotations.containsKey(key);
 	}
 	
