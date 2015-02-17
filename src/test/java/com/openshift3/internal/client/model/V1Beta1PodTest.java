@@ -19,6 +19,7 @@ import com.openshift.client.utils.Samples;
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.model.IPod;
+import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 
 public class V1Beta1PodTest {
 

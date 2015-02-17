@@ -27,9 +27,9 @@ import com.openshift3.internal.client.model.ImageRepository;
 import com.openshift3.internal.client.model.Pod;
 import com.openshift3.internal.client.model.Project;
 import com.openshift3.internal.client.model.ReplicationController;
-import com.openshift3.internal.client.model.ResourcePropertiesRegistry;
 import com.openshift3.internal.client.model.Service;
 import com.openshift3.internal.client.model.Status;
+import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 
 /**
  * ResourceFactory creates a list of resources from a json string 

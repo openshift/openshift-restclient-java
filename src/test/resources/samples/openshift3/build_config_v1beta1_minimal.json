@@ -29,7 +29,15 @@
         "strategy": {
             "type": "STI",
             "stiStrategy": {
-                "image": "openshift/wildfly-8-centos:latest"
+                "image": "openshift/wildfly-8-centos:latest",
+                "scripts": "alocation",
+                "clean": true,
+                "env" : [
+                    {
+                        "name" : "foo",
+                        "value" : "bar"
+                    }
+                ]
             }
         },
         "output": {

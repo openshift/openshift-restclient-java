@@ -17,6 +17,7 @@ import org.junit.Test;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.capability.resources.IDeploymentTraceability;
 import com.openshift3.client.capability.resources.ITemplateTraceability;
+import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 
 public class KubernetesResourceTest {
 

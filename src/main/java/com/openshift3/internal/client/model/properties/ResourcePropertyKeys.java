@@ -6,12 +6,12 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.internal.client.model.properties;
 
 /**
  * Keys used to determine where a given property is for a given resource
  */
-public interface ResourcePropertyKeys {
+public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String ANNOTATIONS = "annotations";
 	static final String APIVERSION  = "apiversion";
 	static final String CREATION_TIMESTAMP = "creationTimestamp";
@@ -31,7 +31,7 @@ public interface ResourcePropertyKeys {
 	
 	static final String BUILD_STATUS	= "build.status";
 	static final String BUILD_MESSAGE	= "build.message";
-	static final String BUILDCONFIG_SOURCE_URI = "buildconfig.sourceuri";
+	
 	static final String DEPLOYMENTCONFIG_CONTAINERS = "deploymentconfig.containers";
 	static final String DEPLOYMENTCONFIG_REPLICAS = "deploymentconfig.replicas";
 	static final String DEPLOYMENTCONFIG_REPLICA_SELECTOR = "deploymentconfig.replica.selector";

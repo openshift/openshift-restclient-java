@@ -36,8 +36,8 @@ import com.openshift3.client.capability.ICapability;
 import com.openshift3.client.capability.server.IImageRegistryHosting;
 import com.openshift3.client.model.IResource;
 import com.openshift3.internal.client.capability.server.DefaultImageRegistryHosting;
-import com.openshift3.internal.client.model.ResourcePropertiesRegistry;
 import com.openshift3.internal.client.model.Status;
+import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 
 public class DefaultClient implements IClient{
 	

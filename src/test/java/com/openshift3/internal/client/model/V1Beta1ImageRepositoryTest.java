@@ -20,6 +20,7 @@ import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.client.model.IImageRepository;
+import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 
 public class V1Beta1ImageRepositoryTest {
 	private static IImageRepository repo;
