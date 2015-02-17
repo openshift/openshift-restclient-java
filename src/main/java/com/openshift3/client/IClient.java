@@ -75,6 +75,13 @@ public interface IClient extends ICapable{
 	URL getBaseURL();
 	
 	/**
+	 * The OpenShift API version for this client
+	 * @return
+	 * @throws UnsupportedVersionException
+	 */
+	String getOpenShiftAPIVersion() throws UnsupportedVersionException;
+	
+	/**
 	 * Connect to the OpenShift server and potentially
 	 * returns a authorization context?
 	 */
