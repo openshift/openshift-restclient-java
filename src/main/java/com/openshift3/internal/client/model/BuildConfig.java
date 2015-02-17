@@ -33,6 +33,11 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		super(node, client, propertyKeys);
 		//TODO add check to kind here
 	}
+	
+	@Override
+	public String getOutputRepositoryName() {
+		return asString(BUILDCONFIG_OUTPUT_REPO);
+	}
 
 	public String getSourceURI() {
 		return asString(BUILDCONFIG_SOURCE_URI);

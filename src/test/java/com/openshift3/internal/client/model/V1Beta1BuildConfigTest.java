@@ -39,6 +39,11 @@ public class V1Beta1BuildConfigTest {
 	}
 	
 	@Test
+	public void getOutputRespositoryName(){
+		assertEquals("origin-ruby-sample",config.getOutputRepositoryName());
+	}
+	
+	@Test
 	public void getSourceURI(){
 		assertEquals("git@github.com:jcantrill/javaparks.git", config.getSourceURI());
 	}
