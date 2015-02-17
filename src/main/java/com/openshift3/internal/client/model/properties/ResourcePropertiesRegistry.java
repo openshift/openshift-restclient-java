@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.internal.client.model.properties;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 	private static ResourcePropertiesRegistry instance;
 
 	private final Map<VersionKey, Map<String, String []>> versionPropertyMap = new HashMap<VersionKey, Map<String, String []>>();
-	private static final Map<String, String []> V1BETA1_KUBERNETES_MAP = new HashMap<String, String []>(){{
+	public static final Map<String, String []> V1BETA1_KUBERNETES_MAP = new HashMap<String, String []>(){{
 		put(ANNOTATIONS, new String [] {"annotations"});
 		put(APIVERSION, new String [] {"apiVersion"});
 		put(CREATION_TIMESTAMP, new String []  {"creationTimestamp"});
@@ -44,7 +44,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(STATUS_MESSAGE, new String [] {"message"});
 	}};
 
-	private static final Map<String, String []> V1BETA1_OPENSHIFT_MAP = new HashMap<String, String []>(){{
+	public static final Map<String, String []> V1BETA1_OPENSHIFT_MAP = new HashMap<String, String []>(){{
 		//common properties
 		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
 		put(CREATION_TIMESTAMP, new String []  {"metadata", "creationTimestamp"});
@@ -56,6 +56,18 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(BUILD_STATUS, new String[]{"status"});
 		
 		put(BUILDCONFIG_SOURCE_URI, new String[]{"parameters","source","git","uri"});
+		put(BUILDCONFIG_STRATEGY, new String[]{"parameters","strategy"});
+		put(BUILDCONFIG_TYPE, new String[]{"parameters","strategy", "type"});
+		put(BUILDCONFIG_CUSTOM_IMAGE, new String[]{"parameters","strategy", "customStrategy", "image"});
+		put(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET, new String[]{"parameters","strategy", "customStrategy", "exposeDockerSocket"});
+		put(BUILDCONFIG_CUSTOM_ENV, new String[]{"parameters","strategy", "customStrategy", "env"});
+		put(BUILDCONFIG_DOCKER_CONTEXTDIR, new String[]{"parameters","strategy", "dockerStrategy", "contextDir"});
+		put(BUILDCONFIG_DOCKER_NOCACHE, new String[]{"parameters","strategy", "dockerStrategy", "noCache"});
+		put(BUILDCONFIG_DOCKER_BASEIMAGE, new String[]{"parameters","strategy", "dockerStrategy","baseImage"});
+		put(BUILDCONFIG_STI_IMAGE, new String[]{"parameters","strategy", "stiStrategy", "image"});
+		put(BUILDCONFIG_STI_SCRIPTS, new String[]{"parameters","strategy", "stiStrategy", "scripts"});
+		put(BUILDCONFIG_STI_CLEAN, new String[]{"parameters","strategy", "stiStrategy", "clean"});
+		put(BUILDCONFIG_STI_ENV, new String[]{"parameters","strategy", "stiStrategy", "env"});
 		
 		put(DEPLOYMENTCONFIG_CONTAINERS, new String[]{"template","controllerTemplate","podTemplate","desiredState","manifest","containers"});
 		put(DEPLOYMENTCONFIG_REPLICAS, new String[]{"template","controllerTemplate","replicas"});

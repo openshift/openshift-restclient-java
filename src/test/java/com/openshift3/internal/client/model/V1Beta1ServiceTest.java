@@ -14,6 +14,7 @@ import com.openshift.client.utils.Samples;
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.model.IService;
+import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 
 /**
  * Test to validate the lookup paths are correct for the version

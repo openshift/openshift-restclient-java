@@ -26,6 +26,8 @@ import com.openshift3.client.model.IResource;
 import com.openshift3.internal.client.capability.resources.AnnotationDeploymentConfigTraceability;
 import com.openshift3.internal.client.capability.resources.AnnotationDeploymentTraceability;
 import com.openshift3.internal.client.capability.resources.AnnotationTemplateTraceability;
+import com.openshift3.internal.client.model.properties.ResourcePropertyKeys;
+import com.openshift3.internal.util.JBossDmrExtentions;
 
 /**
  * Resource is an abstract representation of a Kubernetes resource
@@ -174,25 +176,24 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 	}
 	
 	protected Map<String, String> asMap(String property){
-		String [] path = propertyKeys.get(property);
-		ModelNode node = this.node.get(path);
-		HashMap<String, String> map = new HashMap<String, String>();
-		if( ModelType.UNDEFINED == node.getType())
-			return map;
-		for (String key : node.keys()) {
-			map.put(key, node.get(key).asString());
-		}
-		return map;
+		return JBossDmrExtentions.asMap(this.node, propertyKeys, property);
 	}
 	
 	protected int asInt(String key){
-		String [] property = propertyKeys.get(key);
-		return node.get(property).asInt();
+		return JBossDmrExtentions.asInt(node, propertyKeys, key);
 	}
 	
 	protected String asString(String property){
-		String [] path = propertyKeys.get(property);
-		return node.get(path).asString();
+		return JBossDmrExtentions.asString(node, propertyKeys, property);
+	}
+	
+	
+	protected boolean asBoolean(String property) {
+		ModelNode modelNode = get(property);
+		if(modelNode.getType() != ModelType.BOOLEAN){
+			return false;
+		}
+		return modelNode.asBoolean();
 	}
 
 	@Override

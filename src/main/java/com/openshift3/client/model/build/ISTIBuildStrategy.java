@@ -6,17 +6,23 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client.model;
+package com.openshift3.client.model.build;
 
-import com.openshift3.client.model.build.IBuildStrategy;
+import java.util.Map;
 
-public interface IBuildConfig extends IResource {
+import com.openshift3.client.images.DockerImageURI;
 
-	/**
-	 * Return the source URL for a build
-	 * @return
-	 */
-	String getSourceURI();
+public interface ISTIBuildStrategy extends IBuildStrategy {
 	
-	<T extends IBuildStrategy> T getBuildStrategy(); 	
+	/**
+	 * The Builder Image used to execute the build
+	 */
+	DockerImageURI getImage();
+	
+	String getScriptsLocation();
+	
+	Map<String, String> getEnvironmentVariables();
+	
+	boolean forceClean();
+	
 }

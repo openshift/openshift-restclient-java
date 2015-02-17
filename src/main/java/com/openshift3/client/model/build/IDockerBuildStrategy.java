@@ -6,22 +6,15 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client.model;
+package com.openshift3.client.model.build;
 
-public enum BuildTrigger {
+import com.openshift3.client.images.DockerImageURI;
+
+public interface IDockerBuildStrategy extends IBuildStrategy {
 	
-	GitHub("github"),
-	Generic("generic");
+	String getContextDir();
 	
-	private  String name;
+	boolean isNoCache();
 	
-	BuildTrigger(String name){
-		this.name = name;
-	}
-	
-	@Override
-	public String toString() {
-		return name;
-	}
-	
+	DockerImageURI getBaseImage();
 }
