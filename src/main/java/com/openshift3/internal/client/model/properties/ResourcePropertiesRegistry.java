@@ -55,7 +55,9 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(BUILD_MESSAGE, new String[]{"message"});
 		put(BUILD_STATUS, new String[]{"status"});
 		
+		put(BUILDCONFIG_SOURCE_TYPE, new String[]{"parameters","source","type"});
 		put(BUILDCONFIG_SOURCE_URI, new String[]{"parameters","source","git","uri"});
+		put(BUILDCONFIG_SOURCE_REF, new String[]{"parameters","source","git","ref"});
 		put(BUILDCONFIG_STRATEGY, new String[]{"parameters","strategy"});
 		put(BUILDCONFIG_TYPE, new String[]{"parameters","strategy", "type"});
 		put(BUILDCONFIG_CUSTOM_IMAGE, new String[]{"parameters","strategy", "customStrategy", "image"});

@@ -189,11 +189,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 	
 	
 	protected boolean asBoolean(String property) {
-		ModelNode modelNode = get(property);
-		if(modelNode.getType() != ModelType.BOOLEAN){
-			return false;
-		}
-		return modelNode.asBoolean();
+		return JBossDmrExtentions.asBoolean(node, propertyKeys, property);
 	}
 
 	@Override

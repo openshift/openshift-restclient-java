@@ -9,6 +9,8 @@
 package com.openshift3.internal.client.model.properties;
 
 public interface BuildConfigPropertyKeys {
+	static final String BUILDCONFIG_SOURCE_TYPE = "buildconfig.source.type";
+	static final String BUILDCONFIG_SOURCE_REF = "buildconfig.source.ref";
 	static final String BUILDCONFIG_SOURCE_URI = "buildconfig.sourceuri";
 	static final String BUILDCONFIG_STRATEGY = "buildconfig.strategy";
 	static final String BUILDCONFIG_TYPE = "buildconfig.strategy.type";

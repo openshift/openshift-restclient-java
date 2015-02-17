@@ -17,11 +17,14 @@ import org.jboss.dmr.ModelType;
 import com.openshift3.client.IClient;
 import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.client.model.IBuildConfig;
+import com.openshift3.client.model.build.BuildSourceType;
 import com.openshift3.client.model.build.BuildStrategyType;
 import com.openshift3.client.model.build.BuildTrigger;
+import com.openshift3.client.model.build.IBuildSource;
 import com.openshift3.client.model.build.IBuildStrategy;
 import com.openshift3.internal.client.model.build.CustomBuildStrategy;
 import com.openshift3.internal.client.model.build.DockerBuildStrategy;
+import com.openshift3.internal.client.model.build.GitBuildSource;
 import com.openshift3.internal.client.model.build.STIBuildStrategy;
 
 public class BuildConfig extends KubernetesResource implements IBuildConfig {
@@ -33,6 +36,17 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
 	public String getSourceURI() {
 		return asString(BUILDCONFIG_SOURCE_URI);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends IBuildSource> T getBuildSource() {
+		switch(BuildSourceType.valueOf(asString(BUILDCONFIG_SOURCE_TYPE))){
+		case Git:
+			return (T) new GitBuildSource(asString(BUILDCONFIG_SOURCE_URI), asString(BUILDCONFIG_SOURCE_REF));
+		default:
+		}
+		return null;
 	}
 
 	public void addTrigger(BuildTrigger type, String secret){
