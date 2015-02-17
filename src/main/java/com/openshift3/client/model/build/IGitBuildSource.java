@@ -6,28 +6,13 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client.model;
+package com.openshift3.client.model.build;
 
-import com.openshift3.client.model.build.IBuildSource;
-import com.openshift3.client.model.build.IBuildStrategy;
-
-public interface IBuildConfig extends IResource {
-
-	/**
-	 * Return the source URL for a build
-	 * @return
-	 */
-	String getSourceURI();
+public interface IGitBuildSource extends IBuildSource {
 	
 	/**
-	 * The source info of the build
+	 * The branch/tag/ref to build
 	 * @return
 	 */
-	<T extends IBuildSource> T getBuildSource();
-	
-	/**
-	 * The strategy to for building the source
-	 * @return
-	 */
-	<T extends IBuildStrategy> T getBuildStrategy(); 	
+	String getRef();
 }

@@ -37,11 +37,29 @@ public class JBossDmrExtentions {
 	
 	public static int asInt(ModelNode node, Map<String, String []> propertyKeys, String key){
 		String [] property = propertyKeys.get(key);
-		return node.get(property).asInt();
+		ModelNode modelNode = node.get(property);
+		if(modelNode.getType() == ModelType.UNDEFINED){
+			return 0;
+		}
+		return modelNode.asInt();
 	}
 	
-	public static String asString(ModelNode node, Map<String, String []> propertyKeys, String property){
-		String [] path = propertyKeys.get(property);
-		return node.get(path).asString();
+	public static String asString(ModelNode node, Map<String, String []> propertyKeys, String key){
+		String [] path = propertyKeys.get(key);
+		ModelNode modelNode = node.get(path);
+		if(modelNode.getType() == ModelType.UNDEFINED){
+			return "";
+		}
+		return modelNode.asString();
 	}
+	
+	public static boolean asBoolean(ModelNode node, Map<String, String []> propertyKeys, String key) {
+		String [] path = propertyKeys.get(key);
+		ModelNode modelNode = node.get(path);
+		if(modelNode.getType() == ModelType.UNDEFINED){
+			return false;
+		}
+		return modelNode.asBoolean();
+	}
+
 }

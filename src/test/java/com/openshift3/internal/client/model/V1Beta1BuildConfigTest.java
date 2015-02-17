@@ -11,9 +11,6 @@ package com.openshift3.internal.client.model;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,9 +20,10 @@ import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.client.model.IBuildConfig;
-import com.openshift3.client.model.IDeploymentConfig;
+import com.openshift3.client.model.build.BuildSourceType;
 import com.openshift3.client.model.build.BuildStrategyType;
 import com.openshift3.client.model.build.IBuildStrategy;
+import com.openshift3.client.model.build.IGitBuildSource;
 import com.openshift3.client.model.build.ISTIBuildStrategy;
 import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 
@@ -43,6 +41,14 @@ public class V1Beta1BuildConfigTest {
 	@Test
 	public void getSourceURI(){
 		assertEquals("git@github.com:jcantrill/javaparks.git", config.getSourceURI());
+	}
+	
+	@Test
+	public void getGitBuildSource(){
+		IGitBuildSource source = config.<IGitBuildSource>getBuildSource();
+		assertEquals(BuildSourceType.Git, source.getType());
+		assertEquals("git@github.com:jcantrill/javaparks.git", source.getURI());
+		assertEquals("Exp. to get the source ref","", source.getRef());
 	}
 	
 	@Test

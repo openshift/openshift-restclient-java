@@ -10,9 +10,6 @@ package com.openshift3.internal.client.model.build;
 
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
