@@ -30,4 +30,11 @@ public interface IBuildConfig extends IResource {
 	 * @return
 	 */
 	<T extends IBuildStrategy> T getBuildStrategy(); 	
+	
+	/**
+	 * Retrieve the name of the repository where the
+	 * resulting build image will be pushed
+	 * @return
+	 */
+	String getOutputRepositoryName();
 }

@@ -66,6 +66,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(BUILDCONFIG_DOCKER_CONTEXTDIR, new String[]{"parameters","strategy", "dockerStrategy", "contextDir"});
 		put(BUILDCONFIG_DOCKER_NOCACHE, new String[]{"parameters","strategy", "dockerStrategy", "noCache"});
 		put(BUILDCONFIG_DOCKER_BASEIMAGE, new String[]{"parameters","strategy", "dockerStrategy","baseImage"});
+		put(BUILDCONFIG_OUTPUT_REPO, new String[]{"parameters","output", "to","name"});
 		put(BUILDCONFIG_STI_IMAGE, new String[]{"parameters","strategy", "stiStrategy", "image"});
 		put(BUILDCONFIG_STI_SCRIPTS, new String[]{"parameters","strategy", "stiStrategy", "scripts"});
 		put(BUILDCONFIG_STI_CLEAN, new String[]{"parameters","strategy", "stiStrategy", "clean"});

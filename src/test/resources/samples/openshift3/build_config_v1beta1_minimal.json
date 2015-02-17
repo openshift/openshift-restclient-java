@@ -42,7 +42,11 @@
         },
         "output": {
             "imageTag": "jcantrill/javaparks:latest",
-            "registry": "172.30.17.59:5001"
+            "registry": "172.30.17.59:5001",
+            "to": {
+               "kind": "ImageRepository",
+               "name": "origin-ruby-sample"
+            }
         }
     },
     "labels" : {
