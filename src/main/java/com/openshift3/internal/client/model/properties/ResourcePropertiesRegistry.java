@@ -35,6 +35,8 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		
 		put(REPLICATION_CONTROLLER_REPLICA_COUNT, new String [] {"desiredState", "replicas"});
 		put(REPLICATION_CONTROLLER_REPLICA_SELECTOR, new String [] {"desiredState", "replicaSelector"});
+		put(REPLICATION_CONTROLLER_CONTAINERS, new String [] {"desiredState", "podTemplate","desiredState","manifest","containers"});
+		put(REPLICATION_CONTROLLER_CURRENT_REPLICA_COUNT, new String [] {"currentState", "replicas"});
 		
 		put(POD_IP, new String[]{"currentState","podIP"});
 		put(SERVICE_CONTAINER_PORT, new String [] {"containerPort"});

@@ -19,7 +19,9 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String NAME = "name";
 	static final String NAMESPACE = "namespace";
 	
+	static final String REPLICATION_CONTROLLER_CONTAINERS = "replicationcontroller.containers";
 	static final String REPLICATION_CONTROLLER_REPLICA_COUNT = "replicationcontroller.replicacount";
+	static final String REPLICATION_CONTROLLER_CURRENT_REPLICA_COUNT = "replicationcontroller.replicacount.current";
 	static final String REPLICATION_CONTROLLER_REPLICA_SELECTOR = "replicationcontroller.selector";
 	
 	static final String SERVICE_CONTAINER_PORT = "service.containerport";

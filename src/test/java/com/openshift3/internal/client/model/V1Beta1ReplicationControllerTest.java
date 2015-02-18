@@ -44,7 +44,19 @@ public class V1Beta1ReplicationControllerTest {
 		assertEquals(labels, rc.getReplicaSelector());
 	}
 	
-	public void getReplicaCount(){
-		assertEquals(1, rc.getReplicaCount());
+	@Test
+	public void getDesiredReplicaCount(){
+		assertEquals(1, rc.getDesiredReplicaCount());
+	}
+	
+	@Test
+	public void getCurrentReplicaCount(){
+		assertEquals(2, rc.getCurrentReplicaCount());
+	}
+	
+	@Test
+	public void testGetImages(){
+		String [] exp = new String []{"mysql"};
+		assertArrayEquals(exp , rc.getImages().toArray());
 	}
 }

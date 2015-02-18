@@ -68,7 +68,7 @@
         }
     },
     "currentState": {
-        "replicas": 1,
+        "replicas": 2,
         "podTemplate": {
             "desiredState": {
                 "manifest": {

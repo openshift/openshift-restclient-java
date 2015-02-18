@@ -8,9 +8,12 @@
  ******************************************************************************/
 package com.openshift3.internal.client.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 
 import com.openshift3.client.IClient;
 import com.openshift3.client.model.IReplicationController;
@@ -22,13 +25,29 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	}
 
 	@Override
-	public int getReplicaCount() {
+	public int getDesiredReplicaCount() {
 		return asInt(REPLICATION_CONTROLLER_REPLICA_COUNT);
 	}
 
 	@Override
 	public Map<String, String> getReplicaSelector() {
 		return asMap(REPLICATION_CONTROLLER_REPLICA_SELECTOR);
+	}
+
+	@Override
+	public int getCurrentReplicaCount() {
+		return asInt(REPLICATION_CONTROLLER_CURRENT_REPLICA_COUNT);
+	}
+
+	@Override
+	public Collection<String> getImages() {
+		ModelNode node = get(REPLICATION_CONTROLLER_CONTAINERS);
+		if(node.getType() != ModelType.LIST) return new ArrayList<String>();
+		Collection<String> list = new ArrayList<String>();
+		for (ModelNode entry : node.asList()) {
+			list.add(entry.get("image").asString());
+		}
+		return list;
 	}
 
 }
