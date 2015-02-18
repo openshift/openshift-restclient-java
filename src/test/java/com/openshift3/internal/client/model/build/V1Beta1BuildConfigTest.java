@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.internal.client.model.build;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -27,6 +27,8 @@ import com.openshift3.client.model.build.IBuildStrategy;
 import com.openshift3.client.model.build.IBuildTrigger;
 import com.openshift3.client.model.build.IGitBuildSource;
 import com.openshift3.client.model.build.ISTIBuildStrategy;
+import com.openshift3.internal.client.model.BuildConfig;
+import com.openshift3.internal.client.model.ImageChangeTrigger;
 import com.openshift3.internal.client.model.build.WebhookTrigger;
 import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 

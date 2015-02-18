@@ -58,6 +58,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(NAMESPACE, new String []  {"metadata", "namespace"});
 		
 		put(BUILD_MESSAGE, new String[]{"message"});
+		put(BUILD_PODNAME, new String[]{"podName"});
 		put(BUILD_STATUS, new String[]{"status"});
 		
 		put(BUILDCONFIG_SOURCE_TYPE, new String[]{"parameters","source","type"});

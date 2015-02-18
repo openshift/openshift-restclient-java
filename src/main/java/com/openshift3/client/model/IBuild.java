@@ -21,4 +21,10 @@ public interface IBuild extends IResource {
 	 * @return
 	 */
 	String getMessage();
+	
+	/**
+	 * The name of the pod running the build
+	 * @return
+	 */
+	String getPodName();
 }

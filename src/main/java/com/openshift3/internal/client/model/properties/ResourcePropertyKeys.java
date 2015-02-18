@@ -33,6 +33,7 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	
 	static final String BUILD_STATUS	= "build.status";
 	static final String BUILD_MESSAGE	= "build.message";
+	static final String BUILD_PODNAME	= "build.podname";
 	
 	static final String DEPLOYMENTCONFIG_CONTAINERS = "deploymentconfig.containers";
 	static final String DEPLOYMENTCONFIG_REPLICAS = "deploymentconfig.replicas";

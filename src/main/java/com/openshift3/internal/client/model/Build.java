@@ -31,5 +31,10 @@ public class Build extends KubernetesResource implements IBuild{
 		return asString(BUILD_MESSAGE);
 	}
 
+	@Override
+	public String getPodName() {
+		return asString(BUILD_PODNAME);
+	}
+
 	
 }

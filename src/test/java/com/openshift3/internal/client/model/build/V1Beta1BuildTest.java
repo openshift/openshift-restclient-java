@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.internal.client.model.build;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -19,6 +19,7 @@ import com.openshift.client.utils.Samples;
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.model.IBuild;
+import com.openshift3.internal.client.model.Build;
 import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 
 public class V1Beta1BuildTest {
@@ -40,6 +41,11 @@ public class V1Beta1BuildTest {
 	@Test
 	public void getMessage(){
 		assertEquals("Some status message", build.getMessage());
+	}
+	
+	@Test
+	public void testGetPodName(){
+		assertEquals("build-bcc3a625-b7ab-11e4-8457-080027c5bfa9", build.getPodName());
 	}
 	
 }
