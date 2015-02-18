@@ -8,7 +8,9 @@
  ******************************************************************************/
 package com.openshift3.internal.client.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
@@ -19,13 +21,15 @@ import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.client.model.IBuildConfig;
 import com.openshift3.client.model.build.BuildSourceType;
 import com.openshift3.client.model.build.BuildStrategyType;
-import com.openshift3.client.model.build.BuildTrigger;
+import com.openshift3.client.model.build.BuildTriggerType;
 import com.openshift3.client.model.build.IBuildSource;
 import com.openshift3.client.model.build.IBuildStrategy;
+import com.openshift3.client.model.build.IBuildTrigger;
 import com.openshift3.internal.client.model.build.CustomBuildStrategy;
 import com.openshift3.internal.client.model.build.DockerBuildStrategy;
 import com.openshift3.internal.client.model.build.GitBuildSource;
 import com.openshift3.internal.client.model.build.STIBuildStrategy;
+import com.openshift3.internal.client.model.build.WebhookTrigger;
 
 public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
@@ -34,6 +38,32 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		//TODO add check to kind here
 	}
 	
+	@Override
+	public List<IBuildTrigger> getBuildTriggers() {
+		List<IBuildTrigger> triggers = new ArrayList<IBuildTrigger>();
+		List<ModelNode> list = get(BUILDCONFIG_TRIGGERS).asList();
+		for (ModelNode node : list) {
+			switch(BuildTriggerType.valueOf(node.get("type").asString())){
+				case generic:
+					triggers.add(new WebhookTrigger(BuildTriggerType.generic, node.get(new String[]{"generic","secret"}).asString()));
+					break;
+				case github:
+					triggers.add(new WebhookTrigger(BuildTriggerType.github, node.get(new String[]{"github","secret"}).asString()));
+					break;
+				case imageChange:
+					triggers.add(new ImageChangeTrigger(
+							node.get(new String[]{"imageChange","image"}).asString(),
+							node.get(new String[]{"imageChange", "from","name"}).asString(),
+							node.get(new String[]{"imageChange","tag"}).asString()
+							)
+					);
+					break;
+				default:
+			}
+		}
+		return triggers;
+	}
+
 	@Override
 	public String getOutputRepositoryName() {
 		return asString(BUILDCONFIG_OUTPUT_REPO);
@@ -52,14 +82,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		default:
 		}
 		return null;
-	}
-
-	public void addTrigger(BuildTrigger type, String secret){
-		//FIXME
-//		ModelNode trigger = new ModelNode();
-//		trigger.get("type").set(type.toString());
-//		trigger.get(new String[]{type.toString(),"secret"}).set(secret);
-//		getNode().get("triggers").add(trigger);
 	}
 
 	public void setSource(String type, String uri){

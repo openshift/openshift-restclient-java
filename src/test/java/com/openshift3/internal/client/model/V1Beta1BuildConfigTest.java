@@ -22,9 +22,12 @@ import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.client.model.IBuildConfig;
 import com.openshift3.client.model.build.BuildSourceType;
 import com.openshift3.client.model.build.BuildStrategyType;
+import com.openshift3.client.model.build.BuildTriggerType;
 import com.openshift3.client.model.build.IBuildStrategy;
+import com.openshift3.client.model.build.IBuildTrigger;
 import com.openshift3.client.model.build.IGitBuildSource;
 import com.openshift3.client.model.build.ISTIBuildStrategy;
+import com.openshift3.internal.client.model.build.WebhookTrigger;
 import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 
 public class V1Beta1BuildConfigTest {
@@ -36,6 +39,16 @@ public class V1Beta1BuildConfigTest {
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.BUILD_CONFIG_MINIMAL.getContentAsString());
 		config = new BuildConfig(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.BuildConfig));
+	}
+	
+	@Test
+	public void getBuildTriggers(){
+		IBuildTrigger [] exp = new IBuildTrigger[]{
+				new WebhookTrigger(BuildTriggerType.github, "secret101"),
+				new WebhookTrigger(BuildTriggerType.generic, "secret101"),
+				new ImageChangeTrigger("openshift/ruby-20-centos", "ruby-20-centos", "latest")
+		};
+		assertArrayEquals(exp, config.getBuildTriggers().toArray());
 	}
 	
 	@Test

@@ -71,6 +71,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(BUILDCONFIG_STI_SCRIPTS, new String[]{"parameters","strategy", "stiStrategy", "scripts"});
 		put(BUILDCONFIG_STI_CLEAN, new String[]{"parameters","strategy", "stiStrategy", "clean"});
 		put(BUILDCONFIG_STI_ENV, new String[]{"parameters","strategy", "stiStrategy", "env"});
+		put(BUILDCONFIG_TRIGGERS, new String[]{"triggers"});
 		
 		put(DEPLOYMENTCONFIG_CONTAINERS, new String[]{"template","controllerTemplate","podTemplate","desiredState","manifest","containers"});
 		put(DEPLOYMENTCONFIG_REPLICAS, new String[]{"template","controllerTemplate","replicas"});

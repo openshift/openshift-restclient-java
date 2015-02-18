@@ -8,8 +8,11 @@
  ******************************************************************************/
 package com.openshift3.client.model;
 
+import java.util.List;
+
 import com.openshift3.client.model.build.IBuildSource;
 import com.openshift3.client.model.build.IBuildStrategy;
+import com.openshift3.client.model.build.IBuildTrigger;
 
 public interface IBuildConfig extends IResource {
 
@@ -18,6 +21,12 @@ public interface IBuildConfig extends IResource {
 	 * @return
 	 */
 	String getSourceURI();
+	
+	/**
+	 * The policies which will trigger a build
+	 * @return
+	 */
+	List<IBuildTrigger> getBuildTriggers();
 	
 	/**
 	 * The source info of the build

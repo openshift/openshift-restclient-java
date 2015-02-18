@@ -17,6 +17,16 @@
             "generic": {
                 "secret": "secret101"
             }
+        },
+        {
+            "type": "imageChange",
+            "imageChange": {
+                "image": "openshift/ruby-20-centos",
+                "from": {
+                    "name": "ruby-20-centos"
+                },
+                "tag": "latest"
+            }
         }
     ],
     "parameters": {
