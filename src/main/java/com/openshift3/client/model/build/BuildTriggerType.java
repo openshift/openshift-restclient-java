@@ -8,20 +8,8 @@
  ******************************************************************************/
 package com.openshift3.client.model.build;
 
-public enum BuildTrigger {
-	
-	GitHub("github"),
-	Generic("generic");
-	
-	private  String name;
-	
-	BuildTrigger(String name){
-		this.name = name;
-	}
-	
-	@Override
-	public String toString() {
-		return name;
-	}
-	
+public enum BuildTriggerType {
+	generic,
+	github,
+	imageChange
 }

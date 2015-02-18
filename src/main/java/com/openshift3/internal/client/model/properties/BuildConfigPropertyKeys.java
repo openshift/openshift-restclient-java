@@ -29,4 +29,6 @@ public interface BuildConfigPropertyKeys {
 	static final String BUILDCONFIG_STI_ENV = "buildconfig.sti.env";
 
 	static final String BUILDCONFIG_OUTPUT_REPO = "buildconfig.outputrepo";
+	
+	static final String BUILDCONFIG_TRIGGERS = "buildconfig.triggers";
 }

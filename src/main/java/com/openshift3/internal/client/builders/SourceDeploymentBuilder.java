@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.openshift3.client.images.DockerImageURI;
-import com.openshift3.client.model.build.BuildTrigger;
 import com.openshift3.internal.client.model.BuildConfig;
 import com.openshift3.internal.client.model.DeploymentConfig;
 import com.openshift3.internal.client.model.ImageRepository;
