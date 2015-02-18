@@ -33,6 +33,22 @@ public class V1Beta1PodTest {
 	}
 	
 	@Test
+	public void testGetHost(){
+		assertEquals("openshiftdev.local", pod.getHost());
+	}
+	
+	@Test
+	public void testGetStatus(){
+		assertEquals("Running", pod.getStatus());
+	}
+	
+	@Test
+	public void testGetImages(){
+		String [] exp = new String []{"mysql"};
+		assertArrayEquals(exp, pod.getImages().toArray());
+	}
+
+	@Test
 	public void getIP() {
 		assertEquals("172.17.0.5", pod.getIP());
 	}

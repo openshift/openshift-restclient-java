@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.openshift3.client.model;
 
+import java.util.Collection;
+
 public interface IPod extends IResource {
 
 	/**
@@ -15,4 +17,26 @@ public interface IPod extends IResource {
 	 * @return
 	 */
 	String getIP();
+	
+	/**
+	 * Get the name of the host on which
+	 * the pod is running
+	 * @return
+	 */
+	String getHost();
+	
+	/**
+	 * Get the collection of image names
+	 * for the pod containers
+	 * @return
+	 */
+	Collection<String> getImages();
+	
+	/**
+	 * Get the status of the pod
+	 * @return
+	 */
+	String getStatus();
+	
+	
 }

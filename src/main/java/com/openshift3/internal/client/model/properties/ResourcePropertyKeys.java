@@ -41,5 +41,8 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String IMAGEREPO_DOCKER_IMAGE_REPO = "imagerepo.dockerimagerepo";
 	static final String PROJECT_DISPLAY_NAME = "project.displayname";
 	
+	static final String POD_CONTAINERS = "pod.containers";
+	static final String POD_HOST = "pod.host";
 	static final String POD_IP = "pod.ip";
+	static final String POD_STATUS = "pod.status";
 }
