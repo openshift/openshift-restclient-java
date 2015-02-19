@@ -20,8 +20,8 @@ import com.openshift.internal.client.httpclient.EncodingException;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.request.IMediaType;
 import com.openshift.internal.client.httpclient.request.Parameter;
+import com.openshift3.client.authorization.IAuthorizationStrategy;
 import com.openshift3.client.model.IResource;
-import com.openshift3.internal.client.model.KubernetesResource;
 
 /**
  * @author André Dietisheim
@@ -93,6 +93,8 @@ public interface IHttpClient {
 	public void setAcceptVersion(String version);
 	
 	public void setAcceptedMediaType(String acceptedMediaType);
+	
+	public void setAuthorizationStrategy(IAuthorizationStrategy strategy);
 	
 	public interface ISSLCertificateCallback {
 

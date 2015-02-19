@@ -43,13 +43,14 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.client.HttpMethod;
 import com.openshift.client.IHttpClient;
-import com.openshift.client.utils.Base64Coder;
 import com.openshift.client.utils.SSLUtils;
 import com.openshift.internal.client.httpclient.request.IMediaType;
 import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.httpclient.request.ParameterValueMap;
 import com.openshift.internal.client.utils.StreamUtils;
 import com.openshift.internal.client.utils.StringUtils;
+import com.openshift3.client.authorization.IAuthorizationStrategy;
+import com.openshift3.client.authorization.URLConnectionRequest;
 import com.openshift3.client.model.IResource;
 
 /**
@@ -63,41 +64,30 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UrlConnectionHttpClient.class);
 
 	protected String userAgent;
-	protected String username;
-	protected String password;
-	protected String authKey;
-	protected String authIV;
-	protected String token;
 	protected String acceptedMediaType;
 	protected String acceptedVersion;
 	protected ISSLCertificateCallback sslAuthorizationCallback;
 	protected Integer configTimeout;
 	private String excludedSSLCipherRegex;
+	private IAuthorizationStrategy authStrategy;
 
-	public UrlConnectionHttpClient(
-			String username, String password, String userAgent, String acceptedMediaType, String version) {
-		this(username, password, userAgent, acceptedMediaType, version, null, null);
+	public UrlConnectionHttpClient(String userAgent, String acceptedMediaType, String version){
+		this(userAgent, acceptedMediaType, version, null, null, null);
 	}
 
-	public UrlConnectionHttpClient(
-			String username, String password, String userAgent, String acceptedMediaType, String version, String authKey, String authIV) {
-		this(username, password, userAgent, acceptedMediaType, version, authKey, authIV, null,null, null, null);
-	}
-
-	public UrlConnectionHttpClient(String username, String password, String userAgent, String acceptedMediaType,
-			String version, String authKey, String authIV, String token, ISSLCertificateCallback callback, Integer configTimeout, String excludedSSLCipherRegex) {
-		// TODO: separate auth strategies in UrlConnectionHttpClient
-		this.username = username;
-		this.password = password;
+	public UrlConnectionHttpClient(String userAgent, String acceptedMediaType,
+			String version, ISSLCertificateCallback callback, Integer configTimeout, String excludedSSLCipherRegex) {
 		this.userAgent = userAgent;
 		this.acceptedMediaType = acceptedMediaType;
 		this.acceptedVersion = version;
-		this.authKey = authKey;
-		this.authIV = authIV;
-		this.token = token;
 		this.sslAuthorizationCallback = callback;
 		this.configTimeout = configTimeout;
 		this.excludedSSLCipherRegex = excludedSSLCipherRegex;
+	}
+	
+	@Override
+	public void setAuthorizationStrategy(IAuthorizationStrategy strategy) {
+		this.authStrategy = strategy;
 	}
 
 	@Override
@@ -157,7 +147,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		HttpURLConnection connection = null;
 		try {
 			connection = createConnection(
-					url, username, password, authKey, authIV, token, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
+					url, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
 			// PATCH not yet supported by JVM
 			setRequestMethod(httpMethod, connection);
 			if (!parameters.isEmpty()) {
@@ -180,7 +170,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		HttpURLConnection connection = null;
 		try {
 			connection = createConnection(
-					url, username, password, authKey, authIV, token, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
+					url, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
 			// PATCH not yet supported by JVM
 			setRequestMethod(httpMethod, connection);
 			if(resource != null){
@@ -255,20 +245,16 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		return "https".equals(url.getProtocol());
 	}
 
-	protected HttpURLConnection createConnection(URL url, String username, String password, String authKey,
-			String authIV, String token, String userAgent, String acceptedVersion, String acceptedMediaType,
+	protected HttpURLConnection createConnection(URL url, String userAgent, String acceptedVersion, String acceptedMediaType,
 			ISSLCertificateCallback callback, int timeout)
 			throws IOException {
-		LOGGER.trace(
-                "creating connection to {} using username \"{}\" and password \"{}\" or token \"{}\"",
-				new Object[] { url, username, password, token });
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		if (isHttps(url)) {
 			HttpsURLConnection httpsConnection = (HttpsURLConnection) connection;
 			SSLContext sslContext = setSSLCallback(sslAuthorizationCallback, url, httpsConnection);
 			setFilteredCiphers(excludedSSLCipherRegex, sslContext, httpsConnection);
 		}
-		setAuthorization(username, password, authKey, authIV, token, connection);
+		setAuthorization(connection);
 		connection.setUseCaches(false);
 		connection.setDoInput(true);
 		connection.setAllowUserInteraction(false);
@@ -277,13 +263,13 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		// wont work when switching http->https
 		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4620571
 		connection.setInstanceFollowRedirects(true);
-		setUserAgent(userAgent, authKey, connection);
+		setUserAgent(userAgent, connection);
 		setAcceptHeader(acceptedVersion, acceptedMediaType, connection);
 
 		return connection;
 	}
 
-	private void setUserAgent(String userAgent, String authKey, HttpURLConnection connection) {
+	private void setUserAgent(String userAgent, HttpURLConnection connection) {
 		if (!StringUtils.isEmpty(userAgent)) {
 			connection.setRequestProperty(PROPERTY_USER_AGENT, userAgent);
 		}
@@ -304,23 +290,10 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		connection.setRequestProperty(PROPERTY_ACCEPT, builder.toString());
 	}
 
-	private void setAuthorization(String username, String password, String authKey, String authIV, String token,
-			HttpURLConnection connection) {
-		if (username == null || username.trim().length() == 0
-				|| password == null || password.trim().length() == 0) {
-			if (authKey != null && authIV != null) {
-				connection.setRequestProperty(PROPERTY_AUTHKEY, authKey);
-				connection.setRequestProperty(PROPERTY_AUTHIV, authIV);
-			}
-			else if(token != null){
-                		connection.setRequestProperty(PROPERTY_AUTHORIZATION,
-				new StringBuilder().append(AUTHORIZATION_BEARER).append(SPACE).append(token).toString());
-			}
-		} else {
-			String credentials = Base64Coder.encode(
-					new StringBuilder().append(username).append(COLON).append(password).toString().getBytes());
-			connection.setRequestProperty(PROPERTY_AUTHORIZATION,
-					new StringBuilder().append(AUTHORIZATION_BASIC).append(SPACE).append(credentials).toString());
+	protected final void setAuthorization(HttpURLConnection connection) {
+		if(authStrategy != null){
+			authStrategy.authorize(new URLConnectionRequest(connection));
+			return;
 		}
 	}
 

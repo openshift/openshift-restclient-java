@@ -104,8 +104,7 @@ public class HttpClientTest extends TestTimer {
 	@Test(expected = HttpClientException.class)
 	public void shouldThrowIfNoAcceptedMediaType() throws SocketTimeoutException, HttpClientException,
 			MalformedURLException {
-		IHttpClient client = new UrlConnectionHttpClient(
-				"username", "password", "useragent", null, "42.0");
+		IHttpClient client = new UrlConnectionHttpClient( "useragent", null, "42.0");
 		client.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
 	}
 
@@ -715,18 +714,17 @@ public class HttpClientTest extends TestTimer {
 
 	private abstract class UrlConnectionHttpClientFake extends UrlConnectionHttpClient {
 		private UrlConnectionHttpClientFake(String userAgent, String acceptVersion) {
-			super("username", "password", userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
-					"authkey", "authiv", null, null, IHttpClient.NO_TIMEOUT, null);
+			super(userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
+					null, IHttpClient.NO_TIMEOUT, null);
 		}
 
 		private UrlConnectionHttpClientFake(String userAgent, String acceptVersion, ISSLCertificateCallback callback) {
-			super("username", "password", userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
-					"authkey", "authiv", null, callback,IHttpClient.NO_TIMEOUT, null);
+			super(userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
+					callback,IHttpClient.NO_TIMEOUT, null);
 		}
 		
 		public HttpURLConnection createConnection() throws IOException, KeyStoreException {
-			return super.createConnection(new URL("http://localhost"), username, password, authKey, authIV,
-					token, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, NO_TIMEOUT);
+			return super.createConnection(new URL("http://localhost"), userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, NO_TIMEOUT);
 		}
 	};
 

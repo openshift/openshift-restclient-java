@@ -32,6 +32,7 @@ import com.openshift3.client.IClient;
 import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.UnsupportedVersionException;
+import com.openshift3.client.authorization.IAuthorizationStrategy;
 import com.openshift3.client.capability.ICapability;
 import com.openshift3.client.capability.server.IImageRegistryHosting;
 import com.openshift3.client.model.IResource;
@@ -191,19 +192,6 @@ public class DefaultClient implements IClient{
 		initializeCapability(capabilities, IImageRegistryHosting.class, new DefaultImageRegistryHosting(this));
 		capabilitiesInitialized = true;
 	}
-	
-	@Override
-	public AuthorizationContext authorize() {
-		try {
-			client.get(this.baseUrl,  IHttpClient.DEFAULT_READ_TIMEOUT);
-			return new AuthorizationContext();
-		} catch (SocketTimeoutException e) {
-			LOGGER.error("Socket timeout trying to connect", e);
-		} catch (HttpClientException e) {
-			LOGGER.error("HttpClient Exception trying to connect", e);
-		}
-		return null;
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -301,5 +289,9 @@ public class DefaultClient implements IClient{
 		return this.baseUrl;
 	}
 
+	@Override
+	public void setAuthorizationStrategy(IAuthorizationStrategy strategy) {
+		this.client.setAuthorizationStrategy(strategy);
+	}
 
 }

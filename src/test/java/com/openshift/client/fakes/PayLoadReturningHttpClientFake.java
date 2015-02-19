@@ -38,14 +38,9 @@ public class PayLoadReturningHttpClientFake extends UrlConnectionHttpClient {
 	}
 
 	protected PayLoadReturningHttpClientFake(OpenShiftTestConfiguration configuration, String mediaType, String version) {
-		super(configuration.getRhlogin(),
-				configuration.getPassword(),
-				configuration.getClientId(),
+		super(				configuration.getClientId(),
 				mediaType,
 				version,
-				null,
-				null,
-				null,
 				null,
 				null,
 				null);

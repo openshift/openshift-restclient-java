@@ -6,21 +6,18 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client;
+package com.openshift3.client.authorization;
 
-import com.openshift3.client.model.IStatus;
+/**
+ * Authorization interface to provide various authorization mechanisms
+ * to an OpenShift server 
+ *
+ */
+public interface IAuthorizationStrategy {
 
-public class OpenShiftException extends RuntimeException {
-
-	private static final long serialVersionUID = -7076942050102006278L;
-	private IStatus status;
-
-	public OpenShiftException(String message, Throwable cause, IStatus status) {
-		super(message, cause);
-		this.status = status;
-	}		
-	
-	public IStatus getStatus(){
-		return this.status;
-	}
+	/**
+	 * Authorize the given request
+	 * @param request
+	 */
+	void authorize(IRequest request);
 }

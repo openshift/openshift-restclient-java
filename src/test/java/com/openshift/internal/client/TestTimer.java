@@ -1,7 +1,6 @@
 package com.openshift.internal.client;
 
 import com.openshift.client.OpenShiftException;
-import com.openshift.client.utils.TestConnectionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

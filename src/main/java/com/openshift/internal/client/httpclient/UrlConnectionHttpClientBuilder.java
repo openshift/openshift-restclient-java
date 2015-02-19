@@ -12,6 +12,8 @@ package com.openshift.internal.client.httpclient;
 
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IHttpClient.ISSLCertificateCallback;
+import com.openshift3.client.authorization.BasicAuthorizationStrategy;
+import com.openshift3.client.authorization.IAuthorizationStrategy;
 
 /**
  * @author André Dietisheim
@@ -21,34 +23,27 @@ import com.openshift.client.IHttpClient.ISSLCertificateCallback;
 public class UrlConnectionHttpClientBuilder {
 
 	private String userAgent;
-	private String username;
-	private String password;
-	private String authKey;
-	private String authIV;
-	private String token;
 	private String acceptedMediaType;
 	private String version;
 	private Integer configTimeout;
 	private ISSLCertificateCallback callback;
 	private String excludeSSLCipherRegex;
+	private IAuthorizationStrategy authStrategy;
 
 	public UrlConnectionHttpClientBuilder setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
 		return this;
 	}
-
-	public UrlConnectionHttpClientBuilder setCredentials(String username, String password) {
-		return setCredentials(username, password, null, null, null);
-	}
 	
-	public UrlConnectionHttpClientBuilder setCredentials(String username, String password, String authKey, String authIV, String token) {
-		this.username = username;
-		this.password = password;
-		this.authKey = authKey;
-		this.authIV = authIV;
-		this.token = token;
+	public UrlConnectionHttpClientBuilder setAuthorizationStrategy(IAuthorizationStrategy strategy){
+		this.authStrategy = strategy;
 		return this;
 	}
+	
+	public UrlConnectionHttpClientBuilder setCredentials(String username, String password) {
+		return setAuthorizationStrategy(new BasicAuthorizationStrategy(username, password));
+	}
+	
 	public UrlConnectionHttpClientBuilder setConfigTimeout (Integer configTimeout) {
 		this.configTimeout = configTimeout;
 		return this;
@@ -75,7 +70,9 @@ public class UrlConnectionHttpClientBuilder {
 	}
 	
 	public IHttpClient client() {
-		return new UrlConnectionHttpClient(
-				username, password, userAgent, acceptedMediaType, version, authKey, authIV, token, callback, configTimeout, excludeSSLCipherRegex);
+		UrlConnectionHttpClient urlClient = new UrlConnectionHttpClient(
+				userAgent, acceptedMediaType, version, callback, configTimeout, excludeSSLCipherRegex);
+		urlClient.setAuthorizationStrategy(authStrategy);
+		return urlClient;
 	}
 }

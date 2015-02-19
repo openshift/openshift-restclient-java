@@ -6,21 +6,21 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client;
+package com.openshift3.client.authorization;
 
-import com.openshift3.client.model.IStatus;
+import java.net.URLConnection;
 
-public class OpenShiftException extends RuntimeException {
+public class URLConnectionRequest implements IRequest {
 
-	private static final long serialVersionUID = -7076942050102006278L;
-	private IStatus status;
+	private final URLConnection connection;
 
-	public OpenShiftException(String message, Throwable cause, IStatus status) {
-		super(message, cause);
-		this.status = status;
-	}		
-	
-	public IStatus getStatus(){
-		return this.status;
+	public URLConnectionRequest(URLConnection connection) {
+		this.connection = connection;
 	}
+
+	@Override
+	public void setProperty(String name, String value) {
+		connection.setRequestProperty(name, value);
+	}
+
 }

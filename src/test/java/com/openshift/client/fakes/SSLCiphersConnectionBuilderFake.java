@@ -42,7 +42,7 @@ public class SSLCiphersConnectionBuilderFake extends TestConnectionBuilder {
 	private class FilteredSSLCiphersClientFake extends UrlConnectionHttpClient {
 
 		private FilteredSSLCiphersClientFake(String excludedSSLCipherRegex) {
-			super(null, null, null, MEDIATYPE_APPLICATION_JSON, null, null, null, null, null, null, excludedSSLCipherRegex);
+			super(null, MEDIATYPE_APPLICATION_JSON, null, null, null, excludedSSLCipherRegex);
 		}
 
 		@Override
@@ -57,11 +57,6 @@ public class SSLCiphersConnectionBuilderFake extends TestConnectionBuilder {
 		public String[] getFilteredCiphers() throws MalformedURLException, IOException {
 			HttpsURLConnection connection = (HttpsURLConnection) createConnection(
 					new URL("https://localhost"), 
-					username, 
-					password, 
-					authKey, 
-					authIV, 
-					token, 
 					userAgent,
 					acceptedVersion, 
 					acceptedMediaType, 

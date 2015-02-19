@@ -12,13 +12,13 @@ import com.openshift3.client.IClient;
 import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.capability.server.IImageRegistryHosting;
-import com.openshift3.internal.client.model.KubernetesResource;
-import com.openshift3.internal.client.model.Service;
+import com.openshift3.client.model.IResource;
+import com.openshift3.client.model.IService;
 
 public class DefaultImageRegistryHosting implements IImageRegistryHosting {
 
 	private IClient client;
-	private Service service;
+	private IService service;
 
 	public DefaultImageRegistryHosting(IClient client) {
 		this.client = client;
@@ -36,14 +36,14 @@ public class DefaultImageRegistryHosting implements IImageRegistryHosting {
 
 	@Override
 	public boolean isSupported() {
-		KubernetesResource resource;
+		IResource resource;
 		try{
 			resource = client.get(ResourceKind.Service, "docker-registry", "");
 		}catch(OpenShiftException e){
 			resource = e.getStatus();
 		}
 		if(resource.getKind() == ResourceKind.Service){
-			this.service = (Service) resource;
+			this.service = (IService) resource;
 			return true;
 		}
 		return false;

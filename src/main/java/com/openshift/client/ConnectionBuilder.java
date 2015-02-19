@@ -28,6 +28,10 @@ import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.response.Link;
 import com.openshift.internal.client.response.OpenShiftJsonDTOFactory;
 import com.openshift.internal.client.response.RestResponse;
+import com.openshift3.client.authorization.BasicAuthorizationStrategy;
+import com.openshift3.client.authorization.BearerTokenAuthorizationStrategy;
+import com.openshift3.client.authorization.IAuthorizationStrategy;
+import com.openshift3.client.authorization.KerbrosBrokerAuthorizationStrategy;
 
 /**
  * A builder for a connection to OpenShift.
@@ -80,26 +84,20 @@ public class ConnectionBuilder {
 
 	public class KeyConnectionBuilder extends AbstractConnectionBuilder {
 
-		private final String authIV;
-		private final String authKey;
+		private IAuthorizationStrategy authStrategy;
 
 		protected KeyConnectionBuilder(String authIV, String authKey, String serverUrl,
 				IOpenShiftConfiguration configuration) {
 			super(serverUrl, configuration);
-			this.authIV = authIV;
-			this.authKey = authKey;
+			this.authStrategy = new KerbrosBrokerAuthorizationStrategy(authKey, authIV);
 		}
 
 		@Override
 		public IOpenShiftConnection create() {
-			// TODO: separate auth strategies in UrlConnectionHttpClient
+			
 			IHttpClient client = createHttpClient(
 					clientId,
-					null,
-					null,
-					authIV,
-					authKey,
-					null,
+					authStrategy,
 					serverUrl,
 					timeout,
 					callback,
@@ -110,11 +108,11 @@ public class ConnectionBuilder {
 
 	public class TokenConnectionBuilder extends AbstractConnectionBuilder {
 
-		private final String token;
+		private final BearerTokenAuthorizationStrategy authStrategy;
 
 		protected TokenConnectionBuilder(String token, String serverUrl, IOpenShiftConfiguration configuration) {
 			super(serverUrl, configuration);
-			this.token = token;
+			this.authStrategy = new BearerTokenAuthorizationStrategy(token);
 		}
 
 		@Override
@@ -122,29 +120,23 @@ public class ConnectionBuilder {
 			// TODO: separate auth strategies in UrlConnectionHttpClient
 			IHttpClient client = createHttpClient(
 					clientId,
-					null,
-					null,
-					null,
-					null,
-					token,
+					authStrategy,
 					serverUrl,
 					timeout,
 					callback,
 					sslCipherExclusionRegex);
-			return getAPIResource(null, null, token, createRestService(client));
+			return getAPIResource(null, null, authStrategy.getToken(), createRestService(client));
 		}
 	}
 	
 	public class CredentialsConnectionBuilder extends AbstractConnectionBuilder {
 
-		private final String username;
-		private final String password;
-
+		private final BasicAuthorizationStrategy authStrategy;
+		
 		CredentialsConnectionBuilder(String username, String password, String serverUrl,
 				IOpenShiftConfiguration configuration) {
 			super(serverUrl, configuration);
-			this.username = username;
-			this.password = password;
+			this.authStrategy = new BasicAuthorizationStrategy(username, password);
 		}
 
 		@Override
@@ -152,20 +144,16 @@ public class ConnectionBuilder {
 			// TODO: separate auth strategies in UrlConnectionHttpClient
 			IHttpClient client = createHttpClient(
 					clientId,
-					username,
-					password,
-					null,
-					null,
-					null,
+					authStrategy,
 					serverUrl,
 					timeout,
 					callback,
 					sslCipherExclusionRegex);
-			return getAPIResource(username, password, null, createRestService(client));
+			return getAPIResource(authStrategy.getUsername(), authStrategy.getPassword(), null, createRestService(client));
 		}
 		
 		public IOpenShiftConnection create(IHttpClient client) {
-			return getAPIResource(username, password, null, createRestService(client));
+			return getAPIResource(authStrategy.getUsername(), authStrategy.getPassword(), null, createRestService(client));
 		}
 	
 	}
@@ -232,11 +220,10 @@ public class ConnectionBuilder {
 					IHttpClient.MEDIATYPE_APPLICATION_JSON, new OpenShiftJsonDTOFactory(), httpClient);
 		}
 
-		public IHttpClient createHttpClient(final String clientId, final String username, final String password,
-				final String authKey, final String authIV, final String token, final String serverUrl,
+		public IHttpClient createHttpClient(final String clientId, final IAuthorizationStrategy authStrategy, final String serverUrl,
 				final int timeout, final ISSLCertificateCallback sslCertificateCallback, String exludeSSLCipherRegex) {
 			return new UrlConnectionHttpClientBuilder()
-					.setCredentials(username, password, authKey, authIV, token)
+					.setAuthorizationStrategy(authStrategy)
 					.setConfigTimeout(timeout)
 					.setSSLCertificateCallback(sslCertificateCallback)
 					.excludeSSLCipher(exludeSSLCipherRegex)

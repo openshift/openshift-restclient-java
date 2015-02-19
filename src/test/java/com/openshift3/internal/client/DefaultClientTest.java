@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import com.openshift.client.IHttpClient;
 import com.openshift3.client.ResourceKind;
+import com.openshift3.client.authorization.IAuthorizationStrategy;
 import com.openshift3.client.model.IPod;
 import com.openshift3.internal.client.model.Pod;
 
@@ -87,6 +88,14 @@ public class DefaultClientTest {
 		assertEquals("Expected the frontend pod", podBackEnd, pods.get(0));
 	}
 
+	@Test 
+	public void testSetAuthStrategySetsIHttpClientAuthStrategy(){
+		IAuthorizationStrategy strategy = mock(IAuthorizationStrategy.class);
+		client.setAuthorizationStrategy(strategy );
+		
+		verify(httpClient).setAuthorizationStrategy(eq(strategy));
+	}
+	
 	@Test
 	public void testListResourceFilteringNoMatch() throws Exception {
 		Map<String, String> labels = new HashMap<String, String>();

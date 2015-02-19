@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import com.openshift3.client.authorization.IAuthorizationStrategy;
 import com.openshift3.client.capability.ICapable;
 import com.openshift3.client.model.IResource;
 
@@ -82,11 +83,9 @@ public interface IClient extends ICapable{
 	String getOpenShiftAPIVersion() throws UnsupportedVersionException;
 	
 	/**
-	 * Connect to the OpenShift server and potentially
-	 * returns a authorization context?
+	 * Set the authorization strategy for the client when
+	 * making requests to the server
+	 * @param strategy
 	 */
-	AuthorizationContext authorize();
-	
-	static class AuthorizationContext {
-	}
+	void setAuthorizationStrategy(IAuthorizationStrategy strategy);
 }

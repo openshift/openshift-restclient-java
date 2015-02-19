@@ -6,21 +6,20 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client;
+package com.openshift3.client.authorization;
 
-import com.openshift3.client.model.IStatus;
+/**
+ * A type to decouple an IAuthorizationStrategy from
+ * the underlying connection stream 
+ */
+public interface IRequest {
 
-public class OpenShiftException extends RuntimeException {
-
-	private static final long serialVersionUID = -7076942050102006278L;
-	private IStatus status;
-
-	public OpenShiftException(String message, Throwable cause, IStatus status) {
-		super(message, cause);
-		this.status = status;
-	}		
-	
-	public IStatus getStatus(){
-		return this.status;
-	}
+	/**
+	 * Add the property with the given name and
+	 * value to the underlying request
+	 * 
+	 * @param name
+	 * @param value
+	 */
+	void setProperty(String name, String value);
 }

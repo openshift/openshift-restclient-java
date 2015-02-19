@@ -6,21 +6,24 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client;
+package com.openshift3.client.authorization;
 
-import com.openshift3.client.model.IStatus;
+import static org.mockito.Mockito.*;
 
-public class OpenShiftException extends RuntimeException {
+import java.net.URLConnection;
 
-	private static final long serialVersionUID = -7076942050102006278L;
-	private IStatus status;
+import org.junit.Test;
 
-	public OpenShiftException(String message, Throwable cause, IStatus status) {
-		super(message, cause);
-		this.status = status;
-	}		
-	
-	public IStatus getStatus(){
-		return this.status;
+public class URLConnectionAuthorizationRequestTest {
+
+	@Test
+	public void testSetProperty() {
+		URLConnection conn = mock(URLConnection.class);
+		
+		URLConnectionRequest request = new URLConnectionRequest(conn);
+		request.setProperty("foo", "bar");
+		
+		verify(conn).setRequestProperty(eq("foo"), eq("bar"));
 	}
+
 }
