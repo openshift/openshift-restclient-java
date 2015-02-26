@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.openshift.client.NoopSSLCertificateCallback;
 import com.openshift3.client.IClient;
 import com.openshift3.client.model.IProject;
 import com.openshift3.client.model.IResource;
@@ -35,7 +36,7 @@ public class DefaultClientIntegrationTest {
 	@Test
 	public void testResourceLifeCycle() throws MalformedURLException {
 		
-		DefaultClient client = new DefaultClient(new URL("http://localhost:8080"));
+		DefaultClient client = new DefaultClient(new URL("http://localhost:8080"), new NoopSSLCertificateCallback());
 		IResourceFactory factory = new ResourceFactory(client);
 		
 		IProject project = factory.create("v1beta1", ResourceKind.Project);
