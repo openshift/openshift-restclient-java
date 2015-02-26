@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import com.openshift.internal.client.httpclient.UnauthorizedException;
 import com.openshift3.client.authorization.IAuthorizationStrategy;
 import com.openshift3.client.capability.ICapable;
 import com.openshift3.client.model.IResource;
@@ -79,6 +80,7 @@ public interface IClient extends ICapable{
 	 * The OpenShift API version for this client
 	 * @return
 	 * @throws UnsupportedVersionException
+	 * @throws {@link UnauthorizedException}
 	 */
 	String getOpenShiftAPIVersion() throws UnsupportedVersionException;
 	
