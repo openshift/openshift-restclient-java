@@ -10,6 +10,7 @@ package com.openshift3.internal.client;
 
 import static com.openshift3.client.capability.CapabilityInitializer.initializeCapability;
 
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -245,9 +246,12 @@ public class DefaultClient implements IClient{
 				}
 			}
 			return versions;
-		} catch (Exception e) {
+		} catch (MalformedURLException e) {
 			LOGGER.error("Exception", e);
-			throw new RuntimeException(e);
+			throw new com.openshift.client.OpenShiftException(e,"");
+		} catch (SocketTimeoutException e) {
+			LOGGER.error("Exception", e);
+			throw new com.openshift.client.OpenShiftException(e,"");
 		}
 	}
 
