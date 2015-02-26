@@ -12,13 +12,10 @@ import static com.openshift3.client.capability.CapabilityInitializer.initializeC
 
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.net.ssl.SSLSession;
 
 import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
@@ -56,37 +53,26 @@ public class DefaultClient implements IClient{
 	private OpenShiftAPIVersion openShiftVersion;
 	private KubernetesAPIVersion kubernetesVersion;
 	
-	public DefaultClient(URL baseUrl){
-		this(baseUrl, null);
+	public DefaultClient(URL baseUrl, ISSLCertificateCallback sslCertCallback){
+		this(baseUrl, null, sslCertCallback);
 	}
 	
 	/*
 	 * Testing constructor
 	 */
-	DefaultClient(URL baseUrl,  IHttpClient httpClient){
+	DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback){
 		this.baseUrl = baseUrl;
-		client = httpClient != null ? httpClient : newIHttpClient();
+		client = httpClient != null ? httpClient : newIHttpClient(sslCertCallback);
 		factory = new ResourceFactory(this);
 	}
 	
 	/*
 	 * Factory method for testing
 	 */
-	private IHttpClient newIHttpClient(){
+	private IHttpClient newIHttpClient(ISSLCertificateCallback sslCertCallback){
 		return  new UrlConnectionHttpClientBuilder()
 		.setAcceptMediaType("application/json")
-		.setSSLCertificateCallback(new ISSLCertificateCallback() {
-			
-			@Override
-			public boolean allowHostname(String hostname, SSLSession session) {
-				return true;
-			}
-			
-			@Override
-			public boolean allowCertificate(X509Certificate[] chain) {
-				return true;
-			}
-		})
+		.setSSLCertificateCallback(sslCertCallback)
 		.client();
 	}
 	

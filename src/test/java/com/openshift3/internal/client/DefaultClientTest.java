@@ -58,7 +58,7 @@ public class DefaultClientTest {
 	
 	private void givenAClient() throws MalformedURLException{
 		httpClient = mock(IHttpClient.class);
-		client = new DefaultClient(baseUrl, httpClient);
+		client = new DefaultClient(baseUrl, httpClient, null);
 		factory = new ResourceFactory(client);
 	}
 	
