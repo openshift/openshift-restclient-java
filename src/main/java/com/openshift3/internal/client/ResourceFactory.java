@@ -27,6 +27,7 @@ import com.openshift3.internal.client.model.ImageRepository;
 import com.openshift3.internal.client.model.Pod;
 import com.openshift3.internal.client.model.Project;
 import com.openshift3.internal.client.model.ReplicationController;
+import com.openshift3.internal.client.model.Route;
 import com.openshift3.internal.client.model.Service;
 import com.openshift3.internal.client.model.Status;
 import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
@@ -47,6 +48,7 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.Project, Project.class);
 		IMPL_MAP.put(ResourceKind.Pod, Pod.class);
 		IMPL_MAP.put(ResourceKind.ReplicationController, ReplicationController.class);
+		IMPL_MAP.put(ResourceKind.Route, Route.class);
 		IMPL_MAP.put(ResourceKind.Status, Status.class);
 		IMPL_MAP.put(ResourceKind.Service, Service.class);
 	}
