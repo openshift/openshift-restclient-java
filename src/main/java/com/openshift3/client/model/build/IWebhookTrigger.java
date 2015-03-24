@@ -6,9 +6,15 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client.model.build;
+	package com.openshift3.client.model.build;
 
 public interface IWebhookTrigger extends IBuildTrigger {
 	
 	String getSecret();
+	
+	/**
+	 * The URL to trigger the build for the resource
+	 * @return the URL or empty if the resource is not configured with an IClient
+	 */
+	String getWebhookURL();
 }

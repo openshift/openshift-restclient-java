@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift3.internal.client.model.build;
 
+import com.openshift.internal.client.utils.StringUtils;
 import com.openshift3.client.model.build.BuildTriggerType;
 import com.openshift3.client.model.build.IWebhookTrigger;
 
@@ -15,10 +16,18 @@ public class WebhookTrigger implements IWebhookTrigger {
 
 	private BuildTriggerType type;
 	private String secret;
+	private String resourceName;
+	private String baseURL;
+	private String apiVersion;
+	private String namespace;
 
-	public WebhookTrigger(BuildTriggerType triggerType, String secret) {
+	public WebhookTrigger(BuildTriggerType triggerType, String secret, String resourceName, String baseURL, String apiVersion, String namespace) {
 		this.type = triggerType;
 		this.secret = secret;
+		this.resourceName = resourceName;
+		this.baseURL = baseURL;
+		this.apiVersion = apiVersion;
+		this.namespace = namespace;
 	}
 
 	@Override
@@ -29,6 +38,21 @@ public class WebhookTrigger implements IWebhookTrigger {
 	@Override
 	public String getSecret() {
 		return secret;
+	}
+
+	@Override
+	public String getWebhookURL() {
+		if(StringUtils.isEmpty(baseURL)){
+			return "";
+		}
+		return String.format("%s/osapi/%s/buildConfigHooks/%s/%s/%s?namespace=%s",
+					baseURL,
+					apiVersion,
+					resourceName,
+					secret,
+					type.toString(),
+					namespace
+				);
 	}
 
 	@Override
@@ -58,6 +82,5 @@ public class WebhookTrigger implements IWebhookTrigger {
 			return false;
 		return true;
 	}
-	
 	
 }
