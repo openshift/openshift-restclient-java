@@ -12,6 +12,7 @@ import static com.openshift3.internal.util.URIUtils.splitFragment;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.ProxySelector;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
@@ -40,6 +41,7 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +71,7 @@ public class AuthorizationClient implements IAuthorizationClient {
 			OpenShiftAuthorizationRedirectStrategy redirectStrategy = new OpenShiftAuthorizationRedirectStrategy();
 			client = HttpClients.custom()
 					.setRedirectStrategy(redirectStrategy)
+					.setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()))
 					.setDefaultCredentialsProvider(buildCredentialsProvider(username, password))
 					.setHostnameVerifier(hostnameVerifier)
 					.setSslcontext(sslContext)
