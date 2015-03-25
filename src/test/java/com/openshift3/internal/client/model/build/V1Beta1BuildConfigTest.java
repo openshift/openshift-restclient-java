@@ -9,7 +9,9 @@
 package com.openshift3.internal.client.model.build;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
+
+import java.net.URL;
 
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
@@ -35,10 +37,13 @@ import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistr
 public class V1Beta1BuildConfigTest {
 	
 	private static IBuildConfig config;
+	private static IClient client;
 	
 	@BeforeClass
-	public static void setup(){
-		IClient client = mock(IClient.class);
+	public static void setup() throws Exception{
+		client = mock(IClient.class);
+		when(client.getBaseURL()).thenReturn(new URL("https://localhost:8443"));
+		when(client.getOpenShiftAPIVersion()).thenReturn("v1beta1");
 		ModelNode node = ModelNode.fromJSONString(Samples.BUILD_CONFIG_MINIMAL.getContentAsString());
 		config = new BuildConfig(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.BuildConfig));
 	}
@@ -46,8 +51,8 @@ public class V1Beta1BuildConfigTest {
 	@Test
 	public void getBuildTriggers(){
 		IBuildTrigger [] exp = new IBuildTrigger[]{
-				new WebhookTrigger(BuildTriggerType.github, "secret101"),
-				new WebhookTrigger(BuildTriggerType.generic, "secret101"),
+				new WebhookTrigger(BuildTriggerType.github, "secret101","foo", "https://localhost:8443", "v1beta1","foo"),
+				new WebhookTrigger(BuildTriggerType.generic, "secret101","foo", "https://localhost:8443", "v1beta1","foo"),
 				new ImageChangeTrigger("openshift/ruby-20-centos", "ruby-20-centos", "latest")
 		};
 		assertArrayEquals(exp, config.getBuildTriggers().toArray());

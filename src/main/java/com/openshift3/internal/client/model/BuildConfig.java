@@ -42,13 +42,16 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	public List<IBuildTrigger> getBuildTriggers() {
 		List<IBuildTrigger> triggers = new ArrayList<IBuildTrigger>();
 		List<ModelNode> list = get(BUILDCONFIG_TRIGGERS).asList();
+		final String name = getName();
+		final String url = getClient() != null ? getClient().getBaseURL().toString() : "";
+		final String version = getClient() != null ? getClient().getOpenShiftAPIVersion() : "";
 		for (ModelNode node : list) {
 			switch(BuildTriggerType.valueOf(node.get("type").asString())){
 				case generic:
-					triggers.add(new WebhookTrigger(BuildTriggerType.generic, node.get(new String[]{"generic","secret"}).asString()));
+					triggers.add(new WebhookTrigger(BuildTriggerType.generic, node.get(new String[]{"generic","secret"}).asString(), name, url, version,getNamespace()));
 					break;
 				case github:
-					triggers.add(new WebhookTrigger(BuildTriggerType.github, node.get(new String[]{"github","secret"}).asString()));
+					triggers.add(new WebhookTrigger(BuildTriggerType.github, node.get(new String[]{"github","secret"}).asString(), name, url, version, getNamespace()));
 					break;
 				case imageChange:
 					triggers.add(new ImageChangeTrigger(
