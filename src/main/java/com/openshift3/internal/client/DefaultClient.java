@@ -102,9 +102,7 @@ public class DefaultClient implements IClient{
 			List<T> items = (List<T>) factory.createList(response, kind);
 			return filterItems(items, labels); //client filter until we can figure out how to restrict with a server call
 		} catch (HttpClientException e){
-			LOGGER.debug("Exception while trying to list resource.", e);
-			//TODO handle case where there is no status response
-			throw new OpenShiftException("Exception listing the resources", e, factory.<Status>create(e.getMessage()));
+			throw handleHttpClientException("Exception listing the resources", e);
 		} catch (SocketTimeoutException e) {
 			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout listing resources");
 		} 
@@ -132,7 +130,7 @@ public class DefaultClient implements IClient{
 			LOGGER.debug(response);
 			return factory.create(response);
 		} catch (HttpClientException e){
-			throw new OpenShiftException("Exception creating the resource", e, factory.<Status>create(e.getMessage()));
+			throw handleHttpClientException("Exception creating the resource", e);
 		} catch (SocketTimeoutException e) {
 			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout creating resource %", resource.getName());
 		}
@@ -150,7 +148,7 @@ public class DefaultClient implements IClient{
 			LOGGER.debug(response);
 			//TODO return response object here
 		} catch (HttpClientException e){
-			throw new OpenShiftException("Exception deleting the resource", e, factory.<Status>create(e.getMessage()));
+			throw handleHttpClientException("Exception deleting the resource", e);
 		} catch (SocketTimeoutException e) {
 			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout deleting resource %", resource.getName());
 		} 
@@ -168,7 +166,7 @@ public class DefaultClient implements IClient{
 			LOGGER.debug(response);
 			return factory.create(response);
 		} catch (HttpClientException e){
-			throw new OpenShiftException("Exception getting the resource", e, factory.<Status>create(e.getMessage()));
+			throw handleHttpClientException("Exception getting the resource", e);
 		} catch (SocketTimeoutException e) {
 			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout getting resource %", name);
 		} 
@@ -285,4 +283,12 @@ public class DefaultClient implements IClient{
 		this.client.setAuthorizationStrategy(strategy);
 	}
 
+	private OpenShiftException handleHttpClientException(String message, HttpClientException e) {
+		LOGGER.debug(message, e);
+		if (e.getMessage().startsWith("{")) {
+			return new OpenShiftException(message, e, factory.<Status>create(e.getMessage()));
+		} else {
+			return new OpenShiftException(message, e, null);
+		}
+	}
 }
