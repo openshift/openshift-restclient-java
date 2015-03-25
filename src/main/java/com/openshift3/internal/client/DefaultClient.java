@@ -264,6 +264,7 @@ public class DefaultClient implements IClient{
 			typeMappings.put(ResourceKind.DeploymentConfig, osEndpoint);
 			typeMappings.put(ResourceKind.ImageRepository, osEndpoint);
 			typeMappings.put(ResourceKind.Project, osEndpoint);
+			typeMappings.put(ResourceKind.Route, osEndpoint);
 			
 			//Kubernetes endpoints
 			final String k8eEndpoint = String.format("%s/%s", apiEndpoint, getKubernetesVersion());

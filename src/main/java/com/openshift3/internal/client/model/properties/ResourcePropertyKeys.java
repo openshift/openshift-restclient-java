@@ -41,6 +41,14 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String DEPLOYMENTCONFIG_TRIGGERS = "deploymentconfig.triggers";
 	static final String IMAGEREPO_DOCKER_IMAGE_REPO = "imagerepo.dockerimagerepo";
 	static final String PROJECT_DISPLAY_NAME = "project.displayname";
+	static final String ROUTE_HOST = "route.host";
+	static final String ROUTE_PATH = "route.path";
+	static final String ROUTE_SERVICE_NAME = "route.serviceName";
+	static final String ROUTE_TLS_TERMINATION_TYPE = "route.tls.termination";
+	static final String ROUTE_TLS_CERTIFICATE = "route.tls.certificate";
+	static final String ROUTE_TLS_KEY = "route.tls.key";
+	static final String ROUTE_TLS_CACERT = "route.tls.caCertificate";
+	static final String ROUTE_TLS_DESTINATION_CACERT = "route.tls.destinationCaCertificate";
 	
 	static final String POD_CONTAINERS = "pod.containers";
 	static final String POD_HOST = "pod.host";

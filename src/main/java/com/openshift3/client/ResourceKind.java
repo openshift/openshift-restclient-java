@@ -22,6 +22,7 @@ public enum ResourceKind {
 	Project("projects"),
 	Pod("pods"),
 	ReplicationController("replicationControllers"),
+	Route("routes"),
 	Status(""),
 	Service("services");
 
