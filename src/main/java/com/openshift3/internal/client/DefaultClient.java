@@ -137,6 +137,23 @@ public class DefaultClient implements IClient{
 	}
 
 	@Override
+	public <T extends IResource> T update(T resource) {
+		try {
+			final URL endpoint = new URLBuilder(getBaseURL(), getTypeMappings())
+				.resource(resource)
+				.addParmeter("namespace", resource.getNamespace())
+				.build();
+			String response = client.put(endpoint, IHttpClient.DEFAULT_READ_TIMEOUT, resource);
+			LOGGER.debug(response);
+			return factory.create(response);
+		} catch (HttpClientException e){
+			throw handleHttpClientException("Exception updating the resource", e);
+		} catch (SocketTimeoutException e) {
+			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout updating resource %", resource.getName());
+		}
+	}
+
+	@Override
 	public <T extends IResource> void delete(T resource) {
 		try {
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())

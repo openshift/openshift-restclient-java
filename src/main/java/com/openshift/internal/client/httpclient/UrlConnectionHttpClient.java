@@ -107,6 +107,12 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 
 	@Override
+	public String put(URL url, int timeout, IResource resource)
+			throws HttpClientException, SocketTimeoutException, EncodingException {
+		return request(HttpMethod.PUT, url, timeout, resource);
+	}
+	
+	@Override
 	public String post(URL url, IMediaType mediaType, int timeout, Parameter... parameters)
 			throws HttpClientException, SocketTimeoutException, EncodingException {
 		return request(HttpMethod.POST, url, mediaType, timeout, parameters);
