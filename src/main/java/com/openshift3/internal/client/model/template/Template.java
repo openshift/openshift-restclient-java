@@ -1,0 +1,56 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * All rights reserved. This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Red Hat, Inc.
+ ******************************************************************************/
+package com.openshift3.internal.client.model.template;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.jboss.dmr.ModelNode;
+
+import com.openshift3.client.IClient;
+import com.openshift3.client.model.IResource;
+import com.openshift3.client.model.template.IParameter;
+import com.openshift3.client.model.template.ITemplate;
+import com.openshift3.internal.client.IResourceFactory;
+import com.openshift3.internal.client.model.KubernetesResource;
+
+public class Template extends KubernetesResource implements ITemplate{
+
+	public Template(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
+		super(node, client, propertyKeys);
+	}
+	
+	@Override
+	public Map<String, IParameter> getParameters() {
+		Collection<ModelNode> nodes = get(TEMPLATE_PARAMETERS).asList();
+		Map<String, IParameter> params = new HashMap<String, IParameter>(nodes.size());
+		for (ModelNode node : nodes) {
+			Parameter p = new Parameter(node);
+			params.put(p.getName(), p);
+		}
+		return params;
+	}
+
+	@Override
+	public Collection<IResource> getItems() {
+		Collection<ModelNode> nodes = get(TEMPLATE_ITEMS).asList();
+		List<IResource> resources = new ArrayList<IResource>(nodes.size());
+		IResourceFactory factory = getClient().getResourceFactory();
+		if(factory != null){
+			for (ModelNode node : nodes) {
+				resources.add(factory.create(node.toJSONString(true)));
+			}
+		}
+		return resources;
+	}
+
+}

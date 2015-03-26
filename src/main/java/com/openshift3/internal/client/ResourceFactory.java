@@ -22,6 +22,7 @@ import com.openshift3.client.ResourceKind;
 import com.openshift3.client.model.IResource;
 import com.openshift3.internal.client.model.Build;
 import com.openshift3.internal.client.model.BuildConfig;
+import com.openshift3.internal.client.model.Config;
 import com.openshift3.internal.client.model.DeploymentConfig;
 import com.openshift3.internal.client.model.ImageRepository;
 import com.openshift3.internal.client.model.Pod;
@@ -31,6 +32,7 @@ import com.openshift3.internal.client.model.Route;
 import com.openshift3.internal.client.model.Service;
 import com.openshift3.internal.client.model.Status;
 import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
+import com.openshift3.internal.client.model.template.Template;
 
 /**
  * ResourceFactory creates a list of resources from a json string 
@@ -43,6 +45,7 @@ public class ResourceFactory implements IResourceFactory{
 	static {
 		IMPL_MAP.put(ResourceKind.Build, Build.class);
 		IMPL_MAP.put(ResourceKind.BuildConfig, BuildConfig.class);
+		IMPL_MAP.put(ResourceKind.Config, Config.class);
 		IMPL_MAP.put(ResourceKind.DeploymentConfig, DeploymentConfig.class);
 		IMPL_MAP.put(ResourceKind.ImageRepository, ImageRepository.class);
 		IMPL_MAP.put(ResourceKind.Project, Project.class);
@@ -51,6 +54,7 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.Route, Route.class);
 		IMPL_MAP.put(ResourceKind.Status, Status.class);
 		IMPL_MAP.put(ResourceKind.Service, Service.class);
+		IMPL_MAP.put(ResourceKind.Template, Template.class);
 	}
 	private IClient client;
 	

@@ -15,12 +15,12 @@ import com.openshift3.client.model.IResource;
  * Capability of resource tracing the template from which
  * it was generated
  */
-public class AnnotationTemplateTraceability implements	ITemplateTraceability {
+public class TemplateTraceability implements	ITemplateTraceability {
 
 	private static final String TEMPLATE_ANNOTATION = "template";
 	private IResource resource;
 
-	public AnnotationTemplateTraceability(IResource resource) {
+	public TemplateTraceability(IResource resource) {
 		this.resource = resource;
 	}
 
@@ -37,7 +37,7 @@ public class AnnotationTemplateTraceability implements	ITemplateTraceability {
 
 	@Override
 	public String getName() {
-		return AnnotationTemplateTraceability.class.getSimpleName();
+		return TemplateTraceability.class.getSimpleName();
 	}
 
 }

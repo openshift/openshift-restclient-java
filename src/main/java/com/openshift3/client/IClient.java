@@ -16,6 +16,7 @@ import com.openshift.internal.client.httpclient.UnauthorizedException;
 import com.openshift3.client.authorization.IAuthorizationStrategy;
 import com.openshift3.client.capability.ICapable;
 import com.openshift3.client.model.IResource;
+import com.openshift3.internal.client.IResourceFactory;
 
 /**
  * Client is the the simplest interface for interacting with the OpenShift
@@ -97,4 +98,11 @@ public interface IClient extends ICapable{
 	 * @param strategy
 	 */
 	void setAuthorizationStrategy(IAuthorizationStrategy strategy);
+
+	/**
+	 * The resource factory used to create resources based on the
+	 * response from the server
+	 * @return
+	 */
+	IResourceFactory getResourceFactory();
 }

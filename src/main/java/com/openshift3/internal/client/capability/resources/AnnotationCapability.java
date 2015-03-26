@@ -8,8 +8,6 @@
  ******************************************************************************/
 package com.openshift3.internal.client.capability.resources;
 
-import com.openshift3.client.IClient;
-import com.openshift3.client.ResourceKind;
 import com.openshift3.client.capability.ICapability;
 import com.openshift3.client.model.IResource;
 
@@ -20,31 +18,16 @@ import com.openshift3.client.model.IResource;
 public abstract class AnnotationCapability implements ICapability {
 
 	private final IResource resource;
-	private final IClient client;
 	private final String name;
 
-	public AnnotationCapability(String name, IResource resource, IClient client) {
+	public AnnotationCapability(String name, IResource resource) {
 		this.resource = resource;
-		this.client = client;
 		this.name = name;
 	}
 	
 	@Override
 	public boolean isSupported() {
-		if(client == null) return false;
 		return resource.isAnnotatedWith(getAnnotationKey());
-	}
-	
-	/**
-	 * Get the associated resource of the given kind using the
-	 * name from the annotation key;
-	 * @param kind
-	 * @return
-	 */
-	protected <T extends IResource> T getAssociatedResource(ResourceKind kind){
-		if(!isSupported()) return null;
-		String name = getResource().getAnnotation(getAnnotationKey());
-		return getClient().get(kind, name, getResource().getNamespace());
 	}
 	
 	@Override
@@ -56,13 +39,18 @@ public abstract class AnnotationCapability implements ICapability {
 		return this.resource;
 	}
 	
-	protected IClient getClient(){
-		return client;
-	}
+
 	/**
 	 * The annotation key
 	 * @return
 	 */
 	protected abstract String getAnnotationKey();
-
+	
+	/**
+	 * The annotations value
+	 * @return
+	 */
+	public String getAnnotationValue(){
+		return getResource().getAnnotation(getAnnotationKey());
+	}
 }

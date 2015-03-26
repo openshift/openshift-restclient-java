@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.internal.client.model.build;
 
 import com.openshift3.client.images.DockerImageURI;
 import com.openshift3.client.model.build.BuildTriggerType;

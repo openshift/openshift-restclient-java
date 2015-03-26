@@ -6,23 +6,20 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.client.capability.resources;
 
-import java.util.Map;
+import java.util.Collection;
 
-import org.jboss.dmr.ModelNode;
+import com.openshift3.client.capability.ICapability;
 
-import com.openshift3.client.IClient;
-import com.openshift3.client.model.IStatus;
-
-public class Status extends KubernetesResource implements IStatus{
-
-	public Status(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
-	}
-
-	public String getMessage(){
-		return asString(STATUS_MESSAGE);
-	}
-
+/**
+ * Determine if resource is tagged with categories
+ * of technologies it includes
+ */
+public interface ITags extends ICapability {
+	
+	/**
+	 * The list of tags
+	 */
+	Collection<String> getTags();
 }

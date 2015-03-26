@@ -10,31 +10,28 @@ package com.openshift3.internal.client.capability.resources;
 
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.capability.resources.IDeploymentTraceability;
-import com.openshift3.client.model.IReplicationController;
+import com.openshift3.client.capability.resources.IDeploymentConfigTraceability;
+import com.openshift3.client.model.IDeploymentConfig;
 import com.openshift3.client.model.IResource;
 
 /**
- * Determine which deployment caused a resource to
- * be deployed based on the information found in its
- * annotations
+ * Capability for a resource to determine
+ * to which deploymentconfig it is associated
  */
-public class AnnotationDeploymentTraceability extends AnnotationCapability implements IDeploymentTraceability {
-	
-	private static final String DEPLOYMENT_ANNOTATION = "deployment";
+public class DeploymentConfigTraceability extends AssociationCapability implements IDeploymentConfigTraceability {
 
-	public AnnotationDeploymentTraceability(IResource resource, IClient client) {
-		super(AnnotationDeploymentTraceability.class.getSimpleName(), resource, client);
+	public DeploymentConfigTraceability(IResource resource, IClient client) {
+		super(DeploymentConfigTraceability.class.getSimpleName(), resource, client);
 	}
 
 	@Override
-	public IReplicationController getDeployment() {
-		return getAssociatedResource(ResourceKind.ReplicationController);
+	public IDeploymentConfig getDeploymentConfig() {
+		return getAssociatedResource(ResourceKind.DeploymentConfig);
 	}
 
 	@Override
 	protected String getAnnotationKey() {
-		return DEPLOYMENT_ANNOTATION;
+		return "deploymentconfig";
 	}
 
 }

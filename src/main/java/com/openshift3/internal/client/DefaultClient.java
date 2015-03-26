@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.openshift3.internal.client;
 
-import static com.openshift3.client.capability.CapabilityInitializer.initializeCapability;
+import static com.openshift3.client.capability.CapabilityInitializer.initializeClientCapabilities;
 
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -31,10 +31,9 @@ import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.UnsupportedVersionException;
 import com.openshift3.client.authorization.IAuthorizationStrategy;
+import com.openshift3.client.capability.CapabilityVisitor;
 import com.openshift3.client.capability.ICapability;
-import com.openshift3.client.capability.server.IImageRegistryHosting;
 import com.openshift3.client.model.IResource;
-import com.openshift3.internal.client.capability.server.DefaultImageRegistryHosting;
 import com.openshift3.internal.client.model.Status;
 import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 
@@ -76,6 +75,10 @@ public class DefaultClient implements IClient{
 		.setSSLCertificateCallback(sslCertCallback)
 		.client();
 	}
+	@Override
+	public IResourceFactory getResourceFactory() {
+		return factory;
+	};
 	
 	@Override
 	public <T extends IResource> List<T> list(ResourceKind kind) {
@@ -191,7 +194,7 @@ public class DefaultClient implements IClient{
 
 	public synchronized void initializeCapabilities(){
 		if(capabilitiesInitialized) return;
-		initializeCapability(capabilities, IImageRegistryHosting.class, new DefaultImageRegistryHosting(this));
+		initializeClientCapabilities(capabilities, this);
 		capabilitiesInitialized = true;
 	}
 
@@ -207,6 +210,16 @@ public class DefaultClient implements IClient{
 			initializeCapabilities();
 		}
 		return capabilities.containsKey(capability);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends ICapability> void accept(CapabilityVisitor<T> visitor){
+		if(!capabilitiesInitialized) initializeCapabilities();
+		if(capabilities.containsKey(visitor.getCapabilityType())){
+			T capability = (T) capabilities.get(visitor.getCapabilityType());
+			visitor.visit(capability);
+		}
 	}
 
 	public List<KubernetesAPIVersion> getKubernetesVersions() {
@@ -280,6 +293,8 @@ public class DefaultClient implements IClient{
 			typeMappings.put(ResourceKind.ImageRepository, osEndpoint);
 			typeMappings.put(ResourceKind.Project, osEndpoint);
 			typeMappings.put(ResourceKind.Route, osEndpoint);
+			typeMappings.put(ResourceKind.Template, osEndpoint);
+			typeMappings.put(ResourceKind.TemplateConfig, osEndpoint);
 			
 			//Kubernetes endpoints
 			final String k8eEndpoint = String.format("%s/%s", apiEndpoint, getKubernetesVersion());

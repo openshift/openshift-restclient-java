@@ -6,23 +6,18 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.internal.util;
 
-import java.util.Map;
+import static org.junit.Assert.*;
 
 import org.jboss.dmr.ModelNode;
+import org.junit.Test;
 
-import com.openshift3.client.IClient;
-import com.openshift3.client.model.IStatus;
+public class JBossDmrExtentionsTest {
 
-public class Status extends KubernetesResource implements IStatus{
-
-	public Status(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
-	}
-
-	public String getMessage(){
-		return asString(STATUS_MESSAGE);
+	@Test
+	public void testAsMapWhenPropertyKeysAreNull() {
+		assertNotNull(JBossDmrExtentions.asMap(new ModelNode(), null, null));
 	}
 
 }

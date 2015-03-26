@@ -13,15 +13,15 @@ import com.openshift3.client.IClient;
 import com.openshift3.client.model.IResource;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AnnotationTemplateTraceabilityTest {
+public class TemplateTraceabilityTest {
 
-	private AnnotationTemplateTraceability capability;
+	private TemplateTraceability capability;
 	@Mock private IClient client;
 	@Mock private IResource resource;
 
 	@Before
 	public void setUp(){
-		capability = new AnnotationTemplateTraceability(resource);
+		capability = new TemplateTraceability(resource);
 		when(resource.getNamespace()).thenReturn("mynamespace");
 	}
 	
@@ -42,6 +42,6 @@ public class AnnotationTemplateTraceabilityTest {
 	
 	@Test
 	public void testGetName(){
-		assertEquals("", AnnotationTemplateTraceability.class.getSimpleName(), capability.getName());
+		assertEquals("", TemplateTraceability.class.getSimpleName(), capability.getName());
 	}
 }

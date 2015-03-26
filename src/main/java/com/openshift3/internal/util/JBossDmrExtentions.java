@@ -24,13 +24,15 @@ public class JBossDmrExtentions {
 	}
 
 	public static Map<String, String> asMap(ModelNode root, Map<String, String []> propertyKeys, String property){
-		String [] path = propertyKeys.get(property);
-		ModelNode node = root.get(path);
 		HashMap<String, String> map = new HashMap<String, String>();
-		if( ModelType.UNDEFINED == node.getType())
-			return map;
-		for (String key : node.keys()) {
-			map.put(key, node.get(key).asString());
+		if(propertyKeys != null){
+			String [] path = propertyKeys.get(property);
+			ModelNode node = root.get(path);
+			if( ModelType.UNDEFINED == node.getType())
+				return map;
+			for (String key : node.keys()) {
+				map.put(key, node.get(key).asString());
+			}
 		}
 		return map;
 	}
