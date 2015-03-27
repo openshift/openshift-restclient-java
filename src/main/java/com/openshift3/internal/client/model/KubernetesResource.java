@@ -10,8 +10,10 @@ package com.openshift3.internal.client.model;
 
 import static com.openshift3.client.capability.CapabilityInitializer.initializeCapability;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
@@ -19,6 +21,7 @@ import org.jboss.dmr.ModelType;
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.capability.ICapability;
+import com.openshift3.client.capability.CapabilityVisitor;
 import com.openshift3.client.capability.resources.IDeploymentConfigTraceability;
 import com.openshift3.client.capability.resources.IDeploymentTraceability;
 import com.openshift3.client.capability.resources.ITemplateTraceability;
@@ -68,11 +71,23 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 		return (T) capabilities.get(capability);
 	}
 	
+	public Set<Class<? extends ICapability>> getCapabilities(){
+		return Collections.unmodifiableSet(capabilities.keySet());
+	}
+	
 	@Override
 	public boolean supports(Class<? extends ICapability> capability) {
 		return capabilities.containsKey(capability);
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends ICapability> void accept(CapabilityVisitor<T> visitor){
+		if(capabilities.containsKey(visitor.getCapabilityType())){
+			T capability = (T) capabilities.get(visitor.getCapabilityType());
+			visitor.visit(capability);
+		}
+	}
 	
 	@Override
 	public Map<String, String> getAnnotations() {

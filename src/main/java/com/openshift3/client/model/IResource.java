@@ -9,9 +9,11 @@
 package com.openshift3.client.model;
 
 import java.util.Map;
+import java.util.Set;
 
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.capability.ICapability;
+import com.openshift3.client.capability.CapabilityVisitor;
 import com.openshift3.client.capability.ICapable;
 
 
@@ -27,6 +29,20 @@ public interface IResource extends ICapable{
 	 * @return true if the client is able to offer this capability
 	 */
 	boolean supports(Class<? extends ICapability> capability);
+	
+	/**
+	 * Retrieve the list of capabilities supported by this resource
+	 * @return
+	 */
+	Set<Class<? extends ICapability>>  getCapabilities();
+	
+	/**
+	 * Use the given visitor to access the desired capability if it
+	 * is supported
+	 *
+	 * @param visitor  A visitor looking for a given Capability type
+	 */
+	<T extends ICapability> void accept(CapabilityVisitor<T> visitor);
 	
 	/**
 	 * The resource kind

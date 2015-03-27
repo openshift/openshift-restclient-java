@@ -10,11 +10,15 @@ package com.openshift3.internal.client.model;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift3.client.ResourceKind;
+import com.openshift3.client.capability.CapabilityVisitor;
 import com.openshift3.client.capability.resources.IDeploymentTraceability;
 import com.openshift3.client.capability.resources.ITemplateTraceability;
 import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
@@ -60,5 +64,18 @@ public class KubernetesResourceTest {
 		assertTrue("Exp. to support capability since resource has template annotation", resource.supports(ITemplateTraceability.class));
 		assertNotNull(resource.getCapability(ITemplateTraceability.class));
 	}
+	
+	@Test
+	public void testAcceptVisitor(){
+		final List<Boolean> visited = new ArrayList<Boolean>();
+		resource.accept(new CapabilityVisitor<ITemplateTraceability>(){
 
+			@Override
+			public void visit(ITemplateTraceability capability) {
+				visited.add(Boolean.TRUE);
+			}
+			
+		});
+		assertEquals("Exp. the visitor to be visited", 1, visited.size());
+	}
 }
