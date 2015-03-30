@@ -6,23 +6,28 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client.model;
+package com.openshift3.client.model.template;
 
+import java.util.Collection;
 import java.util.Map;
 
-import org.jboss.dmr.ModelNode;
+import com.openshift3.client.model.IResource;
 
-import com.openshift3.client.IClient;
-import com.openshift3.client.model.IStatus;
-
-public class Status extends KubernetesResource implements IStatus{
-
-	public Status(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
-	}
-
-	public String getMessage(){
-		return asString(STATUS_MESSAGE);
-	}
-
+/**
+ * Representation of a set of pre-configured parameterized set of resources
+ */
+public interface ITemplate extends IResource {
+	
+	/**
+	 * Retrieve the list of resources this template
+	 * creates
+	 * @return
+	 */
+	Collection<IResource> getItems();
+	
+	/**
+	 * A map of parameter names to parameters.
+	 * @return
+	 */
+	Map<String, IParameter> getParameters();
 }

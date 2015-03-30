@@ -21,12 +21,12 @@ import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
 import com.openshift3.client.model.IPod;
 import com.openshift3.client.model.IReplicationController;
-import com.openshift3.internal.client.capability.resources.AnnotationDeploymentTraceability;
+import com.openshift3.internal.client.capability.resources.DeploymentTraceability;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AnnotationDeploymentTraceabilityTest {
+public class DeploymentTraceabilityTest {
 
-	private AnnotationDeploymentTraceability capability;
+	private DeploymentTraceability capability;
 
 	@Mock private IReplicationController deployment;
 	@Mock private IPod resource;
@@ -34,7 +34,7 @@ public class AnnotationDeploymentTraceabilityTest {
 	
 	@Before
 	public void setUp(){
-		capability = new AnnotationDeploymentTraceability(resource, client);
+		capability = new DeploymentTraceability(resource, client);
 		
 		when(resource.getNamespace()).thenReturn("mynamespace");
 		

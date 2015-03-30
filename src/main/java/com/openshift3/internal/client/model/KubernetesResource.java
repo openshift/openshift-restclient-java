@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.openshift3.internal.client.model;
 
-import static com.openshift3.client.capability.CapabilityInitializer.initializeCapability;
+import static com.openshift3.client.capability.CapabilityInitializer.initializeCapabilities;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,15 +20,9 @@ import org.jboss.dmr.ModelType;
 
 import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.capability.ICapability;
 import com.openshift3.client.capability.CapabilityVisitor;
-import com.openshift3.client.capability.resources.IDeploymentConfigTraceability;
-import com.openshift3.client.capability.resources.IDeploymentTraceability;
-import com.openshift3.client.capability.resources.ITemplateTraceability;
+import com.openshift3.client.capability.ICapability;
 import com.openshift3.client.model.IResource;
-import com.openshift3.internal.client.capability.resources.AnnotationDeploymentConfigTraceability;
-import com.openshift3.internal.client.capability.resources.AnnotationDeploymentTraceability;
-import com.openshift3.internal.client.capability.resources.AnnotationTemplateTraceability;
 import com.openshift3.internal.client.model.properties.ResourcePropertyKeys;
 import com.openshift3.internal.util.JBossDmrExtentions;
 
@@ -43,28 +37,13 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
 	private Map<String, String []> propertyKeys;
 	
-	public KubernetesResource(){
-		this(new ModelNode(), null, null);
-	}
-	
-	public KubernetesResource(String json){
-		this.node = ModelNode.fromJSONString(json);
-		initializeCapabilities();
-	}
-	
 	public KubernetesResource(ModelNode node, IClient client, Map<String, String []> propertyKeys){
 		this.node = node;
 		this.client = client;
 		this.propertyKeys = propertyKeys;
-		initializeCapabilities();
+		initializeCapabilities(capabilities, this, client);
 	}
-	
-	protected void initializeCapabilities(){
-		initializeCapability(capabilities, ITemplateTraceability.class, new AnnotationTemplateTraceability(this));
-		initializeCapability(capabilities, IDeploymentConfigTraceability.class, new AnnotationDeploymentConfigTraceability(this, client));
-		initializeCapability(capabilities, IDeploymentTraceability.class, new AnnotationDeploymentTraceability(this, client));
-	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ICapability> T getCapability(Class<T> capability) {

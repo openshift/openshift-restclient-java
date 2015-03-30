@@ -28,6 +28,7 @@ import com.openshift3.client.model.build.IBuildTrigger;
 import com.openshift3.internal.client.model.build.CustomBuildStrategy;
 import com.openshift3.internal.client.model.build.DockerBuildStrategy;
 import com.openshift3.internal.client.model.build.GitBuildSource;
+import com.openshift3.internal.client.model.build.ImageChangeTrigger;
 import com.openshift3.internal.client.model.build.STIBuildStrategy;
 import com.openshift3.internal.client.model.build.WebhookTrigger;
 

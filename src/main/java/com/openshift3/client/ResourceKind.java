@@ -23,8 +23,17 @@ public enum ResourceKind {
 	Pod("pods"),
 	ReplicationController("replicationControllers"),
 	Route("routes"),
-	Status(""),
-	Service("services");
+	Service("services"), 
+	Template("templates"),
+	
+	/*
+	 * These are not true resources that can be used (mostly) in
+	 * RESTful operations
+	 */
+	Config(""), //not rest resource
+	Status(""), //not rest resource
+	TemplateConfig("templateConfigs") //mechanism for processing templates
+	;
 
 	// punting here for now
 	private final String plural;

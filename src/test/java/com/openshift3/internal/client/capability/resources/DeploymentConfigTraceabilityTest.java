@@ -16,9 +16,9 @@ import com.openshift3.client.model.IDeploymentConfig;
 import com.openshift3.client.model.IPod;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AnnotationDeploymentConfigTraceabilityTest {
+public class DeploymentConfigTraceabilityTest {
 
-	private AnnotationDeploymentConfigTraceability capability;
+	private DeploymentConfigTraceability capability;
 	
 	@Mock private IDeploymentConfig config;
 	@Mock private IPod resource;
@@ -26,7 +26,7 @@ public class AnnotationDeploymentConfigTraceabilityTest {
 	
 	@Before
 	public void setUp(){
-		capability = new AnnotationDeploymentConfigTraceability(resource, client);
+		capability = new DeploymentConfigTraceability(resource, client);
 		
 		when(resource.getNamespace()).thenReturn("mynamespace");
 		

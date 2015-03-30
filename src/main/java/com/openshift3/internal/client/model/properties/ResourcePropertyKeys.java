@@ -54,4 +54,7 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String POD_HOST = "pod.host";
 	static final String POD_IP = "pod.ip";
 	static final String POD_STATUS = "pod.status";
+	
+	static final String TEMPLATE_PARAMETERS = "template.parameters";
+	static final String TEMPLATE_ITEMS = "template.items";
 }

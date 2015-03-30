@@ -29,4 +29,12 @@ public interface ICapable {
 	 * @return true if the client is able to offer this capability
 	 */
 	boolean supports(Class<? extends ICapability> capability);
+	
+	/**
+	 * Use the given visitor to access the desired capability if it
+	 * is supported
+	 *
+	 * @param visitor  A visitor looking for a given Capability type
+	 */
+	<T extends ICapability> void accept(CapabilityVisitor<T> visitor);
 }

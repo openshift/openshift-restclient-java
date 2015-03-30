@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.openshift3.client.IClient;
 import com.openshift3.client.model.IResource;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -18,15 +17,14 @@ public class AnnotationCapabilityTest {
 	
 	private AnnotationCapability capability;
 	@Mock private IResource resource;
-	@Mock private IClient client;
 	
 	@Before
 	public void setUp(){
-		capability = newCapability(client);
+		capability = newCapability();
 	}
 	
-	private AnnotationCapability newCapability(IClient client){
-		return new AnnotationCapability("MyCapability", resource, client) {
+	private AnnotationCapability newCapability(){
+		return new AnnotationCapability("MyCapability", resource) {
 			@Override
 			protected String getAnnotationKey() {
 				return "foobar";
@@ -44,11 +42,4 @@ public class AnnotationCapabilityTest {
 	public void unsupportedWhenAnnotationsDoNotHaveADeploymentKey(){
 		assertFalse("Exp. the capability to not be supported when annotation key does not exists", capability.isSupported());
 	}
-	
-	@Test
-	public void unsupportedWhenTheClientIsNull(){
-		capability = newCapability(null);
-		assertFalse("Exp. the capability to be unsupported because the IClient is null", capability.isSupported());
-	}
-
 }

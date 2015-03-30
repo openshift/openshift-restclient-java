@@ -96,6 +96,9 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(ROUTE_TLS_KEY, new String[]{ "tls", "key" });
 		put(ROUTE_TLS_CACERT, new String[]{"tls","caCertificate"});
 		put(ROUTE_TLS_DESTINATION_CACERT, new String[]{"tls","destinationCACertificate"});
+
+		put(TEMPLATE_PARAMETERS, new String[]{"parameters"});
+		put(TEMPLATE_ITEMS, new String[]{"items"});
 	}};
 
 	private ResourcePropertiesRegistry(){
@@ -106,10 +109,12 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Build), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.BuildConfig), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Config), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.DeploymentConfig), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.ImageRepository), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Project), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Route), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Template), V1BETA1_OPENSHIFT_MAP);
 	}
 	
 	public static final ResourcePropertiesRegistry getInstance(){

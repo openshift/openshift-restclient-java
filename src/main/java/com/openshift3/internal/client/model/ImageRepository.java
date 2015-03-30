@@ -26,10 +26,6 @@ public class ImageRepository extends KubernetesResource implements IImageReposit
 		super(node, client, propertyKeys);
 	}
 
-	public ImageRepository(String json) {
-		super(json);
-	}
-
 	public void setDockerImageRepository(DockerImageURI uri) {
 		set(IMAGEREPO_DOCKER_IMAGE_REPO, uri.getAbsoluteUri());		
 	}

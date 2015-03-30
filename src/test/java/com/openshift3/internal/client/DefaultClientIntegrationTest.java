@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client;
+package com.openshift3.internal.client;
 
 import static org.junit.Assert.*;
 
@@ -14,15 +14,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.client.NoopSSLCertificateCallback;
 import com.openshift3.client.IClient;
+import com.openshift3.client.ResourceKind;
+import com.openshift3.client.authorization.AuthorizationClientFactory;
+import com.openshift3.client.authorization.OAuthStrategy;
 import com.openshift3.client.model.IProject;
 import com.openshift3.client.model.IResource;
 import com.openshift3.client.model.IService;
+import com.openshift3.client.model.template.ITemplate;
 import com.openshift3.internal.client.DefaultClient;
 import com.openshift3.internal.client.IResourceFactory;
 import com.openshift3.internal.client.ResourceFactory;
@@ -33,10 +38,26 @@ public class DefaultClientIntegrationTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultClientIntegrationTest.class);
 	
+	private static final String URL = "https://localhost:8443";
+	private DefaultClient client;
+
+	@Before
+	public void setup () throws MalformedURLException{
+		client = new DefaultClient(new URL(URL), new NoopSSLCertificateCallback());
+		client.setAuthorizationStrategy(new OAuthStrategy(URL, new AuthorizationClientFactory().create(), "jcantril", "abcd"));
+	}
+	
+	@Test
+	public void testListTemplates(){
+		List<ITemplate> list = client.list(ResourceKind.Template, "test");
+		for (ITemplate template : list) {
+			LOG.debug(template.toString());
+		}
+	}
+	
 	@Test
 	public void testResourceLifeCycle() throws MalformedURLException {
 		
-		DefaultClient client = new DefaultClient(new URL("http://localhost:8080"), new NoopSSLCertificateCallback());
 		IResourceFactory factory = new ResourceFactory(client);
 		
 		IProject project = factory.create("v1beta1", ResourceKind.Project);
