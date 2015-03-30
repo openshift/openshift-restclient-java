@@ -6,7 +6,9 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client.model;
+package com.openshift3.client.model.route;
+
+import com.openshift3.client.model.IResource;
 
 /**
  * OpenShift route to Service

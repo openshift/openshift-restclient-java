@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client.model;
+package com.openshift3.client.model.route;
 
 /**
  * TLS configuration for routes.
