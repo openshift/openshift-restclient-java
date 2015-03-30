@@ -6,13 +6,10 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.internal.client;
-
-import static org.junit.Assert.*;
+package com.openshift3.internal.client.capability.server;
 
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
+import java.util.Collection;
 
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
@@ -20,30 +17,27 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.client.NoopSSLCertificateCallback;
 import com.openshift.client.utils.Samples;
+import com.openshift3.client.IClient;
 import com.openshift3.client.ResourceKind;
-import com.openshift3.client.authorization.AuthorizationClientFactory;
-import com.openshift3.client.authorization.OAuthStrategy;
 import com.openshift3.client.capability.CapabilityVisitor;
 import com.openshift3.client.capability.server.ITemplateProcessing;
 import com.openshift3.client.model.IConfig;
+import com.openshift3.client.model.IResource;
 import com.openshift3.client.model.template.ITemplate;
-import com.openshift3.internal.client.DefaultClient;
+import com.openshift3.internal.client.IntegrationTestHelper;
 import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
 import com.openshift3.internal.client.model.template.Template;
 
-public class ProcessAndApplyTemplateIntegrationTest {
-	private static final Logger LOG = LoggerFactory.getLogger(ProcessAndApplyTemplateIntegrationTest.class);
+public class ServerTemplateProcessingIntegrationTest {
+	private static final Logger LOG = LoggerFactory.getLogger(ServerTemplateProcessingIntegrationTest.class);
 	
-	private static final String URL = "https://localhost:8443";
-	private static final String NAMESPACE = "test";
-	private DefaultClient client;
+	private IClient client;
+	private IntegrationTestHelper helper = new IntegrationTestHelper();
 
 	@Before
 	public void setup () throws MalformedURLException{
-		client = new DefaultClient(new URL(URL), new NoopSSLCertificateCallback());
-		client.setAuthorizationStrategy(new OAuthStrategy(URL, new AuthorizationClientFactory().create(), "jcantril", "abcd"));
+		client = helper.createClient();
 	}
 	
 	@Test
@@ -55,8 +49,15 @@ public class ProcessAndApplyTemplateIntegrationTest {
 
 			@Override
 			public void visit(ITemplateProcessing capability) {
-				IConfig config = capability.process(template, NAMESPACE);
-				LOG.debug(config.toString());
+				LOG.debug("Processing template: " + template.toString());
+				IConfig config = capability.process(template, helper.getDefaultNamespace());
+				LOG.debug("Applying config: ", config.toString());
+				
+				Collection<IResource> results = client.create(config, helper.getDefaultNamespace());
+				LOG.debug("applied template");
+				for (IResource resource : results) {
+					LOG.debug(resource.toString());
+				}
 			}
 		});
 	}

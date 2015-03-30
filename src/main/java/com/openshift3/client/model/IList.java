@@ -8,11 +8,15 @@
  ******************************************************************************/
 package com.openshift3.client.model;
 
-/**
- * A Config which is a list of resources.
- * @deprecated ??? in later model versions in favor of List?
- */
-@Deprecated
-public interface IConfig extends IList{
+import java.util.Collection;
 
+/**
+ * A list of resources.
+ */
+public interface IList extends IResource{
+	/**
+	 * Retrieve the list of resources for this config
+	 * @return
+	 */
+	Collection<IResource> getItems();
 }

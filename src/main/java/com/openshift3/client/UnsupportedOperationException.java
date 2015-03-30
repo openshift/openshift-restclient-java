@@ -6,13 +6,13 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client.model;
+package com.openshift3.client;
 
-/**
- * A Config which is a list of resources.
- * @deprecated ??? in later model versions in favor of List?
- */
-@Deprecated
-public interface IConfig extends IList{
+public class UnsupportedOperationException extends RuntimeException {
+	
+	private static final long serialVersionUID = 1L;
 
+	public UnsupportedOperationException(String message){
+		super(message);
+	}
 }
