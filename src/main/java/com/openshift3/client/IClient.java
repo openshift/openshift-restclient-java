@@ -66,6 +66,13 @@ public interface IClient extends ICapable{
 	<T extends IResource> T create(T resource);
 
 	/**
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	<T extends IResource> T update(T resource);
+	
+	/**
 	 * @param resource
 	 */
 	<T extends IResource> void delete(T resource);

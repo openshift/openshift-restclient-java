@@ -81,6 +81,7 @@ public interface IHttpClient {
 	public String post(URL url, int timeout, IResource resource) throws HttpClientException, SocketTimeoutException, EncodingException;
 
     public String put(URL url, IMediaType mediaType, int timeout, Parameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
+    public String put(URL url, int timeout, IResource resource) throws HttpClientException, SocketTimeoutException, EncodingException;
 
     public String patch(URL url, IMediaType mediaType, int timeout, Parameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
 
