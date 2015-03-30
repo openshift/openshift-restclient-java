@@ -13,8 +13,8 @@ import java.util.Map;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift3.client.IClient;
-import com.openshift3.client.model.IRoute;
-import com.openshift3.client.model.ITLSConfig;
+import com.openshift3.client.model.route.IRoute;
+import com.openshift3.client.model.route.ITLSConfig;
 
 public class Route extends KubernetesResource implements IRoute {
 	public Route(ModelNode node, IClient client,
