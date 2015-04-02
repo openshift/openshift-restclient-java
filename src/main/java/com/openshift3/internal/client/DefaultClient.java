@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +30,12 @@ import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
 import com.openshift3.client.IClient;
 import com.openshift3.client.OpenShiftException;
 import com.openshift3.client.ResourceKind;
+import com.openshift3.client.UnsupportedOperationException;
 import com.openshift3.client.UnsupportedVersionException;
 import com.openshift3.client.authorization.IAuthorizationStrategy;
 import com.openshift3.client.capability.CapabilityVisitor;
 import com.openshift3.client.capability.ICapability;
+import com.openshift3.client.model.IList;
 import com.openshift3.client.model.IResource;
 import com.openshift3.internal.client.model.Status;
 import com.openshift3.internal.client.model.properties.ResourcePropertiesRegistry;
@@ -121,13 +124,36 @@ public class DefaultClient implements IClient{
 		}
 		return filtered;
 	}
+	
+	@Override
+	public Collection<IResource> create(IList list, String namespace){
+		List<IResource> results = new ArrayList<IResource>(list.getItems().size());
+		for (IResource resource : list.getItems()) {
+			try{
+				results.add(create(resource, namespace));
+			}catch(OpenShiftException e){
+				if(e.getStatus() != null){
+					results.add(e.getStatus());
+				}else{
+					throw e;
+				}
+			}
+		}
+		return results;
+	}
 
 	@Override
 	public <T extends IResource> T create(T resource) {
+		return create(resource, resource.getNamespace());
+	}
+	
+	@Override
+	public <T extends IResource> T create(T resource, String namespace) {
+		if(resource.getKind() == ResourceKind.List) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		try {
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(resource.getKind())
-				.addParmeter("namespace", resource.getNamespace())
+				.addParmeter("namespace", namespace)
 				.build();
 			String response = client.post(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT, resource);
 			LOGGER.debug(response);
@@ -138,9 +164,10 @@ public class DefaultClient implements IClient{
 			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout creating resource %", resource.getName());
 		}
 	}
-
+	
 	@Override
 	public <T extends IResource> T update(T resource) {
+		if(resource.getKind() == ResourceKind.List) throw new UnsupportedOperationException("Update operation not supported for resource type 'List'");
 		try {
 			final URL endpoint = new URLBuilder(getBaseURL(), getTypeMappings())
 				.resource(resource)
@@ -158,6 +185,7 @@ public class DefaultClient implements IClient{
 
 	@Override
 	public <T extends IResource> void delete(T resource) {
+		if(resource.getKind() == ResourceKind.List) throw new UnsupportedOperationException("Delete operation not supported for resource type 'List'");
 		try {
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.resource(resource)

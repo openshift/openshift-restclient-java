@@ -6,13 +6,13 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift3.client.model;
+package com.openshift3;
 
-/**
- * A Config which is a list of resources.
- * @deprecated ??? in later model versions in favor of List?
- */
-@Deprecated
-public interface IConfig extends IList{
+public class UnsupportedVersionException extends RuntimeException {
+	
+	private static final long serialVersionUID = 1L;
 
+	public UnsupportedVersionException(String version){
+		super(String.format("OpenShift API version '%s' is not supported by this client", version));
+	}
 }

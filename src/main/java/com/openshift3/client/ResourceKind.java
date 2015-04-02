@@ -30,7 +30,8 @@ public enum ResourceKind {
 	 * These are not true resources that can be used (mostly) in
 	 * RESTful operations
 	 */
-	Config(""), //not rest resource
+	Config(""), //not rest resource,
+	List(""),
 	Status(""), //not rest resource
 	TemplateConfig("templateConfigs") //mechanism for processing templates
 	;
