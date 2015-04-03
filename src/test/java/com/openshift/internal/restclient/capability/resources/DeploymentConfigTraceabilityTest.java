@@ -1,0 +1,53 @@
+package com.openshift.internal.restclient.capability.resources;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
+import com.openshift.restclient.IClient;
+import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.model.IDeploymentConfig;
+import com.openshift.restclient.model.IPod;
+
+@RunWith(MockitoJUnitRunner.class)
+public class DeploymentConfigTraceabilityTest {
+
+	private DeploymentConfigTraceability capability;
+	
+	@Mock private IDeploymentConfig config;
+	@Mock private IPod resource;
+	@Mock private IClient client;
+	
+	@Before
+	public void setUp(){
+		capability = new DeploymentConfigTraceability(resource, client);
+		
+		when(resource.getNamespace()).thenReturn("mynamespace");
+		
+		when(client.get(eq(ResourceKind.DeploymentConfig), eq("foobar"), eq("mynamespace")))
+			.thenReturn(config);
+	}
+	
+	@Test
+	public void supportedWhenAnnotationsHaveADeploymentKey(){
+		when(resource.isAnnotatedWith(eq("deploymentconfig"))).thenReturn(true);
+		when(resource.getAnnotation("deploymentconfig")).thenReturn("foobar");
+
+		assertEquals("Exp. to get the deploymentConfig", config, capability.getDeploymentConfig());
+		
+		verify(client).get(eq(ResourceKind.DeploymentConfig), eq("foobar"), eq("mynamespace"));
+	}
+
+	@Test
+	public void unsupportedWhenAnnotationsDoNotHaveADeploymentKey(){
+		assertNull("Exp. to get the deploymentConfig", capability.getDeploymentConfig());
+	}
+
+}

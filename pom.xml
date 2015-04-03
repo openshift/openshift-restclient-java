@@ -16,10 +16,10 @@
 
 	<!-- Artifact Information -->
 	<groupId>com.openshift</groupId>
-	<artifactId>openshift-java-client</artifactId>
+	<artifactId>openshift-restclient-java</artifactId>
 	<version>3.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>OpenShift Java Client</name>
+	<name>OpenShift Java REST Client</name>
 	<url>http://openshift.redhat.com</url>
 	<description>OpenShift Java Client</description>
 
@@ -48,7 +48,7 @@
 	<!-- Issues -->
 	<issueManagement>
 		<system>jira</system>
-		<url>http://jira.jboss.com/jira/browse/JBIDE</url>
+		<url>https://issues.jboss.org/browse/OSJC</url>
 	</issueManagement>
 
 	<!-- Licenses -->
@@ -92,26 +92,9 @@
 					<version>2.12</version>
 					<configuration>
 						<argLine>-Dfile.encoding=UTF-8</argLine>
-						<systemPropertyVariables>
-							<libra_server>${libra_server}</libra_server>
-							<default_rhlogin>${default_rhlogin}</default_rhlogin>
-							<rhpassword>${rhpassword}</rhpassword>
-							<https.proxyHost>${proxyHost}</https.proxyHost>
-							<https.proxyPort>${proxyPort}</https.proxyPort>
-							<http.proxyHost>${proxyHost}</http.proxyHost>
-							<http.proxyPort>${proxyPort}</http.proxyPort>
-						</systemPropertyVariables>
 						<excludes>
-							<exclude>**/OpenShiftIntegrationTestSuite.java</exclude>
-							<exclude>**/openshift3/**/*Integration*.java</exclude>
+							<exclude>**/*IntegrationTest.java</exclude>
 						</excludes>
-						<includes>
-							<include>**/OpenShiftTestSuite.java</include>
-							<include>**/openshift3/**/*Test.java</include>
-						</includes>
-						<!--excludes> <exclude>**/OpenShiftTestSuite.java</exclude> </excludes> 
-							<includes> <include>**/OpenShiftIntegrationTestSuite.java</include> </includes -->
-						<!--jvm>/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/bin/java</jvm -->
 					</configuration>
 				</plugin>
 				<plugin>
@@ -160,7 +143,6 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.1</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -191,6 +173,11 @@
 		    <groupId>commons-codec</groupId>
 		    <artifactId>commons-codec</artifactId>
 		    <version>1.6</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
 		</dependency>
 	</dependencies>
 
@@ -315,4 +302,11 @@
 			</build>
 		</profile>
 	</profiles>
+	<scm>
+		<url>https://github.com/openshift/openshift-restclient-java</url>
+	</scm>
+	<organization>
+		<name>Red Hat, Inc</name>
+		<url>http://www.redhat.com</url>
+	</organization>
 </project>

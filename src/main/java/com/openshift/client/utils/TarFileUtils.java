@@ -17,8 +17,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 
-import com.openshift.internal.client.utils.StreamUtils;
-
 /**
  * @author Andre Dietisheim
  */
@@ -44,7 +42,8 @@ public class TarFileUtils {
 			}
 			return gitFolderPresent;
 		} finally {
-			StreamUtils.close(tarInputStream);
+			if(tarInputStream != null)
+				tarInputStream.close();
 		}
 	}
 }
