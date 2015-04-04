@@ -38,6 +38,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +49,9 @@ import com.openshift.client.utils.SSLUtils;
 import com.openshift.internal.client.httpclient.request.IMediaType;
 import com.openshift.internal.client.httpclient.request.Parameter;
 import com.openshift.internal.client.httpclient.request.ParameterValueMap;
-import com.openshift.internal.client.utils.StreamUtils;
-import com.openshift.internal.client.utils.StringUtils;
-import com.openshift3.client.authorization.IAuthorizationStrategy;
-import com.openshift3.client.authorization.URLConnectionRequest;
-import com.openshift3.client.model.IResource;
+import com.openshift.restclient.authorization.IAuthorizationStrategy;
+import com.openshift.restclient.authorization.URLConnectionRequest;
+import com.openshift.restclient.model.IResource;
 
 /**
  * @author Andre Dietisheim
@@ -100,7 +100,6 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		return request(HttpMethod.HEAD, url, null, timeout);
 	}
 
-	@Override
 	public String put(URL url, IMediaType mediaType, int timeout, Parameter... parameters)
 			throws HttpClientException, SocketTimeoutException, EncodingException {
 		return request(HttpMethod.PUT, url, mediaType, timeout, parameters);
@@ -113,28 +112,15 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 	
 	@Override
-	public String post(URL url, IMediaType mediaType, int timeout, Parameter... parameters)
-			throws HttpClientException, SocketTimeoutException, EncodingException {
-		return request(HttpMethod.POST, url, mediaType, timeout, parameters);
-	}
-	
-	@Override
 	public String post(URL url, int timeout, IResource resource) throws HttpClientException, SocketTimeoutException, EncodingException {
 		return request(HttpMethod.POST, url, timeout, resource);
 	}
 
-	@Override
-	public String patch(URL url, IMediaType mediaType, int timeout, Parameter... parameters)
-			throws HttpClientException, SocketTimeoutException, EncodingException {
-		return request(HttpMethod.PATCH, url, mediaType, timeout, parameters);
-	}
-
-	@Override
 	public String delete(URL url, IMediaType mediaType, int timeout, Parameter... parameters)
 			throws HttpClientException, SocketTimeoutException, EncodingException {
 		return request(HttpMethod.DELETE, url, mediaType, timeout, parameters);
 	}
-
+	
 	@Override
 	public String delete(URL url, int timeout)
 			throws HttpClientException, SocketTimeoutException, EncodingException {
@@ -161,7 +147,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 				setRequestMediaType(requestMediaType, connection);
 				requestMediaType.writeTo(parameters, connection.getOutputStream());
 			}
-			return StreamUtils.readToString(connection.getInputStream(), StreamUtils.UTF_8);
+			return IOUtils.toString(connection.getInputStream(), "UTF-8");
 		} catch (SocketTimeoutException e) {
 			throw e;
 		} catch (IOException e) {
@@ -185,7 +171,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 				writer.write(resource.toString());
 				writer.flush();
 			}
-			return StreamUtils.readToString(connection.getInputStream(), StreamUtils.UTF_8);
+			return IOUtils.toString(connection.getInputStream(), "UTF-8");
 		} catch (SocketTimeoutException e) {
 			throw e;
 		} catch (IOException e) {
@@ -234,7 +220,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 
 	protected String createErrorMessage(IOException ioe, HttpURLConnection connection) throws IOException {
-		String errorMessage = StreamUtils.readToString(connection.getErrorStream());
+		String errorMessage = IOUtils.toString(connection.getErrorStream());
 		if (!StringUtils.isEmpty(errorMessage)) {
 			return errorMessage;
 		}

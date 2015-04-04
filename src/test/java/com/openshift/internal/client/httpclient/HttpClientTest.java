@@ -17,7 +17,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -26,12 +25,6 @@ import java.net.URL;
 import java.security.KeyStoreException;
 import java.security.cert.X509Certificate;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,22 +40,13 @@ import org.junit.rules.ExpectedException;
 
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IHttpClient.ISSLCertificateCallback;
-import com.openshift.client.OpenShiftException;
-import com.openshift.client.configuration.AbstractOpenshiftConfiguration.ConfigurationOptions;
-import com.openshift.client.configuration.IOpenShiftConfiguration;
 import com.openshift.client.fakes.HttpServerFake;
 import com.openshift.client.fakes.HttpsServerFake;
-import com.openshift.client.fakes.OpenShiftConfigurationFake;
-import com.openshift.client.fakes.PayLoadReturningHttpClientFake;
-import com.openshift.client.fakes.SSLCiphersConnectionBuilderFake;
-import com.openshift.client.fakes.SSLCiphersConnectionBuilderFake.SSLCipherConnection;
 import com.openshift.client.fakes.WaitingHttpServerFake;
 import com.openshift.client.utils.Base64Coder;
 import com.openshift.client.utils.ExceptionCauseMatcher;
 import com.openshift.client.utils.SSLUtils;
 import com.openshift.internal.client.TestTimer;
-import com.openshift.internal.client.httpclient.request.FormUrlEncodedMediaType;
-import com.openshift.internal.client.httpclient.request.StringParameter;
 
 /**
  * @author Andre Dietisheim
@@ -78,7 +62,6 @@ public class HttpClientTest extends TestTimer {
 	private HttpServerFake serverFake;
 	private IHttpClient httpClient;
 	private HttpsServerFake httpsServerFake;
-	private IOpenShiftConfiguration configuration;
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -87,11 +70,10 @@ public class HttpClientTest extends TestTimer {
 	public void setUp() throws Exception {
 		this.serverFake = startHttpServerFake(null);
 		this.httpsServerFake = startHttpsServerFake(null);
-		this.configuration = new OpenShiftConfigurationFake("10000","10000","10000",null);
 		this.httpClient = new UrlConnectionHttpClientBuilder()
 				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
 				.setUserAgent("com.openshift.client.test")
-				.setConfigTimeout(configuration.getTimeout())
+				.setConfigTimeout(new Integer("10000"))
 				.client();
 	}
 
@@ -122,29 +104,9 @@ public class HttpClientTest extends TestTimer {
 	}
 
 	@Test
-	public void canPost() throws Throwable {
-		String response = httpClient.post(serverFake.getUrl(), new FormUrlEncodedMediaType(), IHttpClient.NO_TIMEOUT);
-		assertThat(response).startsWith("POST");
-	}
-
-	@Test
-	public void canPut() throws SocketTimeoutException, HttpClientException, MalformedURLException,
-			EncodingException {
-		String response = httpClient.put(serverFake.getUrl(), new FormUrlEncodedMediaType(), IHttpClient.NO_TIMEOUT);
-		assertThat(response).startsWith("PUT");
-	}
-
-	@Test
 	public void canDelete() throws Throwable {
 		String response = httpClient.delete(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
 		assertThat(response).startsWith("DELETE");
-	}
-
-	@Test
-	public void canPatch() throws Throwable {
-		String response = httpClient.patch(serverFake.getUrl(), new FormUrlEncodedMediaType(), IHttpClient.NO_TIMEOUT);
-		assertThat(response).startsWith("POST");
-		assertTrue(response.contains("X-Http-Method-Override: PATCH"));
 	}
 
 	/**
@@ -251,31 +213,6 @@ public class HttpClientTest extends TestTimer {
 	}
 
 	@Test
-	public void shouldEncodeParametersCorrectly() throws HttpClientException, FileNotFoundException, IOException,
-			OpenShiftException {
-		// pre-conditions
-		IHttpClient httpClient = new PayLoadReturningHttpClientFake(IHttpClient.MEDIATYPE_APPLICATION_JSON, "1.0");
-		// operation
-		String response = httpClient.post(serverFake.getUrl(),
-				new FormUrlEncodedMediaType(),
-				IHttpClient.NO_TIMEOUT,
-				new StringParameter("adietish", "redhat"),
-				new StringParameter("xcoulon", "redhat"));
-
-		// verification
-		String[] entries = response.split(String.valueOf(IHttpClient.AMPERSAND));
-		assertEquals(2, entries.length);
-		String[] keyValuePair = entries[0].split(String.valueOf(IHttpClient.EQUALS));
-		assertEquals(2, keyValuePair.length);
-		assertEquals("adietish", keyValuePair[0]);
-		assertEquals("redhat", keyValuePair[1]);
-		keyValuePair = entries[1].split(String.valueOf(IHttpClient.EQUALS));
-		assertEquals(2, keyValuePair.length);
-		assertEquals("xcoulon", keyValuePair[0]);
-		assertEquals("redhat", keyValuePair[1]);
-	}
-
-	@Test
 	public void shouldAddServiceVersionToAcceptHeader() throws Exception {
 		// pre-conditions
 		String version = "42.0";
@@ -344,28 +281,28 @@ public class HttpClientTest extends TestTimer {
 			server.stop();
 		}
 	}
-
-	@Test
-	public void shouldRespectGivenTimeoutPOST() throws Throwable {
-		// pre-conditions
-		final int timeout = 1000;
-		final int serverDelay = timeout * 4;
-		assertThat(timeout).isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
-		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
-		long startTime = System.currentTimeMillis();
-		// operations
-		try {
-			httpClient.post(serverFake.getUrl(), new FormUrlEncodedMediaType(), timeout);
-			fail("Timeout expected.");
-		} catch (SocketTimeoutException e) {
-			// assert
-			assertThat(System.currentTimeMillis() - startTime).isGreaterThan(timeout)
-					.isLessThan(serverDelay)
-					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
-		} finally {
-			serverFake.stop();
-		}
-	}
+//TODO delete me?  after moving to apache.httpclient
+//	@Test
+//	public void shouldRespectGivenTimeoutPOST() throws Throwable {
+//		// pre-conditions
+//		final int timeout = 1000;
+//		final int serverDelay = timeout * 4;
+//		assertThat(timeout).isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+//		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
+//		long startTime = System.currentTimeMillis();
+//		// operations
+//		try {
+//			httpClient.post(serverFake.getUrl(), new FormUrlEncodedMediaType(), timeout);
+//			fail("Timeout expected.");
+//		} catch (SocketTimeoutException e) {
+//			// assert
+//			assertThat(System.currentTimeMillis() - startTime).isGreaterThan(timeout)
+//					.isLessThan(serverDelay)
+//					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+//		} finally {
+//			serverFake.stop();
+//		}
+//	}
 
 	@Test
 	public void shouldRespectGivenTimeoutDELETE() throws Throwable {
@@ -389,27 +326,27 @@ public class HttpClientTest extends TestTimer {
 		}
 	}
 
-	@Test
-	public void shouldRespectGivenTimeoutPUT() throws Throwable {
-		// pre-conditions
-		final int timeout = 1000;
-		final int serverDelay = timeout * 4;
-		assertThat(timeout).isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
-		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
-		long startTime = System.currentTimeMillis();
-		// operations
-		try {
-			httpClient.put(serverFake.getUrl(), new FormUrlEncodedMediaType(), timeout);
-			fail("Timeout expected.");
-		} catch (SocketTimeoutException e) {
-			// assert
-			assertThat(System.currentTimeMillis() - startTime).isGreaterThan(timeout)
-					.isLessThan(serverDelay)
-					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
-		} finally {
-			serverFake.stop();
-		}
-	}
+//	@Test
+//	public void shouldRespectGivenTimeoutPUT() throws Throwable {
+//		// pre-conditions
+//		final int timeout = 1000;
+//		final int serverDelay = timeout * 4;
+//		assertThat(timeout).isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+//		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
+//		long startTime = System.currentTimeMillis();
+//		// operations
+//		try {
+//			httpClient.put(serverFake.getUrl(), new FormUrlEncodedMediaType(), timeout);
+//			fail("Timeout expected.");
+//		} catch (SocketTimeoutException e) {
+//			// assert
+//			assertThat(System.currentTimeMillis() - startTime).isGreaterThan(timeout)
+//					.isLessThan(serverDelay)
+//					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+//		} finally {
+//			serverFake.stop();
+//		}
+//	}
 
 	@Test
 	public void shouldRespectGivenTimeoutGET() throws Throwable {
@@ -458,202 +395,33 @@ public class HttpClientTest extends TestTimer {
 		}
 	}
 
-	@Test
-	public void shouldRespectDefaultTimeout() throws Throwable {
-		// pre-conditions
-		final int timeout = 1000;
-		final int serverDelay = timeout * 10000;
-		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,null,null,"5000");
-		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
-				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
-				.setUserAgent("com.openshift.client.test")
-				.setConfigTimeout(configuration.getTimeout())
-				.client();
-		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
-		long startTime = System.currentTimeMillis();
-		// operations
-		try {
-			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
-			fail("Timeout expected.");
-		} catch (SocketTimeoutException e) {
-			// assert
-			assertThat(System.currentTimeMillis() - startTime)
-					.isGreaterThan(configuration.getTimeout() - 20)
-					.isLessThan(configuration.getTimeout() + 20);
-		} finally {
-			serverFake.stop();
-		}
-	}
+//	@Test
+//	public void shouldRespectDefaultTimeout() throws Throwable {
+//		// pre-conditions
+//		final int timeout = 1000;
+//		final int serverDelay = timeout * 10000;
+//		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,null,null,"5000");
+//		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
+//				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
+//				.setUserAgent("com.openshift.client.test")
+//				.setConfigTimeout(configuration.getTimeout())
+//				.client();
+//		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
+//		long startTime = System.currentTimeMillis();
+//		// operations
+//		try {
+//			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+//			fail("Timeout expected.");
+//		} catch (SocketTimeoutException e) {
+//			// assert
+//			assertThat(System.currentTimeMillis() - startTime)
+//					.isGreaterThan(configuration.getTimeout() - 20)
+//					.isLessThan(configuration.getTimeout() + 20);
+//		} finally {
+//			serverFake.stop();
+//		}
+//	}
 
-	@Test
-	public void shouldRespectSystemConfigurationTimeoutOverridingDefaultTimeout() throws Throwable {
-		// pre-conditions
-		final int timeout = 1000;
-		final int serverDelay = timeout * 15;
-		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,null,"2000","1000");
-		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
-				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
-				.setUserAgent("com.openshift.client.test")
-				.setConfigTimeout(configuration.getTimeout())
-				.client();
-		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
-		long startTime = System.currentTimeMillis();
-		// operations
-		try {
-			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
-			fail("Timeout expected.");
-		} catch (SocketTimeoutException e) {
-			// assert
-			assertThat(System.currentTimeMillis() - startTime)
-					.isGreaterThan(configuration.getTimeout() - 20)
-					.isLessThan(configuration.getTimeout() + 20);
-		} finally {
-			serverFake.stop();
-		}
-	}
-
-	@Test
-	public void shouldRespectUserConfigurationTimeoutOverridingSystemConfigurationTimeout() throws Throwable {
-		// pre-conditions
-		final int timeout = 1000;
-		final int serverDelay = timeout * 15;
-		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake(null,"3000","2000","1000");
-		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
-				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
-				.setUserAgent("com.openshift.client.test")
-				.setConfigTimeout(configuration.getTimeout())
-				.client();
-		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
-		long startTime = System.currentTimeMillis();
-		// operations
-		try {
-			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
-			fail("Timeout expected.");
-		} catch (SocketTimeoutException e) {
-			// assert
-			assertThat(System.currentTimeMillis() - startTime)
-					.isGreaterThan(configuration.getTimeout() - 20)
-					.isLessThan(configuration.getTimeout() + 20);
-		} finally {
-			serverFake.stop();
-		}
-	}
-
-	@Test
-	public void shouldRespectSystemPropertiesTimeoutOverridingUserConfigurationTimeout() throws Throwable {
-		// pre-conditions
-		final int timeout = 1000;
-		final int serverDelay = timeout * 15;
-		IOpenShiftConfiguration configuration = new OpenShiftConfigurationFake("4000","3000","2000","1000");
-		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
-				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
-				.setUserAgent("com.openshift.client.test")
-				.setConfigTimeout(configuration.getTimeout())
-				.client();
-		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
-		long startTime = System.currentTimeMillis();
-		// operations
-		try {
-			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
-			fail("Timeout expected.");
-		} catch (SocketTimeoutException e) {
-			// assert
-			assertThat(System.currentTimeMillis() - startTime)
-					.isGreaterThan(configuration.getTimeout() - 20)
-					.isLessThan(configuration.getTimeout() + 20);
-		} finally {
-			serverFake.stop();
-		}
-	}
-
-	@Test
-	public void shouldFallbackToDefaultSystemPropertyTimeout() throws Throwable {
-		// pre-conditions
-		final int timeout = 1000;
-		final int serverDelay = timeout * 15;
-		System.clearProperty(IHttpClient.SYSPROP_OPENSHIFT_READ_TIMEOUT);
-		String timeoutBackup = System.getProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT);
-		System.setProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT, String.valueOf(timeout));
-		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
-		long startTime = System.currentTimeMillis();
-		// operations
-		try {
-			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
-			fail("Timeout expected.");
-		} catch (SocketTimeoutException e) {
-			// assert
-			assertThat(System.currentTimeMillis() - startTime).isGreaterThan(timeout)
-					.isLessThan(serverDelay)
-					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
-		} finally {
-			serverFake.stop();
-			restoreSystemProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT, timeoutBackup);
-		}
-	}
-
-	@Test
-	public void shouldFallbackToDefaultTimeout() throws Throwable {
-		// pre-conditions
-		final int serverDelay = 4 * 1000;
-		System.clearProperty(IHttpClient.SYSPROP_OPENSHIFT_READ_TIMEOUT);
-		final String timeoutBackup = System.getProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT);
-		System.clearProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT);
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		final WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
-		final long startTime = System.currentTimeMillis();
-		// operations
-		Future<Long> future = executor.submit(new Callable<Long>() {
-
-			@Override
-			public Long call() throws Exception {
-				try {
-					httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
-					return -1l;
-				} catch (SocketTimeoutException e) {
-					return -1l;
-				}
-			}
-		});
-		long waited = -1;
-		try {
-			waited = future.get(serverDelay, TimeUnit.MILLISECONDS);
-			fail("get should have timed out");
-		} catch (TimeoutException e) {
-			assertThat(waited).isGreaterThanOrEqualTo(-1);
-			assertThat(System.currentTimeMillis() - startTime)
-					.isGreaterThanOrEqualTo(serverDelay)
-					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
-		} finally {
-			executor.shutdownNow();
-			restoreSystemProperty(IHttpClient.SYSPROP_DEFAULT_READ_TIMEOUT, timeoutBackup);
-		}
-	}
-
-	@Test
-	public void shouldFilterBadSSLCiphers() throws Throwable {
-		// pre-conditions
-		// operations
-		SSLCipherConnection connection = (SSLCipherConnection) new SSLCiphersConnectionBuilderFake()
-				.sslCiphersConnection()
-				.disableBadSSLCiphers(ConfigurationOptions.YES)
-				.create();
-
-		// verification
-		assertThat(connection.getFilteredCiphers()).satisfies(new NoDHECiphersCondition());
-	}
-	
-	@Test
-	public void shouldNotFilterBadSSLCiphers() throws Throwable {
-		// pre-conditions
-		// operations
-		SSLCipherConnection connection = (SSLCipherConnection) new SSLCiphersConnectionBuilderFake()
-		.sslCiphersConnection()
-		.disableBadSSLCiphers(ConfigurationOptions.NO)
-		.create();
-
-		// verification
-		assertThat(connection.getSupportedCiphers()).isEqualTo(connection.getFilteredCiphers());
-	}
 	
 	private HttpServerFake startHttpServerFake(String statusLine) throws Exception {
 		int port = new Random().nextInt(9 * 1024) + 1024;
@@ -685,22 +453,6 @@ public class HttpClientTest extends TestTimer {
 		return serverFake;
 	}
 
-	private static final class NoDHECiphersCondition extends Condition<Object[]> {
-		@Override
-		public boolean matches(Object[] ciphers) {
-			for (Object cipher : ciphers) {
-				if (!(cipher instanceof String)) {
-					return false;
-				}
-				// no DHE ciphers left
-				if (((String) cipher).matches(SSLUtils.CIPHER_DHE_REGEX)) {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
-
 	private class AcceptVersionClientFake extends UrlConnectionHttpClientFake {
 
 		public AcceptVersionClientFake(String acceptVersion) {
@@ -728,11 +480,4 @@ public class HttpClientTest extends TestTimer {
 		}
 	};
 
-	private void restoreSystemProperty(String property, String value) {
-		if (value == null) {
-			System.clearProperty(property);
-		} else {
-			System.setProperty(property, value);
-		}
-	}
 }

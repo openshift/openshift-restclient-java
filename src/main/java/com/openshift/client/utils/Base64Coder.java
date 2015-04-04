@@ -11,8 +11,7 @@
 package com.openshift.client.utils;
 
 import javax.xml.bind.DatatypeConverter;
-
-import com.openshift.internal.client.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * A utility class that offers methods to encode and decode strings from and to

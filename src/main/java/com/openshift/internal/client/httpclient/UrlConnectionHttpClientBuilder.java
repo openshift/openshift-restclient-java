@@ -12,8 +12,8 @@ package com.openshift.internal.client.httpclient;
 
 import com.openshift.client.IHttpClient;
 import com.openshift.client.IHttpClient.ISSLCertificateCallback;
-import com.openshift3.client.authorization.BasicAuthorizationStrategy;
-import com.openshift3.client.authorization.IAuthorizationStrategy;
+import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
+import com.openshift.restclient.authorization.IAuthorizationStrategy;
 
 /**
  * @author André Dietisheim

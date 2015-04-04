@@ -31,9 +31,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import com.openshift.internal.client.utils.StreamUtils;
-
+import org.apache.commons.io.IOUtils;
 /**
  * @author André Dietisheim
  * @author Nicolas Spano
@@ -149,7 +147,7 @@ public class HttpServerFake {
 			} finally {
 				// we should not close the connection, let the client close the
 				// connection
-				StreamUtils.quietlyClose(outputStream);
+				IOUtils.closeQuietly(outputStream);
 			}
 		}
 

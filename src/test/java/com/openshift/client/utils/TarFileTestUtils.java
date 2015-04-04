@@ -29,7 +29,6 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.utils.IOUtils;
 
 import com.openshift.internal.client.utils.Assert;
-import com.openshift.internal.client.utils.StreamUtils;
 
 /**
  * @author Andre Dietisheim
@@ -93,8 +92,8 @@ public class TarFileTestUtils {
 		} finally {
 			newArchiveOut.finish();
 			newArchiveOut.flush();
-			StreamUtils.close(archiveIn);
-			StreamUtils.close(newArchiveOut);
+			if(archiveIn != null) archiveIn.close();
+			if(newArchiveOut != null) newArchiveOut.close();
 		}
 	}
 
@@ -118,7 +117,7 @@ public class TarFileTestUtils {
 			}
 			return paths;
 		} finally {
-			StreamUtils.close(archiveIn);
+			if(archiveIn != null) archiveIn.close();
 		}
 	}
 }

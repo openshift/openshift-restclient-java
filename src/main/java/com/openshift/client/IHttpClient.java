@@ -18,10 +18,8 @@ import javax.net.ssl.SSLSession;
 
 import com.openshift.internal.client.httpclient.EncodingException;
 import com.openshift.internal.client.httpclient.HttpClientException;
-import com.openshift.internal.client.httpclient.request.IMediaType;
-import com.openshift.internal.client.httpclient.request.Parameter;
-import com.openshift3.client.authorization.IAuthorizationStrategy;
-import com.openshift3.client.model.IResource;
+import com.openshift.restclient.authorization.IAuthorizationStrategy;
+import com.openshift.restclient.model.IResource;
 
 /**
  * @author André Dietisheim
@@ -77,15 +75,9 @@ public interface IHttpClient {
 
 	public String head(URL url, int timeout) throws HttpClientException, SocketTimeoutException;
 
-	public String post(URL url, IMediaType mediaType, int timeout, Parameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
 	public String post(URL url, int timeout, IResource resource) throws HttpClientException, SocketTimeoutException, EncodingException;
 
-    public String put(URL url, IMediaType mediaType, int timeout, Parameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
     public String put(URL url, int timeout, IResource resource) throws HttpClientException, SocketTimeoutException, EncodingException;
-
-    public String patch(URL url, IMediaType mediaType, int timeout, Parameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
-
-    public String delete(URL url, IMediaType mediaType, int timeout, Parameter... parameters) throws HttpClientException, SocketTimeoutException, EncodingException;
 
     public String delete(URL url, int timeout) throws HttpClientException, SocketTimeoutException, EncodingException;
 

@@ -18,8 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.openshift3.client.authorization.IRequest;
-import com.openshift3.client.authorization.IAuthorizationStrategy;
+import com.openshift.restclient.authorization.IAuthorizationStrategy;
+import com.openshift.restclient.authorization.IRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UrlConnectionHttpClientTest {
