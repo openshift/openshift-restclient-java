@@ -45,9 +45,9 @@ import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.client.NoopSSLCertificateCallback;
 import com.openshift.client.IHttpClient.ISSLCertificateCallback;
-import com.openshift.client.OpenShiftException;
+import com.openshift.restclient.NoopSSLCertificateCallback;
+import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.authorization.IAuthorizationClient;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 

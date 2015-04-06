@@ -26,7 +26,9 @@ import com.openshift.restclient.model.IResource;
  * @author Nicolas Spano
  * @author Corey Daley
  * @author Sean Kavanagh
+ * @deprecated This interface and its supporting classes to be deprecated in the near future.
  */
+@Deprecated
 public interface IHttpClient {
 	
 	public static final String HTTP = "http";

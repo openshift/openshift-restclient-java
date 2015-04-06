@@ -11,7 +11,6 @@ package com.openshift.restclient;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.openshift.client.IHttpClient.ISSLCertificateCallback;
 import com.openshift.internal.restclient.DefaultClient;
 
 /**
@@ -31,7 +30,7 @@ public final class ClientFactory {
 		try {
 			url = new URL(baseUrl);
 		} catch (MalformedURLException e) {
-			throw new OpenShiftException(String.format("Malformed URL '%s'", baseUrl), e, null);
+			throw new OpenShiftException(e, "Malformed URL '%s'", baseUrl);
 		}
 		return new DefaultClient(url, sslCertCallback);
 	}

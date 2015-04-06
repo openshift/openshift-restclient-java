@@ -1,6 +1,6 @@
 package com.openshift.internal.client;
 
-import com.openshift.client.OpenShiftException;
+import com.openshift.restclient.OpenShiftException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

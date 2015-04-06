@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -8,18 +8,25 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.client;
+package com.openshift.restclient;
 
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLSession;
 
 /**
  * @author Andre Dietisheim
  */
-public class OpenShiftRequestException extends OpenShiftException {
+public class NoopSSLCertificateCallback implements ISSLCertificateCallback {
 
-	private static final long serialVersionUID = 1L;
+	@Override
+	public boolean allowCertificate(X509Certificate[] chain) {
+		return true;
+	}
 
-	public OpenShiftRequestException(String message, Object... arguments) {
-		super(message, arguments);
+	@Override
+	public boolean allowHostname(String hostname, SSLSession session) {
+		return true;
 	}
 
 }
