@@ -15,9 +15,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
-import com.openshift.client.NoopSSLCertificateCallback;
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.NoopSSLCertificateCallback;
 import com.openshift.restclient.authorization.AuthorizationClientFactory;
 import com.openshift.restclient.authorization.OAuthStrategy;
 

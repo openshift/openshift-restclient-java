@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
+import java.text.MessageFormat;
+
 import com.openshift.restclient.model.IStatus;
 
 public class OpenShiftException extends RuntimeException {
@@ -15,8 +17,16 @@ public class OpenShiftException extends RuntimeException {
 	private static final long serialVersionUID = -7076942050102006278L;
 	private IStatus status;
 
-	public OpenShiftException(String message, Throwable cause, IStatus status) {
-		super(message, cause);
+	public OpenShiftException(Throwable cause, String message, Object... arguments) {
+		super(MessageFormat.format(message, arguments), cause);
+	}
+
+	public OpenShiftException(String message, Object... arguments) {
+		this(null, null, message, arguments);
+	}
+	
+	public OpenShiftException(Throwable cause, IStatus status, String message, Object... arguments ) {
+		super(MessageFormat.format(message, arguments), cause);
 		this.status = status;
 	}		
 	

@@ -111,7 +111,7 @@ public class DefaultClient implements IClient{
 		} catch (HttpClientException e){
 			throw handleHttpClientException("Exception listing the resources", e);
 		} catch (SocketTimeoutException e) {
-			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout listing resources");
+			throw new OpenShiftException(e, "SocketTimeout listing resources");
 		} 
 	}
 	
@@ -162,7 +162,7 @@ public class DefaultClient implements IClient{
 		} catch (HttpClientException e){
 			throw handleHttpClientException("Exception creating the resource", e);
 		} catch (SocketTimeoutException e) {
-			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout creating resource %", resource.getName());
+			throw new OpenShiftException(e, "SocketTimeout creating resource %", resource.getName());
 		}
 	}
 	
@@ -180,7 +180,7 @@ public class DefaultClient implements IClient{
 		} catch (HttpClientException e){
 			throw handleHttpClientException("Exception updating the resource", e);
 		} catch (SocketTimeoutException e) {
-			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout updating resource %", resource.getName());
+			throw new OpenShiftException(e, "SocketTimeout updating resource %", resource.getName());
 		}
 	}
 
@@ -199,7 +199,7 @@ public class DefaultClient implements IClient{
 		} catch (HttpClientException e){
 			throw handleHttpClientException("Exception deleting the resource", e);
 		} catch (SocketTimeoutException e) {
-			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout deleting resource %", resource.getName());
+			throw new OpenShiftException(e, "SocketTimeout deleting resource %", resource.getName());
 		} 
 	}
 
@@ -217,7 +217,7 @@ public class DefaultClient implements IClient{
 		} catch (HttpClientException e){
 			throw handleHttpClientException("Exception getting the resource", e);
 		} catch (SocketTimeoutException e) {
-			throw new com.openshift.client.OpenShiftException(e, "SocketTimeout getting resource %", name);
+			throw new OpenShiftException(e, "SocketTimeout getting resource %", name);
 		} 
 	}
 
@@ -305,10 +305,10 @@ public class DefaultClient implements IClient{
 			return versions;
 		} catch (MalformedURLException e) {
 			LOGGER.error("Exception", e);
-			throw new com.openshift.client.OpenShiftException(e,"");
+			throw new OpenShiftException(e,"");
 		} catch (SocketTimeoutException e) {
 			LOGGER.error("Exception", e);
-			throw new com.openshift.client.OpenShiftException(e,"");
+			throw new OpenShiftException(e,"");
 		}
 	}
 

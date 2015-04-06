@@ -6,15 +6,12 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift.client;
+package com.openshift.restclient;
 
 /**
- * Common interface to something that is refreshable (e.g. a IConnection)
+ * Extends for now until confirmation that we can completely
+ * swap it for the deprecated class
  */
-public interface IRefreshable {
+public interface ISSLCertificateCallback extends com.openshift.client.IHttpClient.ISSLCertificateCallback {
 
-	/**
-	 * Refresh the entity
-	 */
-	void refresh();
 }
