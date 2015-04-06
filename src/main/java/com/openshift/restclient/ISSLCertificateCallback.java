@@ -8,10 +8,18 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
-/**
- * Extends for now until confirmation that we can completely
- * swap it for the deprecated class
- */
-public interface ISSLCertificateCallback extends com.openshift.client.IHttpClient.ISSLCertificateCallback {
+import java.security.cert.X509Certificate;
 
+import javax.net.ssl.SSLSession;
+
+/**
+ * TODO - depricate extension once we refactor the use of IHttpClient
+ * @author jeff.cantrill
+ *
+ */
+public interface ISSLCertificateCallback extends com.openshift.client.IHttpClient.ISSLCertificateCallback{
+	
+	boolean allowCertificate(X509Certificate[] chain);
+
+	boolean allowHostname(String hostname, SSLSession session); 
 }

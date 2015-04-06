@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.client.IHttpClient;
-import com.openshift.client.IHttpClient.ISSLCertificateCallback;
+import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.internal.client.httpclient.HttpClientException;
 import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
 import com.openshift.internal.restclient.model.Status;
