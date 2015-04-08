@@ -2,7 +2,7 @@ OpenShift Java REST Client
 ===========================
 
 This is the Java REST client for the version 3 architecture of [OpenShift](https://github.com/openshift/origin) based on Kubernetes.  The implementation is
-a work in progress to provide functionality and features of the command-line interface and is used by JBoss Tools for OpenShift.
+a work in progress to provide functionality and features of the command-line interface and is used by JBoss Tools for OpenShift.  For compatibility with OpenShift 2.x see https://github.com/openshift/openshift-java-client/.
 
 Usage
 -----
