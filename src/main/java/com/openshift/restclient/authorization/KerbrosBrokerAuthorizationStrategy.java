@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.openshift.restclient.authorization;
 
-import com.openshift.client.IHttpClient;
+import com.openshift.restclient.http.IHttpClient;
 
 /**
  * Authorization strategy to support Kerberos authorization

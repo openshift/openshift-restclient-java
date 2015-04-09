@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.openshift.restclient.authorization;
 
-import com.openshift.client.IHttpClient;
+import com.openshift.restclient.http.IHttpClient;
 
 /**
  * Authorization stategy to add a Bearer Token to a request

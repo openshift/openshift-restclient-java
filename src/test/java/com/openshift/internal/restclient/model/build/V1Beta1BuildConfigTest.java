@@ -17,7 +17,6 @@ import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.openshift.client.utils.Samples;
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
 import com.openshift.internal.restclient.model.build.WebhookTrigger;
@@ -33,6 +32,7 @@ import com.openshift.restclient.model.build.IBuildStrategy;
 import com.openshift.restclient.model.build.IBuildTrigger;
 import com.openshift.restclient.model.build.IGitBuildSource;
 import com.openshift.restclient.model.build.ISTIBuildStrategy;
+import com.openshift.restclient.utils.Samples;
 
 public class V1Beta1BuildConfigTest {
 	

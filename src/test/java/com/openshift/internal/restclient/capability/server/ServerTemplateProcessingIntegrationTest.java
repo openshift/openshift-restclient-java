@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.client.utils.Samples;
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.template.Template;
@@ -28,6 +27,7 @@ import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IConfig;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
+import com.openshift.restclient.utils.Samples;
 
 public class ServerTemplateProcessingIntegrationTest {
 	private static final Logger LOG = LoggerFactory.getLogger(ServerTemplateProcessingIntegrationTest.class);

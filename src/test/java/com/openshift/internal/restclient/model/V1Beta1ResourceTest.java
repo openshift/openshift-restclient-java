@@ -16,13 +16,13 @@ import org.jboss.dmr.ModelType;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.openshift.client.utils.Samples;
 import com.openshift.internal.restclient.model.Build;
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.utils.Samples;
 
 public class V1Beta1ResourceTest {
 	

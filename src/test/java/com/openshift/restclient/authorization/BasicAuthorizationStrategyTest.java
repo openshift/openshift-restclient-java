@@ -16,9 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.openshift.client.utils.Base64Coder;
 import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.authorization.IRequest;
+import com.openshift.restclient.utils.Base64Coder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BasicAuthorizationStrategyTest {

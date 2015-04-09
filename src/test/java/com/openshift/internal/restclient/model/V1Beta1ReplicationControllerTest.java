@@ -18,12 +18,12 @@ import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.openshift.client.utils.Samples;
 import com.openshift.internal.restclient.model.ReplicationController;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IReplicationController;
+import com.openshift.restclient.utils.Samples;
 
 public class V1Beta1ReplicationControllerTest {
 

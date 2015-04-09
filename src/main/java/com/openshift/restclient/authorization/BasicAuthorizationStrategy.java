@@ -8,8 +8,8 @@
  ******************************************************************************/
 package com.openshift.restclient.authorization;
 
-import com.openshift.client.IHttpClient;
-import com.openshift.client.utils.Base64Coder;
+import com.openshift.restclient.http.IHttpClient;
+import com.openshift.restclient.utils.Base64Coder;
 
 /**
  * Authorization strategy for basic authorization

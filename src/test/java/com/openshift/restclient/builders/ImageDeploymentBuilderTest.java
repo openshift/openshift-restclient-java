@@ -7,12 +7,12 @@ import java.util.List;
 import org.jboss.dmr.ModelNode;
 import org.junit.Test;
 
-import com.openshift.client.utils.Samples;
 import com.openshift.internal.restclient.builders.ImageDeploymentBuilder;
 import com.openshift.internal.restclient.model.DeploymentConfig;
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.utils.Samples;
 
 //TODO WIP determine if this is still needed
 public class ImageDeploymentBuilderTest {

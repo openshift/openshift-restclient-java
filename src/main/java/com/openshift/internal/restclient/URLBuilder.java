@@ -20,9 +20,9 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.client.IHttpClient;
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -39,7 +39,7 @@ public class URLBuilder {
 	private Map<String, String> params = new HashMap<String, String>();
 	private final Map<ResourceKind, String> typeMappings;
 
-	URLBuilder(URL baseUrl, Map<ResourceKind, String> typeMappings, IResource resource) {
+	public URLBuilder(URL baseUrl, Map<ResourceKind, String> typeMappings, IResource resource) {
 		this(baseUrl, typeMappings);
 		resource(resource);
 	}

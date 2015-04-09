@@ -21,6 +21,9 @@ import com.openshift.restclient.NoopSSLCertificateCallback;
 import com.openshift.restclient.authorization.AuthorizationClientFactory;
 import com.openshift.restclient.authorization.OAuthStrategy;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class IntegrationTestHelper {
 
 	private Properties prop;
