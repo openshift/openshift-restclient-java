@@ -8,6 +8,9 @@
  ******************************************************************************/
 package com.openshift.restclient.capability;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface ICapability {
 	
 	/**

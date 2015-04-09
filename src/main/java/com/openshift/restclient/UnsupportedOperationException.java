@@ -8,6 +8,11 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
+/**
+ * @author Jeff Cantrill
+ */
+// TODO: replace with a unique name (UnsupportedResourceOperationException?) 
+// since there's an identical exception in jdk (which is a runtime exception, too)
 public class UnsupportedOperationException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1L;

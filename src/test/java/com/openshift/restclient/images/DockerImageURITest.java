@@ -14,6 +14,9 @@ import org.junit.Test;
 
 import com.openshift.restclient.images.DockerImageURI;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class DockerImageURITest {
 	
 	private static final String NAME = "foo";

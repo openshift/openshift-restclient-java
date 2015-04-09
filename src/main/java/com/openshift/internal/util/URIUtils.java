@@ -15,6 +15,8 @@ import java.net.URISyntaxException;
 
 /**
  * Helper methods for manipulating URIs
+ * 
+ * @author Jeff Cantrill
  */
 public class URIUtils {
 	

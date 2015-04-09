@@ -8,11 +8,13 @@
  ******************************************************************************/
 package com.openshift.restclient.authorization;
 
-import com.openshift.client.IHttpClient;
+import com.openshift.restclient.http.IHttpClient;
 
 /**
  * Authorization strategy to support Kerberos authorization
  * to the OpenShift broker
+ * 
+ * @author Jeff Cantrill
  */
 public class KerbrosBrokerAuthorizationStrategy implements	IAuthorizationStrategy {
 

@@ -11,28 +11,31 @@ package com.openshift.restclient.model;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface IReplicationController  extends IResource{
 	
 	/**
-	 * The desired number of replicas
+	 * Returns the desired number of replicas
 	 * @return
 	 */
 	int getDesiredReplicaCount();
 	
 	/**
-	 * The current number of replicas
+	 * Returns the current number of replicas
 	 * @return
 	 */
 	int getCurrentReplicaCount();
 	
 	/**
-	 * The selector used by the controller
+	 * Returns the selector used by the controller
 	 * @return
 	 */
 	Map<String, String> getReplicaSelector();
 	
 	/**
-	 * Retrieve the list of images deployed in the
+	 * Retrieves the list of images deployed in the
 	 * pod containers from this controller
 	 * @return
 	 */

@@ -11,6 +11,8 @@ package com.openshift.restclient.images;
 /**
  * ImageUri is an immutable representation of a full image tag in accordance with
  * with Docker conventions [REGISTRYHOST/][USERNAME/]NAME[:TAG]
+ * 
+ * @author Jeff Cantrill
  */
 public class DockerImageURI {
 	
@@ -26,6 +28,7 @@ public class DockerImageURI {
 		this.name = name;
 		this.tag = LATEST;
 	}
+
 	public DockerImageURI(String tag){
 		String[] segments = tag.split("/");
 		switch (segments.length) {
@@ -43,7 +46,7 @@ public class DockerImageURI {
 			break;
 		}
 	}
-	
+
 	private void setNameAndTag(String nameAndTag){
 		String [] nameTag = nameAndTag.split(":");
 		if(nameTag.length == 2){

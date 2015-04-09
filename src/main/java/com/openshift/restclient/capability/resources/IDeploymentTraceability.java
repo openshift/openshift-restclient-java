@@ -14,6 +14,8 @@ import com.openshift.restclient.model.IReplicationController;
 /**
  * Trace the source of what caused a resource
  * to be deployed
+ * 
+ * @author Jeff Cantrill
  */
 public interface IDeploymentTraceability extends ICapability {
 

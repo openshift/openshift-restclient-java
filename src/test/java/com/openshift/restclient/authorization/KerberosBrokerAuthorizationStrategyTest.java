@@ -19,6 +19,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.openshift.restclient.authorization.IRequest;
 import com.openshift.restclient.authorization.KerbrosBrokerAuthorizationStrategy;
 
+/**
+ * @author Jeff Cantrill
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class KerberosBrokerAuthorizationStrategyTest {
 	

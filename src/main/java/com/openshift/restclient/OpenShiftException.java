@@ -12,6 +12,9 @@ import java.text.MessageFormat;
 
 import com.openshift.restclient.model.IStatus;
 
+/**
+ * @author Andre Dietisheim
+ */
 public class OpenShiftException extends RuntimeException {
 
 	private static final long serialVersionUID = -7076942050102006278L;

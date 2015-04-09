@@ -8,22 +8,25 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface IBuild extends IResource {
 
 	/**
-	 * The status of the buld
+	 * Returns the status of the buld
 	 * @return
 	 */
 	String getStatus();
 	
 	/**
-	 * Details about the status of this build
+	 * Returns the details about the status of this build
 	 * @return
 	 */
 	String getMessage();
 	
 	/**
-	 * The name of the pod running the build
+	 * Returns the name of the pod running the build
 	 * @return
 	 */
 	String getPodName();

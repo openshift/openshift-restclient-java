@@ -10,6 +10,9 @@ package com.openshift.restclient.model.build;
 
 import com.openshift.restclient.images.DockerImageURI;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface IDockerBuildStrategy extends IBuildStrategy {
 	
 	String getContextDir();

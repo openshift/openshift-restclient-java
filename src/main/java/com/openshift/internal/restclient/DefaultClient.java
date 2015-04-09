@@ -23,14 +23,13 @@ import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.client.IHttpClient;
-import com.openshift.restclient.ISSLCertificateCallback;
-import com.openshift.internal.client.httpclient.HttpClientException;
-import com.openshift.internal.client.httpclient.UrlConnectionHttpClientBuilder;
+import com.openshift.internal.restclient.http.HttpClientException;
+import com.openshift.internal.restclient.http.UrlConnectionHttpClientBuilder;
 import com.openshift.internal.restclient.model.Status;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
+import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedOperationException;
@@ -38,9 +37,13 @@ import com.openshift.restclient.UnsupportedVersionException;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
+import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class DefaultClient implements IClient{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
@@ -98,6 +101,7 @@ public class DefaultClient implements IClient{
 	@Override
 	public <T extends IResource> List<T> list(ResourceKind kind, String namespace, Map<String, String> labels) {
 		if(!getTypeMappings().containsKey(kind))
+			// TODO: replace with specific runtime exception
 			throw new RuntimeException("No OpenShift resource endpoint for type: " + kind);
 		try {
 			URLBuilder builder = new URLBuilder(this.baseUrl, getTypeMappings())

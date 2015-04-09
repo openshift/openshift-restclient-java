@@ -23,6 +23,9 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IReplicationController;
 
+/**
+ * @author Jeff Cantrill
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class DeploymentTraceabilityTest {
 

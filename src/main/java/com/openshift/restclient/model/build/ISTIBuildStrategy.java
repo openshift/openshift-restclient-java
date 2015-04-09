@@ -12,10 +12,13 @@ import java.util.Map;
 
 import com.openshift.restclient.images.DockerImageURI;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface ISTIBuildStrategy extends IBuildStrategy {
 	
 	/**
-	 * The Builder Image used to execute the build
+	 * Returns the Builder Image used to execute the build
 	 */
 	DockerImageURI getImage();
 	

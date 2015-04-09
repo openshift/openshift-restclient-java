@@ -14,6 +14,9 @@ import org.junit.Test;
 
 import com.openshift.internal.restclient.capability.resources.AssociationCapability;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class AssociationCapabilityTest {
 
 	@Test

@@ -10,6 +10,8 @@ package com.openshift.internal.restclient.model.properties;
 
 /**
  * Keys used to determine where a given property is for a given resource
+ * 
+ * @author Jeff Cantrill
  */
 public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String ANNOTATIONS = "annotations";

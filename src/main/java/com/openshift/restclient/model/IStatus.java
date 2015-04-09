@@ -11,11 +11,13 @@ package com.openshift.restclient.model;
 /**
  * Status message resulting from trying to manipulate an
  * OpenShift resource and an error occurs
+ * 
+ * @author Jeff Cantrill
  */
 public interface IStatus extends IResource {
 
 	/**
-	 * The status message
+	 * Returns the status message
 	 * @return
 	 */
 	String getMessage();

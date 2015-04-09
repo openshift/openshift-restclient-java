@@ -16,6 +16,9 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.route.IRoute;
 import com.openshift.restclient.model.route.ITLSConfig;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class Route extends KubernetesResource implements IRoute {
 	public Route(ModelNode node, IClient client,
 			Map<String, String[]> propertyKeys) {

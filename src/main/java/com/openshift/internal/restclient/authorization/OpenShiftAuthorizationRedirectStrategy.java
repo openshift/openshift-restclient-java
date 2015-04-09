@@ -22,6 +22,8 @@ import org.apache.http.protocol.HttpContext;
 /**
  * OpenShift authorization redirect strategy to disable
  * redirects once an access token is granted
+ * 
+ * @author Jeff Cantrill
  */
 public class OpenShiftAuthorizationRedirectStrategy extends DefaultRedirectStrategy {
 	

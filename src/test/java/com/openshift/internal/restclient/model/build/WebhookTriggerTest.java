@@ -17,6 +17,9 @@ import com.openshift.internal.restclient.model.build.WebhookTrigger;
 import com.openshift.restclient.model.build.BuildTriggerType;
 import com.openshift.restclient.model.build.IWebhookTrigger;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class WebhookTriggerTest {
 
 	private IWebhookTrigger trigger;

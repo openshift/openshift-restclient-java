@@ -51,6 +51,9 @@ import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.authorization.IAuthorizationClient;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class AuthorizationClient implements IAuthorizationClient {
 	private static final Logger LOG = LoggerFactory.getLogger(IAuthorizationClient.class);
 	

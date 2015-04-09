@@ -8,6 +8,10 @@
  ******************************************************************************/
 package com.openshift.restclient.model.build;
 
+/**
+ * @author Jeff Cantrill
+ */
+// TODO: evaluate switching this enum to a class since enums are not extendable
 public enum BuildSourceType {
 	Git
 }

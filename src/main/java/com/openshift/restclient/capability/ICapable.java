@@ -11,11 +11,13 @@ package com.openshift.restclient.capability;
 /**
  * ICapable allows a source to be queried and identify its
  * capabilities
+ * 
+ * @author Jeff Cantrill
  */
 public interface ICapable {
 
 	/**
-	 * Get the capability of the desired type
+	 * Gets the capability of the desired type
 	 * 
 	 * @param capability
 	 * @return an implementation of the given capability
@@ -23,7 +25,7 @@ public interface ICapable {
 	<T extends ICapability> T getCapability(Class<T> capability);
 	
 	/**
-	 * Determine if the client supports the desired capability
+	 * Determines if the client supports the desired capability
 	 *  
 	 * @param capability
 	 * @return true if the client is able to offer this capability
@@ -31,7 +33,7 @@ public interface ICapable {
 	boolean supports(Class<? extends ICapability> capability);
 	
 	/**
-	 * Use the given visitor to access the desired capability if it
+	 * Uses the given visitor to access the desired capability if it
 	 * is supported
 	 *
 	 * @param visitor  A visitor looking for a given Capability type

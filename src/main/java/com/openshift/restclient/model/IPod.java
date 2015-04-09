@@ -10,30 +10,33 @@ package com.openshift.restclient.model;
 
 import java.util.Collection;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface IPod extends IResource {
 
 	/**
-	 * Get the IP of the Pod
+	 * Gets the IP of the Pod
 	 * @return
 	 */
 	String getIP();
 	
 	/**
-	 * Get the name of the host on which
+	 * Gets the name of the host on which
 	 * the pod is running
 	 * @return
 	 */
 	String getHost();
 	
 	/**
-	 * Get the collection of image names
+	 * Gets the collection of image names
 	 * for the pod containers
 	 * @return
 	 */
 	Collection<String> getImages();
 	
 	/**
-	 * Get the status of the pod
+	 * Gets the status of the pod
 	 * @return
 	 */
 	String getStatus();

@@ -19,7 +19,9 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IService;
 
-
+/**
+ * @author Jeff Cantrill
+ */
 public class Service extends KubernetesResource implements IService {
 
 	public Service(ModelNode node, IClient client, Map<String, String []> propertyKeys) {

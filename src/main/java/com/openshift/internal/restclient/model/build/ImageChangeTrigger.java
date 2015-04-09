@@ -12,6 +12,9 @@ import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.build.BuildTriggerType;
 import com.openshift.restclient.model.build.IImageChangeTrigger;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class ImageChangeTrigger implements IImageChangeTrigger {
 
 	private String tag;

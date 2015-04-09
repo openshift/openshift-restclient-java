@@ -13,6 +13,7 @@ package com.openshift.restclient;
  * resources that are of interest
  *
  */
+// TODO: evaluate replacing this by constants/class since enums are not extendable
 public enum ResourceKind {
 	
 	Build("builds"),

@@ -14,6 +14,9 @@ import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.ICustomBuildStrategy;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class CustomBuildStrategy implements ICustomBuildStrategy {
 
 	private DockerImageURI image;

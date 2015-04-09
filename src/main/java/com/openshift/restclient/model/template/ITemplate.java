@@ -15,18 +15,20 @@ import com.openshift.restclient.model.IResource;
 
 /**
  * Representation of a set of pre-configured parameterized set of resources
+ * 
+ * @author Jeff Cantrill
  */
 public interface ITemplate extends IResource {
 	
 	/**
-	 * Retrieve the list of resources this template
+	 * Retrieves the list of resources this template
 	 * creates
 	 * @return
 	 */
 	Collection<IResource> getItems();
 	
 	/**
-	 * A map of parameter names to parameters.
+	 * Returns a map of parameter names to parameters.
 	 * @return
 	 */
 	Map<String, IParameter> getParameters();

@@ -15,6 +15,9 @@ import org.junit.Test;
 
 import com.openshift.internal.util.JBossDmrExtentions;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class JBossDmrExtentionsTest {
 
 	@Test

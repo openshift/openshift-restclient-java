@@ -16,6 +16,9 @@ import org.junit.Test;
 
 import com.openshift.restclient.authorization.URLConnectionRequest;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class URLConnectionAuthorizationRequestTest {
 
 	@Test

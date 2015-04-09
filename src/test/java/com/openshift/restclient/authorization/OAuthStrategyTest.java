@@ -22,6 +22,9 @@ import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.authorization.IRequest;
 import com.openshift.restclient.authorization.OAuthStrategy;
 
+/**
+ * @author Jeff Cantrill
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class OAuthStrategyTest {
 	@Mock

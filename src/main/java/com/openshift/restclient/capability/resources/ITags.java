@@ -15,6 +15,8 @@ import com.openshift.restclient.capability.ICapability;
 /**
  * Determine if resource is tagged with categories
  * of technologies it includes
+ * 
+ * @author Jeff Cantrill
  */
 public interface ITags extends ICapability {
 	

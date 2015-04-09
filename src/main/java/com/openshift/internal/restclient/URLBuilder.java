@@ -20,14 +20,16 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.client.IHttpClient;
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.model.IResource;
 
 /**
  * Helper class to build the URL connection string in the proper
  * format
+ * 
+ * @author Jeff Cantrill
  */
 public class URLBuilder {
 	

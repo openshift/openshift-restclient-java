@@ -13,31 +13,33 @@ import java.util.Map;
 
 /**
  * Kubernetes Service to access a Pod
+ * 
+ * @author Jeff Cantrill
  */
 public interface IService  extends IResource{
 
 	/**
-	 * The container port exposed by the image  
+	 * Sets the container port exposed by the image  
 	 * @param port
 	 */
 	void setContainerPort(int port);
 
 	/**
-	 * The exposed port that is mapped to a
+	 * Sets the exposed port that is mapped to a
 	 * running image
 	 * @param port
 	 */
 	void setPort(int port);
 
 	/**
-	 * The exposed port that is mapped to
+	 * Returns the exposed port that is mapped to
 	 * a running image
 	 * @return
 	 */
-	int  getPort();
+	int getPort();
 
 	/**
-	 * The container name that the service
+	 * Sets the container name that the service
 	 * routes traffic to. 
 	 * @param selector
 	 */
@@ -52,27 +54,27 @@ public interface IService  extends IResource{
 	void setSelector(String key, String value);
 	
 	/**
-	 * The selector used to find the Pod
+	 * Returns the selector used to find the Pod
 	 * to which this service is routing
 	 * @return
 	 */
 	Map<String, String> getSelector();
 
 	/**
-	 * A port where the container is
+	 * Returns a port where the container is
 	 * receiving traffic
 	 * @return
 	 */
 	int getContainerPort();
 
 	/**
-	 * The IP of the service.
+	 * Returns the IP of the service.
 	 * @return
 	 */
 	String getPortalIP();
 	
 	/**
-	 * Retrieve the pods for this service
+	 * Retrieves the pods for this service
 	 * @return
 	 */
 	List<IPod> getPods();

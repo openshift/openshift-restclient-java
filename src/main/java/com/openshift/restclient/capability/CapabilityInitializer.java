@@ -28,11 +28,13 @@ import com.openshift.restclient.model.IResource;
 /**
  * Convenience class to initialize capabilies.  Only adds entry
  * to underlying map if the capability is supported 
+ * 
+ * @author Jeff Cantrill
  */
 public class CapabilityInitializer {
 
 	/**
-	 * Register the capability if it is supported
+	 * Registers the capability if it is supported
 	 * @param capabilities
 	 * @param capability
 	 * @param impl

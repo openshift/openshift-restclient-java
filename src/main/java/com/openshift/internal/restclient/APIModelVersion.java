@@ -10,6 +10,9 @@ package com.openshift.internal.restclient;
 
 import java.util.Comparator;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface APIModelVersion {
 
 	int getOrder();

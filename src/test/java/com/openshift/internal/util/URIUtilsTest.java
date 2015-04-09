@@ -20,6 +20,9 @@ import org.junit.Test;
 
 import com.openshift.internal.util.URIUtils;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class URIUtilsTest {
 	
 	private String location = "https://10.0.2.15:8443/oauth/token/display#access_token=MmJiMTQzMGMtZjA0Mi00ODJmLTkzMDUtYzEyMTE5ODU1OGJh&expires_in=3600&token_type=bearer";

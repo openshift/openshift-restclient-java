@@ -20,6 +20,9 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class ServerTemplateProcessingTest {
 
 	@Test

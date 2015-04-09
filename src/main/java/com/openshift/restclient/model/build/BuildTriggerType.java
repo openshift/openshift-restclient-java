@@ -8,6 +8,10 @@
  ******************************************************************************/
 package com.openshift.restclient.model.build;
 
+/**
+ * @author Jeff Cantrill
+ */
+// TODO: evaluate switching to class/constants since enums are not extendable
 public enum BuildTriggerType {
 	generic,
 	github,

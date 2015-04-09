@@ -25,6 +25,9 @@ import com.openshift.restclient.model.build.IBuildStrategy;
 import com.openshift.restclient.model.build.ICustomBuildStrategy;
 import com.openshift.restclient.model.build.IDockerBuildStrategy;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class BuildConfigTest implements BuildConfigPropertyKeys {
 	@Mock private IClient client;
 	private BuildConfig config;

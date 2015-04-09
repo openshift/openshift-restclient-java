@@ -12,6 +12,9 @@ import java.util.Map;
 
 import com.openshift.restclient.images.DockerImageURI;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface ICustomBuildStrategy extends IBuildStrategy {
 	
 	Map<String, String> getEnvironmentVariables();

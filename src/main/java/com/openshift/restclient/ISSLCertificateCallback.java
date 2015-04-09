@@ -13,11 +13,9 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLSession;
 
 /**
- * TODO - depricate extension once we refactor the use of IHttpClient
- * @author jeff.cantrill
- *
+ * @author Andre Dietisheim
  */
-public interface ISSLCertificateCallback extends com.openshift.client.IHttpClient.ISSLCertificateCallback{
+public interface ISSLCertificateCallback {
 	
 	boolean allowCertificate(X509Certificate[] chain);
 

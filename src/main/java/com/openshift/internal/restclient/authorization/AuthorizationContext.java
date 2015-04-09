@@ -10,6 +10,9 @@ package com.openshift.internal.restclient.authorization;
 
 import com.openshift.restclient.authorization.IAuthorizationContext;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class AuthorizationContext implements IAuthorizationContext {
 	
 	private String token;

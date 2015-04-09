@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2014-2015 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/
 package com.openshift.internal.restclient;
 
 import static org.junit.Assert.*;
@@ -13,15 +23,18 @@ import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.openshift.client.IHttpClient;
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
+import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.model.IPod;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class DefaultClientTest {
 
 	private DefaultClient client;

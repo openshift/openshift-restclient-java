@@ -15,16 +15,18 @@ import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.openshift.client.utils.Samples;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.template.ITemplate;
+import com.openshift.restclient.utils.Samples;
 
 /**
  * Test to validate the lookup paths are correct for the version
+ * 
+ * @author Jeff Cantrill
  */
 public class V1Beta1TemplateTest{
 

@@ -7,10 +7,12 @@ import java.util.Map;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IDeploymentConfig;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class DeploymentConfig extends KubernetesResource implements IDeploymentConfig{
 	
 	public DeploymentConfig(ModelNode node, IClient client, Map<String, String []> propertyKeys) {

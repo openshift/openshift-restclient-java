@@ -10,7 +10,9 @@ package com.openshift.restclient.model;
 
 import com.openshift.restclient.images.DockerImageURI;
 
-
+/**
+ * @author Jeff Cantrill
+ */
 public interface IImageRepository extends IResource{
 
 	/**

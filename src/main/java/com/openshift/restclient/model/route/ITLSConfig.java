@@ -10,6 +10,8 @@ package com.openshift.restclient.model.route;
 
 /**
  * TLS configuration for routes.
+ * 
+ * @author Jeff Cantrill
  */
 public interface ITLSConfig {
 	public enum TLSTerminationType {
@@ -17,7 +19,7 @@ public interface ITLSConfig {
 	}
 
 	/**
-	 * Termination indicates termination type. If termination type is not set,
+	 * Returns the termination type. Termination indicates termination type. If termination type is not set,
 	 * any termination config will be ignored.
 	 * 
 	 * @return Termination type.
@@ -25,6 +27,7 @@ public interface ITLSConfig {
 	TLSTerminationType getTerminationType();
 
 	/**
+	 * Sets the termination type to this config.
 	 * Termination indicates termination type. If termination type is not set,
 	 * any termination config will be ignored.
 	 * 

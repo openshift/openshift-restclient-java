@@ -15,6 +15,9 @@ import org.jboss.dmr.ModelNode;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IBuild;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class Build extends KubernetesResource implements IBuild{
 
 	public Build(ModelNode node, IClient client, Map<String, String []> propertyKeys) {

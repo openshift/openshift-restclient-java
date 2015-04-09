@@ -15,13 +15,16 @@ import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.openshift.client.utils.Samples;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IPod;
+import com.openshift.restclient.utils.Samples;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class V1Beta1PodTest {
 
 	private static IPod pod;
