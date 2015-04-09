@@ -22,6 +22,9 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.utils.Samples;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class V1Beta1PodTest {
 
 	private static IPod pod;

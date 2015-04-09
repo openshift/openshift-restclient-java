@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client.httpclient.request;
+package com.openshift.internal.restclient.http;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -19,8 +19,7 @@ import java.text.MessageFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.internal.client.httpclient.EncodingException;
-import com.openshift.internal.client.utils.UrlUtils;
+import com.openshift.internal.util.URLUtils;
 import com.openshift.restclient.http.IHttpClient;
 
 /**
@@ -37,11 +36,11 @@ import com.openshift.restclient.http.IHttpClient;
  * @author Andre Dietisheim
  * 
  * @see IHttpClient#post(java.net.URL, IMediaType, int,
- *      com.openshift.internal.restclient.client.httpclient.request.Parameter...)
+ *      com.openshift.internal.restclient.http.client.httpclient.request.Parameter...)
  * @see IHttpClient#put(java.net.URL, IMediaType, int,
- *      com.openshift.internal.restclient.client.httpclient.request.Parameter...)
+ *      com.openshift.internal.restclient.http.client.httpclient.request.Parameter...)
  * @see IHttpClient#delete(java.net.URL, IMediaType, int,
- *      com.openshift.internal.restclient.client.httpclient.request.Parameter...)
+ *      com.openshift.internal.restclient.http.client.httpclient.request.Parameter...)
  */
 public class FormUrlEncodedMediaType implements IMediaType {
 
@@ -112,7 +111,7 @@ public class FormUrlEncodedMediaType implements IMediaType {
 	}
 
 	private String encode(String value) throws UnsupportedEncodingException {
-		if (UrlUtils.isUrl(value)) {
+		if (URLUtils.isUrl(value)) {
 			// dont encode url payload
 			return value;
 		}

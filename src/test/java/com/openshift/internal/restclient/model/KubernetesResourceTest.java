@@ -24,6 +24,9 @@ import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
 import com.openshift.restclient.capability.resources.ITemplateTraceability;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class KubernetesResourceTest {
 
 	private ModelNode node;

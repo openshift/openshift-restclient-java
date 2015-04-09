@@ -14,16 +14,22 @@ import java.net.URL;
 import com.openshift.internal.restclient.DefaultClient;
 
 /**
- * Factory class for creating clients to an OpenShift server 
+ * Factory class for creating clients to an OpenShift server
+ * 
+ * @author Jeff Cantrill
  */
 public final class ClientFactory {
 	
 	/**
+	 * Creates a client for the given base url and ssl certificate callback.
 	 * 
-	 * @param baseUrl                  The OpenShift server URL
-	 * @param sslCertCallback     The callback handler for SSL Cert challanges
+	 * @param baseUrl
+	 *            The OpenShift server URL
+	 * @param sslCertCallback
+	 *            The callback handler for SSL Cert challanges
 	 * @return an implementation of IClient
-	 * @throws OpenShiftException if the baseURL is malformed
+	 * @throws OpenShiftException
+	 *             if the baseURL is malformed
 	 */
 	public final IClient create(String baseUrl, ISSLCertificateCallback sslCertCallback){
 		URL url;

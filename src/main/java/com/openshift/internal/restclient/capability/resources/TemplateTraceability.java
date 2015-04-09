@@ -14,6 +14,8 @@ import com.openshift.restclient.model.IResource;
 /**
  * Capability of resource tracing the template from which
  * it was generated
+ * 
+ * @author Jeff Cantrill
  */
 public class TemplateTraceability implements	ITemplateTraceability {
 

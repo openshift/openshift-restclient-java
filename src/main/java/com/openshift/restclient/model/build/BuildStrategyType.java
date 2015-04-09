@@ -12,6 +12,8 @@ package com.openshift.restclient.model.build;
  * The build strategies supported
  * by OpenShift
  */
+
+// TODO: evalute switching to a class/constants since enums are not extendable
 public enum BuildStrategyType {
 	Docker,
 	STI,

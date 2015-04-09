@@ -12,6 +12,9 @@ import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.IDockerBuildStrategy;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class DockerBuildStrategy implements IDockerBuildStrategy {
 
 	private boolean noCache;

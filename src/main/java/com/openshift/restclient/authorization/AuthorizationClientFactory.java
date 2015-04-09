@@ -10,6 +10,9 @@ package com.openshift.restclient.authorization;
 
 import com.openshift.internal.restclient.authorization.AuthorizationClient;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class AuthorizationClientFactory {
 	
 	public IAuthorizationClient create(){

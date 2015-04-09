@@ -19,6 +19,9 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class Project extends KubernetesResource implements IProject{
 
 	public Project(ModelNode node, IClient client, Map<String, String []> propertyKeys) {

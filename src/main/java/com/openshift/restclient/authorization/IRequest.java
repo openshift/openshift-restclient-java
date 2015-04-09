@@ -11,6 +11,8 @@ package com.openshift.restclient.authorization;
 /**
  * A type to decouple an IAuthorizationStrategy from
  * the underlying connection stream 
+ * 
+ * @author Jeff Cantrill
  */
 public interface IRequest {
 

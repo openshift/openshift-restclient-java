@@ -20,6 +20,9 @@ import com.openshift.restclient.model.IConfig;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class ServerTemplateProcessing implements ITemplateProcessing {
 
 	private IClient client;

@@ -43,16 +43,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.internal.client.httpclient.BadRequestException;
-import com.openshift.internal.client.httpclient.EncodingException;
-import com.openshift.internal.client.httpclient.HttpClientException;
-import com.openshift.internal.client.httpclient.HttpMethod;
-import com.openshift.internal.client.httpclient.InternalServerErrorException;
-import com.openshift.internal.client.httpclient.NotFoundException;
-import com.openshift.internal.client.httpclient.UnauthorizedException;
-import com.openshift.internal.client.httpclient.request.IMediaType;
-import com.openshift.internal.client.httpclient.request.Parameter;
-import com.openshift.internal.client.httpclient.request.ParameterValueMap;
 import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
 import com.openshift.restclient.authorization.URLConnectionRequest;

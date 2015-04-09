@@ -8,14 +8,14 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.internal.client.httpclient;
+package com.openshift.internal.restclient.http;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.X509TrustManager;
 
-import com.openshift.internal.client.utils.Assert;
+import com.openshift.internal.util.Assert;
 
 /**
  * A trust manager that calls a callback if the wrapped trustmanager fails to

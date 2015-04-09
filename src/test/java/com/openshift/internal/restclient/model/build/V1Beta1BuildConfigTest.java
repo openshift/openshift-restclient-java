@@ -34,6 +34,9 @@ import com.openshift.restclient.model.build.IGitBuildSource;
 import com.openshift.restclient.model.build.ISTIBuildStrategy;
 import com.openshift.restclient.utils.Samples;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class V1Beta1BuildConfigTest {
 	
 	private static IBuildConfig config;

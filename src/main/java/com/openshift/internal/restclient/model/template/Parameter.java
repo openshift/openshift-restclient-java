@@ -16,6 +16,8 @@ import com.openshift.restclient.model.template.IParameter;
  * Parameter implementation for a template
  * Foregoing versioned implementation of this type for now since it is unlikely to change
  *  and it is not a versioned resource in Kubernetes.  Update as needed
+ *  
+ *  @author Jeff Cantrill
  */
 public class Parameter implements IParameter{
 	

@@ -14,11 +14,13 @@ import com.openshift.restclient.model.template.ITemplate;
 
 /**
  * Add capability to process a template
+ * 
+ * @author Jeff Cantrill
  */
 public interface ITemplateProcessing extends ICapability {
 	
 	/**
-	 * Process the template to substitute the parameters
+	 * Processes the template to substitute the parameters
 	 * where necessary
 	 * 
 	 * @param template        The template to process

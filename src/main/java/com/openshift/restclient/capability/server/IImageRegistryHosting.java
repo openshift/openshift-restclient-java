@@ -13,11 +13,13 @@ import com.openshift.restclient.capability.ICapability;
 /**
  * Identifies an OpenShift server as capable of
  * hosting images via its own registry
+ * 
+ * @author Jeff Cantrill
  */
 public interface IImageRegistryHosting extends ICapability{
 	
 	/**
-	 * Get the Image Registry URI
+	 * Gets the Image Registry URI
 	 * @return the registry URI (e.g. 172.121.17.212:5001)
 	 */
 	String getRegistryUri();

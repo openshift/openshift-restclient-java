@@ -10,6 +10,9 @@ package com.openshift.restclient.authorization;
 
 import java.net.URLConnection;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class URLConnectionRequest implements IRequest {
 
 	private final URLConnection connection;

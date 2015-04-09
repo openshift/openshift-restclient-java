@@ -20,6 +20,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.openshift.internal.restclient.capability.resources.TagCapability;
 import com.openshift.restclient.model.IResource;
 
+/**
+ * @author Jeff Cantrill
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class TagCapabilityTest {
 

@@ -11,12 +11,14 @@ package com.openshift.restclient.authorization;
 /**
  * Authorization interface to provide various authorization mechanisms
  * to an OpenShift server 
+ * 
+ * @author Jeff Cantrill
  *
  */
 public interface IAuthorizationStrategy {
 
 	/**
-	 * Authorize the given request
+	 * Authorizes the given request
 	 * @param request
 	 */
 	void authorize(IRequest request);

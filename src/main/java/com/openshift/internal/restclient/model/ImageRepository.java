@@ -16,6 +16,9 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IImageRepository;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class ImageRepository extends KubernetesResource implements IImageRepository {
 
 	public ImageRepository(){

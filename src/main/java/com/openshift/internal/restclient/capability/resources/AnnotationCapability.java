@@ -14,6 +14,8 @@ import com.openshift.restclient.model.IResource;
 /**
  * Determine if a resource has a capability if it 
  * has the given annotation
+ * 
+ * @author Jeff Cantrill
  */
 public abstract class AnnotationCapability implements ICapability {
 

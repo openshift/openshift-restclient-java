@@ -28,6 +28,8 @@ import com.openshift.restclient.model.IResource;
 /**
  * Helper class to build the URL connection string in the proper
  * format
+ * 
+ * @author Jeff Cantrill
  */
 public class URLBuilder {
 	
@@ -39,7 +41,7 @@ public class URLBuilder {
 	private Map<String, String> params = new HashMap<String, String>();
 	private final Map<ResourceKind, String> typeMappings;
 
-	public URLBuilder(URL baseUrl, Map<ResourceKind, String> typeMappings, IResource resource) {
+	URLBuilder(URL baseUrl, Map<ResourceKind, String> typeMappings, IResource resource) {
 		this(baseUrl, typeMappings);
 		resource(resource);
 	}

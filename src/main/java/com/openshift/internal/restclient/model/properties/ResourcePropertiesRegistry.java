@@ -18,6 +18,8 @@ import com.openshift.restclient.ResourceKind;
 
 /**
  * Registry of keys to property paths by version for each API resource type 
+ * 
+ * @author Jeff Cantrill
  */
 @SuppressWarnings("serial")
 public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {

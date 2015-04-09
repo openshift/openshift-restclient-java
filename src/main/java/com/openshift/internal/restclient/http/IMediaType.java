@@ -8,11 +8,10 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client.httpclient.request;
+package com.openshift.internal.restclient.http;
 
 import java.io.OutputStream;
 
-import com.openshift.internal.client.httpclient.EncodingException;
 import com.openshift.restclient.http.IHttpClient;
 
 /**

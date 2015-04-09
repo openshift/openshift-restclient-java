@@ -11,6 +11,9 @@ package com.openshift.internal.restclient.model.build;
 import com.openshift.restclient.model.build.BuildSourceType;
 import com.openshift.restclient.model.build.IGitBuildSource;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class GitBuildSource implements IGitBuildSource {
 
 	private String ref;

@@ -13,6 +13,8 @@ import com.openshift.restclient.utils.Base64Coder;
 
 /**
  * Authorization strategy for basic authorization
+ * 
+ * @author Jeff Cantrill
  */
 public class BasicAuthorizationStrategy implements IAuthorizationStrategy {
 

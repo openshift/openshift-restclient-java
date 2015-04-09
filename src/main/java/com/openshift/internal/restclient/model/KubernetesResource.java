@@ -28,7 +28,8 @@ import com.openshift.restclient.model.IResource;
 
 /**
  * Resource is an abstract representation of a Kubernetes resource
- *
+ * 
+ * @author Jeff Cantrill
  */
 public class KubernetesResource implements IResource, ResourcePropertyKeys{
 	

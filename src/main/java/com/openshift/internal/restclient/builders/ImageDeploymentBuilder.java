@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * All rights reserved. This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Red Hat, Inc.
+ ******************************************************************************/
 package com.openshift.internal.restclient.builders;
 
 import java.util.ArrayList;
@@ -11,6 +19,8 @@ import com.openshift.restclient.images.DockerImageURI;
  * ImageDeploymentBuilder supports building OpenShift resources that
  * can be deployed from an Image and do not require source code to be
  * built into the image 
+ * 
+ * @author Jeff Cantrill
  */
 public class ImageDeploymentBuilder {
 

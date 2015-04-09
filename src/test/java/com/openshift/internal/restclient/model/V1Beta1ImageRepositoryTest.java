@@ -23,6 +23,9 @@ import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IImageRepository;
 import com.openshift.restclient.utils.Samples;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class V1Beta1ImageRepositoryTest {
 	private static IImageRepository repo;
 	

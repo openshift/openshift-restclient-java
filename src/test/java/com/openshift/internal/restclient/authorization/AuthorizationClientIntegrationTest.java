@@ -15,6 +15,9 @@ import org.junit.Test;
 import com.openshift.internal.restclient.authorization.AuthorizationClient;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class AuthorizationClientIntegrationTest {
 
 	private static final String BASE_URL = "https://localhost:8443";

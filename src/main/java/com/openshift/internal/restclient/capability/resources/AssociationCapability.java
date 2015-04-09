@@ -15,6 +15,8 @@ import com.openshift.restclient.model.IResource;
 /**
  * Retrieve the associated resource from the given
  * resource's annotation
+ * 
+ * @author Jeff Cantrill
  */
 public abstract class AssociationCapability extends AnnotationCapability{
 

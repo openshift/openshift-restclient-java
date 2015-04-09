@@ -23,7 +23,7 @@ import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.internal.client.httpclient.HttpClientException;
+import com.openshift.internal.restclient.http.HttpClientException;
 import com.openshift.internal.restclient.http.UrlConnectionHttpClientBuilder;
 import com.openshift.internal.restclient.model.Status;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
@@ -41,6 +41,9 @@ import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class DefaultClient implements IClient{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);

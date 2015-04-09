@@ -12,8 +12,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.openshift.internal.client.httpclient.HttpMethod;
-
 /**
  * @author Andre Dietisheim
  */

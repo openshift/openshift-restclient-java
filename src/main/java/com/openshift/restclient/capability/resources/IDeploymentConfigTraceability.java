@@ -11,6 +11,9 @@ package com.openshift.restclient.capability.resources;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.IDeploymentConfig;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface IDeploymentConfigTraceability extends ICapability {
 	
 	/**

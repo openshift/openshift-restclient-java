@@ -18,6 +18,8 @@ import com.openshift.restclient.model.IResource;
  * Determine which deployment caused a resource to
  * be deployed based on the information found in its
  * annotations
+ * 
+ * @author Jeff Cantrill
  */
 public class DeploymentTraceability extends AssociationCapability implements IDeploymentTraceability {
 	

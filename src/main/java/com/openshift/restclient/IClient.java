@@ -21,12 +21,14 @@ import com.openshift.restclient.model.IResource;
 /**
  * Client is the the simplest interface for interacting with the OpenShift
  * master server.
+ * 
+ * @author Jeff Cantrill
  *
  */
 public interface IClient extends ICapable{
 	
 	/**
-	 * List all possible resources of the given kind in the default namespace
+	 * Lists all possible resources of the given kind in the default namespace
 	 * @param kind
 	 * @return
 	 */
@@ -34,7 +36,7 @@ public interface IClient extends ICapable{
 
 	
 	/**
-	 * list the given given resource kind scoping it to a specific namespace
+	 * Lists the given given resource kind scoping it to a specific namespace
 	 * 
 	 * @param kind
 	 * @param namespace    The namespace to scope the possible results of this list
@@ -43,7 +45,7 @@ public interface IClient extends ICapable{
 	<T extends IResource> List<T> list(ResourceKind kind, String namespace);
 	
 	/**
-	 * list the given given resource kind scoping it to a specific namespace
+	 * Lists the given given resource kind scoping it to a specific namespace
 	 * 
 	 * @param kind
 	 * @param namespace    The namespace to scope the possible results of this list
@@ -62,7 +64,7 @@ public interface IClient extends ICapable{
 	<T extends IResource> T get(ResourceKind kind, String name, String namespace);
 	
 	/**
-	 * Create the given resource in the namespace defined on the 
+	 * Creates the given resource in the namespace defined on the 
 	 * resource or the default namspace if undefined
 	 * @param resource
 	 * @return
@@ -71,7 +73,7 @@ public interface IClient extends ICapable{
 	<T extends IResource> T create(T resource);
 
 	/**
-	 * Create the given resource in the given namespace
+	 * Creates the given resource in the given namespace
 	 * @param resource
 	 * @param namespace
 	 * @return
@@ -79,7 +81,7 @@ public interface IClient extends ICapable{
 	<T extends IResource> T create(T resource, String namespace);
 	
 	/**
-	 * Create a list of resources in the given namespace
+	 * Creates a list of resources in the given namespace
 	 * @param list  The resource definitions
 	 * @param namespace the namespace for the resources
 	 * @return  A collection of the resources created or the status
@@ -90,7 +92,7 @@ public interface IClient extends ICapable{
 	Collection<IResource> create(IList list, String namespace);
 	
 	/**
-	 * 
+	 * Updates the given resource
 	 * @param resource
 	 * @return
 	 * @throws UnsupportedOperationException if the resource is a list
@@ -98,6 +100,7 @@ public interface IClient extends ICapable{
 	<T extends IResource> T update(T resource);
 	
 	/**
+	 * Deletes the given resource.
 	 * @param resource
 	 * @throws UnsupportedOperationException if the resource is a list
 	 */
@@ -110,7 +113,7 @@ public interface IClient extends ICapable{
 	URL getBaseURL();
 	
 	/**
-	 * The OpenShift API version for this client
+	 * Returns the OpenShift API version for this client
 	 * @return
 	 * @throws UnsupportedVersionException
 	 * @throws {@link UnauthorizedException}
@@ -118,14 +121,14 @@ public interface IClient extends ICapable{
 	String getOpenShiftAPIVersion() throws UnsupportedVersionException;
 	
 	/**
-	 * Set the authorization strategy for the client when
+	 * Sets the authorization strategy for the client when
 	 * making requests to the server
 	 * @param strategy
 	 */
 	void setAuthorizationStrategy(IAuthorizationStrategy strategy);
 
 	/**
-	 * The resource factory used to create resources based on the
+	 * Returns the resource factory used to create resources based on the
 	 * response from the server
 	 * @return
 	 */

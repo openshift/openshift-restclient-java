@@ -15,6 +15,8 @@ import com.openshift.restclient.model.IResource;
 /**
  * Factory class for creating resources from a 
  * response string
+ * 
+ * @author Jeff Cantrill
  */
 public interface IResourceFactory {
 	

@@ -8,7 +8,7 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.internal.client.httpclient;
+package com.openshift.internal.restclient.http;
 
 
 /**

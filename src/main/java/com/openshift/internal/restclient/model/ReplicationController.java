@@ -18,6 +18,9 @@ import org.jboss.dmr.ModelType;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IReplicationController;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class ReplicationController extends KubernetesResource implements IReplicationController{
 
 	public ReplicationController(ModelNode node, IClient client, Map<String, String []> propertyKeys) {

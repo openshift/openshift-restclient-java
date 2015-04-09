@@ -8,6 +8,9 @@
  ******************************************************************************/
 package com.openshift.restclient.model.build;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface IBuildTrigger {
 	
 	BuildTriggerType getType();

@@ -10,19 +10,22 @@ package com.openshift.restclient.model.build;
 
 import com.openshift.restclient.images.DockerImageURI;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface IImageChangeTrigger extends IBuildTrigger {
 	
 	
 	DockerImageURI getImage();
 	
 	/**
-	 * The name of the docker image repo to watch
+	 * Returns the name of the docker image repo to watch
 	 * @return
 	 */
 	DockerImageURI getFrom();
 	
 	/**
-	 * The tag to watch in the image repository
+	 * Returns the tag to watch in the image repository
 	 * @return
 	 */
 	String getTag();

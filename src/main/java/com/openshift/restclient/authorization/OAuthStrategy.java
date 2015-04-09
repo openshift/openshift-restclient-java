@@ -8,6 +8,9 @@
  ******************************************************************************/
 package com.openshift.restclient.authorization;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class OAuthStrategy implements IAuthorizationStrategy {
 
 	private IAuthorizationClient authclient;

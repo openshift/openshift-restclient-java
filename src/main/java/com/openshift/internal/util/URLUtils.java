@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client.utils;
+package com.openshift.internal.util;
 
 import java.net.URL;
 import java.util.regex.Pattern;
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 /**
  * @author Andre Dietisheim
  */
-public class UrlUtils {
+public class URLUtils {
 
 	private static final Pattern URL_PATTERN = Pattern
 			.compile("(https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
@@ -29,7 +29,7 @@ public class UrlUtils {
 	public static final String SCHEME_HTTPS = HTTPS + SCHEMA_SEPARATOR;
 	public static final char USERNAME_SEPARATOR = '@';
 
-	private UrlUtils() {
+	private URLUtils() {
 		// inhibit instantiation
 	}
 

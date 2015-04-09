@@ -25,6 +25,8 @@ import com.openshift.restclient.utils.Samples;
 
 /**
  * Test to validate the lookup paths are correct for the version
+ * 
+ * @author Jeff Cantrill
  */
 public class V1Beta1TemplateTest{
 

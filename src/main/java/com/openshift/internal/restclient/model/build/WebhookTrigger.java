@@ -12,6 +12,9 @@ import org.apache.commons.lang.StringUtils;
 import com.openshift.restclient.model.build.BuildTriggerType;
 import com.openshift.restclient.model.build.IWebhookTrigger;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class WebhookTrigger implements IWebhookTrigger {
 
 	private BuildTriggerType type;

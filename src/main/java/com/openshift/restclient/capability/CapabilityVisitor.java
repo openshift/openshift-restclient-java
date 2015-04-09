@@ -14,19 +14,21 @@ import java.lang.reflect.ParameterizedType;
 /**
  * A visitor used to access a resources capability
  * @param <T> The capability type
+ * 
+ * @author Jeff Cantrill
  */
 public abstract class CapabilityVisitor<T extends ICapability> {
 	
 	private Type type;
 	
 	/**
-	 * Visit the capability
+	 * Visits the capability
 	 * @param capability
 	 */
 	public abstract void visit(T capability);
 	
 	/**
-	 * Get the Capability type
+	 * Gets the Capability type
 	 * @return
 	 */
 	public final Type getCapabilityType(){

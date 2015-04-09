@@ -29,6 +29,9 @@ import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.IService;
 import com.openshift.restclient.model.template.ITemplate;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class DefaultClientIntegrationTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultClientIntegrationTest.class);

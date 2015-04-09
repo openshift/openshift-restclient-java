@@ -15,6 +15,9 @@ import com.openshift.restclient.capability.server.IImageRegistryHosting;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.IService;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class DefaultImageRegistryHosting implements IImageRegistryHosting {
 
 	private IClient client;

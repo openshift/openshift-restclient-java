@@ -15,6 +15,9 @@ import org.jboss.dmr.ModelNode;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IStatus;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class Status extends KubernetesResource implements IStatus{
 
 	public Status(ModelNode node, IClient client, Map<String, String []> propertyKeys) {

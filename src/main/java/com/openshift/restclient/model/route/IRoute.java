@@ -12,6 +12,8 @@ import com.openshift.restclient.model.IResource;
 
 /**
  * OpenShift route to Service
+ * 
+ * @author Jeff Cantrill
  */
 public interface IRoute extends IResource {
 

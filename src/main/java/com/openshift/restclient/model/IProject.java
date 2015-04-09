@@ -12,10 +12,13 @@ import java.util.List;
 
 import com.openshift.restclient.ResourceKind;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface IProject extends IResource {
 
 	/**
-	 * Retrieve resource of the given kind that are scoped to
+	 * Retrieves resource of the given kind that are scoped to
 	 * this project
 	 * @param kind
 	 * @return List<IResources>

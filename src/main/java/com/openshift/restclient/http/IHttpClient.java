@@ -13,8 +13,8 @@ package com.openshift.restclient.http;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-import com.openshift.internal.client.httpclient.EncodingException;
-import com.openshift.internal.client.httpclient.HttpClientException;
+import com.openshift.internal.restclient.http.EncodingException;
+import com.openshift.internal.restclient.http.HttpClientException;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
 import com.openshift.restclient.model.IResource;
 

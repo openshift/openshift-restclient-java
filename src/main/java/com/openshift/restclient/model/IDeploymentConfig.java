@@ -10,17 +10,20 @@ package com.openshift.restclient.model;
 
 import java.util.Map;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface IDeploymentConfig extends IResource {
 
 	/**
-	 * Return the number of replicas to be created by the replication
+	 * Returns the number of replicas to be created by the replication
 	 * controller generated from this deployment config
 	 * @return
 	 */
 	int getReplicas();
 	
 	/**
-	 * Return the replica selector to be used by the replication
+	 * Returns the replica selector to be used by the replication
 	 * controller generated from this deployment config
 	 * 
 	 * @return java.util.Map<String, String>

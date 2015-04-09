@@ -8,12 +8,11 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
-
-
-
 /**
  * This list of supported OpenShift API Models
  * by this client
+ * 
+ * @author Jeff Cantrill
  */
 public enum OpenShiftAPIVersion implements APIModelVersion{
 	v1beta1(1);

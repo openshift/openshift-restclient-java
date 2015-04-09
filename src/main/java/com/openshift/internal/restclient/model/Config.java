@@ -15,12 +15,14 @@ import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 
-import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.model.IConfig;
 import com.openshift.restclient.model.IResource;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class Config extends KubernetesResource implements IConfig{
 
 	public Config(ModelNode node, IClient client, Map<String, String []> propertyKeys) {

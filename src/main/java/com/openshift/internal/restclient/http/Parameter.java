@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.internal.client.httpclient.request;
+package com.openshift.internal.restclient.http;
 
 /**
  * A parameter wrapper to pass param key/values to the service when executing a

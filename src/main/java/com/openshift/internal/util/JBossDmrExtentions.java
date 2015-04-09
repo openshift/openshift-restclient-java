@@ -17,6 +17,8 @@ import org.jboss.dmr.ModelType;
 /**
  * Helper extensions to those provided
  * by JBoss DMR library
+ * 
+ * @author Jeff Cantrill
  */
 public class JBossDmrExtentions {
 	

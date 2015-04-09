@@ -17,6 +17,8 @@ import com.openshift.restclient.model.IResource;
 /**
  * Capability for a resource to determine
  * to which deploymentconfig it is associated
+ * 
+ * @author Jeff Cantrill
  */
 public class DeploymentConfigTraceability extends AssociationCapability implements IDeploymentConfigTraceability {
 

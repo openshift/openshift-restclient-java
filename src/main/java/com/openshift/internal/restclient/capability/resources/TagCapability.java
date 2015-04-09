@@ -14,6 +14,9 @@ import java.util.Collection;
 import com.openshift.restclient.capability.resources.ITags;
 import com.openshift.restclient.model.IResource;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class TagCapability extends AnnotationCapability implements ITags {
 
 	public TagCapability(IResource resource) {

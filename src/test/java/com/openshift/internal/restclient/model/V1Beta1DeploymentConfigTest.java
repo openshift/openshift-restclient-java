@@ -25,6 +25,9 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.utils.Samples;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class V1Beta1DeploymentConfigTest {
 	
 	private static IDeploymentConfig config;

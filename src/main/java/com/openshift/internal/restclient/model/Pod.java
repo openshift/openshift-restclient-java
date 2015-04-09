@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * All rights reserved. This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Red Hat, Inc.
+ ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
 import java.util.ArrayList;
@@ -10,6 +18,9 @@ import org.jboss.dmr.ModelType;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IPod;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class Pod extends KubernetesResource implements IPod {
 
 	public Pod(ModelNode node, IClient client, Map<String, String []> propertyKeys) {

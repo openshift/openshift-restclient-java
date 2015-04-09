@@ -32,6 +32,9 @@ import com.openshift.restclient.model.build.IBuildSource;
 import com.openshift.restclient.model.build.IBuildStrategy;
 import com.openshift.restclient.model.build.IBuildTrigger;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
 	public BuildConfig(ModelNode node, IClient client, Map<String, String []> propertyKeys) {

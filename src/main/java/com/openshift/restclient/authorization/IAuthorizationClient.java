@@ -10,6 +10,9 @@ package com.openshift.restclient.authorization;
 
 import com.openshift.restclient.ISSLCertificateCallback;
 
+/**
+ * @author Jeff Cantrill
+ */
 public interface IAuthorizationClient {
 
 	/**

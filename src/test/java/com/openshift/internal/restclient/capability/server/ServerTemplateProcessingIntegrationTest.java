@@ -29,6 +29,9 @@ import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
 import com.openshift.restclient.utils.Samples;
 
+/**
+ * @author Jeff Cantrill
+ */
 public class ServerTemplateProcessingIntegrationTest {
 	private static final Logger LOG = LoggerFactory.getLogger(ServerTemplateProcessingIntegrationTest.class);
 	

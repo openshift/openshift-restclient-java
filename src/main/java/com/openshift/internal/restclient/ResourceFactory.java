@@ -37,6 +37,8 @@ import com.openshift.restclient.model.IResource;
 
 /**
  * ResourceFactory creates a list of resources from a json string 
+ * 
+ * @author Jeff Cantrill
  */
 public class ResourceFactory implements IResourceFactory{
 	

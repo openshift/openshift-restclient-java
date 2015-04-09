@@ -12,6 +12,8 @@ import java.util.Collection;
 
 /**
  * A list of resources.
+ * 
+ * @author Jeff Cantrill
  */
 public interface IList extends IResource{
 	/**

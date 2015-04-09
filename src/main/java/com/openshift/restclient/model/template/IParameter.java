@@ -10,43 +10,45 @@ package com.openshift.restclient.model.template;
 
 /**
  * A parameter for a template
+ * 
+ * @author Jeff Cantrill
  */
 public interface IParameter {
 	
 	/**
-	 * The name of the parameter that is substituted
+	 * Returns the name of the parameter that is substituted
 	 * in the template
 	 * @return
 	 */
 	String getName();
 	
 	/**
-	 * The description
+	 * Returns the description
 	 * @return
 	 */
 	String getDescription();
 	
 	/**
-	 * The value to use
+	 * Returns the value to use
 	 * @return
 	 */
 	String getValue();
 	
 	/**
-	 * Set the value to use
+	 * Sets the value to use
 	 * @param value
 	 */
 	void setValue(String value);
 	
 	/**
-	 * The generator name which will use the value
+	 * Returns the generator name which will use the value
 	 * from 'getFrom' if set
 	 * @return
 	 */
 	String getGeneratorName();
 	
 	/**
-	 * The input to the generator
+	 * Returns the input to the generator
 	 * @return
 	 */
 	String getFrom();

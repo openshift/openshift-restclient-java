@@ -19,6 +19,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.openshift.restclient.authorization.BearerTokenAuthorizationStrategy;
 import com.openshift.restclient.authorization.IRequest;
 
+/**
+ * @author Jeff Cantrill
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class BearerTokenAuthorizationStrategyTest {
 	

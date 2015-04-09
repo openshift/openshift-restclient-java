@@ -20,6 +20,9 @@ import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.authorization.IRequest;
 import com.openshift.restclient.utils.Base64Coder;
 
+/**
+ * @author Jeff Cantrill
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class BasicAuthorizationStrategyTest {
 	

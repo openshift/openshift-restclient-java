@@ -15,63 +15,64 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.ICapable;
 
-
 /**
  * IResource is a representation of a Kubernetes resource (e.g. Service, Pod, ReplicationController) 
+ * 
+ * @author Jeff Cantrill
  */
 public interface IResource extends ICapable{
 
 	/**
-	 * Retrieve the list of capabilities supported by this resource
+	 * Retrieves the list of capabilities supported by this resource
 	 * @return
 	 */
 	Set<Class<? extends ICapability>>  getCapabilities();
 	
 	/**
-	 * The resource kind
+	 * Returns the resource kind
 	 * @return
 	 */
 	ResourceKind getKind();
 	
 	/**
-	 * The version of this resource
+	 * returns the version of this resource
 	 * @return
 	 */
 	String getApiVersion();
 
 	/**
-	 * Timestamp of when this resource
+	 * Returns the timestamp of when this resource
 	 * was created
 	 * @return
 	 */
 	String getCreationTimeStamp();
 	
 	/**
-	 * The identifier for this resource
+	 * Returns the identifier for this resource
 	 * @return
 	 */
 	String getName();
 	
 	/**
-	 * Set the identifier for this resource
+	 * Sets the identifier for this resource
 	 * @param name
 	 */
 	void setName(String name);
 	
 	/**
-	 * The scope of this resource
+	 * Returns the scope of this resource
 	 * @return
 	 */
 	String getNamespace();
 	
 	/**
-	 * The scope of this resource
+	 * Sets the scope of this resource
 	 * @param namespace
 	 */
 	void setNamespace(String namespace);
 	
 	/**
-	 * Retrieve the labels associated with the resource
+	 * Retrieves the labels associated with the resource
 	 * @return
 	 */
 	Map<String, String> getLabels();
@@ -79,7 +80,7 @@ public interface IResource extends ICapable{
 	void addLabel(String key, String value);
 	
 	/**
-	 * Return true if the resource is annotated with
+	 * Returns <code>true</code> if the resource is annotated with
 	 * the given key
 	 * @param key
 	 * @return true if the annotation key exists
@@ -87,14 +88,14 @@ public interface IResource extends ICapable{
 	boolean isAnnotatedWith(String key);
 	
 	/**
-	 * Retrieve the annotated value for the given key
+	 * Retrieves the annotated value for the given key
 	 * @param key
 	 * @return
 	 */
 	String getAnnotation(String key);
 	
 	/**
-	 * Retrieve the annotations associated with the resource
+	 * Retrieves the annotations associated with the resource
 	 * @return
 	 */
 	Map<String, String> getAnnotations();
