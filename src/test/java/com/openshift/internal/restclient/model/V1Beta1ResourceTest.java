@@ -8,16 +8,14 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
-import com.openshift.internal.restclient.model.Build;
-import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
@@ -31,8 +29,8 @@ public class V1Beta1ResourceTest {
 	
 	private static IResource resource;
 	
-	@BeforeClass
-	public static void setup(){
+	@Before
+	public void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_SERVICE.getContentAsString());
 		resource = new KubernetesResource(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Service));
