@@ -85,6 +85,7 @@ public class AuthorizationClient implements IAuthorizationClient {
 									.addParameter("response_type", "token")
 									.addParameter("client_id", "openshift-challenging-client")
 									.build());
+			request.addHeader("X-CSRF-Token", "1");
 			response = client.execute(request);
 			return createAuthorizationConext(response, redirectStrategy.isAuthorized());
 		} catch (URISyntaxException e) {
