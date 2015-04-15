@@ -28,7 +28,9 @@ public enum Samples {
 	V1BETA1_POD("openshift3/v1beta1_pod.json"), 
 	V1BETA1_REPLICATION_CONTROLLER("openshift3/v1beta1_replication_controller.json"), 
 	V1BETA1_SERVICE("openshift3/v1beta1_service.json"), 
-	V1BETA1_TEMPLATE("openshift3/v1beta1_template.json"); 
+	V1BETA1_TEMPLATE("openshift3/v1beta1_template.json"), 
+	
+	V1BETA3_Status("openshift3/v1beta3_status.json"); 
 	
 	private static final String SAMPLES_FOLDER = "/samples/";
 
