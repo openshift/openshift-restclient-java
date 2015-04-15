@@ -51,6 +51,11 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(STATUS_MESSAGE, new String [] {"message"});
 	}};
 
+	public static final Map<String, String []> V1BETA3_KUBERNETES_MAP = new HashMap<String, String []>(){{
+		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
+		put(STATUS_MESSAGE, new String [] {"message"});
+	}};
+
 	public static final Map<String, String []> V1BETA1_OPENSHIFT_MAP = new HashMap<String, String []>(){{
 		//common properties
 		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
@@ -117,6 +122,9 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Project), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Route), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Template), V1BETA1_OPENSHIFT_MAP);
+		
+		//v1beta3
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.Status), V1BETA3_KUBERNETES_MAP);
 	}
 	
 	public static final ResourcePropertiesRegistry getInstance(){
