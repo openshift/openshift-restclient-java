@@ -9,6 +9,7 @@
 package com.openshift.internal.restclient.model.template;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 
 import com.openshift.restclient.model.template.IParameter;
 
@@ -28,14 +29,15 @@ public class Parameter implements IParameter{
 	public Parameter(ModelNode node){
 		this.node = node;
 	}
+	
 	@Override
 	public String getName() {
-		return node.get("name").asString();
+		return asString("name");
 	}
 
 	@Override
 	public String getDescription() {
-		return node.get("description").asString();
+		return asString("description");
 	}
 
 	@Override
@@ -45,17 +47,22 @@ public class Parameter implements IParameter{
 
 	@Override
 	public String getValue() {
-		return node.get(VALUE).asString();
+		return asString(VALUE);
 	}
 
 	@Override
 	public String getGeneratorName() {
-		return node.get("generator").asString();
+		return asString("generator");
 	}
 
 	@Override
 	public String getFrom() {
-		return node.get("from").asString();
+		return asString("from");
 	}
-
+	
+	private String asString(String key) {
+		ModelNode value = node.get(key);
+		if(value.getType() == ModelType.UNDEFINED) return "";
+		return value.asString();
+	}
 }
