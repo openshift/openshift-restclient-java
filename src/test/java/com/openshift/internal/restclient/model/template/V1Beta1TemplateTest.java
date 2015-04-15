@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift.internal.restclient.model;
+package com.openshift.internal.restclient.model.template;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -48,6 +48,11 @@ public class V1Beta1TemplateTest{
 	@Test
 	public void testGetParameters() {
 		assertEquals("Exp. the number of items to be more than zero",4, template.getParameters().size());
+	}
+	
+	@Test
+	public void testGetLabels() {
+		assertEquals("Exp. to retrieve the labels",1, template.getLabels().size());
 	}
 
 }

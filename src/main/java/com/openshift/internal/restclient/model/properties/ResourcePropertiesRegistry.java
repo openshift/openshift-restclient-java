@@ -55,7 +55,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		//common properties
 		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
 		put(CREATION_TIMESTAMP, new String []  {"metadata", "creationTimestamp"});
-		put(LABELS, new String []  {"metadata", "labels"});
+		put(LABELS, new String []  { "labels"});
 		put(NAME , new String []  {"metadata", "name"});
 		put(NAMESPACE, new String []  {"metadata", "namespace"});
 		
