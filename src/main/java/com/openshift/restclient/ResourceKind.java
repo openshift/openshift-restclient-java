@@ -19,7 +19,7 @@ public enum ResourceKind {
 	Build("builds"),
 	BuildConfig("buildConfigs"),
 	DeploymentConfig("deploymentConfigs"),
-	ImageRepository("imageRepositories"),
+	ImageStream("imageStreams"),
 	Project("projects"),
 	Pod("pods"),
 	ReplicationController("replicationControllers"),

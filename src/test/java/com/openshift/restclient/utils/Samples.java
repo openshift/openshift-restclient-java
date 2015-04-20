@@ -23,7 +23,7 @@ public enum Samples {
 	//kubernetes samples
 	BUILD_CONFIG_MINIMAL("openshift3/build_config_v1beta1_minimal.json"),
 	DEPLOYMENT_CONFIG_MINIMAL("openshift3/deployment_config_v1beta1_minimal.json"), 
-	IMAGE_REPOSITORY_MINIMAL("openshift3/image_repo_v1beta1_minimal.json"), 
+	V1BETA1_IMAGE_STREAM("openshift3/v1beta1_image_stream.json"), 
 	V1BETA1_BUILD("openshift3/v1beta1_build.json"), 
 	V1BETA1_POD("openshift3/v1beta1_pod.json"), 
 	V1BETA1_REPLICATION_CONTROLLER("openshift3/v1beta1_replication_controller.json"), 

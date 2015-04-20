@@ -21,7 +21,7 @@ import com.openshift.internal.restclient.model.Build;
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.internal.restclient.model.Config;
 import com.openshift.internal.restclient.model.DeploymentConfig;
-import com.openshift.internal.restclient.model.ImageRepository;
+import com.openshift.internal.restclient.model.ImageStream;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.internal.restclient.model.Project;
 import com.openshift.internal.restclient.model.ReplicationController;
@@ -50,7 +50,7 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.BuildConfig, BuildConfig.class);
 		IMPL_MAP.put(ResourceKind.Config, Config.class);
 		IMPL_MAP.put(ResourceKind.DeploymentConfig, DeploymentConfig.class);
-		IMPL_MAP.put(ResourceKind.ImageRepository, ImageRepository.class);
+		IMPL_MAP.put(ResourceKind.ImageStream, ImageStream.class);
 		IMPL_MAP.put(ResourceKind.Project, Project.class);
 		IMPL_MAP.put(ResourceKind.Pod, Pod.class);
 		IMPL_MAP.put(ResourceKind.ReplicationController, ReplicationController.class);

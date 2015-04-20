@@ -13,7 +13,7 @@ import com.openshift.restclient.images.DockerImageURI;
 /**
  * @author Jeff Cantrill
  */
-public interface IImageRepository extends IResource{
+public interface IImageStream extends IResource{
 
 	/**
 	 * Retrieve the docker image URI for which this image repository
