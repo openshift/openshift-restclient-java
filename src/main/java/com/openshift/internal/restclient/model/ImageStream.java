@@ -14,28 +14,28 @@ import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
-import com.openshift.restclient.model.IImageRepository;
+import com.openshift.restclient.model.IImageStream;
 
 /**
  * @author Jeff Cantrill
  */
-public class ImageRepository extends KubernetesResource implements IImageRepository {
+public class ImageStream extends KubernetesResource implements IImageStream {
 
-	public ImageRepository(){
+	public ImageStream(){
 		this(new ModelNode(), null, null);
 	}
 	
-	public ImageRepository(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
+	public ImageStream(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
 	}
 
 	public void setDockerImageRepository(DockerImageURI uri) {
-		set(IMAGEREPO_DOCKER_IMAGE_REPO, uri.getAbsoluteUri());		
+		set(IMAGESTREAM_DOCKER_IMAGE_REPO, uri.getAbsoluteUri());		
 	}
 
 	@Override
 	public DockerImageURI getDockerImageRepository() {
-		return new DockerImageURI(asString(IMAGEREPO_DOCKER_IMAGE_REPO));
+		return new DockerImageURI(asString(IMAGESTREAM_DOCKER_IMAGE_REPO));
 	}
 
 }

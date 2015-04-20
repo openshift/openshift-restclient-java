@@ -86,7 +86,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(DEPLOYMENTCONFIG_REPLICA_SELECTOR, new String[]{"template","controllerTemplate","replicaSelector"});
 		put(DEPLOYMENTCONFIG_TRIGGERS, new String[]{"triggers"});
 		
-		put(IMAGEREPO_DOCKER_IMAGE_REPO, new String[]{"status","dockerImageRepository"});
+		put(IMAGESTREAM_DOCKER_IMAGE_REPO, new String[]{"status","dockerImageRepository"});
 		
 		put(PROJECT_DISPLAY_NAME, new String[]{"displayName"});
 		
@@ -113,7 +113,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.BuildConfig), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Config), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.DeploymentConfig), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.ImageRepository), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.ImageStream), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Project), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Route), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Template), V1BETA1_OPENSHIFT_MAP);

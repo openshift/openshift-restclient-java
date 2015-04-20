@@ -15,30 +15,30 @@ import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.openshift.internal.restclient.model.ImageRepository;
+import com.openshift.internal.restclient.model.ImageStream;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
-import com.openshift.restclient.model.IImageRepository;
+import com.openshift.restclient.model.IImageStream;
 import com.openshift.restclient.utils.Samples;
 
 /**
  * @author Jeff Cantrill
  */
-public class V1Beta1ImageRepositoryTest {
-	private static IImageRepository repo;
+public class V1Beta1ImageStreamTest {
+	private static IImageStream repo;
 	
 	@BeforeClass
 	public static void setup(){
 		IClient client = mock(IClient.class);
-		ModelNode node = ModelNode.fromJSONString(Samples.IMAGE_REPOSITORY_MINIMAL.getContentAsString());
-		repo = new ImageRepository(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.ImageRepository));
+		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_IMAGE_STREAM.getContentAsString());
+		repo = new ImageStream(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.ImageStream));
 	}
 	
 	@Test
-	public void getD() {
-		assertEquals(new DockerImageURI("172.30.17.3:5001/test/origin-ruby-sample"), repo.getDockerImageRepository());
+	public void getDockerImageRepository() {
+		assertEquals(new DockerImageURI("openshift/ruby-20-centos7"), repo.getDockerImageRepository());
 	}
 
 }

@@ -323,7 +323,7 @@ public class DefaultClient implements IClient{
 			typeMappings.put(ResourceKind.Build, osEndpoint);
 			typeMappings.put(ResourceKind.BuildConfig, osEndpoint);
 			typeMappings.put(ResourceKind.DeploymentConfig, osEndpoint);
-			typeMappings.put(ResourceKind.ImageRepository, osEndpoint);
+			typeMappings.put(ResourceKind.ImageStream, osEndpoint);
 			typeMappings.put(ResourceKind.Project, osEndpoint);
 			typeMappings.put(ResourceKind.Route, osEndpoint);
 			typeMappings.put(ResourceKind.Template, osEndpoint);

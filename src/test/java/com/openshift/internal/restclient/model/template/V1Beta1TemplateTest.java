@@ -47,7 +47,7 @@ public class V1Beta1TemplateTest{
 
 	@Test
 	public void testGetParameters() {
-		assertEquals("Exp. the number of items to be more than zero",4, template.getParameters().size());
+		assertEquals("Exp. the number of items to be more than zero",5, template.getParameters().size());
 	}
 	
 	@Test
