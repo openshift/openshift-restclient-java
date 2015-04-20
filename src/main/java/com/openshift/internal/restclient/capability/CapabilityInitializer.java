@@ -6,23 +6,27 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift.restclient.capability;
+package com.openshift.internal.restclient.capability;
 
 import java.util.Map;
 
 import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
 import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
+import com.openshift.internal.restclient.capability.resources.ProjectTemplateListCapability;
+import com.openshift.internal.restclient.capability.resources.ProjectTemplateProcessing;
 import com.openshift.internal.restclient.capability.resources.TagCapability;
 import com.openshift.internal.restclient.capability.resources.TemplateTraceability;
-import com.openshift.internal.restclient.capability.server.DefaultImageRegistryHosting;
 import com.openshift.internal.restclient.capability.server.ServerTemplateProcessing;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.resources.IDeploymentConfigTraceability;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
+import com.openshift.restclient.capability.resources.IProjectTemplateList;
+import com.openshift.restclient.capability.resources.IProjectTemplateProcessing;
 import com.openshift.restclient.capability.resources.ITags;
 import com.openshift.restclient.capability.resources.ITemplateTraceability;
-import com.openshift.restclient.capability.server.IImageRegistryHosting;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
+import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -45,6 +49,16 @@ public class CapabilityInitializer {
 		}
 	}
 	
+	/**
+	 * Initialize Project specific capabilities
+	 * @param capabilities
+	 * @param resource
+	 */
+	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IProject project, IClient client){
+		initializeCapability(capabilities, IProjectTemplateProcessing.class, new ProjectTemplateProcessing(project, client));
+		initializeCapability(capabilities, IProjectTemplateList.class, new ProjectTemplateListCapability(project, client));
+	}
+	
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IResource resource, IClient client){
 		initializeCapability(capabilities, ITemplateTraceability.class, new TemplateTraceability(resource));
 		initializeCapability(capabilities, IDeploymentConfigTraceability.class, new DeploymentConfigTraceability(resource, client));
@@ -53,7 +67,6 @@ public class CapabilityInitializer {
 	}
 	
 	public static void initializeClientCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IClient client){
-		initializeCapability(capabilities, IImageRegistryHosting.class, new DefaultImageRegistryHosting(client));
 		initializeCapability(capabilities, ITemplateProcessing.class, new ServerTemplateProcessing(client));
 	}
 }

@@ -37,6 +37,9 @@ public interface ICapable {
 	 * is supported
 	 *
 	 * @param visitor  A visitor looking for a given Capability type
+	 * @param <T>  visitor  A capability visitor
+	 * @param <R> unsupportedCapabililityValue  The value to return when the capability is not supported
+	 * @return <R> A type that is expected by the caller 
 	 */
-	<T extends ICapability> void accept(CapabilityVisitor<T> visitor);
+	<T extends ICapability, R> R accept(CapabilityVisitor<T, R> visitor, R unsupportedCapabililityValue);
 }

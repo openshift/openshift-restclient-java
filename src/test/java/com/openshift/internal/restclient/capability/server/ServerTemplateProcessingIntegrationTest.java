@@ -48,10 +48,10 @@ public class ServerTemplateProcessingIntegrationTest {
 
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_TEMPLATE.getContentAsString());
 		final ITemplate template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Template));
-		client.accept(new CapabilityVisitor<ITemplateProcessing>() {
+		client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {
 
 			@Override
-			public void visit(ITemplateProcessing capability) {
+			public Object visit(ITemplateProcessing capability) {
 				LOG.debug("Processing template: " + template.toString());
 				IConfig config = capability.process(template, helper.getDefaultNamespace());
 				LOG.debug("Applying config: ", config.toString());
@@ -61,8 +61,9 @@ public class ServerTemplateProcessingIntegrationTest {
 				for (IResource resource : results) {
 					LOG.debug(resource.toString());
 				}
+				return null;
 			}
-		});
+		}, new Object());
 	}
 
 }

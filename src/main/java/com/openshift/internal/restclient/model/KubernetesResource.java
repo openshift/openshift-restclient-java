@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import static com.openshift.restclient.capability.CapabilityInitializer.initializeCapabilities;
+import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,6 +55,10 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 		return Collections.unmodifiableSet(capabilities.keySet());
 	}
 	
+	protected Map<Class<? extends ICapability>, ICapability> getModifiableCapabilities(){
+		return capabilities;
+	}
+	
 	@Override
 	public boolean supports(Class<? extends ICapability> capability) {
 		return capabilities.containsKey(capability);
@@ -62,11 +66,12 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends ICapability> void accept(CapabilityVisitor<T> visitor){
+	public <T extends ICapability, R> R accept(CapabilityVisitor<T, R> visitor, R unsupportedValue){
 		if(capabilities.containsKey(visitor.getCapabilityType())){
 			T capability = (T) capabilities.get(visitor.getCapabilityType());
-			visitor.visit(capability);
+			return (R) visitor.visit(capability);
 		}
+		return unsupportedValue;
 	}
 	
 	@Override

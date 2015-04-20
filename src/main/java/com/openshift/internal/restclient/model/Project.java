@@ -8,10 +8,13 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
+import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.IClient;
@@ -20,14 +23,24 @@ import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
 
 /**
+ * DMR implementation of a project
  * @author Jeff Cantrill
  */
 public class Project extends KubernetesResource implements IProject{
 
 	public Project(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
+		initializeCapabilities(getModifiableCapabilities(), this, getClient());
 	}
 	
+	@Override
+	public String getNamespace() {
+		if(StringUtils.isEmpty(super.getNamespace()))
+			return getName();
+		return super.getNamespace();
+	}
+
+
 	@Override
 	public String getDisplayName(){
 		return asString(PROJECT_DISPLAY_NAME);

@@ -72,14 +72,15 @@ public class KubernetesResourceTest {
 	@Test
 	public void testAcceptVisitor(){
 		final List<Boolean> visited = new ArrayList<Boolean>();
-		resource.accept(new CapabilityVisitor<ITemplateTraceability>(){
+		resource.accept(new CapabilityVisitor<ITemplateTraceability, Object>(){
 
 			@Override
-			public void visit(ITemplateTraceability capability) {
+			public Object  visit(ITemplateTraceability capability) {
 				visited.add(Boolean.TRUE);
+				return (Object)null;
 			}
 			
-		});
+		}, new Object());
 		assertEquals("Exp. the visitor to be visited", 1, visited.size());
 	}
 }
