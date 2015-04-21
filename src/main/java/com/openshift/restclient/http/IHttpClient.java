@@ -26,7 +26,7 @@ import com.openshift.restclient.model.IResource;
  * @deprecated This interface and its supporting classes to be deprecated in the near future.
  */
 @Deprecated
-public interface IHttpClient {
+public interface IHttpClient extends IHttpStatusCodes{
 	
 	public static final String HTTP = "http";
 
@@ -44,12 +44,6 @@ public interface IHttpClient {
 
 	public static final String AUTHORIZATION_BASIC = "Basic";
 	public static final String AUTHORIZATION_BEARER = "Bearer";
-
-	public static final int STATUS_OK = 200;
-	public static final int STATUS_INTERNAL_SERVER_ERROR = 500;
-	public static final int STATUS_BAD_REQUEST = 400;
-	public static final int STATUS_UNAUTHORIZED = 401;
-	public static final int STATUS_NOT_FOUND = 404;
 
 	public static final char SPACE = ' ';
 	public static final char COLON = ':';

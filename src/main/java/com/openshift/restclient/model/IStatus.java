@@ -21,4 +21,10 @@ public interface IStatus extends IResource {
 	 * @return
 	 */
 	String getMessage();
+
+	/**
+	 * The HTTP status code
+	 * @return an int
+	 */
+	int getCode();
 }

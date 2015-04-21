@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.http.HttpClientException;
+import com.openshift.internal.restclient.http.UnauthorizedException;
 import com.openshift.internal.restclient.http.UrlConnectionHttpClientBuilder;
 import com.openshift.internal.restclient.model.Status;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
@@ -38,13 +39,14 @@ import com.openshift.restclient.authorization.IAuthorizationStrategy;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.http.IHttpClient;
+import com.openshift.restclient.http.IHttpStatusCodes;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
 
 /**
  * @author Jeff Cantrill
  */
-public class DefaultClient implements IClient{
+public class DefaultClient implements IClient, IHttpStatusCodes{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
 	private URL baseUrl;
@@ -343,6 +345,7 @@ public class DefaultClient implements IClient{
 		return this.baseUrl;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void setAuthorizationStrategy(IAuthorizationStrategy strategy) {
 		this.client.setAuthorizationStrategy(strategy);
@@ -351,9 +354,14 @@ public class DefaultClient implements IClient{
 	private OpenShiftException handleHttpClientException(String message, HttpClientException e) {
 		LOGGER.debug(message, e);
 		if (e.getMessage().startsWith("{")) {
-			return new OpenShiftException(message, e, factory.<Status>create(e.getMessage()));
+			Status status = factory.create(e.getMessage());
+			if(status.getCode() == STATUS_FORBIDDEN) {
+				//TODO replace with exception not based on HttpClient or refactor
+				throw new UnauthorizedException(status.getMessage(), e);
+			}
+			return new OpenShiftException(e, status, message);
 		} else {
-			return new OpenShiftException(message, e, null);
+			return new OpenShiftException(e, message);
 		}
 	}
 }

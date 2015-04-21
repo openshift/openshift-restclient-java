@@ -15,7 +15,8 @@ package com.openshift.internal.restclient;
  * @author Jeff Cantrill
  */
 public enum KubernetesAPIVersion implements APIModelVersion{
-	v1beta1(1);
+	v1beta1(1), 
+	v1beta3(2);
 	
 	private int order;
 	

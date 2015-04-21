@@ -1,0 +1,10 @@
+{
+  "kind": "Status",
+  "apiVersion": "v1beta3",
+  "metadata": {},
+  "status": "Failure",
+  "message": "\"/api/v1beta1/services/ruby-helloworld-sample\" is forbidden because foo cannot get on services with name \"ruby-helloworld-sample\" in default",
+  "reason": "Forbidden",
+  "details": {},
+  "code": 403
+}
