@@ -49,11 +49,13 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(SERVICE_SELECTOR, new String [] {"selector"});
 		put(SERVICE_PORTALIP, new String [] {"portalIP"});
 		put(STATUS_MESSAGE, new String [] {"message"});
+		put(STATUS_CODE, new String [] {"code"});
 	}};
 
 	public static final Map<String, String []> V1BETA3_KUBERNETES_MAP = new HashMap<String, String []>(){{
 		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
 		put(STATUS_MESSAGE, new String [] {"message"});
+		put(STATUS_CODE, new String [] {"code"});
 	}};
 
 	public static final Map<String, String []> V1BETA1_OPENSHIFT_MAP = new HashMap<String, String []>(){{

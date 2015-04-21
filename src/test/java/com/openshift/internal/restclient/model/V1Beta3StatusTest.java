@@ -11,18 +11,13 @@ package com.openshift.internal.restclient.model;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jboss.dmr.ModelNode;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.openshift.internal.restclient.model.Service;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.model.IService;
 import com.openshift.restclient.model.IStatus;
 import com.openshift.restclient.utils.Samples;
 
@@ -32,10 +27,10 @@ import com.openshift.restclient.utils.Samples;
  */
 public class V1Beta3StatusTest{
 
-	private IStatus status;
+	private static IStatus status;
 	
-	@Before
-	public void setUp(){
+	@BeforeClass
+	public static void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_Status.getContentAsString());
 		status = new Status(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta3", ResourceKind.Status));
@@ -44,5 +39,10 @@ public class V1Beta3StatusTest{
 	@Test
 	public void testGetMessage() {
 		assertEquals("\"/api/v1beta1/services/ruby-helloworld-sample\" is forbidden because foo cannot get on services with name \"ruby-helloworld-sample\" in default", status.getMessage());
+	}
+	
+	@Test
+	public void testGetCode() {
+		assertEquals(403, status.getCode());
 	}
 }

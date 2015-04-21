@@ -28,4 +28,9 @@ public class Status extends KubernetesResource implements IStatus{
 		return asString(STATUS_MESSAGE);
 	}
 
+	@Override
+	public int getCode() {
+		return asInt(STATUS_CODE);
+	}
+
 }
