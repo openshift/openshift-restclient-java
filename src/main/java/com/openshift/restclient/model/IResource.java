@@ -77,6 +77,11 @@ public interface IResource extends ICapable{
 	 */
 	Map<String, String> getLabels();
 	
+	/**
+	 * Add or update a label;
+	 * @param key
+	 * @param value
+	 */
 	void addLabel(String key, String value);
 	
 	/**

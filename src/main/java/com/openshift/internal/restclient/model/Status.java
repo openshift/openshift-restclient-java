@@ -33,4 +33,14 @@ public class Status extends KubernetesResource implements IStatus{
 		return asInt(STATUS_CODE);
 	}
 
+	@Override
+	public String getStatus() {
+		return asString(STATUS_STATUS);
+	}
+
+	@Override
+	public boolean isFailure() {
+		return "Failure".equals(getStatus());
+	}
+
 }

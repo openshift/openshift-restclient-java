@@ -27,4 +27,17 @@ public interface IStatus extends IResource {
 	 * @return an int
 	 */
 	int getCode();
+	
+	/**
+	 * The status info of the status
+	 * @return
+	 */
+	String getStatus();
+	
+	/**
+	 * Determine if this status is indicates
+	 * a failure
+	 * @return
+	 */
+	boolean isFailure();
 }

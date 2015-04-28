@@ -45,4 +45,9 @@ public class V1Beta3StatusTest{
 	public void testGetCode() {
 		assertEquals(403, status.getCode());
 	}
+
+	@Test
+	public void testGetStatus() {
+		assertEquals("Failure", status.getStatus());
+	}
 }

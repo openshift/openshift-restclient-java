@@ -26,6 +26,7 @@ public interface IResourceFactory {
 	 * @param json
 	 * @param kind
 	 * @return
+	 * @throws ResourceFactoryException  if it is unable to create resources
 	 */
 	List<IResource> createList(String json, ResourceKind kind);
 	
@@ -33,6 +34,7 @@ public interface IResourceFactory {
 	 * Create a resource from a response string
 	 * @param response
 	 * @return
+	 * @throws ResourceFactoryException  if it is unable to create resources
 	 */
 	<T extends IResource> T create(String response) ;
 

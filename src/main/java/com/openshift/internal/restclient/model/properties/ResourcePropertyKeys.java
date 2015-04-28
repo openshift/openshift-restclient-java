@@ -33,6 +33,7 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	
 	static final String STATUS_MESSAGE = "status.message";
 	static final String STATUS_CODE = "status.code";
+	static final String STATUS_STATUS = "status.status";
 	
 	static final String BUILD_STATUS	= "build.status";
 	static final String BUILD_MESSAGE	= "build.message";

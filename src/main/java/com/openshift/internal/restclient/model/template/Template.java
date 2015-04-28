@@ -42,7 +42,7 @@ public class Template extends KubernetesResource implements ITemplate{
 		}
 		return params;
 	}
-
+	
 	@Override
 	public Collection<IResource> getItems() {
 		Collection<ModelNode> nodes = get(TEMPLATE_ITEMS).asList();
@@ -54,6 +54,16 @@ public class Template extends KubernetesResource implements ITemplate{
 			}
 		}
 		return resources;
+	}
+
+	@Override
+	public void updateParameterValues(Collection<IParameter> parameters) {
+		Map<String, IParameter> actuals = getParameters();
+		for (IParameter param : parameters) {
+			if(actuals.containsKey(param.getName())) {
+				actuals.get(param.getName()).setValue(param.getValue());
+			}
+		}
 	}
 
 }

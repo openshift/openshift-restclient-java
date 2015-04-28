@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
-import static com.openshift.restclient.capability.CapabilityInitializer.initializeClientCapabilities;
+import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeClientCapabilities;
 
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -249,12 +249,13 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends ICapability> void accept(CapabilityVisitor<T> visitor){
+	public <T extends ICapability, R> R accept(CapabilityVisitor<T, R> visitor, R unsupportedCapabililityValue){
 		if(!capabilitiesInitialized) initializeCapabilities();
 		if(capabilities.containsKey(visitor.getCapabilityType())){
 			T capability = (T) capabilities.get(visitor.getCapabilityType());
-			visitor.visit(capability);
+			return (R) visitor.visit(capability);
 		}
+		return unsupportedCapabililityValue;
 	}
 
 	public List<KubernetesAPIVersion> getKubernetesVersions() {

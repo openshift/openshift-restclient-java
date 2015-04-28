@@ -32,4 +32,12 @@ public interface ITemplate extends IResource {
 	 * @return
 	 */
 	Map<String, IParameter> getParameters();
+	
+	/**
+	 * Update the template's parameter values, with the values from the
+	 * collection if a parameter with the same name is found
+	 * 
+	 * @param parameters
+	 */
+	void updateParameterValues(Collection<IParameter> parameters);
 }
