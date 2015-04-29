@@ -18,6 +18,7 @@ import com.openshift.restclient.model.template.ITemplate;
 
 public class ProjectTemplateListCapability implements IProjectTemplateList {
 	
+	private static final String COMMON_NAMESPACE = "openshift"; //eventually configurable
 	private IProject project;
 	private IClient client;
 
@@ -41,4 +42,10 @@ public class ProjectTemplateListCapability implements IProjectTemplateList {
 		return client.<ITemplate>list(ResourceKind.Template, project.getNamespace());
 	}
 
+	@Override
+	public Collection<ITemplate> getCommonTemplates() {
+		return client.<ITemplate>list(ResourceKind.Template,COMMON_NAMESPACE);
+	}
+	
+	
 }

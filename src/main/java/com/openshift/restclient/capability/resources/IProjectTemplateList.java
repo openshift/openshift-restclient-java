@@ -19,5 +19,15 @@ import com.openshift.restclient.model.template.ITemplate;
  */
 public interface IProjectTemplateList extends ICapability {
 
+	/**
+	 * Retrieve the templates associated with a specific project
+	 * @return
+	 */
 	Collection<ITemplate> getTemplates();
+	
+	/**
+	 * Retrieve the common templates from the server (e.g. 'openshift' namespace)
+	 * @return
+	 */
+	Collection<ITemplate> getCommonTemplates();
 }
