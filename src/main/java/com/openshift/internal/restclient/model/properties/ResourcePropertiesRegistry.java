@@ -64,7 +64,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		//common properties
 		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
 		put(CREATION_TIMESTAMP, new String []  {"metadata", "creationTimestamp"});
-		put(LABELS, new String []  { "labels"});
+		put(LABELS, new String []  { "metadata","labels"});
 		put(NAME , new String []  {"metadata", "name"});
 		put(NAMESPACE, new String []  {"metadata", "namespace"});
 		
@@ -94,6 +94,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(DEPLOYMENTCONFIG_REPLICAS, new String[]{"template","controllerTemplate","replicas"});
 		put(DEPLOYMENTCONFIG_REPLICA_SELECTOR, new String[]{"template","controllerTemplate","replicaSelector"});
 		put(DEPLOYMENTCONFIG_TRIGGERS, new String[]{"triggers"});
+		put(DEPLOYMENTCONFIG_STRATEGY, new String[]{"template","strategy","type"});
 		
 		put(IMAGESTREAM_DOCKER_IMAGE_REPO, new String[]{"status","dockerImageRepository"});
 		
@@ -117,6 +118,7 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.ReplicationController), V1BETA1_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.Service), V1BETA1_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.Status), V1BETA1_KUBERNETES_MAP);
+
 		
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Build), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.BuildConfig), V1BETA1_OPENSHIFT_MAP);

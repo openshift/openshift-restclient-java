@@ -16,7 +16,10 @@ import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.restclient.KubernetesAPIVersion;
 import com.openshift.internal.restclient.model.KubernetesResource;
+import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
+import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.model.IResource;
@@ -32,6 +35,21 @@ public class Template extends KubernetesResource implements ITemplate{
 		super(node, client, propertyKeys);
 	}
 	
+	/**
+	 * Template is an OS kind that compiles to kubernetes v1beta1 structure
+	 * for labels.
+	 * TODO: remove method when we move to v1beta3
+	 */
+	@Override
+	public Map<String, String> getLabels() {
+		final String version = getNode().get("apiVersion").asString();
+		if(KubernetesAPIVersion.valueOf(version).equals(KubernetesAPIVersion.v1beta1)) {
+			return JBossDmrExtentions.asMap(getNode(), ResourcePropertiesRegistry.V1BETA1_KUBERNETES_MAP, LABELS);
+		}
+		return super.getLabels();
+	}
+
+
 	@Override
 	public Map<String, IParameter> getParameters() {
 		Collection<ModelNode> nodes = get(TEMPLATE_PARAMETERS).asList();

@@ -35,10 +35,14 @@ public class V1Beta1DeploymentConfigTest {
 	@BeforeClass
 	public static void setup(){
 		IClient client = mock(IClient.class);
-		ModelNode node = ModelNode.fromJSONString(Samples.DEPLOYMENT_CONFIG_MINIMAL.getContentAsString());
+		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_DEPLOYMENT_CONIFIG.getContentAsString());
 		config = new DeploymentConfig(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.DeploymentConfig));
 	}
 	
+	@Test 
+	public void getLabels() {
+		assertArrayEquals(new String[] {"template"},config.getLabels().keySet().toArray(new String[] {}));
+	}
 	@Test
 	public void getReplicas(){
 		assertEquals(1, config.getReplicas());
@@ -47,8 +51,18 @@ public class V1Beta1DeploymentConfigTest {
 	@Test
 	public void getReplicaSelector() {
 		Map<String, String> exp = new HashMap<String, String>();
-		exp.put("name", "javaparks");
+		exp.put("name", "database");
 		assertEquals(exp, config.getReplicaSelector());
+	}
+	
+	@Test
+	public void getTriggerTypes() {
+		assertArrayEquals(new String[] {"ConfigChange"}, config.getTriggerTypes().toArray(new String[] {}));
+	}
+	
+	@Test
+	public void testGetDeploymentStrategyTypes() {
+		assertEquals("Recreate", config.getDeploymentStrategyType());
 	}
 
 }

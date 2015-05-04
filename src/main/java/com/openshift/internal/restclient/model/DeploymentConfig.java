@@ -1,6 +1,7 @@
 package com.openshift.internal.restclient.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ public class DeploymentConfig extends KubernetesResource implements IDeploymentC
 		return asMap(DEPLOYMENTCONFIG_REPLICA_SELECTOR);
 	}
 	
+	@Override
 	public List<String> getTriggerTypes(){
 		List<String> types = new ArrayList<String>();
 		ModelNode triggers = get(DEPLOYMENTCONFIG_TRIGGERS);
@@ -84,5 +86,10 @@ public class DeploymentConfig extends KubernetesResource implements IDeploymentC
 		container.get("ports").add(port);
 		controllerTemplate.get(new String[]{"podTemplate","desiredState","manifest","containers"}).add(container);
 		controllerTemplate.get(new String[]{"podTemplate","labels","name"}).set(imageTag.getName());
+	}
+
+	@Override
+	public String getDeploymentStrategyType() {
+		return asString(DEPLOYMENTCONFIG_STRATEGY);
 	}
 }

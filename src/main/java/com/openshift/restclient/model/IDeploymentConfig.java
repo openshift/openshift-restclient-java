@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -29,4 +30,17 @@ public interface IDeploymentConfig extends IResource {
 	 * @return java.util.Map<String, String>
 	 */
 	Map<String, String> getReplicaSelector();
+	
+	/**
+	 * Get the list of deployment triggers
+	 * @return a collection of trigger types
+	 */
+	Collection<String> getTriggerTypes();
+
+	/**
+	 * Convenience method to get the deployment
+	 * strategy type
+	 * @return the type as a string
+	 */
+	String getDeploymentStrategyType();
 }
