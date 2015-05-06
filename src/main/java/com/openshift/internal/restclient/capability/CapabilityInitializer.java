@@ -10,6 +10,7 @@ package com.openshift.internal.restclient.capability;
 
 import java.util.Map;
 
+import com.openshift.internal.restclient.capability.resources.ClientCapability;
 import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
 import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateListCapability;
@@ -19,6 +20,7 @@ import com.openshift.internal.restclient.capability.resources.TemplateTraceabili
 import com.openshift.internal.restclient.capability.server.ServerTemplateProcessing;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.ICapability;
+import com.openshift.restclient.capability.resources.IClientCapability;
 import com.openshift.restclient.capability.resources.IDeploymentConfigTraceability;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
 import com.openshift.restclient.capability.resources.IProjectTemplateList;
@@ -64,6 +66,7 @@ public class CapabilityInitializer {
 		initializeCapability(capabilities, IDeploymentConfigTraceability.class, new DeploymentConfigTraceability(resource, client));
 		initializeCapability(capabilities, IDeploymentTraceability.class, new DeploymentTraceability(resource, client));
 		initializeCapability(capabilities, ITags.class, new TagCapability(resource));
+		initializeCapability(capabilities, IClientCapability.class, new ClientCapability(client));
 	}
 	
 	public static void initializeClientCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IClient client){
