@@ -14,12 +14,17 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
+import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.NoopSSLCertificateCallback;
 import com.openshift.restclient.authorization.AuthorizationClientFactory;
 import com.openshift.restclient.authorization.OAuthStrategy;
+import com.openshift.restclient.model.IResource;
 
 /**
  * @author Jeff Cantrill
@@ -27,7 +32,8 @@ import com.openshift.restclient.authorization.OAuthStrategy;
 public class IntegrationTestHelper {
 
 	private Properties prop;
-	
+	private static final Logger LOG = LoggerFactory.getLogger(IntegrationTestHelper.class);
+
 	public IntegrationTestHelper(){
 		loadProperties();
 	}
@@ -50,6 +56,10 @@ public class IntegrationTestHelper {
 		return prop.getProperty("default.project");
 	}
 	
+	public String generateNamespace() {
+		return String.format("%s-%s",getDefaultNamespace(), new Random().nextInt(9999));
+	}
+
 	private void loadProperties(){
 		InputStream is = null;
         try {
@@ -61,5 +71,15 @@ public class IntegrationTestHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+	}
+	
+	public static void cleanUpResource(IClient client, IResource resource){
+		try{
+			Thread.sleep(1000);
+			LOG.debug(String.format("Deleting resource: %s", resource));
+			client.delete(resource);
+		}catch(Exception e){
+			LOG.error("Exception deleting", e);
+		}
 	}
 }

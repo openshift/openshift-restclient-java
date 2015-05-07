@@ -15,9 +15,11 @@ import com.openshift.internal.restclient.capability.resources.DeploymentConfigTr
 import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateListCapability;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateProcessing;
+import com.openshift.internal.restclient.capability.resources.ServiceSinglePortCapability;
 import com.openshift.internal.restclient.capability.resources.TagCapability;
 import com.openshift.internal.restclient.capability.resources.TemplateTraceability;
 import com.openshift.internal.restclient.capability.server.ServerTemplateProcessing;
+import com.openshift.internal.restclient.model.Service;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.resources.IClientCapability;
@@ -25,6 +27,7 @@ import com.openshift.restclient.capability.resources.IDeploymentConfigTraceabili
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
 import com.openshift.restclient.capability.resources.IProjectTemplateList;
 import com.openshift.restclient.capability.resources.IProjectTemplateProcessing;
+import com.openshift.restclient.capability.resources.IServiceSinglePortSupport;
 import com.openshift.restclient.capability.resources.ITags;
 import com.openshift.restclient.capability.resources.ITemplateTraceability;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
@@ -59,6 +62,10 @@ public class CapabilityInitializer {
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IProject project, IClient client){
 		initializeCapability(capabilities, IProjectTemplateProcessing.class, new ProjectTemplateProcessing(project, client));
 		initializeCapability(capabilities, IProjectTemplateList.class, new ProjectTemplateListCapability(project, client));
+	}
+	
+	public static  void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, Service service, IClient client){
+		initializeCapability(capabilities, IServiceSinglePortSupport.class, new ServiceSinglePortCapability(service));
 	}
 	
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IResource resource, IClient client){

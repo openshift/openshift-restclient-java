@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift.internal.restclient.model;
+package com.openshift.internal.restclient.model.v1beta1;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

@@ -8,12 +8,20 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.properties;
 
+import static com.openshift.internal.restclient.model.properties.KubernetesApiModelProperties.V1BETA1_KUBERNETES_MAP;
+import static com.openshift.internal.restclient.model.properties.KubernetesApiModelProperties.V1BETA3_KUBERNETES_MAP;
+import static com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP;
+import static com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties.V1BETA3_OPENSHIFT_MAP;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.openshift.internal.restclient.APIModelVersion;
 import com.openshift.internal.restclient.KubernetesAPIVersion;
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
+import com.openshift.restclient.IncompatibleApiVersionsException;
 import com.openshift.restclient.ResourceKind;
 
 /**
@@ -21,99 +29,15 @@ import com.openshift.restclient.ResourceKind;
  * 
  * @author Jeff Cantrill
  */
-@SuppressWarnings("serial")
-public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
+public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 
 	private static ResourcePropertiesRegistry instance;
-
+	
 	private final Map<VersionKey, Map<String, String []>> versionPropertyMap = new HashMap<VersionKey, Map<String, String []>>();
-	public static final Map<String, String []> V1BETA1_KUBERNETES_MAP = new HashMap<String, String []>(){{
-		put(ANNOTATIONS, new String [] {"annotations"});
-		put(APIVERSION, new String [] {"apiVersion"});
-		put(CREATION_TIMESTAMP, new String []  {"creationTimestamp"});
-		put(LABELS, new String []  {"labels"});
-		put(NAME , new String []  {"id"});
-		put(NAMESPACE, new String []  {"namespace"});
-		
-		put(REPLICATION_CONTROLLER_REPLICA_COUNT, new String [] {"desiredState", "replicas"});
-		put(REPLICATION_CONTROLLER_REPLICA_SELECTOR, new String [] {"desiredState", "replicaSelector"});
-		put(REPLICATION_CONTROLLER_CONTAINERS, new String [] {"desiredState", "podTemplate","desiredState","manifest","containers"});
-		put(REPLICATION_CONTROLLER_CURRENT_REPLICA_COUNT, new String [] {"currentState", "replicas"});
-		
-		put(POD_IP, new String[]{"currentState","podIP"});
-		put(POD_HOST, new String[]{"currentState","host"});
-		put(POD_STATUS, new String[]{"currentState","status"});
-		put(POD_CONTAINERS, new String[]{"desiredState","manifest","containers"});
-		put(SERVICE_CONTAINER_PORT, new String [] {"containerPort"});
-		put(SERVICE_PORT, new String [] {"port"});
-		put(SERVICE_SELECTOR, new String [] {"selector"});
-		put(SERVICE_PORTALIP, new String [] {"portalIP"});
-		put(STATUS_MESSAGE, new String [] {"message"});
-		put(STATUS_CODE, new String [] {"code"});
-		put(STATUS_STATUS, new String [] {"status"});
-	}};
 
-	public static final Map<String, String []> V1BETA3_KUBERNETES_MAP = new HashMap<String, String []>(){{
-		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
-		put(STATUS_MESSAGE, new String [] {"message"});
-		put(STATUS_CODE, new String [] {"code"});
-		put(STATUS_STATUS, new String [] {"status"});
-	}};
-
-	public static final Map<String, String []> V1BETA1_OPENSHIFT_MAP = new HashMap<String, String []>(){{
-		//common properties
-		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
-		put(CREATION_TIMESTAMP, new String []  {"metadata", "creationTimestamp"});
-		put(LABELS, new String []  { "metadata","labels"});
-		put(NAME , new String []  {"metadata", "name"});
-		put(NAMESPACE, new String []  {"metadata", "namespace"});
-		
-		put(BUILD_MESSAGE, new String[]{"message"});
-		put(BUILD_PODNAME, new String[]{"podName"});
-		put(BUILD_STATUS, new String[]{"status"});
-		
-		put(BUILDCONFIG_SOURCE_TYPE, new String[]{"parameters","source","type"});
-		put(BUILDCONFIG_SOURCE_URI, new String[]{"parameters","source","git","uri"});
-		put(BUILDCONFIG_SOURCE_REF, new String[]{"parameters","source","git","ref"});
-		put(BUILDCONFIG_STRATEGY, new String[]{"parameters","strategy"});
-		put(BUILDCONFIG_TYPE, new String[]{"parameters","strategy", "type"});
-		put(BUILDCONFIG_CUSTOM_IMAGE, new String[]{"parameters","strategy", "customStrategy", "image"});
-		put(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET, new String[]{"parameters","strategy", "customStrategy", "exposeDockerSocket"});
-		put(BUILDCONFIG_CUSTOM_ENV, new String[]{"parameters","strategy", "customStrategy", "env"});
-		put(BUILDCONFIG_DOCKER_CONTEXTDIR, new String[]{"parameters","strategy", "dockerStrategy", "contextDir"});
-		put(BUILDCONFIG_DOCKER_NOCACHE, new String[]{"parameters","strategy", "dockerStrategy", "noCache"});
-		put(BUILDCONFIG_DOCKER_BASEIMAGE, new String[]{"parameters","strategy", "dockerStrategy","baseImage"});
-		put(BUILDCONFIG_OUTPUT_REPO, new String[]{"parameters","output", "to","name"});
-		put(BUILDCONFIG_STI_IMAGE, new String[]{"parameters","strategy", "stiStrategy", "image"});
-		put(BUILDCONFIG_STI_SCRIPTS, new String[]{"parameters","strategy", "stiStrategy", "scripts"});
-		put(BUILDCONFIG_STI_CLEAN, new String[]{"parameters","strategy", "stiStrategy", "clean"});
-		put(BUILDCONFIG_STI_ENV, new String[]{"parameters","strategy", "stiStrategy", "env"});
-		put(BUILDCONFIG_TRIGGERS, new String[]{"triggers"});
-		
-		put(DEPLOYMENTCONFIG_CONTAINERS, new String[]{"template","controllerTemplate","podTemplate","desiredState","manifest","containers"});
-		put(DEPLOYMENTCONFIG_REPLICAS, new String[]{"template","controllerTemplate","replicas"});
-		put(DEPLOYMENTCONFIG_REPLICA_SELECTOR, new String[]{"template","controllerTemplate","replicaSelector"});
-		put(DEPLOYMENTCONFIG_TRIGGERS, new String[]{"triggers"});
-		put(DEPLOYMENTCONFIG_STRATEGY, new String[]{"template","strategy","type"});
-		
-		put(IMAGESTREAM_DOCKER_IMAGE_REPO, new String[]{"status","dockerImageRepository"});
-		
-		put(PROJECT_DISPLAY_NAME, new String[]{"displayName"});
-		
-		put(ROUTE_HOST, new String[] { "host" });
-		put(ROUTE_PATH, new String[] { "path" });
-		put(ROUTE_SERVICE_NAME, new String[] { "serviceName" });
-		put(ROUTE_TLS_TERMINATION_TYPE, new String[]{ "tls", "termination" });
-		put(ROUTE_TLS_CERTIFICATE, new String[]{ "tls", "certificate" });
-		put(ROUTE_TLS_KEY, new String[]{ "tls", "key" });
-		put(ROUTE_TLS_CACERT, new String[]{"tls","caCertificate"});
-		put(ROUTE_TLS_DESTINATION_CACERT, new String[]{"tls","destinationCACertificate"});
-
-		put(TEMPLATE_PARAMETERS, new String[]{"parameters"});
-		put(TEMPLATE_ITEMS, new String[]{"items"});
-	}};
-
+	@SuppressWarnings("deprecation")
 	private ResourcePropertiesRegistry(){
+		//v1beta1
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.Pod), V1BETA1_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.ReplicationController), V1BETA1_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.Service), V1BETA1_KUBERNETES_MAP);
@@ -130,7 +54,20 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Template), V1BETA1_OPENSHIFT_MAP);
 		
 		//v1beta3
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.Pod), V1BETA3_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.ReplicationController), V1BETA3_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.Service), V1BETA3_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.Status), V1BETA3_KUBERNETES_MAP);
+
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Build), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.BuildConfig), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.List), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.DeploymentConfig), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.ImageStream), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Project), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Route), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Template), V1BETA3_OPENSHIFT_MAP);
+		
 	}
 	
 	public static final ResourcePropertiesRegistry getInstance(){
@@ -151,20 +88,44 @@ public final class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		return versionPropertyMap.get(key);
 	}
 	
+	public KubernetesAPIVersion [] getSupportedKubernetesVersions(){
+		return KubernetesAPIVersion.values();
+	}
+
+	public OpenShiftAPIVersion[] getSupportedOpenShiftVersions(){
+		return OpenShiftAPIVersion.values();
+	}
+	
 	/**
 	 * The maximum Kubernetes API supported by this client
 	 * @return
+	 * @throws IncompatibleApiVersionsException if the client can not support the server
 	 */
-	public KubernetesAPIVersion getMaxSupportedKubernetesVersion(){
-		return KubernetesAPIVersion.v1beta1;
+	public KubernetesAPIVersion getMaxSupportedKubernetesVersion(List<KubernetesAPIVersion> serverVersions) {
+		return getMaxSupportedVersion(Arrays.asList(getSupportedKubernetesVersions()), serverVersions);
 	}
 	
 	/**
 	 * The maximum OpenShift API supported by this client
 	 * @return
+	 * @throws IncompatibleApiVersionsException if the client can not support the server
 	 */
-	public OpenShiftAPIVersion getMaxSupportedOpenShiftVersion(){
-		return OpenShiftAPIVersion.v1beta1;
+	public OpenShiftAPIVersion getMaxSupportedOpenShiftVersion(List<OpenShiftAPIVersion> serverVersions){
+		return getMaxSupportedVersion(Arrays.asList(getSupportedOpenShiftVersions()), serverVersions);
+	}
+	
+	private <T extends APIModelVersion> T getMaxSupportedVersion(List<T> clientVersions, List<T> serverVersions) {
+		Collections.sort(clientVersions, new APIModelVersion.VersionComparitor());
+		Collections.sort(serverVersions, new APIModelVersion.VersionComparitor());
+		T maxClientVersion = clientVersions.get(clientVersions.size() - 1);
+		T maxServerVersion = serverVersions.get(serverVersions.size() - 1);
+		if(serverVersions.contains(maxClientVersion)) {
+			return maxClientVersion;
+		}
+		if(clientVersions.contains(maxServerVersion)) {
+			return maxServerVersion;
+		}
+		throw new IncompatibleApiVersionsException(clientVersions.toString(), serverVersions.toString());
 	}
 	
 	private static class VersionKey {

@@ -17,12 +17,12 @@ package com.openshift.restclient;
 public enum ResourceKind {
 	
 	Build("builds"),
-	BuildConfig("buildConfigs"),
-	DeploymentConfig("deploymentConfigs"),
-	ImageStream("imageStreams"),
+	BuildConfig("buildconfigs"),
+	DeploymentConfig("deploymentconfigs"),
+	ImageStream("imagestreams"),
 	Project("projects"),
 	Pod("pods"),
-	ReplicationController("replicationControllers"),
+	ReplicationController("replicationcontrollers"),
 	Route("routes"),
 	Service("services"), 
 	Template("templates"),
@@ -31,10 +31,13 @@ public enum ResourceKind {
 	 * These are not true resources that can be used (mostly) in
 	 * RESTful operations
 	 */
+	@Deprecated
 	Config(""), //not rest resource,
 	List(""),
 	Status(""), //not rest resource
-	TemplateConfig("templateConfigs") //mechanism for processing templates
+	@Deprecated
+	TemplateConfig("templateconfig"),//mechanism for processing templates pre v1beta3
+	ProcessedTemplates("processedtemplates"),//mechanism for processing templates
 	;
 
 	// punting here for now

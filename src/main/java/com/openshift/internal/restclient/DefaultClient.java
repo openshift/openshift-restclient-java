@@ -34,7 +34,6 @@ import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedOperationException;
-import com.openshift.restclient.UnsupportedVersionException;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
@@ -48,6 +47,9 @@ import com.openshift.restclient.model.IResource;
  */
 public class DefaultClient implements IClient, IHttpStatusCodes{
 	
+	public static final String SYSTEM_PROP_K8E_API_VERSION = "osjc.k8e.apiversion"; 
+	public static final String SYSTEM_PROP_OPENSHIFT_API_VERSION = "osjc.openshift.apiversion"; 
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
 	private URL baseUrl;
 	private IHttpClient client;
@@ -59,8 +61,8 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	private static final String osApiEndpoint = "osapi";
 	
 	private final Map<ResourceKind, String> typeMappings = new HashMap<ResourceKind, String>();
-	private OpenShiftAPIVersion openShiftVersion;
-	private KubernetesAPIVersion kubernetesVersion;
+	private String openShiftVersion;
+	private String kubernetesVersion;
 	
 	public DefaultClient(URL baseUrl, ISSLCertificateCallback sslCertCallback){
 		this(baseUrl, null, sslCertCallback);
@@ -73,6 +75,8 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		this.baseUrl = baseUrl;
 		client = httpClient != null ? httpClient : newIHttpClient(sslCertCallback);
 		factory = new ResourceFactory(this);
+		openShiftVersion = System.getProperty(SYSTEM_PROP_OPENSHIFT_API_VERSION, null);
+		kubernetesVersion = System.getProperty(SYSTEM_PROP_K8E_API_VERSION, null);
 	}
 	
 	/*
@@ -158,9 +162,10 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	public <T extends IResource> T create(T resource, String namespace) {
 		if(resource.getKind() == ResourceKind.List) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		try {
+			namespace = resource.getKind() == ResourceKind.Project ? "" : namespace;
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(resource.getKind())
-				.addParmeter("namespace", namespace)
+				.namespace(namespace)
 				.build();
 			String response = client.post(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT, resource);
 			LOGGER.debug(response);
@@ -178,7 +183,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		try {
 			final URL endpoint = new URLBuilder(getBaseURL(), getTypeMappings())
 				.resource(resource)
-				.addParmeter("namespace", resource.getNamespace())
+				.namespace(resource.getNamespace())
 				.build();
 			String response = client.put(endpoint, IHttpClient.DEFAULT_READ_TIMEOUT, resource);
 			LOGGER.debug(response);
@@ -194,9 +199,10 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	public <T extends IResource> void delete(T resource) {
 		if(resource.getKind() == ResourceKind.List) throw new UnsupportedOperationException("Delete operation not supported for resource type 'List'");
 		try {
+			String namespace = resource.getKind() == ResourceKind.Project ? "" : resource.getNamespace();
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.resource(resource)
-				.addParmeter("namespace", resource.getNamespace())
+				.namespace(namespace)
 				.build();
 			LOGGER.debug(String.format("Deleting resource: %s", endpoint));
 			String response = client.delete(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT);
@@ -212,10 +218,11 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	@Override
 	public <T extends IResource> T get(ResourceKind kind, String name, String namespace) {
 		try {
+			namespace = kind == ResourceKind.Project ? "" : namespace;
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(kind)
 				.name(name)
-				.addParmeter("namespace", namespace)
+				.namespace(namespace)
 				.build();
 			String response = client.get(endpoint, IHttpClient.DEFAULT_READ_TIMEOUT);
 			LOGGER.debug(response);
@@ -266,29 +273,19 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		return getVersion(OpenShiftAPIVersion.class, osApiEndpoint);
 	}
 
-	public KubernetesAPIVersion getKubernetesVersion() {
+	public String getKubernetesVersion() {
 		if(kubernetesVersion == null){
 			List<KubernetesAPIVersion> versions = getKubernetesVersions();
-			kubernetesVersion = ResourcePropertiesRegistry.getInstance().getMaxSupportedKubernetesVersion();
-			if(!versions.contains(kubernetesVersion)){
-				throw new RuntimeException(String.format("Kubernetes API version '%s' is not supported by this client"));
-			}
+			kubernetesVersion = ResourcePropertiesRegistry.getInstance().getMaxSupportedKubernetesVersion(versions).toString();
 		}
 		return kubernetesVersion; 
 	}
 
 	@Override
-	public String getOpenShiftAPIVersion() throws UnsupportedVersionException{
-		return getOpenShiftVersion().toString();
-	}
-	
-	public OpenShiftAPIVersion getOpenShiftVersion() {
+	public String getOpenShiftAPIVersion() {
 		if(openShiftVersion == null){
 			List<OpenShiftAPIVersion> versions = getOpenShiftVersions();
-			openShiftVersion = ResourcePropertiesRegistry.getInstance().getMaxSupportedOpenShiftVersion();
-			if(!versions.contains(openShiftVersion)){
-				throw new UnsupportedVersionException(openShiftVersion.toString());
-			}
+			openShiftVersion = ResourcePropertiesRegistry.getInstance().getMaxSupportedOpenShiftVersion(versions).toString();
 		}
 		return openShiftVersion; 
 	}
@@ -322,7 +319,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	private Map<ResourceKind, String> getTypeMappings(){
 		if(typeMappings.isEmpty()){
 			//OpenShift endpoints
-			final String osEndpoint = String.format("%s/%s", osApiEndpoint, getOpenShiftVersion());
+			final String osEndpoint = String.format("%s/%s", osApiEndpoint, getOpenShiftAPIVersion());
 			typeMappings.put(ResourceKind.Build, osEndpoint);
 			typeMappings.put(ResourceKind.BuildConfig, osEndpoint);
 			typeMappings.put(ResourceKind.DeploymentConfig, osEndpoint);
@@ -330,7 +327,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			typeMappings.put(ResourceKind.Project, osEndpoint);
 			typeMappings.put(ResourceKind.Route, osEndpoint);
 			typeMappings.put(ResourceKind.Template, osEndpoint);
+			//not real kinds
 			typeMappings.put(ResourceKind.TemplateConfig, osEndpoint);
+			typeMappings.put(ResourceKind.ProcessedTemplates, osEndpoint);
 			
 			//Kubernetes endpoints
 			final String k8eEndpoint = String.format("%s/%s", apiEndpoint, getKubernetesVersion());

@@ -9,6 +9,7 @@
 package com.openshift.internal.restclient.capability.server;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.jboss.dmr.ModelNode;
@@ -33,6 +34,10 @@ import com.openshift.restclient.utils.Samples;
  * @author Jeff Cantrill
  */
 public class ServerTemplateProcessingIntegrationTest {
+	private static final String VERSION = "v1beta3";
+
+	private static final String COMMON = "openshift";
+
 	private static final Logger LOG = LoggerFactory.getLogger(ServerTemplateProcessingIntegrationTest.class);
 	
 	private IClient client;
@@ -45,25 +50,34 @@ public class ServerTemplateProcessingIntegrationTest {
 	
 	@Test
 	public void testProcessAndApplyTemplate() throws Exception{
-
-		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_TEMPLATE.getContentAsString());
-		final ITemplate template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Template));
-		client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {
-
-			@Override
-			public Object visit(ITemplateProcessing capability) {
-				LOG.debug("Processing template: " + template.toString());
-				IConfig config = capability.process(template, helper.getDefaultNamespace());
-				LOG.debug("Applying config: ", config.toString());
+		final Collection<IResource> results = new ArrayList<IResource>();
+		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_TEMPLATE.getContentAsString());
+		final ITemplate template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Template));
+		template.setNamespace(COMMON);
+		try {
+			client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {
 				
-				Collection<IResource> results = client.create(config, helper.getDefaultNamespace());
-				LOG.debug("applied template");
-				for (IResource resource : results) {
-					LOG.debug(resource.toString());
+				@Override
+				public Object visit(ITemplateProcessing capability) {
+					
+					LOG.debug("Processing template: " + template.toString());
+					ITemplate processedTemplate = capability.process(template, COMMON);
+					
+					LOG.debug("Applying template: ", processedTemplate.toString());
+					LOG.debug("applied template");
+					for (IResource resource : processedTemplate.getItems()) {
+						LOG.debug("creating: ", resource);
+						results.add(client.create(resource, COMMON));
+						LOG.debug("created: ", resource.toString());
+					}
+					return null;
 				}
-				return null;
+			}, new Object());
+		}finally {
+			IntegrationTestHelper.cleanUpResource(client, template);
+			for (IResource resource : results) {
+				IntegrationTestHelper.cleanUpResource(client, resource);
 			}
-		}, new Object());
+		}
 	}
-
 }

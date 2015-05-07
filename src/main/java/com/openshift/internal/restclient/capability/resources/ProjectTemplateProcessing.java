@@ -11,9 +11,10 @@ package com.openshift.internal.restclient.capability.resources;
 import java.util.Collection;
 
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.resources.IProjectTemplateProcessing;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
-import com.openshift.restclient.model.IConfig;
+import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
@@ -23,7 +24,7 @@ import com.openshift.restclient.model.template.ITemplate;
  *
  */
 public class ProjectTemplateProcessing implements IProjectTemplateProcessing {
-
+	
 	private String namespace;
 	private IClient client;
 	private ITemplateProcessing serverCapability;
@@ -47,13 +48,15 @@ public class ProjectTemplateProcessing implements IProjectTemplateProcessing {
 	}
 
 	@Override
-	public IConfig process(ITemplate template) {
+	public ITemplate process(ITemplate template) {
 		return serverCapability.process(template, namespace);
 	}
 
 	@Override
-	public Collection<IResource> apply(IConfig config) {
-		return client.create(config, namespace);
+	public Collection<IResource> apply(ITemplate template) {
+		IList resources = client.getResourceFactory().create(template.getApiVersion(), ResourceKind.List);
+		resources.addAll(template.getItems());
+		return client.create(resources, this.namespace);
 	}
 
 }

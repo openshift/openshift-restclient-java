@@ -17,10 +17,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.model.IResource;
@@ -41,6 +41,8 @@ public class URLBuilder {
 	private Map<String, String> params = new HashMap<String, String>();
 	private final Map<ResourceKind, String> typeMappings;
 
+	private String namespace;
+
 	URLBuilder(URL baseUrl, Map<ResourceKind, String> typeMappings, IResource resource) {
 		this(baseUrl, typeMappings);
 		resource(resource);
@@ -52,7 +54,12 @@ public class URLBuilder {
 	}
 	
 	URLBuilder namespace(String namespace){
-		addParmeter("namespace", namespace);
+		if(StringUtils.isBlank(namespace)) return this;
+		if(typeMappingIsForV1Beta1()) {
+			addParmeter("namespace", namespace);
+		}else {
+			this.namespace = namespace;
+		}
 		return this;
 	}
 	
@@ -88,6 +95,41 @@ public class URLBuilder {
 		if (kind == null)
 			throw new RuntimeException(
 					"Unable to build a URL because the ResourceKind is unknown");
+		if(typeMappingIsForV1Beta1()) {
+			buildWithNamespaceAsQueryParam(url);
+		}else {
+			buildWithNamespaceInPath(url);
+		}
+
+		try {
+			LOG.debug(String.format("Built url: %s", url.toString()));
+			return new URL(url.toString());
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+
+	private boolean typeMappingIsForV1Beta1() {
+		String mapping = typeMappings.get(kind);
+		return mapping.contains("v1beta1");
+	}
+
+	private void buildWithNamespaceInPath(StringBuilder url) {
+		url.append("/")
+			.append(typeMappings.get(kind));
+		if(namespace != null) {
+			url.append("/namespaces/")
+				.append(namespace);
+		}
+		url.append("/").append(kind.pluralize());
+		if (name != null) {
+			url.append("/").append(name);
+		}
+		url = appendParameters(url);
+	}
+
+	private URL buildWithNamespaceAsQueryParam(StringBuilder url) {
 		url.append("/")
 			.append(typeMappings.get(kind)).append("/")
 			.append(kind.pluralize());

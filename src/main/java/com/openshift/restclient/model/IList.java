@@ -21,4 +21,10 @@ public interface IList extends IResource{
 	 * @return
 	 */
 	Collection<IResource> getItems();
+
+	/**
+	 * Add all of the given resources to the list
+	 * @param items
+	 */
+	void addAll(Collection<IResource> items);
 }

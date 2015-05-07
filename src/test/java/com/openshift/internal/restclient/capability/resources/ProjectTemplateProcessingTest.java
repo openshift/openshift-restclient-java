@@ -19,14 +19,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.resources.IProjectTemplateProcessing;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
-import com.openshift.restclient.model.IConfig;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
+import com.openshift.restclient.utils.Samples;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectTemplateProcessingTest {
@@ -41,8 +42,6 @@ public class ProjectTemplateProcessingTest {
 	private ITemplateProcessing serverCapability;
 	@Mock
 	private IProject project;
-	@Mock
-	IConfig config;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -73,9 +72,9 @@ public class ProjectTemplateProcessingTest {
 	
 	@Test
 	public void processTemplateShouldUseTheClientsCapability() {
-		when(serverCapability.process(any(ITemplate.class), anyString())).thenReturn(config);
+		when(serverCapability.process(any(ITemplate.class), anyString())).thenReturn(template);
 		
-		assertEquals(config, capability.process(template));
+		assertEquals(template, capability.process(template));
 		verify(serverCapability).process(eq(template), eq(NAMESPACE));
 	}
 
@@ -84,9 +83,11 @@ public class ProjectTemplateProcessingTest {
 		@SuppressWarnings("unchecked")
 		Collection<IResource> resources = mock(Collection.class);
 		when(client.create(any(IList.class), anyString())).thenReturn(resources);
+		when(client.getResourceFactory()).thenReturn(new ResourceFactory(client));
+		ITemplate template = new ResourceFactory(client).create(Samples.V1BETA3_TEMPLATE.getContentAsString());
 		
-		assertEquals(resources, capability.apply(config));
-		verify(client).create(eq(config), eq(NAMESPACE));
+		assertEquals(resources, capability.apply(template));
+		verify(client).create(any(IList.class), eq(NAMESPACE));
 	}
 	
 }

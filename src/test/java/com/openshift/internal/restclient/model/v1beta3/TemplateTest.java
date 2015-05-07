@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift.internal.restclient.model.template;
+package com.openshift.internal.restclient.model.v1beta3;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -28,18 +28,23 @@ import com.openshift.restclient.utils.Samples;
  * 
  * @author Jeff Cantrill
  */
-public class V1Beta1TemplateTest{
+public class TemplateTest{
 
+	private static final String VERSION = "v1beta3";
 	private ITemplate template;
 	
 	@Before
 	public void setUp(){
 		IClient client = mock(IClient.class);
 		when(client.getResourceFactory()).thenReturn(new ResourceFactory(client));
-		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_TEMPLATE.getContentAsString());
-		template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Template));
+		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_TEMPLATE.getContentAsString());
+		template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Template));
 	}
-	
+	@Test
+	public void testGetApiVersion() {
+		assertEquals(VERSION, template.getApiVersion());
+	}
+
 	@Test
 	public void testGetItems() {
 		assertEquals("Exp. the number of items to be more than zero", 8, template.getItems().size());

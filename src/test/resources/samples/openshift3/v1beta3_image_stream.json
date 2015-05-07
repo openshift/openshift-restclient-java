@@ -1,0 +1,19 @@
+{
+    "kind": "ImageStream",
+    "apiVersion": "v1beta3",
+    "metadata": {
+        "name": "origin-ruby-sample",
+        "namespace": "test",
+        "selfLink": "/osapi/v1beta1/imageStreams/origin-ruby-sample?namespace=test",
+        "uid": "87ba7a8c-f41a-11e4-bc91-080027893417",
+        "resourceVersion": "58329",
+        "creationTimestamp": "2015-05-06T18:05:51Z",
+        "labels": {
+            "template": "application-template-stibuild"
+        }
+    },
+    "spec": {},
+    "status": {
+        "dockerImageRepository": "172.30.159.174:5000/test/origin-ruby-sample"
+    }
+}

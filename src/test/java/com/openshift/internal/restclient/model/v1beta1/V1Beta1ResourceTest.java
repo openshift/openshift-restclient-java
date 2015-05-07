@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift.internal.restclient.model;
+package com.openshift.internal.restclient.model.v1beta1;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -16,6 +16,8 @@ import org.jboss.dmr.ModelType;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.internal.restclient.model.Build;
+import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;

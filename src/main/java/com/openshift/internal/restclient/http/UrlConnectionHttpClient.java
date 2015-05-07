@@ -162,6 +162,8 @@ public class UrlConnectionHttpClient implements IHttpClient {
 					url, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
 			// PATCH not yet supported by JVM
 			setRequestMethod(httpMethod, connection);
+			LOGGER.debug(String.format("Request Properties: %s", connection.getRequestProperties()));
+			LOGGER.debug(String.format("Request Method: %s", connection.getRequestMethod()));
 			if(resource != null){
 				connection.setDoOutput(true);
 				PrintWriter writer = new PrintWriter(connection.getOutputStream());

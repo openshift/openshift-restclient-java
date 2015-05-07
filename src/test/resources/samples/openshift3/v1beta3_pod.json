@@ -1,0 +1,101 @@
+{
+    "kind": "Pod",
+    "apiVersion": "v1beta3",
+    "metadata": {
+        "name": "ruby-sample-build-1",
+        "namespace": "test",
+        "selfLink": "/api/v1beta1/pods/ruby-sample-build-1?namespace=test",
+        "uid": "44d68d4c-f41b-11e4-a871-080027893417",
+        "resourceVersion": "58407",
+        "creationTimestamp": "2015-05-06T18:11:08Z",
+        "labels": {
+            "build": "ruby-sample-build-1",
+            "buildconfig": "ruby-sample-build",
+            "name": "ruby-sample-build",
+            "template": "application-template-stibuild"
+        }
+    },
+    "spec": {
+        "volumes": [
+            {
+                "name": "docker-socket",
+                "hostPath": {
+                    "path": "/var/run/docker.sock"
+                },
+                "emptyDir": null,
+                "gcePersistentDisk": null,
+                "gitRepo": null,
+                "secret": null,
+                "nfs": null,
+                "iscsi": null,
+                "glusterfs": null
+            }
+        ],
+        "containers": [
+            {
+                "name": "sti-build",
+                "image": "openshift/origin-sti-builder:v0.5",
+                "args": [
+                    "--loglevel=0"
+                ],
+                "env": [
+                    {
+                        "name": "BUILD",
+                        "value": "{\"kind\":\"Build\",\"apiVersion\":\"v1beta1\",\"metadata\":{\"name\":\"ruby-sample-build-1\",\"namespace\":\"test\",\"selfLink\":\"/osapi/v1beta1/builds/ruby-sample-build-1?namespace=test\",\"uid\":\"44d28bfd-f41b-11e4-a871-080027893417\",\"resourceVersion\":\"58370\",\"creationTimestamp\":\"2015-05-06T18:11:08Z\",\"labels\":{\"buildconfig\":\"ruby-sample-build\",\"name\":\"ruby-sample-build\",\"template\":\"application-template-stibuild\"}},\"parameters\":{\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"git://github.com/openshift/ruby-hello-world.git\"}},\"strategy\":{\"type\":\"STI\",\"stiStrategy\":{\"builderImage\":\"openshift/ruby-20-centos7:latest\",\"image\":\"openshift/ruby-20-centos7:latest\"}},\"output\":{\"to\":{\"kind\":\"ImageStream\",\"name\":\"origin-ruby-sample\"},\"dockerImageReference\":\"172.30.159.174:5000/test/origin-ruby-sample\",\"imageTag\":\"test/origin-ruby-sample\",\"registry\":\"172.30.159.174:5000\"},\"resources\":{}},\"status\":\"Pending\",\"duration\":0,\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"test\",\"name\":\"ruby-sample-build\"}}"
+                    },
+                    {
+                        "name": "SOURCE_REPOSITORY",
+                        "value": "git://github.com/openshift/ruby-hello-world.git"
+                    },
+                    {
+                        "name": "BUILD_LOGLEVEL",
+                        "value": "0"
+                    }
+                ],
+                "resources": {},
+                "volumeMounts": [
+                    {
+                        "name": "docker-socket",
+                        "mountPath": "/var/run/docker.sock"
+                    }
+                ],
+                "terminationMessagePath": "/dev/termination-log",
+                "privileged": true,
+                "imagePullPolicy": "IfNotPresent",
+                "capabilities": {}
+            }
+        ],
+        "restartPolicy": "Never",
+        "dnsPolicy": "ClusterFirst",
+        "host": "openshiftdev.local"
+    },
+    "status": {
+        "phase": "Failed",
+        "Condition": [
+            {
+                "type": "Ready",
+                "status": "False"
+            }
+        ],
+        "hostIP": "127.0.0.1",
+        "podIP": "172.17.0.2",
+        "containerStatuses": [
+            {
+                "name": "sti-build",
+                "state": {
+                    "termination": {
+                        "exitCode": 255,
+                        "startedAt": "2015-05-06T18:12:42Z",
+                        "finishedAt": "2015-05-06T18:13:56Z"
+                    }
+                },
+                "lastState": {},
+                "ready": false,
+                "restartCount": 0,
+                "image": "openshift/origin-sti-builder:v0.5",
+                "imageID": "docker://c14cdbc8674ce37e02bff9a6b44c67eae25c4cd07e0034fa5762d0090248e393",
+                "containerID": "docker://296e5aae27673a2b59f3812ac0b6f0b924db4101690e3d0be300bb38a31c0f54"
+            }
+        ]
+    }
+}
