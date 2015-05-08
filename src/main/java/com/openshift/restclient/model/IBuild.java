@@ -29,5 +29,6 @@ public interface IBuild extends IResource {
 	 * Returns the name of the pod running the build
 	 * @return
 	 */
+	@Deprecated
 	String getPodName();
 }

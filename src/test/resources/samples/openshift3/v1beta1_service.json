@@ -1,5 +1,7 @@
     {
       "id": "hello-openshift-service",
+      "kind" : "Service",
+      "apiVersion" : "v1beta1",
       "creationTimestamp": "2015-01-19T14:36:17Z",
       "namespace": "hello-openshift-project",
       "port": 5001,

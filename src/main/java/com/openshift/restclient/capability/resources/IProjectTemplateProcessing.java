@@ -11,7 +11,6 @@ package com.openshift.restclient.capability.resources;
 import java.util.Collection;
 
 import com.openshift.restclient.capability.ICapability;
-import com.openshift.restclient.model.IConfig;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
 
@@ -24,14 +23,13 @@ public interface IProjectTemplateProcessing extends ICapability {
 	 * @param template        The template to process
 	 * @return a config of resources
 	 */
-	IConfig process(ITemplate template);
-
+	ITemplate process(ITemplate template);
+	
 	/**
-	 * Apply the given config for a project
-	 * 
+	 * Apply the objects defined in the template to the server
 	 * @param config
-	 * @return a collection of resources
+	 * @return
 	 */
-	Collection<IResource> apply(IConfig config);
+	Collection<IResource> apply(ITemplate template);
 	
 }

@@ -25,7 +25,8 @@ public interface ISTIBuildStrategy extends IBuildStrategy {
 	String getScriptsLocation();
 	
 	Map<String, String> getEnvironmentVariables();
-	
+
+	@Deprecated
 	boolean forceClean();
 	
 }

@@ -9,15 +9,17 @@
 package com.openshift.internal.restclient.capability.server;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
-import com.openshift.restclient.model.IConfig;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.template.IParameter;
 import com.openshift.restclient.model.template.ITemplate;
 
 /**
@@ -33,7 +35,7 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 	
 	@Override
 	public boolean isSupported() {
-		return true;
+		return !OpenShiftAPIVersion.v1beta1.toString().equals(client.getOpenShiftAPIVersion());
 	}
 
 	@Override
@@ -41,12 +43,13 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 		return this.getClass().getSimpleName();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IConfig process(ITemplate template, String namespace) {
-		return client.<IConfig>create(new TemplateConfigAdapter(template, namespace));
+	public ITemplate process(ITemplate template, String namespace) {
+		return client.create(new TemplateConfigAdapter(template, namespace));
 	}
 	
-	protected static class TemplateConfigAdapter extends KubernetesResource implements IConfig{
+	protected static class TemplateConfigAdapter extends KubernetesResource implements ITemplate{
 		
 		private ITemplate template;
 		private String namespace;
@@ -63,7 +66,7 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 		
 		@Override
 		public ResourceKind getKind() {
-			return ResourceKind.TemplateConfig;
+			return ResourceKind.ProcessedTemplates;
 		}
 
 		@Override
@@ -74,6 +77,14 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 		@Override
 		public Collection<IResource> getItems() {
 			return template.getItems();
+		}
+		@Override
+		public Map<String, IParameter> getParameters() {
+			return template.getParameters();
+		}
+		@Override
+		public void updateParameterValues(Collection<IParameter> parameters) {
+			template.updateParameterValues(parameters);
 		}
 		
 	}

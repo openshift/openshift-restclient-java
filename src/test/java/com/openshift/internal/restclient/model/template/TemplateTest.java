@@ -13,7 +13,6 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.jboss.dmr.ModelNode;
@@ -21,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
+import com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.template.IParameter;
 import com.openshift.restclient.model.template.ITemplate;
@@ -36,7 +35,7 @@ public class TemplateTest {
 		params.add(param("foo","bar"));
 		params.add(param("abc","xyz"));
 		params.add(param("123","456"));
-		template = new Template(node, client, ResourcePropertiesRegistry.V1BETA1_OPENSHIFT_MAP);
+		template = new Template(node, client, OpenShiftApiModelProperties.V1BETA3_OPENSHIFT_MAP);
 	}
 
 	@Test

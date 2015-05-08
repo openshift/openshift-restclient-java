@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.internal.restclient.model.properties.BuildConfigPropertyKeys;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
+import com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.build.BuildStrategyType;
@@ -35,7 +36,7 @@ public class BuildConfigTest implements BuildConfigPropertyKeys {
 	
 	@Before
 	public void setup(){
-		config = new BuildConfig(node, client, ResourcePropertiesRegistry.V1BETA1_OPENSHIFT_MAP);
+		config = new BuildConfig(node, client, OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP);
 	}
 	
 	@Test
@@ -61,10 +62,10 @@ public class BuildConfigTest implements BuildConfigPropertyKeys {
 	
 	@Test
 	public void testGetDockerBuildStrategy() {
-		node.get(ResourcePropertiesRegistry.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_TYPE)).set("Docker");
-		node.get(ResourcePropertiesRegistry.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_CONTEXTDIR)).set("aContextDir");
-		node.get(ResourcePropertiesRegistry.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_NOCACHE)).set(true);
-		node.get(ResourcePropertiesRegistry.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_BASEIMAGE)).set("thebaseImage");
+		node.get(OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_TYPE)).set("Docker");
+		node.get(OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_CONTEXTDIR)).set("aContextDir");
+		node.get(OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_NOCACHE)).set(true);
+		node.get(OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_BASEIMAGE)).set("thebaseImage");
 		
 		IBuildStrategy strategy = config.getBuildStrategy();
 		assertEquals(BuildStrategyType.Docker, strategy.getType());

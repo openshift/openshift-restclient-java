@@ -11,7 +11,7 @@ package com.openshift.restclient;
 /**
  * @author Jeff Cantrill
  */
-public class UnsupportedVersionException extends RuntimeException {
+public class UnsupportedVersionException extends OpenShiftException {
 	
 	private static final long serialVersionUID = 1L;
 

@@ -34,4 +34,8 @@ public interface BuildConfigPropertyKeys {
 	static final String BUILDCONFIG_OUTPUT_REPO = "buildconfig.outputrepo";
 	
 	static final String BUILDCONFIG_TRIGGERS = "buildconfig.triggers";
+	
+	static final String BUILD_CONFIG_IMAGECHANGE_IMAGE = "buildconfig.imagechange.image";
+	static final String BUILD_CONFIG_IMAGECHANGE_NAME = "buildconfig.imagechange.name";
+	static final String BUILD_CONFIG_IMAGECHANGE_TAG = "buildconfig.imagechange.tag";
 }

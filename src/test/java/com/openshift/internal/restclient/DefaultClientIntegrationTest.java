@@ -28,44 +28,65 @@ import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.IService;
 import com.openshift.restclient.model.template.ITemplate;
+import com.openshift.restclient.utils.Samples;
 
 /**
  * @author Jeff Cantrill
  */
 public class DefaultClientIntegrationTest {
 
+	private static final String VERSION = "v1beta3";
+
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultClientIntegrationTest.class);
 	
 	private IClient client;
 	private IntegrationTestHelper helper = new IntegrationTestHelper();
 
+	private IResourceFactory factory;
+
 	@Before
 	public void setup () {
 		client = helper.createClient();
+		factory = new ResourceFactory(client);
 	}
 	
 	@Test
 	public void testListTemplates(){
-		List<ITemplate> list = client.list(ResourceKind.Template, "test");
-		for (ITemplate template : list) {
-			LOG.debug(template.toString());
+		ITemplate template = null; 
+		IProject project = null;
+		try {
+			project = factory.create(VERSION, ResourceKind.Project);
+			project.setName(helper.generateNamespace());
+			template = factory.create(Samples.V1BETA3_TEMPLATE.getContentAsString());
+			template.setNamespace(project.getName());
+			
+			project = client.create(project);
+			template = client.create(template, project.getNamespace());
+			
+			List<ITemplate> list = client.list(ResourceKind.Template, project.getName());
+			assertEquals(1, list.size());
+			for (ITemplate t : list) {
+				LOG.debug(t.toString());
+			}
+		}finally {
+			cleanUpResource(client, template);
+			cleanUpResource(client, project);
 		}
 	}
 	
 	@Test
 	public void testResourceLifeCycle() throws MalformedURLException {
 		
-		IResourceFactory factory = new ResourceFactory(client);
 		
-		IProject project = factory.create("v1beta1", ResourceKind.Project);
-		project.setName("firstproject");
+		IProject project = factory.create(VERSION, ResourceKind.Project);
+		project.setName(helper.generateNamespace());
 		LOG.debug(String.format("Stubbing project: %s", project));
 		
-		IProject other = factory.create("v1beta1", ResourceKind.Project);
-		other.setName("other");
+		IProject other = factory.create(VERSION, ResourceKind.Project);
+		other.setName(helper.generateNamespace());
 		LOG.debug(String.format("Stubbing project: %s", project));
 		
-		IService service = factory.create("v1beta1", ResourceKind.Service);
+		IService service = factory.create(VERSION, ResourceKind.Service);
 		service.setNamespace(project.getName()); //this will be the project's namespace
 		service.setName("some-service");
 		service.setContainerPort(6767);
@@ -73,8 +94,8 @@ public class DefaultClientIntegrationTest {
 		service.setSelector("name", "barpod");
 		LOG.debug(String.format("Stubbing service: %s", service));
 
-		Service otherService = factory.create("v1beta1", ResourceKind.Service);
-		otherService.setNamespace("someothernamespace"); //this will be the project's namespace
+		Service otherService = factory.create(VERSION, ResourceKind.Service);
+		otherService.setNamespace(other.getName()); //this will be the project's namespace
 		otherService.setName("some-other-service");
 		otherService.setContainerPort(8787);
 		otherService.setPort(8787);
@@ -97,11 +118,9 @@ public class DefaultClientIntegrationTest {
 			otherService = client.create(otherService);
 			LOG.debug(String.format("Created service: %s", otherService));
 			
-			LOG.debug(String.format("Listing projects with namespace: %s", project.getNamespace()));
-			List<Project> projects = client.list(ResourceKind.Project, project.getNamespace());
+			LOG.debug("Listing projects");
+			List<Project> projects = client.list(ResourceKind.Project);
 			LOG.debug(String.format("Listed projects: %s", projects));
-			
-			assertEquals("Expected to get the project with the correct namespace", project.getName(), projects.get(0).getName());
 			
 			LOG.debug(String.format("Listing services with namespace: %s", project.getNamespace()));
 			List<Service> services = client.list(ResourceKind.Service, project.getNamespace());

@@ -35,7 +35,7 @@ public class ServerTemplateProcessingTest {
 		ServerTemplateProcessing.TemplateConfigAdapter adapter = new ServerTemplateProcessing.TemplateConfigAdapter (template, namespace);
 		
 		assertEquals(namespace, adapter.getNamespace());
-		assertEquals(ResourceKind.TemplateConfig, adapter.getKind());
+		assertEquals(ResourceKind.ProcessedTemplates, adapter.getKind());
 		assertEquals(template.toString(), adapter.toString());
 		assertEquals(items, adapter.getItems());
 	}

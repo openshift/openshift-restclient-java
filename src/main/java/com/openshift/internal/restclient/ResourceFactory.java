@@ -52,6 +52,7 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.Config, Config.class);
 		IMPL_MAP.put(ResourceKind.DeploymentConfig, DeploymentConfig.class);
 		IMPL_MAP.put(ResourceKind.ImageStream, ImageStream.class);
+		IMPL_MAP.put(ResourceKind.List, com.openshift.internal.restclient.model.List.class);
 		IMPL_MAP.put(ResourceKind.Project, Project.class);
 		IMPL_MAP.put(ResourceKind.Pod, Pod.class);
 		IMPL_MAP.put(ResourceKind.ReplicationController, ReplicationController.class);

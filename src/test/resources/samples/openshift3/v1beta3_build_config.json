@@ -1,0 +1,71 @@
+{
+    "kind": "BuildConfig",
+    "apiVersion": "v1beta3",
+    "metadata": {
+        "name": "ruby-sample-build",
+        "namespace": "test",
+        "selfLink": "/osapi/v1beta1/buildConfigs/ruby-sample-build?namespace=test",
+        "uid": "87bc17dc-f41a-11e4-bc91-080027893417",
+        "resourceVersion": "58372",
+        "creationTimestamp": "2015-05-06T18:05:51Z",
+        "labels": {
+            "name": "ruby-sample-build",
+            "template": "application-template-stibuild"
+        }
+    },
+    "spec": {
+        "triggers": [
+            {
+                "type": "github",
+                "github": {
+                    "secret": "secret101"
+                }
+            },
+            {
+                "type": "generic",
+                "generic": {
+                    "secret": "secret101"
+                }
+            },
+            {
+                "type": "imageChange",
+                "imageChange": {
+                    "lastTriggeredImageID": "openshift/ruby-20-centos7:latest"
+                }
+            }
+        ],
+        "source": {
+            "type": "Git",
+            "git": {
+                "uri": "git://github.com/openshift/ruby-hello-world.git"
+            }
+        },
+        "strategy": {
+            "type": "STI",
+            "stiStrategy": {
+                "from": {
+                    "kind": "ImageStreamTag",
+                    "name": "ruby-20-centos7:latest"
+                },
+                "incremental": true,
+                "scripts" : "alocation",
+                "env" : [
+                    {
+                        "name" : "foo",
+                        "value" : "bar"
+                    }
+                ]
+            }
+        },
+        "output": {
+            "to": {
+                "kind": "ImageStream",
+                "name": "origin-ruby-sample"
+            }
+        },
+        "resources": {}
+    },
+    "status": {
+        "lastVersion": 1
+    }
+}

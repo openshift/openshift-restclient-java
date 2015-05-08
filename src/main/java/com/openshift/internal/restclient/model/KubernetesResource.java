@@ -194,7 +194,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 
 	@Override
 	public String toString() {
-		return node.toJSONString(false);
+		return node.toJSONString(true);
 	}
 	
 	public String toPrettyString(){

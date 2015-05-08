@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift.internal.restclient.model.build;
+package com.openshift.internal.restclient.model.v1beta1;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -15,40 +15,46 @@ import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.openshift.internal.restclient.model.Build;
+import com.openshift.internal.restclient.model.Pod;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.model.IBuild;
+import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.utils.Samples;
 
 /**
  * @author Jeff Cantrill
  */
-public class V1Beta1BuildTest {
-	
-	private static IBuild build;
+public class V1Beta1PodTest {
+
+	private static IPod pod;
 	
 	@BeforeClass
 	public static void setup(){
 		IClient client = mock(IClient.class);
-		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_BUILD.getContentAsString());
-		build = new Build(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Build));
+		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_POD.getContentAsString());
+		pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Pod));
 	}
 	
 	@Test
-	public void getStatus(){
-		assertEquals("Running", build.getStatus());
+	public void testGetHost(){
+		assertEquals("openshiftdev.local", pod.getHost());
+	}
+	
+	@Test
+	public void testGetStatus(){
+		assertEquals("Running", pod.getStatus());
+	}
+	
+	@Test
+	public void testGetImages(){
+		String [] exp = new String []{"mysql"};
+		assertArrayEquals(exp, pod.getImages().toArray());
 	}
 
 	@Test
-	public void getMessage(){
-		assertEquals("Some status message", build.getMessage());
+	public void getIP() {
+		assertEquals("172.17.0.5", pod.getIP());
 	}
-	
-	@Test
-	public void testGetPodName(){
-		assertEquals("build-bcc3a625-b7ab-11e4-8457-080027c5bfa9", build.getPodName());
-	}
-	
+
 }

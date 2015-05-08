@@ -22,7 +22,10 @@ import com.openshift.internal.restclient.model.build.GitBuildSource;
 import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
 import com.openshift.internal.restclient.model.build.STIBuildStrategy;
 import com.openshift.internal.restclient.model.build.WebhookTrigger;
+import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
+import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.build.BuildSourceType;
@@ -58,11 +61,11 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 					triggers.add(new WebhookTrigger(BuildTriggerType.github, node.get(new String[]{"github","secret"}).asString(), name, url, version, getNamespace()));
 					break;
 				case imageChange:
+					Map<String, String[]> keys = ResourcePropertiesRegistry.getInstance().get(version, ResourceKind.BuildConfig);
 					triggers.add(new ImageChangeTrigger(
-							node.get(new String[]{"imageChange","image"}).asString(),
-							node.get(new String[]{"imageChange", "from","name"}).asString(),
-							node.get(new String[]{"imageChange","tag"}).asString()
-							)
+							JBossDmrExtentions.asString(node, keys, BUILD_CONFIG_IMAGECHANGE_IMAGE),
+							JBossDmrExtentions.asString(node, keys, BUILD_CONFIG_IMAGECHANGE_NAME),
+							JBossDmrExtentions.asString(node, keys, BUILD_CONFIG_IMAGECHANGE_TAG))
 					);
 					break;
 				default:

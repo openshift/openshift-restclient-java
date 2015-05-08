@@ -8,14 +8,21 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
+import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.capability.resources.IServiceSinglePortSupport;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IService;
 
@@ -24,18 +31,50 @@ import com.openshift.restclient.model.IService;
  */
 public class Service extends KubernetesResource implements IService {
 
+	private static final String PROPERTY_TARGET_PORT = "targetPort";
+	private static final String PROPERTY_PORT = "port";
+
 	public Service(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
+		initializeCapabilities(getModifiableCapabilities(), this, getClient());
 	}
 	
 	@Override
 	public void setPort(int port){
-		set(SERVICE_PORT, port);
+		if(supports(IServiceSinglePortSupport.class)) {
+			IServiceSinglePortSupport capability = getCapability(IServiceSinglePortSupport.class);
+			capability.setPort(port);
+			return;
+		}
+		ModelNode nodePort = getLowestPort();
+		if(nodePort == null) {
+			nodePort = get(SERVICE_PORT).add();
+		}
+		nodePort.get(PROPERTY_PORT).set(port);
 	}
 	
 	@Override
 	public int getPort(){
-		return asInt(SERVICE_PORT);
+		if(supports(IServiceSinglePortSupport.class)) {
+			IServiceSinglePortSupport capability = getCapability(IServiceSinglePortSupport.class);
+			return capability.getPort();
+		}
+		ModelNode port = getLowestPort();
+		return port != null ? port.get(PROPERTY_PORT).asInt() : 0;
+	}
+	
+	private ModelNode getLowestPort() {
+		if(get(SERVICE_PORT).getType() == ModelType.UNDEFINED) return null;
+		List<ModelNode> ports = new ArrayList<ModelNode>(get(SERVICE_PORT).asList());
+		Collections.sort(ports, new Comparator<ModelNode>() {
+			@Override
+			public int compare(ModelNode node0, ModelNode node1) {
+				BigInteger port0 = node0.get(PROPERTY_PORT).asBigInteger();
+				BigInteger port1 = node1.get(PROPERTY_PORT).asBigInteger();
+				return port0.compareTo(port1);
+			}
+		});
+		return ports.size() == 0 ? null : ports.get(0);
 	}
 	
 	@Override
@@ -60,12 +99,26 @@ public class Service extends KubernetesResource implements IService {
 
 	@Override
 	public void setContainerPort(int port){
-		set(SERVICE_CONTAINER_PORT, port);
+		if(supports(IServiceSinglePortSupport.class)) {
+			IServiceSinglePortSupport capability = getCapability(IServiceSinglePortSupport.class);
+			capability.setContainerPort(port);
+			return;
+		}
+		ModelNode nodePort = getLowestPort();
+		if(nodePort == null) {
+			nodePort = get(SERVICE_PORT).add();
+		}
+		nodePort.get(PROPERTY_TARGET_PORT).set(port);
 	}
 	
 	@Override
 	public int getContainerPort(){
-		return asInt(SERVICE_CONTAINER_PORT);
+		if(supports(IServiceSinglePortSupport.class)) {
+			IServiceSinglePortSupport capability = getCapability(IServiceSinglePortSupport.class);
+			return capability.getContainerPort();
+		}
+		ModelNode port = getLowestPort();
+		return port != null ? port.get(PROPERTY_TARGET_PORT).asInt() : 0;
 	}
 
 	@Override
