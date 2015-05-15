@@ -10,7 +10,7 @@
 	</appender>
 
 	<logger name="com.openshift">
-		<level value="error" />
+		<level value="debug" />
 	</logger>
 
 	<root>

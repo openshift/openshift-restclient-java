@@ -32,4 +32,8 @@ public class KerbrosBrokerAuthorizationStrategy implements	IAuthorizationStrateg
 		request.setProperty(IHttpClient.PROPERTY_AUTHIV, authIV);
 	}
 
+	@Override
+	public void accept(IAuthorizationStrategyVisitor visitor) {
+	}
+
 }

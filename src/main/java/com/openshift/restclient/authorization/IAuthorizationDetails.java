@@ -8,19 +8,35 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.restclient.model.user;
-
-import com.openshift.restclient.model.IResource;
+package com.openshift.restclient.authorization;
 
 /**
+ * The details about how to manually obtain
+ * a request token
+ *  
  * @author jeff.cantrill
  */
-public interface IUser extends IResource {
-
+public interface IAuthorizationDetails {
+	
 	/**
-	 * The full name of this user
-	 * @return 
+	 * The message returned from the server
+	 * for being unauthorized if provided
+	 * @return the message or empty string
 	 */
-	String getFullName();
-
+	String getMessage();
+	
+	/**
+	 * The link to visit to request a valid
+	 * token that can be used to access
+	 * the server if provided
+	 * @return the link or null if not provided
+	 */
+	String getRequestTokenLink();
+	
+	/**
+	 * The authentication scheme
+	 * @return
+	 */
+	String getScheme();
+	
 }

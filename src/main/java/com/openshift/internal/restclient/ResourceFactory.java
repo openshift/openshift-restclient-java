@@ -46,7 +46,7 @@ import com.openshift.internal.restclient.model.oauth.OAuthClientAuthorization;
 import com.openshift.internal.restclient.model.project.OpenshiftProjectRequest;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.template.Template;
-import com.openshift.internal.restclient.model.user.OpenshiftUser;
+import com.openshift.internal.restclient.model.user.OpenShiftUser;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceFactoryException;
@@ -83,7 +83,7 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.RoleBinding, RoleBinding.class);
 		IMPL_MAP.put(ResourceKind.Route, Route.class);
 		IMPL_MAP.put(ResourceKind.Template, Template.class);
-		IMPL_MAP.put(ResourceKind.User, OpenshiftUser.class);
+		IMPL_MAP.put(ResourceKind.User, OpenShiftUser.class);
 		
 		//Kubernetes Kinds
 		IMPL_MAP.put(ResourceKind.Event, KubernetesEvent.class);

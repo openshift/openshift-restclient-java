@@ -8,14 +8,33 @@
  ******************************************************************************/
 package com.openshift.restclient.authorization;
 
+import com.openshift.restclient.model.user.IUser;
+
 /**
  * @author Jeff Cantrill
  */
 public interface IAuthorizationContext {
-
-	AuthorizationType getType();
 	
+	public static final String AUTHSCHEME_BASIC = "Basic";
+	public static final String AUTHSCHEME_OAUTH = "OAuth";
+	
+	/**
+	 * The authorized user if it can be found for this token
+	 * @return return the user for the token or null if not authorized
+	 */
+	IUser getUser();
+	
+	/**
+	 * 
+	 * @return true if the token is non-null; false otherwise
+	 */
 	boolean isAuthorized();
+	
+	/**
+	 * The authorization scope if it can be determined.
+	 * @return the scope or null if unknown
+	 */
+	String getAuthScheme();
 	
 	/**
 	 * Token to use for authentication.  Will return non-null
@@ -30,10 +49,5 @@ public interface IAuthorizationContext {
 	 * @return
 	 */
 	String getExpiresIn();
-	
-	static enum AuthorizationType {
-		Basic,
-		Kerberos
-	}
-	
+
 }

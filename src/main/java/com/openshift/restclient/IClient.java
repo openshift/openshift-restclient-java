@@ -13,10 +13,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.openshift.restclient.authorization.IAuthorizationClient;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
 import com.openshift.restclient.capability.ICapable;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.user.IUser;
 
 /**
  * Client is the the simplest interface for interacting with the OpenShift
@@ -25,7 +27,7 @@ import com.openshift.restclient.model.IResource;
  * @author Jeff Cantrill
  *
  */
-public interface IClient extends ICapable{
+public interface IClient extends ICapable, IAuthorizationClient{
 	
 	/**
 	 * Lists all possible resources of the given kind in the default namespace
@@ -127,10 +129,19 @@ public interface IClient extends ICapable{
 	 */
 	void setAuthorizationStrategy(IAuthorizationStrategy strategy);
 
+	IAuthorizationStrategy getAuthorizationStrategy();
+	
 	/**
 	 * Returns the resource factory used to create resources based on the
 	 * response from the server
 	 * @return
 	 */
 	IResourceFactory getResourceFactory();
+	
+	/**
+	 * @return the user associated with the current session
+	 */
+	IUser getCurrentUser();
+
+
 }

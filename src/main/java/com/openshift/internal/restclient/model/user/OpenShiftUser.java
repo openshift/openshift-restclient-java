@@ -18,11 +18,15 @@ import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.user.IUser;
 
-public class OpenshiftUser extends KubernetesResource implements IUser {
+public class OpenShiftUser extends KubernetesResource implements IUser {
 
-	public OpenshiftUser(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+	public OpenShiftUser(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
 		super(node, client, propertyKeys);
-		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String getFullName() {
+		return asString(USER_FULLNAME);
 	}
 
 }

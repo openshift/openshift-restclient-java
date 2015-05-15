@@ -23,7 +23,7 @@ import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.NoopSSLCertificateCallback;
 import com.openshift.restclient.authorization.AuthorizationClientFactory;
-import com.openshift.restclient.authorization.OAuthStrategy;
+import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -38,17 +38,30 @@ public class IntegrationTestHelper {
 		loadProperties();
 	}
 	
+	public String getDefaultClusterAdminUser() {
+		return  prop.getProperty("default.clusteradmin.user");
+		
+	}
+
+	public String getDefaultClusterAdminPassword() {
+		return  prop.getProperty("default.clusteradmin.password");
+	}
+	
 	public IClient createClient(){
 		final String server = prop.getProperty("serverURL");
-		final String user = prop.getProperty("default.clusteradmin.user");
-		final String password = prop.getProperty("default.clusteradmin.password");
 		DefaultClient client;
 		try {
 			client = new DefaultClient(new URL(server), new NoopSSLCertificateCallback());
-			client.setAuthorizationStrategy(new OAuthStrategy(server, new AuthorizationClientFactory().create(), user, password));
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
+		return client;
+	}
+	public IClient createClientForBasicAuth() {
+		IClient client = createClient();
+		final String user = getDefaultClusterAdminUser();
+		final String password = getDefaultClusterAdminPassword();
+		client.setAuthorizationStrategy(new BasicAuthorizationStrategy(user, password,"abcdef"));
 		return client;
 	}
 	

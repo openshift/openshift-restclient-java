@@ -190,7 +190,7 @@ public class HttpClientTest extends TestTimer {
 		IHttpClient httpClient = new UrlConnectionHttpClientBuilder()
 				.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
 				.setUserAgent("com.openshift.client.test")
-				.setCredentials(username, password)
+				.setCredentials(username, password, null)
 				.client();
 
 		String response = httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
