@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
+import java.io.InputStream;
 import java.util.List;
 
 import com.openshift.restclient.model.IResource;
@@ -37,6 +38,15 @@ public interface IResourceFactory {
 	 * @throws ResourceFactoryException  if it is unable to create resources
 	 */
 	<T extends IResource> T create(String response) ;
+
+	/**
+	 * Create a resource from a response string
+	 * @param input Read the given input stream which assumes the input
+	 *                         is parsable JSON representing a valid resource
+	 * @return
+	 * @throws ResourceFactoryException  if it is unable to create resources
+	 */
+	<T extends IResource> T create(InputStream input) ;
 
 	/**
 	 * Create a resource for a given version and kind
