@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.model.Build;
@@ -90,11 +93,25 @@ public class ResourceFactory implements IResourceFactory{
 		return resources;
 	}
 
+	@Override
+	public <T extends IResource> T create(InputStream input) {
+		try {
+			String resource = IOUtils.toString(input, "UTF-8");
+			return create(resource);
+		} catch (IOException e) {
+			throw new ResourceFactoryException(e, "There was an exception creating the resource from the InputStream");
+		}
+	}
+
 	public <T extends IResource> T create(String response) {
-		ModelNode node = ModelNode.fromJSONString(response);
-		String version = node.get(APIVERSION).asString();
-		ResourceKind kind = ResourceKind.valueOf(node.get(KIND).asString());
-		return create(node, version, kind);
+		try {
+			ModelNode node = ModelNode.fromJSONString(response);
+			String version = node.get(APIVERSION).asString();
+			ResourceKind kind = ResourceKind.valueOf(node.get(KIND).asString());
+			return create(node, version, kind);
+		}catch(Exception e) {
+			throw new ResourceFactoryException(e, "There was an exception creating the resource from: %s", response);
+		}
 	}
 
 	public <T extends IResource> T create(String version, ResourceKind kind) {
