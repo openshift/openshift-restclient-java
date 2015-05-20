@@ -15,18 +15,33 @@ package com.openshift.restclient;
  */
 // TODO: evaluate replacing this by constants/class since enums are not extendable
 public enum ResourceKind {
-	
+	//OpenShift Kinds
 	Build("builds"),
 	BuildConfig("buildconfigs"),
 	DeploymentConfig("deploymentconfigs"),
 	ImageStream("imagestreams"),
+	OAuthAccessToken("oauthaccesstokens"),
+	OAuthAuthorizeToken("oauthauthorizetokens"),
+	OAuthClient("oauthclients"),
+	OAuthClientAuthorization("oauthclientauthorizations"),
+	Policy("policies"),
+	PolicyBinding("policybindings"),
 	Project("projects"),
+	ProjectRequest("projectrequests"),
+	Role("roles"),
+	RoleBinding("rolebindings"),
+	Route("routes"),
+	Template("templates"),
+	User("users"),
+	
+	//Kubernetes Kinds
+	Event("events"),
+	LimitRange("limitranges"),
 	Pod("pods"),
 	ReplicationController("replicationcontrollers"),
-	Route("routes"),
+	ResourceQuota("resourcequotas"), 
 	Service("services"), 
-	Template("templates"),
-	
+
 	/*
 	 * These are not true resources that can be used (mostly) in
 	 * RESTful operations

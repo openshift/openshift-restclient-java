@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,14 +26,27 @@ import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.internal.restclient.model.Config;
 import com.openshift.internal.restclient.model.DeploymentConfig;
 import com.openshift.internal.restclient.model.ImageStream;
+import com.openshift.internal.restclient.model.KubernetesEvent;
+import com.openshift.internal.restclient.model.LimitRange;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.internal.restclient.model.Project;
 import com.openshift.internal.restclient.model.ReplicationController;
+import com.openshift.internal.restclient.model.ResourceQuota;
 import com.openshift.internal.restclient.model.Route;
 import com.openshift.internal.restclient.model.Service;
 import com.openshift.internal.restclient.model.Status;
+import com.openshift.internal.restclient.model.authorization.OpenshiftPolicy;
+import com.openshift.internal.restclient.model.authorization.OpenshiftRole;
+import com.openshift.internal.restclient.model.authorization.PolicyBinding;
+import com.openshift.internal.restclient.model.authorization.RoleBinding;
+import com.openshift.internal.restclient.model.oauth.OAuthAccessToken;
+import com.openshift.internal.restclient.model.oauth.OAuthAuthorizeToken;
+import com.openshift.internal.restclient.model.oauth.OAuthClient;
+import com.openshift.internal.restclient.model.oauth.OAuthClientAuthorization;
+import com.openshift.internal.restclient.model.project.OpenshiftProjectRequest;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.template.Template;
+import com.openshift.internal.restclient.model.user.OpenshiftUser;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceFactoryException;
@@ -50,24 +64,44 @@ public class ResourceFactory implements IResourceFactory{
 	private static final String APIVERSION = "apiVersion";
 	private static final Map<ResourceKind, Class<? extends IResource>> IMPL_MAP = new HashMap<ResourceKind, Class<? extends IResource>>();
 	static {
+		//OpenShift kinds
 		IMPL_MAP.put(ResourceKind.Build, Build.class);
 		IMPL_MAP.put(ResourceKind.BuildConfig, BuildConfig.class);
 		IMPL_MAP.put(ResourceKind.Config, Config.class);
 		IMPL_MAP.put(ResourceKind.DeploymentConfig, DeploymentConfig.class);
 		IMPL_MAP.put(ResourceKind.ImageStream, ImageStream.class);
 		IMPL_MAP.put(ResourceKind.List, com.openshift.internal.restclient.model.List.class);
+		IMPL_MAP.put(ResourceKind.OAuthAccessToken, OAuthAccessToken.class);
+		IMPL_MAP.put(ResourceKind.OAuthAuthorizeToken, OAuthAuthorizeToken.class);
+		IMPL_MAP.put(ResourceKind.OAuthClient, OAuthClient.class);
+		IMPL_MAP.put(ResourceKind.OAuthClientAuthorization, OAuthClientAuthorization.class);
 		IMPL_MAP.put(ResourceKind.Project, Project.class);
-		IMPL_MAP.put(ResourceKind.Pod, Pod.class);
-		IMPL_MAP.put(ResourceKind.ReplicationController, ReplicationController.class);
+		IMPL_MAP.put(ResourceKind.ProjectRequest, OpenshiftProjectRequest.class);
+		IMPL_MAP.put(ResourceKind.Policy, OpenshiftPolicy.class);
+		IMPL_MAP.put(ResourceKind.PolicyBinding, PolicyBinding.class);
+		IMPL_MAP.put(ResourceKind.Role, OpenshiftRole.class);
+		IMPL_MAP.put(ResourceKind.RoleBinding, RoleBinding.class);
 		IMPL_MAP.put(ResourceKind.Route, Route.class);
+		IMPL_MAP.put(ResourceKind.Template, Template.class);
+		IMPL_MAP.put(ResourceKind.User, OpenshiftUser.class);
+		
+		//Kubernetes Kinds
+		IMPL_MAP.put(ResourceKind.Event, KubernetesEvent.class);
+		IMPL_MAP.put(ResourceKind.LimitRange, LimitRange.class);
+		IMPL_MAP.put(ResourceKind.Pod, Pod.class);
+		IMPL_MAP.put(ResourceKind.ResourceQuota, ResourceQuota.class);
+		IMPL_MAP.put(ResourceKind.ReplicationController, ReplicationController.class);
 		IMPL_MAP.put(ResourceKind.Status, Status.class);
 		IMPL_MAP.put(ResourceKind.Service, Service.class);
-		IMPL_MAP.put(ResourceKind.Template, Template.class);
 	}
 	private IClient client;
 	
 	public ResourceFactory(IClient client) {
 		this.client = client;
+	}
+	
+	public static Map<ResourceKind, Class<? extends IResource>> getImplMap(){
+		return Collections.unmodifiableMap(IMPL_MAP);
 	}
 
 	public List<IResource> createList(String json, ResourceKind kind){

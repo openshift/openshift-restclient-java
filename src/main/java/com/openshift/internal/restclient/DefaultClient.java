@@ -324,18 +324,31 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			typeMappings.put(ResourceKind.BuildConfig, osEndpoint);
 			typeMappings.put(ResourceKind.DeploymentConfig, osEndpoint);
 			typeMappings.put(ResourceKind.ImageStream, osEndpoint);
+			typeMappings.put(ResourceKind.OAuthAccessToken, osEndpoint);
+			typeMappings.put(ResourceKind.OAuthAuthorizeToken, osEndpoint);
+			typeMappings.put(ResourceKind.OAuthClient, osEndpoint);
+			typeMappings.put(ResourceKind.OAuthClientAuthorization, osEndpoint);
+			typeMappings.put(ResourceKind.Policy, osEndpoint);
+			typeMappings.put(ResourceKind.PolicyBinding, osEndpoint);
 			typeMappings.put(ResourceKind.Project, osEndpoint);
+			typeMappings.put(ResourceKind.ProjectRequest, osEndpoint);
+			typeMappings.put(ResourceKind.Role, osEndpoint);
+			typeMappings.put(ResourceKind.RoleBinding, osEndpoint);
 			typeMappings.put(ResourceKind.Route, osEndpoint);
 			typeMappings.put(ResourceKind.Template, osEndpoint);
+			typeMappings.put(ResourceKind.User, osEndpoint);
 			//not real kinds
 			typeMappings.put(ResourceKind.TemplateConfig, osEndpoint);
 			typeMappings.put(ResourceKind.ProcessedTemplates, osEndpoint);
 			
 			//Kubernetes endpoints
 			final String k8eEndpoint = String.format("%s/%s", apiEndpoint, getKubernetesVersion());
+			typeMappings.put(ResourceKind.Event, k8eEndpoint);
 			typeMappings.put(ResourceKind.Pod, k8eEndpoint);
-			typeMappings.put(ResourceKind.Service, k8eEndpoint);
+			typeMappings.put(ResourceKind.LimitRange, k8eEndpoint);
 			typeMappings.put(ResourceKind.ReplicationController, k8eEndpoint);
+			typeMappings.put(ResourceKind.ResourceQuota, k8eEndpoint);
+			typeMappings.put(ResourceKind.Service, k8eEndpoint);
 		}
 		return typeMappings;
 	}
