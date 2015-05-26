@@ -60,7 +60,9 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(DEPLOYMENTCONFIG_STRATEGY, new String[]{"template","strategy","type"});
 		
 		put(IMAGESTREAM_DOCKER_IMAGE_REPO, new String[]{"status","dockerImageRepository"});
-		
+
+		put(KIND, new String[] { "kind" });
+
 		put(PROJECT_DISPLAY_NAME, new String[]{"displayName"});
 		
 		put(ROUTE_HOST, new String[] { "host" });
@@ -116,6 +118,8 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(DEPLOYMENTCONFIG_REPLICA_SELECTOR, new String[]{"spec","selector"});
 		put(DEPLOYMENTCONFIG_TRIGGERS, new String[]{"spec","triggers"});
 		put(DEPLOYMENTCONFIG_STRATEGY, new String[]{"spec","strategy","type"});
+
+		put(KIND, new String[]{"kind"});
 		
 		put(IMAGESTREAM_DOCKER_IMAGE_REPO, new String[]{"status","dockerImageRepository"});
 		

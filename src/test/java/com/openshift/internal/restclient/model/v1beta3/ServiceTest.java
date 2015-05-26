@@ -8,8 +8,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.v1beta3;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +90,7 @@ public class ServiceTest{
 
 	@Test
 	public void testSetName() {
-		service.setName("hello-openshift");
+		((Service) service).setName("hello-openshift");
 		assertEquals("hello-openshift", service.getName());
 	}
 	
@@ -101,7 +101,10 @@ public class ServiceTest{
 
 	@Test
 	public void testSetNamespace() {
-		service.setNamespace("foo");
+		// pre-condition
+		// operation
+		((Service) service).setNamespace("foo");
+		// verification
 		assertEquals("foo", service.getNamespace());
 	}
 }

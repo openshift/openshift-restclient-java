@@ -20,6 +20,8 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String LABELS = "labels";
 	static final String NAME = "name";
 	static final String NAMESPACE = "namespace";
+	static final String DISPLAYNAME = "displayName";
+	static final String KIND = "kind";
 	
 	static final String REPLICATION_CONTROLLER_CONTAINERS = "replicationcontroller.containers";
 	static final String REPLICATION_CONTROLLER_REPLICA_COUNT = "replicationcontroller.replicacount";

@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +35,7 @@ public class ResourceTest {
 	public void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_SERVICE.getContentAsString());
-		resource = new KubernetesResource(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Service));
+		resource = new KubernetesResource(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Service)) {};
 	}
 	
 	@Test

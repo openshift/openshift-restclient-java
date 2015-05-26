@@ -25,7 +25,6 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
-import com.openshift.restclient.model.IConfig;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
 import com.openshift.restclient.utils.Samples;
@@ -52,7 +51,7 @@ public class ServerTemplateProcessingIntegrationTest {
 	public void testProcessAndApplyTemplate() throws Exception{
 		final Collection<IResource> results = new ArrayList<IResource>();
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_TEMPLATE.getContentAsString());
-		final ITemplate template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Template));
+		final Template template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Template));
 		template.setNamespace(COMMON);
 		try {
 			client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {
@@ -73,7 +72,7 @@ public class ServerTemplateProcessingIntegrationTest {
 					return null;
 				}
 			}, new Object());
-		}finally {
+		} finally {
 			IntegrationTestHelper.cleanUpResource(client, template);
 			for (IResource resource : results) {
 				IntegrationTestHelper.cleanUpResource(client, resource);

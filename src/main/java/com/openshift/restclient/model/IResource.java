@@ -20,7 +20,7 @@ import com.openshift.restclient.capability.ICapable;
  * 
  * @author Jeff Cantrill
  */
-public interface IResource extends ICapable{
+public interface IResource extends ICapable {
 
 	/**
 	 * Retrieves the list of capabilities supported by this resource
@@ -54,22 +54,10 @@ public interface IResource extends ICapable{
 	String getName();
 	
 	/**
-	 * Sets the identifier for this resource
-	 * @param name
-	 */
-	void setName(String name);
-	
-	/**
 	 * Returns the scope of this resource
 	 * @return
 	 */
 	String getNamespace();
-	
-	/**
-	 * Sets the scope of this resource
-	 * @param namespace
-	 */
-	void setNamespace(String namespace);
 	
 	/**
 	 * Retrieves the labels associated with the resource

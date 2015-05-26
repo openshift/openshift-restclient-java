@@ -30,7 +30,7 @@ public class JBossDmrExtentions {
 		if(propertyKeys != null){
 			String [] path = propertyKeys.get(property);
 			ModelNode node = root.get(path);
-			if( ModelType.UNDEFINED == node.getType())
+			if( !node.isDefined())
 				return map;
 			for (String key : node.keys()) {
 				map.put(key, node.get(key).asString());

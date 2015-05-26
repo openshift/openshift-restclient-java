@@ -89,7 +89,7 @@ public class V1Beta1ServiceTest{
 
 	@Test
 	public void testSetName() {
-		service.setName("hello-openshift");
+		((Service) service).setName("hello-openshift");
 		assertEquals("hello-openshift", service.getName());
 	}
 	
@@ -100,7 +100,10 @@ public class V1Beta1ServiceTest{
 
 	@Test
 	public void testSetNamespace() {
-		service.setNamespace("foo");
+		// pre-condition
+		// operation
+		((Service) service).setNamespace("foo");
+		// verification
 		assertEquals("foo", service.getNamespace());
 	}
 }

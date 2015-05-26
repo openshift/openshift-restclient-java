@@ -23,6 +23,7 @@ public interface KubernetesApiModelProperties extends ResourcePropertyKeys{
 		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
 		put(APIVERSION, new String [] {"apiVersion"});
 		put(CREATION_TIMESTAMP, new String []  {"metadata","creationTimestamp"});
+		put(KIND, new String[] { "kind" });
 		put(LABELS, new String []  {"metadata","labels"});
 		put(NAME , new String []  {"metadata","name"});
 		put(NAMESPACE, new String []  {"metadata","namespace"});
@@ -57,6 +58,7 @@ public interface KubernetesApiModelProperties extends ResourcePropertyKeys{
 		put(ANNOTATIONS, new String [] {"annotations"});
 		put(APIVERSION, new String [] {"apiVersion"});
 		put(CREATION_TIMESTAMP, new String []  {"creationTimestamp"});
+		put(KIND, new String[] { "kind" });
 		put(LABELS, new String []  {"labels"});
 		put(NAME , new String []  {"id"});
 		put(NAMESPACE, new String []  {"namespace"});

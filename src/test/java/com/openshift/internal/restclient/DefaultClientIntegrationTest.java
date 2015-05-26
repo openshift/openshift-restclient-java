@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.net.MalformedURLException;
 import java.util.List;
@@ -18,15 +18,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.Project;
 import com.openshift.internal.restclient.model.Service;
+import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
-import com.openshift.restclient.model.IService;
 import com.openshift.restclient.model.template.ITemplate;
 import com.openshift.restclient.utils.Samples;
 
@@ -52,8 +51,9 @@ public class DefaultClientIntegrationTest {
 	
 	@Test
 	public void testListTemplates(){
-		ITemplate template = null; 
-		IProject project = null;
+		Template template = null; 
+		Project project = null;
+		
 		try {
 			project = factory.create(VERSION, ResourceKind.Project);
 			project.setName(helper.generateNamespace());
@@ -68,7 +68,7 @@ public class DefaultClientIntegrationTest {
 			for (ITemplate t : list) {
 				LOG.debug(t.toString());
 			}
-		}finally {
+		} finally {
 			cleanUpResource(client, template);
 			cleanUpResource(client, project);
 		}
@@ -79,14 +79,14 @@ public class DefaultClientIntegrationTest {
 		
 		
 		IProject project = factory.create(VERSION, ResourceKind.Project);
-		project.setName(helper.generateNamespace());
+		((Project) project).setName(helper.generateNamespace());
 		LOG.debug(String.format("Stubbing project: %s", project));
 		
 		IProject other = factory.create(VERSION, ResourceKind.Project);
-		other.setName(helper.generateNamespace());
+		((Project) other).setName(helper.generateNamespace());
 		LOG.debug(String.format("Stubbing project: %s", project));
 		
-		IService service = factory.create(VERSION, ResourceKind.Service);
+		Service service = factory.create(VERSION, ResourceKind.Service);
 		service.setNamespace(project.getName()); //this will be the project's namespace
 		service.setName("some-service");
 		service.setContainerPort(6767);

@@ -31,14 +31,14 @@ import com.openshift.restclient.model.IResource;
  * 
  * @author Jeff Cantrill
  */
-public class KubernetesResource implements IResource, ResourcePropertyKeys{
+public abstract class KubernetesResource implements IResource, ResourcePropertyKeys {
 	
 	private ModelNode node;
 	private IClient client;
 	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
 	private Map<String, String []> propertyKeys;
 	
-	public KubernetesResource(ModelNode node, IClient client, Map<String, String []> propertyKeys){
+	protected KubernetesResource(ModelNode node, IClient client, Map<String, String []> propertyKeys){
 		this.node = node;
 		this.client = client;
 		this.propertyKeys = propertyKeys;
@@ -105,11 +105,11 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 		this.node = ModelNode.fromJSONString(client.get(getKind(), getName(), getNamespace()).toString());
 	}
 	
-	// TODO Pretty certain this should be protected
 	@Override
 	public ResourceKind getKind(){
-		if(node.has("kind")){
-			return ResourceKind.valueOf(node.get("kind").asString());
+		ModelNode kindNode = get(ResourcePropertyKeys.KIND);
+		if(kindNode.isDefined()){
+			return ResourceKind.valueOf(kindNode.asString());
 		}
 		return null;
 	}
@@ -128,7 +128,6 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 		return asString(NAME);
 	}
 	
-	@Override
 	public void setName(String name) {
 		set(NAME, name);
 	}
@@ -142,14 +141,13 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 		return node.asString();
 	}
 	
-	@Override
 	public void setNamespace(String namespace){
 		set(NAMESPACE, namespace);
 	}
 
 	@Override
 	public void addLabel(String key, String value) {
-		ModelNode labels = node.get("labels");
+		ModelNode labels = node.get(ResourcePropertyKeys.LABELS);
 		labels.get(key).set(value);
 	}
 	
@@ -161,20 +159,25 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 	
 	/*---------- utility methods ------*/
 	protected ModelNode get(String key){
-		String [] property = propertyKeys.get(key);
-		return node.get(property);
+		return node.get(getPath(key));
 	}
-	
+
 	protected void set(String key, int value) {
-		String [] property = propertyKeys.get(key);
-		node.get(property).set(value);
+		node.get(getPath(key)).set(value);
 	}
 	
 	protected void set(String key, String value){
-		String [] property = propertyKeys.get(key);
-		node.get(property).set(value);
+		node.get(getPath(key)).set(value);
 	}
 	
+	private String[] getPath(String key) {
+		String [] property = propertyKeys.get(key);
+		if (property == null) {
+			throw new IllegalArgumentException(String.format("key %s is not known to the resource %s", key, getName().isEmpty()? getClass().getSimpleName() : getName()));
+		}
+		return property;
+	}
+
 	protected Map<String, String> asMap(String property){
 		return JBossDmrExtentions.asMap(this.node, propertyKeys, property);
 	}
@@ -203,26 +206,52 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys{
 	
 	@Override
 	public int hashCode() {
+		String namespace = getNamespace();
+		String name = getName();
+		ResourceKind kind = getKind();
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((node == null) ? 0 : node.hashCode());
-		return result;
+		return prime * (namespace.hashCode() + name.hashCode() + kind.hashCode()); 
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		else if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		else if (getClass() != obj.getClass())
 			return false;
-		KubernetesResource other = (KubernetesResource) obj;
-		if (node == null) {
-			if (other.node != null)
-				return false;
-		} else if (!node.equals(other.node))
-			return false;
+		else {
+			KubernetesResource other = (KubernetesResource) obj; 
+			if (getKind() != null){
+				if (getKind() != other.getKind()) {
+					return false;
+				}
+			} else {
+				if (other.getKind() != null) {
+					return false;
+				}
+			}
+			if (getNamespace() != null) {
+				if(!getNamespace().equals(other.getNamespace())) {
+					return false;
+				}
+			} else {
+				if (other.getNamespace() != null) {
+					return false;
+				}
+			}
+			if (getName() != null) {
+				if(!getName().equals(other.getName())) {
+					return false;
+				}
+			} else {
+				if (other.getName() != null) {
+					return false;
+				}
+			}
+			
+		}
 		return true;
 	}
 	

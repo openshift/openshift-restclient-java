@@ -8,7 +8,11 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import static org.junit.Assert.*;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +21,9 @@ import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.openshift.internal.restclient.model.KubernetesResource;
+import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
+import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
@@ -34,15 +39,31 @@ public class KubernetesResourceTest {
 
 	@Before
 	public void setup(){
+		this.node = createv1Beta1ModelNode();
+		this.resource = createKubernetesResource(OpenShiftAPIVersion.v1beta1.toString(), node);
+	}
+
+	private ModelNode createv1Beta1ModelNode() {
+		node = new ModelNode();
+
 		ModelNode annotations = new ModelNode();
 		annotations.get("foo").set("bar");
 		annotations.get("template").set("foobar");
-		node = new ModelNode();
-		node.get("annotations").set(annotations);
+		node.get(ResourcePropertyKeys.ANNOTATIONS).set(annotations);
 		
-		resource = new KubernetesResource(node, null, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Service));
-		
+		node.get(ResourcePropertyKeys.NAME).set("bartender");
+		node.get(ResourcePropertyKeys.NAMESPACE).set("foofighters");
+		// return dummy kind to avoid NPE
+		node.get(ResourcePropertyKeys.KIND).set(ResourceKind.List.toString());
+
+		return node;
 	}
+	
+	private KubernetesResource createKubernetesResource(String modelVersion, ModelNode node) {
+		return new KubernetesResource(node, null,
+				ResourcePropertiesRegistry.getInstance().get(modelVersion, ResourceKind.Service)) {};
+	}
+
 	@Test
 	public void testGetAnnotation() {
 		assertEquals("bar", resource.getAnnotation("foo"));
@@ -83,4 +104,109 @@ public class KubernetesResourceTest {
 		}, new Object());
 		assertEquals("Exp. the visitor to be visited", 1, visited.size());
 	}
+
+	@Test
+	public void shouldSameHashCodeOnAddedLabels() {
+		// pre-condition
+		int hashCodeBeforeChange = resource.hashCode();
+		
+		// operation
+		resource.set(ResourcePropertyKeys.LABELS, "kungfoo");
+
+		// verification
+		int hashCodeAfterChange = resource.hashCode();
+		assertEquals(hashCodeBeforeChange, hashCodeAfterChange);
+	}
+
+	@Test
+	public void shouldDifferentHashCodeOnDifferentName() {
+		// pre-condition
+		int hashCodeBeforeChange = resource.hashCode();
+		
+		// operation
+		resource.set(ResourcePropertyKeys.NAME, "brucefoolee");
+		
+		// verification
+		int hashCodeAfterChange = resource.hashCode();
+		assertThat(hashCodeBeforeChange).isNotEqualTo(hashCodeAfterChange);
+	}
+
+	@Test
+	public void shouldDifferentHashCodeOnDifferentResourceKind() {
+		// pre-condition
+		int hashCodeBeforeChange = resource.hashCode();
+		
+		// operation
+		node.get(ResourcePropertyKeys.KIND).set(ResourceKind.Event.toString());
+		
+		// verification
+		int hashCodeAfterChange = resource.hashCode();
+		assertThat(hashCodeBeforeChange).isNotEqualTo(hashCodeAfterChange);
+	}
+
+	@Test
+	public void shouldDifferentHashCodeOnDifferentNamespace() {
+		// pre-condition
+		int hashCodeBeforeChange = resource.hashCode();
+		
+		// operation
+		node.get(ResourcePropertyKeys.NAMESPACE).set("barfoo");
+		
+		// verification
+		int hashCodeAfterChange = resource.hashCode();
+		assertThat(hashCodeBeforeChange).isNotEqualTo(hashCodeAfterChange);
+	}
+	
+	@Test
+	public void shouldEqualsOnAddedLabels() {
+		// pre-condition
+		KubernetesResource otherResource = createKubernetesResource(OpenShiftAPIVersion.v1beta1.toString(), node);
+		assertEquals(resource, otherResource);
+
+		// operation
+		otherResource.set(ResourcePropertyKeys.LABELS, "bruceleefoo");
+
+		// verification
+		assertEquals(resource, otherResource);
+	}
+
+	@Test
+	public void shouldNotEqualsOnDifferentName() {
+		// pre-condition
+		KubernetesResource otherResource = createKubernetesResource(OpenShiftAPIVersion.v1beta1.toString(), createv1Beta1ModelNode());
+		assertEquals(resource, otherResource);
+
+		// operation
+		otherResource.set(ResourcePropertyKeys.NAME, "kungfoo");
+		
+		// verification
+		assertThat(resource).isNotEqualTo(otherResource);
+	}
+
+	@Test
+	public void shouldNotEqualsOnDifferentNamespace() {
+		// pre-condition
+		KubernetesResource otherResource = createKubernetesResource(OpenShiftAPIVersion.v1beta1.toString(), createv1Beta1ModelNode());
+		assertEquals(resource, otherResource);
+
+		// operation
+		otherResource.set(ResourcePropertyKeys.NAMESPACE, "karate");
+		
+		// verification
+		assertThat(resource).isNotEqualTo(otherResource);
+	}
+
+	@Test
+	public void shouldNotEqualsOnDifferentResourceKind() {
+		// pre-condition
+		KubernetesResource otherResource = createKubernetesResource(OpenShiftAPIVersion.v1beta1.toString(), createv1Beta1ModelNode());
+		assertEquals(resource, otherResource);
+
+		// operation
+		otherResource.set(ResourcePropertyKeys.KIND, ResourceKind.Event.toString());
+		
+		// verification
+		assertThat(resource).isNotEqualTo(otherResource);
+	}
+
 }
