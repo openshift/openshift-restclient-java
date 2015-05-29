@@ -32,7 +32,7 @@ public class BasicAuthorizationStrategyTest {
 	
 	@Before
 	public void setup(){
-		strategy= new BasicAuthorizationStrategy("aUserName", "aPassword");
+		strategy= new BasicAuthorizationStrategy("aUserName", "aPassword",null);
 	}
 	
 	@Test

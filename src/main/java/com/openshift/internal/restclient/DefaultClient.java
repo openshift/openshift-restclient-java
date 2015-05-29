@@ -34,13 +34,19 @@ import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedOperationException;
+import com.openshift.restclient.authorization.AuthorizationClientFactory;
+import com.openshift.restclient.authorization.IAuthorizationClient;
+import com.openshift.restclient.authorization.IAuthorizationContext;
+import com.openshift.restclient.authorization.IAuthorizationDetails;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
+import com.openshift.restclient.authorization.ResourceForbiddenException;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.http.IHttpStatusCodes;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.user.IUser;
 
 /**
  * @author Jeff Cantrill
@@ -63,6 +69,8 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	private final Map<ResourceKind, String> typeMappings = new HashMap<ResourceKind, String>();
 	private String openShiftVersion;
 	private String kubernetesVersion;
+	private IAuthorizationStrategy strategy;
+	private IAuthorizationClient authClient;
 	
 	public DefaultClient(URL baseUrl, ISSLCertificateCallback sslCertCallback){
 		this(baseUrl, null, sslCertCallback);
@@ -77,6 +85,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		factory = new ResourceFactory(this);
 		openShiftVersion = System.getProperty(SYSTEM_PROP_OPENSHIFT_API_VERSION, null);
 		kubernetesVersion = System.getProperty(SYSTEM_PROP_K8E_API_VERSION, null);
+		authClient = new AuthorizationClientFactory().create(this);
 	}
 	
 	/*
@@ -88,6 +97,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		.setSSLCertificateCallback(sslCertCallback)
 		.client();
 	}
+	
 	@Override
 	public IResourceFactory getResourceFactory() {
 		return factory;
@@ -361,7 +371,13 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	@SuppressWarnings("deprecation")
 	@Override
 	public void setAuthorizationStrategy(IAuthorizationStrategy strategy) {
+		this.strategy = strategy;
 		this.client.setAuthorizationStrategy(strategy);
+	}
+	
+	@Override
+	public IAuthorizationStrategy getAuthorizationStrategy() {
+		return this.strategy;
 	}
 
 	private OpenShiftException handleHttpClientException(String message, HttpClientException e) {
@@ -369,12 +385,36 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		if (e.getMessage().startsWith("{")) {
 			Status status = factory.create(e.getMessage());
 			if(status.getCode() == STATUS_FORBIDDEN) {
-				//TODO replace with exception not based on HttpClient or refactor
-				throw new UnauthorizedException(status.getMessage(), e);
+				return new ResourceForbiddenException(status.getMessage(), e);
 			}
 			return new OpenShiftException(e, status, message);
 		} else {
+			if(e instanceof UnauthorizedException) {
+				return new com.openshift.restclient.authorization.UnauthorizedException(authClient.getAuthorizationDetails(this.baseUrl.toString()));
+			}
 			return new OpenShiftException(e, message);
 		}
 	}
+
+	@Override
+	public IUser getCurrentUser() {
+		return get(ResourceKind.User, "~", "");
+	}
+
+	@Override
+	public IAuthorizationContext getContext(String baseURL) {
+		return this.authClient.getContext(baseURL);
+	}
+
+	@Override
+	public IAuthorizationDetails getAuthorizationDetails(String baseURL) {
+		return this.authClient.getAuthorizationDetails(baseURL);
+	}
+
+	@Override
+	public void setSSLCertificateCallback(ISSLCertificateCallback callback) {
+		this.authClient.setSSLCertificateCallback(callback);
+	}
+	
+	
 }

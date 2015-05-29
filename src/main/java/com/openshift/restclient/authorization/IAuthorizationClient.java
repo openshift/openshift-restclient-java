@@ -16,14 +16,21 @@ import com.openshift.restclient.ISSLCertificateCallback;
 public interface IAuthorizationClient {
 
 	/**
-	 * Retrieve a token for OpenShift using the given baseURL, username, and password
+	 * Retrieve a token for OpenShift.
 	 * 
 	 * @param baseURL
-	 * @param username
-	 * @param password
+	 * @return
+	 * @throws UnauthorizedException
+	 */
+	IAuthorizationContext getContext(final String baseURL);
+	
+	/**
+	 * Retrieve the authorization details for a server
+	 * 
+	 * @param baseURL
 	 * @return
 	 */
-	IAuthorizationContext getContext(final String baseURL, final String username, final String password);
+	IAuthorizationDetails getAuthorizationDetails(String baseURL);
 	
 	/**
 	 * Set the callback handler to use for certificate trust issues.

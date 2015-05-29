@@ -40,8 +40,8 @@ public class UrlConnectionHttpClientBuilder {
 		return this;
 	}
 	
-	public UrlConnectionHttpClientBuilder setCredentials(String username, String password) {
-		return setAuthorizationStrategy(new BasicAuthorizationStrategy(username, password));
+	public UrlConnectionHttpClientBuilder setCredentials(String username, String password, String token) {
+		return setAuthorizationStrategy(new BasicAuthorizationStrategy(username, password, token));
 	}
 	
 	public UrlConnectionHttpClientBuilder setConfigTimeout (Integer configTimeout) {

@@ -15,11 +15,11 @@ import com.openshift.restclient.http.IHttpClient;
  * 
  * @author Jeff Cantrill
  */
-public class BearerTokenAuthorizationStrategy implements IAuthorizationStrategy {
+public class TokenAuthorizationStrategy implements IAuthorizationStrategy {
 
 	private final String token;
 	
-	public BearerTokenAuthorizationStrategy(String token) {
+	public TokenAuthorizationStrategy(String token) {
 		this.token = token;
 	}
 
@@ -31,4 +31,11 @@ public class BearerTokenAuthorizationStrategy implements IAuthorizationStrategy 
 	public String getToken(){
 		return this.token;
 	}
+
+	@Override
+	public void accept(IAuthorizationStrategyVisitor visitor) {
+		visitor.visit(this);
+	}
+
+
 }

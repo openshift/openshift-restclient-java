@@ -8,7 +8,10 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.authorization;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.openshift.restclient.authorization.IAuthorizationContext;
+import com.openshift.restclient.model.user.IUser;
 
 /**
  * @author Jeff Cantrill
@@ -17,18 +20,24 @@ public class AuthorizationContext implements IAuthorizationContext {
 	
 	private String token;
 	private String expires;
-	private boolean authorized;
-	private AuthorizationType type;
+	private String scheme;
+	private IUser user;
 
-	public AuthorizationContext(String token, String expires){
-		this.authorized = true;
+	public AuthorizationContext(String scope){
+		this.scheme = scope;
+	}
+	
+
+	public AuthorizationContext(String token, String expires, IUser user, String scheme){
 		this.token = token;
 		this.expires = expires;
+		this.user = user;
+		this.scheme = scheme;
 	}
-
-	public AuthorizationContext(AuthorizationType type) {
-		this.type = type;
-		this.authorized = false;
+	
+	@Override
+	public boolean isAuthorized() {
+		return StringUtils.isNotEmpty(token);
 	}
 
 	@Override
@@ -40,15 +49,15 @@ public class AuthorizationContext implements IAuthorizationContext {
 	public String getExpiresIn(){
 		return expires;
 	}
-	
+
 	@Override
-	public AuthorizationType getType() {
-		return type;
+	public String getAuthScheme() {
+		return scheme;
 	}
-	
+
 	@Override
-	public boolean isAuthorized() {
-		return authorized;
+	public IUser getUser() {
+		return user;
 	}
 	
 }

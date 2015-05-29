@@ -1,0 +1,16 @@
+{
+    "kind": "User",
+    "apiVersion": "v1beta3",
+    "metadata": {
+        "name": "jordan",
+        "selfLink": "/osapi/v1beta3/users/jordan",
+        "uid": "c09e427e-fff6-11e4-bde0-3c970e4b7ffe",
+        "resourceVersion": "744",
+        "creationTimestamp": "2015-05-21T20:19:58Z"
+    },
+    "identities": [
+        "anypassword:jordan"
+    ],
+    "fullName" : "Foo Master",
+    "groups": null
+}
