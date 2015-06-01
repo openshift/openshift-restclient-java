@@ -147,7 +147,7 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 
 	@Override
 	public void addLabel(String key, String value) {
-		ModelNode labels = node.get(ResourcePropertyKeys.LABELS);
+		ModelNode labels = node.get(getPath(LABELS));
 		labels.get(key).set(value);
 	}
 	
