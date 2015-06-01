@@ -12,13 +12,18 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.openshift.internal.restclient.OpenShiftAPIVersion;
+import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
+import com.openshift.internal.restclient.model.build.STIBuildStrategy;
 import com.openshift.internal.restclient.model.build.WebhookTrigger;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
@@ -48,7 +53,11 @@ public class BuildConfigTest {
 		when(client.getBaseURL()).thenReturn(new URL("https://localhost:8443"));
 		when(client.getOpenShiftAPIVersion()).thenReturn("v1beta3");
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_BUILD_CONFIG.getContentAsString());
-		config = new BuildConfig(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta3", ResourceKind.BuildConfig));
+		config = new BuildConfig(node, client, getPropertyKeys());
+	}
+
+	private static Map<String, String[]> getPropertyKeys() {
+		return ResourcePropertiesRegistry.getInstance().get("v1beta3", ResourceKind.BuildConfig);
 	}
 	
 	@Test
@@ -63,7 +72,7 @@ public class BuildConfigTest {
 	
 	@Test
 	public void getOutputRespositoryName(){
-		assertEquals("origin-ruby-sample",config.getOutputRepositoryName());
+		assertEquals("origin-ruby-sample", config.getOutputRepositoryName());
 	}
 	
 	@Test
@@ -82,13 +91,34 @@ public class BuildConfigTest {
 	@Test
 	public void getSTIBuildStrategy() {
 		IBuildStrategy strategy = config.getBuildStrategy();
+		assertSTIBuildStrategy(strategy);
+	}
+
+	@Test
+	public void setSTIBuildStrategy() {
+		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BuildConfig);
+
+		Map<String, String> env = new HashMap<String, String>();
+		env.put("foo", "bar");
+		writeConfig.setBuildStrategy(new STIBuildStrategy("ruby-20-centos7:latest", "alocation", true, env));
+
+		assertSTIBuildStrategy(reCreateBuildConfig(writeConfig).getBuildStrategy());
+	}
+
+	private void assertSTIBuildStrategy(IBuildStrategy strategy) {
 		assertEquals(BuildStrategyType.STI, strategy.getType());
+		assertTrue(strategy instanceof ISTIBuildStrategy);
+
 		ISTIBuildStrategy sti = (ISTIBuildStrategy)strategy;
 		assertEquals(new DockerImageURI("ruby-20-centos7:latest"), sti.getImage());
 		assertEquals("alocation", sti.getScriptsLocation());
+		assertEquals(true, sti.incremental());
 		assertEquals(1, sti.getEnvironmentVariables().size());
 		assertTrue("Exp. to find the environment variable",sti.getEnvironmentVariables().containsKey("foo"));
 		assertEquals("bar",sti.getEnvironmentVariables().get("foo"));
 	}
 
+	private BuildConfig reCreateBuildConfig(BuildConfig config) {
+		return new BuildConfig(config.getNode(), client, getPropertyKeys());
+	}
 }

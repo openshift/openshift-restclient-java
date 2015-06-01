@@ -9,13 +9,12 @@
 package com.openshift.internal.restclient.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
 
+import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.model.build.CustomBuildStrategy;
 import com.openshift.internal.restclient.model.build.DockerBuildStrategy;
 import com.openshift.internal.restclient.model.build.GitBuildSource;
@@ -34,6 +33,9 @@ import com.openshift.restclient.model.build.BuildTriggerType;
 import com.openshift.restclient.model.build.IBuildSource;
 import com.openshift.restclient.model.build.IBuildStrategy;
 import com.openshift.restclient.model.build.IBuildTrigger;
+import com.openshift.restclient.model.build.ICustomBuildStrategy;
+import com.openshift.restclient.model.build.IDockerBuildStrategy;
+import com.openshift.restclient.model.build.ISTIBuildStrategy;
 
 /**
  * @author Jeff Cantrill
@@ -101,11 +103,59 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 //		params.get(new String[]{"source","git","uri"}).set(uri);
 	}
 	
-	public void setStrategy(String type, String baseImage){
-		//FIXME
-//		ModelNode strategy = getNode().get(new String []{"parameters","strategy"});
-//		strategy.get("type").set(type);	
-//		strategy.get(new String[]{"stiStrategy","image"}).set(baseImage);
+	@Override
+	public void setBuildStrategy(IBuildStrategy strategy) {
+		// Remove other strategies if already set?
+		switch(strategy.getType()) {
+		case Custom:
+			if ( !(strategy instanceof ICustomBuildStrategy)) {
+				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement ICustomBuildStrategy");
+			}
+			ICustomBuildStrategy custom = (ICustomBuildStrategy)strategy;
+			if(custom.getImage() != null) {
+				set(BUILDCONFIG_CUSTOM_IMAGE, custom.getImage().toString());
+			}
+			set(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET, custom.exposeDockerSocket());
+			if(custom.getEnvironmentVariables() != null) {
+				setEnvMap(BUILDCONFIG_CUSTOM_ENV, custom.getEnvironmentVariables());
+			}
+			break;
+		case STI:
+			if ( !(strategy instanceof ISTIBuildStrategy)) {
+				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement ISTIBuildStrategy");
+			}
+			ISTIBuildStrategy sti = (ISTIBuildStrategy)strategy;
+			if(sti.getImage() != null) {
+				set(BUILDCONFIG_STI_IMAGE, sti.getImage().toString());
+			}
+			if(sti.getScriptsLocation() != null) {
+				set(BUILDCONFIG_STI_SCRIPTS, sti.getScriptsLocation());
+			}
+			if(OpenShiftAPIVersion.v1beta1.name().equals(getApiVersion())) {
+				set(BUILDCONFIG_STI_CLEAN, sti.forceClean());
+			} else if(OpenShiftAPIVersion.v1beta3.name().equals(getApiVersion())) {
+				set(BUILDCONFIG_STI_INCREMENTAL, sti.incremental());
+			}
+			if(sti.getEnvironmentVariables() != null) {
+				setEnvMap(BUILDCONFIG_STI_ENV, sti.getEnvironmentVariables());
+			}
+			break;
+		case Docker:
+			if ( !(strategy instanceof IDockerBuildStrategy)) {
+				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement IDockerBuildStrategy");
+			}
+			IDockerBuildStrategy docker = (IDockerBuildStrategy)strategy;
+			if(docker.getBaseImage() != null) {
+				set(BUILDCONFIG_DOCKER_BASEIMAGE, docker.getBaseImage().toString());
+			}
+			if(docker.getContextDir() != null) {
+				set(BUILDCONFIG_DOCKER_CONTEXTDIR, docker.getContextDir());
+			}
+			set(BUILDCONFIG_DOCKER_NOCACHE, docker.isNoCache());
+			break;
+		}
+
+		set(BUILDCONFIG_TYPE, strategy.getType().name());
 	}
 	
 	public void setOutput(DockerImageURI imageUri){
@@ -123,13 +173,20 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			return (T) new CustomBuildStrategy(
 						asString(BUILDCONFIG_CUSTOM_IMAGE),
 						asBoolean(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET),
-						loadEnvironmentVars(new String[]{"customStrategy","env"},  get(BUILDCONFIG_STRATEGY))
+						getEnvMap(BUILDCONFIG_CUSTOM_ENV)
 					);
 		case STI:
+			boolean incremental = false;
+			if(OpenShiftAPIVersion.v1beta1.name().equals(getApiVersion())) {
+				incremental = !asBoolean(BUILDCONFIG_STI_CLEAN);
+			} else if(OpenShiftAPIVersion.v1beta3.name().equals(getApiVersion())) {
+				incremental = asBoolean(BUILDCONFIG_STI_INCREMENTAL);
+			}
+
 			return (T) new STIBuildStrategy(asString(BUILDCONFIG_STI_IMAGE),
 					asString(BUILDCONFIG_STI_SCRIPTS),
-					asBoolean(BUILDCONFIG_STI_CLEAN),
-					loadEnvironmentVars(new String []{"stiStrategy","env"},  get(BUILDCONFIG_STRATEGY))
+					incremental,
+					getEnvMap(BUILDCONFIG_STI_ENV)
 					);
 		case Docker:
 			return (T) new DockerBuildStrategy(
@@ -141,16 +198,4 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		}
 		return null;
 	}
-
-
-	private Map<String, String> loadEnvironmentVars(final String [] key, ModelNode root){
-		Map<String, String> vars = new HashMap<String, String>();
-		if(root.get(key).getType() == ModelType.LIST){
-			for (ModelNode env : root.get(key).asList()) {
-				vars.put(env.get("name").asString(), env.get("value").asString());
-			}
-		}
-		return vars;
-	}
-
 }
