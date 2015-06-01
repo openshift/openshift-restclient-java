@@ -32,6 +32,13 @@ public interface IBuildConfig extends IResource {
 	List<IBuildTrigger> getBuildTriggers();
 	
 	/**
+	 * Add a trigger to the list of triggers for this build.
+	 *
+	 * @param trigger
+	 */
+	void addBuildTrigger(IBuildTrigger trigger);
+
+	/**
 	 * Returns the source info of the build
 	 * @return
 	 */

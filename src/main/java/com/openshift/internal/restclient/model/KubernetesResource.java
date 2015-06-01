@@ -194,7 +194,7 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 		}
 	}
 
-	private String[] getPath(String key) {
+	protected String[] getPath(String key) {
 		String [] property = propertyKeys.get(key);
 		if (property == null) {
 			throw new IllegalArgumentException(String.format("key %s is not known to the resource %s", key, getName().isEmpty()? getClass().getSimpleName() : getName()));
