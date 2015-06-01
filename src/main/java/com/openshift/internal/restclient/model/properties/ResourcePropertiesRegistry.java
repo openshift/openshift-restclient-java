@@ -52,6 +52,7 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Project), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Route), V1BETA1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Template), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.User), V1BETA1_OPENSHIFT_MAP);
 		
 		//v1beta3
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.Event), V1BETA3_KUBERNETES_MAP);

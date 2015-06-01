@@ -30,6 +30,7 @@ public enum Samples {
 	V1BETA1_ROUTE("openshift3/v1beta1_route.json"), 
 	V1BETA1_SERVICE("openshift3/v1beta1_service.json"), 
 	V1BETA1_TEMPLATE("openshift3/v1beta1_template.json"), 
+	V1BETA1_USER("openshift3/v1beta1_user.json"), 
 
 	//v1beta3
 	V1BETA3_BUILD_CONFIG("openshift3/v1beta3_build_config.json"),

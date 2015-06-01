@@ -76,6 +76,9 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 
 		put(TEMPLATE_PARAMETERS, new String[]{"parameters"});
 		put(TEMPLATE_ITEMS, new String[]{"items"});
+		
+		put(USER_FULLNAME, new String[]{"fullName"});
+
 	}};
 	
 	@SuppressWarnings("serial")
