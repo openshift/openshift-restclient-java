@@ -9,12 +9,10 @@
 package com.openshift.internal.restclient.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
 
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.model.build.CustomBuildStrategy;
@@ -105,6 +103,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 //		params.get(new String[]{"source","git","uri"}).set(uri);
 	}
 	
+	@Override
 	public void setBuildStrategy(IBuildStrategy strategy) {
 		// Remove other strategies if already set?
 		switch(strategy.getType()) {
@@ -118,7 +117,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			}
 			set(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET, custom.exposeDockerSocket());
 			if(custom.getEnvironmentVariables() != null) {
-				storeEnvironmentVars(new String []{"customStrategy","env"}, get(BUILDCONFIG_STRATEGY), custom.getEnvironmentVariables());
+				setEnvMap(BUILDCONFIG_CUSTOM_ENV, custom.getEnvironmentVariables());
 			}
 			break;
 		case STI:
@@ -138,7 +137,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 				set(BUILDCONFIG_STI_INCREMENTAL, sti.incremental());
 			}
 			if(sti.getEnvironmentVariables() != null) {
-				storeEnvironmentVars(new String []{"stiStrategy","env"}, get(BUILDCONFIG_STRATEGY), sti.getEnvironmentVariables());
+				setEnvMap(BUILDCONFIG_STI_ENV, sti.getEnvironmentVariables());
 			}
 			break;
 		case Docker:
@@ -174,7 +173,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			return (T) new CustomBuildStrategy(
 						asString(BUILDCONFIG_CUSTOM_IMAGE),
 						asBoolean(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET),
-						loadEnvironmentVars(new String[]{"customStrategy","env"},  get(BUILDCONFIG_STRATEGY))
+						getEnvMap(BUILDCONFIG_CUSTOM_ENV)
 					);
 		case STI:
 			boolean incremental = false;
@@ -187,7 +186,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			return (T) new STIBuildStrategy(asString(BUILDCONFIG_STI_IMAGE),
 					asString(BUILDCONFIG_STI_SCRIPTS),
 					incremental,
-					loadEnvironmentVars(new String []{"stiStrategy","env"},  get(BUILDCONFIG_STRATEGY))
+					getEnvMap(BUILDCONFIG_STI_ENV)
 					);
 		case Docker:
 			return (T) new DockerBuildStrategy(
@@ -199,24 +198,4 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		}
 		return null;
 	}
-
-	private void storeEnvironmentVars(final String [] key, ModelNode root, Map<String, String> envs){
-		ModelNode envsNode = root.get(key);
-		for(Map.Entry<String, String> env: envs.entrySet()) {
-			ModelNode envNode = envsNode.add();
-			envNode.get("name").set(env.getKey());
-			envNode.get("value").set(env.getValue());
-		}
-	}
-
-	private Map<String, String> loadEnvironmentVars(final String [] key, ModelNode root){
-		Map<String, String> vars = new HashMap<String, String>();
-		if(root.get(key).getType() == ModelType.LIST){
-			for (ModelNode env : root.get(key).asList()) {
-				vars.put(env.get("name").asString(), env.get("value").asString());
-			}
-		}
-		return vars;
-	}
-
 }

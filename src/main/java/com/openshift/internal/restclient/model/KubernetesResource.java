@@ -162,6 +162,17 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 		return node.get(getPath(key));
 	}
 
+	protected Map<String, String> getEnvMap(String key) {
+		Map<String, String> values = new HashMap<String, String>();
+		ModelNode source = node.get(getPath(key));
+		if(source.getType() == ModelType.LIST){
+			for (ModelNode value : source.asList()) {
+				values.put(value.get("name").asString(), value.get("value").asString());
+			}
+		}
+		return values;
+	}
+
 	protected void set(String key, int value) {
 		node.get(getPath(key)).set(value);
 	}
@@ -172,6 +183,15 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 
 	protected void set(String key, boolean value){
 		node.get(getPath(key)).set(value);
+	}
+
+	protected void setEnvMap(String key, Map<String, String> values) {
+		ModelNode mapNodeParent = node.get(getPath(key));
+		for(Map.Entry<String, String> value: values.entrySet()) {
+			ModelNode mapNode = mapNodeParent.add();
+			mapNode.get("name").set(value.getKey());
+			mapNode.get("value").set(value.getValue());
+		}
 	}
 
 	private String[] getPath(String key) {
