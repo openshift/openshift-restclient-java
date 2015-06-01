@@ -42,6 +42,15 @@ public interface IBuildConfig extends IResource {
 	 * @return
 	 */
 	<T extends IBuildStrategy> T getBuildStrategy(); 	
+
+	/**
+	 * Set the strategy for how the build should be built. <br/>
+	 * Depending on the strategies available on the server this
+	 * could be 'source', 'docker' or 'custom'.
+	 *
+	 * @param strategy
+	 */
+	void setBuildStrategy(IBuildStrategy strategy);
 	
 	/**
 	 * Retrieves the name of the repository where the

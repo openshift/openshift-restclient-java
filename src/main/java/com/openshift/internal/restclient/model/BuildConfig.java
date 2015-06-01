@@ -105,7 +105,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 //		params.get(new String[]{"source","git","uri"}).set(uri);
 	}
 	
-	public void setStrategy(IBuildStrategy strategy) {
+	public void setBuildStrategy(IBuildStrategy strategy) {
 		// Remove other strategies if already set?
 		switch(strategy.getType()) {
 		case Custom:
