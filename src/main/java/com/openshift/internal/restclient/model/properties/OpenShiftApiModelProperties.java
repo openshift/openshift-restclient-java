@@ -106,7 +106,7 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(BUILDCONFIG_OUTPUT_REPO, new String[]{"spec","output", "to","name"});
 		put(BUILDCONFIG_STI_IMAGE, new String[]{"spec","strategy", "stiStrategy", "from","name"});
 		put(BUILDCONFIG_STI_SCRIPTS, new String[]{"spec","strategy", "stiStrategy", "scripts"});
-		put(BUILDCONFIG_STI_CLEAN, new String[]{"parameters","strategy", "stiStrategy", "clean"});
+		put(BUILDCONFIG_STI_INCREMENTAL, new String[]{"spec","strategy", "stiStrategy", "incremental"});
 		put(BUILDCONFIG_STI_ENV, new String[]{"spec","strategy", "stiStrategy", "env"});
 		put(BUILDCONFIG_TRIGGERS, new String[]{"spec","triggers"});
 		put(BUILD_CONFIG_IMAGECHANGE_IMAGE, new String[]{"imageChange","image"});

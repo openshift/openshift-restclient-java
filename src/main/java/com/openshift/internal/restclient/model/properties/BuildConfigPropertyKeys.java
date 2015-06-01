@@ -29,6 +29,7 @@ public interface BuildConfigPropertyKeys {
 	static final String BUILDCONFIG_STI_IMAGE= "buildconfig.sti.image";
 	static final String BUILDCONFIG_STI_SCRIPTS = "buildconfig.sti.scripts";
 	static final String BUILDCONFIG_STI_CLEAN = "buildconfig.sti.clean";
+	static final String BUILDCONFIG_STI_INCREMENTAL = "buildconfig.sti.incremental";
 	static final String BUILDCONFIG_STI_ENV = "buildconfig.sti.env";
 
 	static final String BUILDCONFIG_OUTPUT_REPO = "buildconfig.outputrepo";

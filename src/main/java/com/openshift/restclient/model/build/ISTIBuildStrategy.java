@@ -26,7 +26,10 @@ public interface ISTIBuildStrategy extends IBuildStrategy {
 	
 	Map<String, String> getEnvironmentVariables();
 
+	boolean incremental();
+
 	@Deprecated
 	boolean forceClean();
+
 	
 }

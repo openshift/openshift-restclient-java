@@ -86,6 +86,7 @@ public class BuildConfigTest {
 		ISTIBuildStrategy sti = (ISTIBuildStrategy)strategy;
 		assertEquals(new DockerImageURI("ruby-20-centos7:latest"), sti.getImage());
 		assertEquals("alocation", sti.getScriptsLocation());
+		assertEquals(true, sti.incremental());
 		assertEquals(1, sti.getEnvironmentVariables().size());
 		assertTrue("Exp. to find the environment variable",sti.getEnvironmentVariables().containsKey("foo"));
 		assertEquals("bar",sti.getEnvironmentVariables().get("foo"));

@@ -16,6 +16,7 @@ import java.util.Map;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
+import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.model.build.CustomBuildStrategy;
 import com.openshift.internal.restclient.model.build.DockerBuildStrategy;
 import com.openshift.internal.restclient.model.build.GitBuildSource;
@@ -131,7 +132,11 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			if(sti.getScriptsLocation() != null) {
 				set(BUILDCONFIG_STI_SCRIPTS, sti.getScriptsLocation());
 			}
-			set(BUILDCONFIG_STI_CLEAN, sti.forceClean());
+			if(OpenShiftAPIVersion.v1beta1.name().equals(getApiVersion())) {
+				set(BUILDCONFIG_STI_CLEAN, sti.forceClean());
+			} else if(OpenShiftAPIVersion.v1beta3.name().equals(getApiVersion())) {
+				set(BUILDCONFIG_STI_INCREMENTAL, sti.incremental());
+			}
 			if(sti.getEnvironmentVariables() != null) {
 				storeEnvironmentVars(new String []{"stiStrategy","env"}, get(BUILDCONFIG_STRATEGY), sti.getEnvironmentVariables());
 			}
@@ -172,9 +177,16 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 						loadEnvironmentVars(new String[]{"customStrategy","env"},  get(BUILDCONFIG_STRATEGY))
 					);
 		case STI:
+			boolean incremental = false;
+			if(OpenShiftAPIVersion.v1beta1.name().equals(getApiVersion())) {
+				incremental = !asBoolean(BUILDCONFIG_STI_CLEAN);
+			} else if(OpenShiftAPIVersion.v1beta3.name().equals(getApiVersion())) {
+				incremental = asBoolean(BUILDCONFIG_STI_INCREMENTAL);
+			}
+
 			return (T) new STIBuildStrategy(asString(BUILDCONFIG_STI_IMAGE),
 					asString(BUILDCONFIG_STI_SCRIPTS),
-					asBoolean(BUILDCONFIG_STI_CLEAN),
+					incremental,
 					loadEnvironmentVars(new String []{"stiStrategy","env"},  get(BUILDCONFIG_STRATEGY))
 					);
 		case Docker:

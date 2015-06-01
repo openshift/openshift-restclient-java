@@ -21,13 +21,13 @@ public class STIBuildStrategy implements ISTIBuildStrategy{
 
 	private DockerImageURI image;
 	private String scriptsLocation;
-	private boolean forceClean;
+	private boolean incremental;
 	private Map<String, String> envVars;
 
-	public STIBuildStrategy(String image, String scriptsLocation, boolean clean, Map<String, String> envVars) {
+	public STIBuildStrategy(String image, String scriptsLocation, boolean incremental, Map<String, String> envVars) {
 		this.image = new DockerImageURI(image);
 		this.scriptsLocation = scriptsLocation;
-		this.forceClean = clean;
+		this.incremental = incremental;
 		this.envVars = envVars;
 	}
 
@@ -52,8 +52,13 @@ public class STIBuildStrategy implements ISTIBuildStrategy{
 	}
 
 	@Override
+	public boolean incremental() {
+		return incremental;
+	}
+
+	@Override
 	public boolean forceClean() {
-		return forceClean;
+		return !incremental;
 	}
 
 }
