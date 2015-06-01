@@ -169,7 +169,11 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 	protected void set(String key, String value){
 		node.get(getPath(key)).set(value);
 	}
-	
+
+	protected void set(String key, boolean value){
+		node.get(getPath(key)).set(value);
+	}
+
 	private String[] getPath(String key) {
 		String [] property = propertyKeys.get(key);
 		if (property == null) {
