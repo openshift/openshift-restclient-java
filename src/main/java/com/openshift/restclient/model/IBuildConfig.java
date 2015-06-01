@@ -36,7 +36,14 @@ public interface IBuildConfig extends IResource {
 	 * @return
 	 */
 	<T extends IBuildSource> T getBuildSource();
-	
+
+	/**
+	 * Set the source for the build.
+	 *
+	 * @param source
+	 */
+	void setBuildSource(IBuildSource source);
+
 	/**
 	 * Returns the strategy to for building the source
 	 * @return

@@ -8,8 +8,11 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.v1beta3;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -22,6 +25,7 @@ import org.junit.Test;
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.BuildConfig;
+import com.openshift.internal.restclient.model.build.GitBuildSource;
 import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
 import com.openshift.internal.restclient.model.build.STIBuildStrategy;
 import com.openshift.internal.restclient.model.build.WebhookTrigger;
@@ -33,6 +37,7 @@ import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.build.BuildSourceType;
 import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.BuildTriggerType;
+import com.openshift.restclient.model.build.IBuildSource;
 import com.openshift.restclient.model.build.IBuildStrategy;
 import com.openshift.restclient.model.build.IBuildTrigger;
 import com.openshift.restclient.model.build.IGitBuildSource;
@@ -82,12 +87,21 @@ public class BuildConfigTest {
 	
 	@Test
 	public void getGitBuildSource(){
-		IGitBuildSource source = config.<IGitBuildSource>getBuildSource();
-		assertEquals(BuildSourceType.Git, source.getType());
-		assertEquals("git://github.com/openshift/ruby-hello-world.git", source.getURI());
-		assertEquals("Exp. to get the source ref","", source.getRef());
+		IBuildSource source = config.getBuildSource();
+		assertGitBuildSource(source);
 	}
-	
+
+	@Test
+	public void setGitBuildSource() {
+		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BuildConfig);
+
+		Map<String, String> env = new HashMap<String, String>();
+		env.put("foo", "bar");
+		writeConfig.setBuildSource(new GitBuildSource("git://github.com/openshift/ruby-hello-world.git", ""));
+
+		assertGitBuildSource(reCreateBuildConfig(writeConfig).getBuildSource());
+	}
+
 	@Test
 	public void getSTIBuildStrategy() {
 		IBuildStrategy strategy = config.getBuildStrategy();
@@ -103,6 +117,15 @@ public class BuildConfigTest {
 		writeConfig.setBuildStrategy(new STIBuildStrategy("ruby-20-centos7:latest", "alocation", true, env));
 
 		assertSTIBuildStrategy(reCreateBuildConfig(writeConfig).getBuildStrategy());
+	}
+
+	private void assertGitBuildSource(IBuildSource source) {
+		assertEquals(BuildSourceType.Git, source.getType());
+		assertEquals("git://github.com/openshift/ruby-hello-world.git", source.getURI());
+		assertTrue(source instanceof IGitBuildSource);
+
+		IGitBuildSource git = (IGitBuildSource)source;
+		assertEquals("Exp. to get the source ref","", git.getRef());
 	}
 
 	private void assertSTIBuildStrategy(IBuildStrategy strategy) {
