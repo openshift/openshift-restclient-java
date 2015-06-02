@@ -67,14 +67,20 @@ public class BuildConfigTest {
 	
 	@Test
 	public void getBuildTriggers(){
-		IBuildTrigger [] exp = new IBuildTrigger[]{
-				new WebhookTrigger(BuildTriggerType.github, "secret101","foo", "https://localhost:8443", "v1beta3","foo"),
-				new WebhookTrigger(BuildTriggerType.generic, "secret101","foo", "https://localhost:8443", "v1beta3","foo"),
-				new ImageChangeTrigger("", "", "")
-		};
-		assertArrayEquals(exp, config.getBuildTriggers().toArray());
+		assertBuildTriggers(config.getBuildTriggers().toArray(new IBuildTrigger[]{}));
 	}
-	
+
+	@Test
+	public void addBuildTriggers() {
+		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BuildConfig);
+
+		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.github, "secret101", null, null, null,null));
+		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.generic, "secret101", null, null, null, null));
+		writeConfig.addBuildTrigger(new ImageChangeTrigger("", "", ""));
+
+		assertBuildTriggers(reCreateBuildConfig(writeConfig).getBuildTriggers().toArray(new IBuildTrigger[]{}));
+	}
+
 	@Test
 	public void getOutputRespositoryName(){
 		assertEquals("origin-ruby-sample", config.getOutputRepositoryName());
@@ -117,6 +123,15 @@ public class BuildConfigTest {
 		writeConfig.setBuildStrategy(new STIBuildStrategy("ruby-20-centos7:latest", "alocation", true, env));
 
 		assertSTIBuildStrategy(reCreateBuildConfig(writeConfig).getBuildStrategy());
+	}
+
+	private void assertBuildTriggers(IBuildTrigger[] triggers) {
+		IBuildTrigger [] exp = new IBuildTrigger[]{
+				new WebhookTrigger(BuildTriggerType.github, "secret101","foo", "https://localhost:8443", "v1beta3","foo"),
+				new WebhookTrigger(BuildTriggerType.generic, "secret101","foo", "https://localhost:8443", "v1beta3","foo"),
+				new ImageChangeTrigger("", "", "")
+		};
+		assertArrayEquals(exp, triggers);
 	}
 
 	private void assertGitBuildSource(IBuildSource source) {

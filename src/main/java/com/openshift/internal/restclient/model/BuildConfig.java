@@ -36,7 +36,9 @@ import com.openshift.restclient.model.build.IBuildTrigger;
 import com.openshift.restclient.model.build.ICustomBuildStrategy;
 import com.openshift.restclient.model.build.IDockerBuildStrategy;
 import com.openshift.restclient.model.build.IGitBuildSource;
+import com.openshift.restclient.model.build.IImageChangeTrigger;
 import com.openshift.restclient.model.build.ISTIBuildStrategy;
+import com.openshift.restclient.model.build.IWebhookTrigger;
 
 /**
  * @author Jeff Cantrill
@@ -75,6 +77,38 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			}
 		}
 		return triggers;
+	}
+
+	@Override
+	public void addBuildTrigger(IBuildTrigger trigger) {
+		ModelNode triggers = get(BUILDCONFIG_TRIGGERS);
+		ModelNode triggerNode = triggers.add();
+		switch(trigger.getType()) {
+		case generic:
+			if(!(trigger instanceof IWebhookTrigger)) {
+				throw new IllegalArgumentException("IBuildTrigger of type generic does not implement IWebhookTrigger");
+			}
+			IWebhookTrigger generic = (IWebhookTrigger)trigger;
+			triggerNode.get(new String[] {"generic", "secret"}).set(generic.getSecret());
+			break;
+		case github:
+			if(!(trigger instanceof IWebhookTrigger)) {
+				throw new IllegalArgumentException("IBuildTrigger of type github does not implement IWebhookTrigger");
+			}
+			IWebhookTrigger github = (IWebhookTrigger)trigger;
+			triggerNode.get(new String[] {"github", "secret"}).set(github.getSecret());
+			break;
+		case imageChange:
+			if(!(trigger instanceof IImageChangeTrigger)) {
+				throw new IllegalArgumentException("IBuildTrigger of type imageChange does not implement IImageChangeTrigger");
+			}
+			IImageChangeTrigger image = (IImageChangeTrigger)trigger;
+			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_IMAGE)).set(image.getImage().toString());
+			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_NAME)).set(image.getFrom().toString());
+			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_TAG)).set(image.getTag());
+			break;
+		}
+		triggerNode.get("type").set(trigger.getType().name());
 	}
 
 	@Override
