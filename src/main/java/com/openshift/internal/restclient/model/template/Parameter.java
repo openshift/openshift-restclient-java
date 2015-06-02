@@ -8,8 +8,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.template;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
 
 import com.openshift.restclient.model.template.IParameter;
 
@@ -52,7 +52,7 @@ public class Parameter implements IParameter{
 
 	@Override
 	public String getGeneratorName() {
-		return asString("generator");
+		return StringUtils.defaultIfEmpty(asString("generate"),asString("generator"));
 	}
 
 	@Override
@@ -62,7 +62,8 @@ public class Parameter implements IParameter{
 	
 	private String asString(String key) {
 		ModelNode value = node.get(key);
-		if(value.getType() == ModelType.UNDEFINED) return "";
-		return value.asString();
+		if(value.isDefined())
+			return value.asString();
+		return "";
 	}
 }

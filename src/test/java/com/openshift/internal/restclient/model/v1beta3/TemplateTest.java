@@ -11,6 +11,8 @@ package com.openshift.internal.restclient.model.v1beta3;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Map;
+
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +22,7 @@ import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegi
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.model.template.IParameter;
 import com.openshift.restclient.model.template.ITemplate;
 import com.openshift.restclient.utils.Samples;
 
@@ -52,7 +55,14 @@ public class TemplateTest{
 
 	@Test
 	public void testGetParameters() {
-		assertEquals("Exp. the number of items to be more than zero",5, template.getParameters().size());
+		Map<String, IParameter> parameters = template.getParameters();
+		assertEquals("Exp. the number of items to be more than zero",5, parameters.size());
+		IParameter param = parameters.get("MYSQL_PASSWORD");
+		assertNotNull(param);
+		assertEquals("",param.getValue());
+		assertEquals("[a-zA-Z0-9]{8}",param.getFrom());
+		assertEquals("expression",param.getGeneratorName());
+		assertEquals("database password",param.getDescription());
 	}
 	
 	@Test
