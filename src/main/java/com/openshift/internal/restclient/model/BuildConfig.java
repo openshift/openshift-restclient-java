@@ -35,6 +35,7 @@ import com.openshift.restclient.model.build.IBuildStrategy;
 import com.openshift.restclient.model.build.IBuildTrigger;
 import com.openshift.restclient.model.build.ICustomBuildStrategy;
 import com.openshift.restclient.model.build.IDockerBuildStrategy;
+import com.openshift.restclient.model.build.IGitBuildSource;
 import com.openshift.restclient.model.build.ISTIBuildStrategy;
 
 /**
@@ -96,11 +97,19 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		return null;
 	}
 
-	public void setSource(String type, String uri){
-		//FIXME
-//		ModelNode params = getNode().get("parameters");
-//		params.get(new String[]{"source","type"}).set(type);
-//		params.get(new String[]{"source","git","uri"}).set(uri);
+	@Override
+	public void setBuildSource(IBuildSource source){
+		switch(source.getType()) {
+		case Git:
+			if(!(source instanceof IGitBuildSource)) {
+				throw new IllegalArgumentException("IBuildSource of type Git does not implement IGitBuildSource");
+			}
+			IGitBuildSource git = (IGitBuildSource) source;
+			set(BUILDCONFIG_SOURCE_REF, git.getRef());
+			break;
+		}
+		set(BUILDCONFIG_SOURCE_URI, source.getURI());
+		set(BUILDCONFIG_SOURCE_TYPE, source.getType().name());
 	}
 	
 	@Override
