@@ -8,10 +8,12 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
-
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,42 +37,67 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 	
 	private ModelNode node;
 	private IClient client;
-	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
+	//private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
+	private Collection<Class<? extends ICapability>> capabilities = new ArrayList<Class<? extends ICapability>>();
 	private Map<String, String []> propertyKeys;
 	
 	protected KubernetesResource(ModelNode node, IClient client, Map<String, String []> propertyKeys){
 		this.node = node;
 		this.client = client;
 		this.propertyKeys = propertyKeys;
-		initializeCapabilities(capabilities, this, client);
+		//initializeCapabilities(capabilities, this, client);
+	}
+
+	public void addCapability(Collection<Class<? extends ICapability>> capabilities) {
+		this.capabilities.addAll(capabilities);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ICapability> T getCapability(Class<T> capability) {
-		return (T) capabilities.get(capability);
+		java.util.List<Class<? extends ICapability>> compats = new ArrayList<Class<? extends ICapability>>();
+		for(Class<? extends ICapability> cap : capabilities) {
+			if(capability.isAssignableFrom(cap)) {
+				compats.add(cap);
+			}
+		}
+
+		for(Class<? extends ICapability> compat : compats) {
+			try {
+				Constructor<? extends ICapability> com = compat.getDeclaredConstructor(new Class[] {this.getClass(), IClient.class});
+				ICapability comInst = com.newInstance(this, client);
+				if(comInst.isSupported()) {
+					return (T) comInst;
+				}
+			} catch(Exception e) {
+				throw new IllegalStateException("Unsupported ICapability registered on " + this.getKind(), e);
+			}
+		}
+
+		return null;
 	}
 	
 	public Set<Class<? extends ICapability>> getCapabilities(){
-		return Collections.unmodifiableSet(capabilities.keySet());
+		return Collections.unmodifiableSet(new HashSet<Class<? extends ICapability>>(capabilities));
 	}
 	
-	protected Map<Class<? extends ICapability>, ICapability> getModifiableCapabilities(){
-		return capabilities;
-	}
-	
+//	protected Map<Class<? extends ICapability>, ICapability> getModifiableCapabilities(){
+//		return capabilities;
+//	}
+
 	@Override
 	public boolean supports(Class<? extends ICapability> capability) {
-		return capabilities.containsKey(capability);
+		//return capabilities.containsKey(capability);
+		return false;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ICapability, R> R accept(CapabilityVisitor<T, R> visitor, R unsupportedValue){
-		if(capabilities.containsKey(visitor.getCapabilityType())){
-			T capability = (T) capabilities.get(visitor.getCapabilityType());
-			return (R) visitor.visit(capability);
-		}
+//		if(capabilities.containsKey(visitor.getCapabilityType())){
+//			T capability = (T) capabilities.get(visitor.getCapabilityType());
+//			return (R) visitor.visit(capability);
+//		}
 		return unsupportedValue;
 	}
 	

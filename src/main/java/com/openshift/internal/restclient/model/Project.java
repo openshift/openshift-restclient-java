@@ -30,7 +30,7 @@ public class Project extends KubernetesResource implements IProject{
 
 	public Project(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
-		initializeCapabilities(getModifiableCapabilities(), this, getClient());
+		//initializeCapabilities(getModifiableCapabilities(), this, getClient());
 	}
 	
 	@Override
