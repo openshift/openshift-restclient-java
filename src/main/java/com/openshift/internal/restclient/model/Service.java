@@ -8,8 +8,6 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +34,6 @@ public class Service extends KubernetesResource implements IService {
 
 	public Service(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
-		initializeCapabilities(getModifiableCapabilities(), this, getClient());
 	}
 	
 	@Override

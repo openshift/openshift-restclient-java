@@ -26,7 +26,7 @@ public interface IResourceFactory {
 	 * @param resource
 	 * @param capabilities
 	 */
-	void registerCapability(ResourceKind kind, Class<? extends ICapability>... capabilities);
+	void registerCapabilities(ResourceKind kind, Class<? extends ICapability>... capabilities);
 
 	/**
 	 * Create a list of resources of the given kind

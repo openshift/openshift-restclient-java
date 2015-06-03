@@ -19,8 +19,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.fest.util.Arrays;
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.restclient.capability.resources.ClientCapability;
+import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
+import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
+import com.openshift.internal.restclient.capability.resources.ProjectTemplateListCapability;
+import com.openshift.internal.restclient.capability.resources.ProjectTemplateProcessing;
+import com.openshift.internal.restclient.capability.resources.ServiceSinglePortCapability;
+import com.openshift.internal.restclient.capability.resources.TagCapability;
+import com.openshift.internal.restclient.capability.resources.TemplateTraceability;
 import com.openshift.internal.restclient.model.Build;
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.internal.restclient.model.Config;
@@ -97,15 +106,37 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.Service, Service.class);
 	}
 
+	@SuppressWarnings("unchecked")
+	private void addBuildInCapabilities(ResourceFactory factory) {
+		factory.registerCapabilities(ResourceKind.Project, ProjectTemplateProcessing.class);
+		factory.registerCapabilities(ResourceKind.Project, ProjectTemplateListCapability.class);
+
+		factory.registerCapabilities(ResourceKind.Service, ServiceSinglePortCapability.class);
+
+		// Register global capabilities
+		Class<? extends ICapability>[] resourceCapabilities = Arrays.array(
+				TemplateTraceability.class,
+				DeploymentConfigTraceability.class,
+				DeploymentTraceability.class,
+				TagCapability.class,
+				ClientCapability.class
+		);
+		for(ResourceKind kind : ResourceKind.values()) {
+			factory.registerCapabilities(kind, resourceCapabilities);
+		}
+	}
+
 	private IClient client;
 	private final Map<ResourceKind, List<Class<? extends ICapability>>> resourceCapabillities;
 	
 	public ResourceFactory(IClient client) {
 		this.client = client;
 		this.resourceCapabillities = new HashMap<ResourceKind, List<Class<? extends ICapability>>>();
+		addBuildInCapabilities(this);
 	}
 	
-	public void registerCapability(ResourceKind kind, Class<? extends ICapability>... capabilities) {
+	@Override
+	public void registerCapabilities(ResourceKind kind, Class<? extends ICapability>... capabilities) {
 		if(kind == null) {
 			throw new IllegalArgumentException("Kind must be specified");
 		}
@@ -118,6 +149,14 @@ public class ResourceFactory implements IResourceFactory{
 		}
 		Collections.addAll(registeredCap, capabilities);
 		resourceCapabillities.put(kind, registeredCap);
+	}
+
+	public List<Class<? extends ICapability>> getCapabilities(ResourceKind kind) {
+		List<Class<? extends ICapability>> capabilities = resourceCapabillities.get(kind);
+		if(capabilities == null) {
+			capabilities = new ArrayList<Class<? extends ICapability>>();
+		}
+		return capabilities;
 	}
 
 	public static Map<ResourceKind, Class<? extends IResource>> getImplMap(){
@@ -191,7 +230,8 @@ public class ResourceFactory implements IResourceFactory{
 
 	private void addCapabilities(IResource resource) {
 		if(resource instanceof KubernetesResource) {
-			((KubernetesResource)resource).addCapability(resourceCapabillities.get(resource.getKind()));
+			KubernetesResource kresource = (KubernetesResource)resource;
+			kresource.addCapabilities(getCapabilities(resource.getKind()));
 		}
 	}
 	

@@ -37,7 +37,6 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 	
 	private ModelNode node;
 	private IClient client;
-	//private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
 	private Collection<Class<? extends ICapability>> capabilities = new ArrayList<Class<? extends ICapability>>();
 	private Map<String, String []> propertyKeys;
 	
@@ -45,59 +44,32 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 		this.node = node;
 		this.client = client;
 		this.propertyKeys = propertyKeys;
-		//initializeCapabilities(capabilities, this, client);
 	}
 
-	public void addCapability(Collection<Class<? extends ICapability>> capabilities) {
+	public void addCapabilities(Collection<Class<? extends ICapability>> capabilities) {
 		this.capabilities.addAll(capabilities);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ICapability> T getCapability(Class<T> capability) {
-		java.util.List<Class<? extends ICapability>> compats = new ArrayList<Class<? extends ICapability>>();
-		for(Class<? extends ICapability> cap : capabilities) {
-			if(capability.isAssignableFrom(cap)) {
-				compats.add(cap);
-			}
-		}
-
-		for(Class<? extends ICapability> compat : compats) {
-			try {
-				Constructor<? extends ICapability> com = compat.getDeclaredConstructor(new Class[] {this.getClass(), IClient.class});
-				ICapability comInst = com.newInstance(this, client);
-				if(comInst.isSupported()) {
-					return (T) comInst;
-				}
-			} catch(Exception e) {
-				throw new IllegalStateException("Unsupported ICapability registered on " + this.getKind(), e);
-			}
-		}
-
-		return null;
+		return getFirstSupportedCapability(capability, filterCompatibleCapabilities(capability));
 	}
-	
+
 	public Set<Class<? extends ICapability>> getCapabilities(){
 		return Collections.unmodifiableSet(new HashSet<Class<? extends ICapability>>(capabilities));
 	}
 	
-//	protected Map<Class<? extends ICapability>, ICapability> getModifiableCapabilities(){
-//		return capabilities;
-//	}
-
 	@Override
 	public boolean supports(Class<? extends ICapability> capability) {
-		//return capabilities.containsKey(capability);
-		return false;
+		return filterCompatibleCapabilities(capability).size() > 0;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ICapability, R> R accept(CapabilityVisitor<T, R> visitor, R unsupportedValue){
-//		if(capabilities.containsKey(visitor.getCapabilityType())){
-//			T capability = (T) capabilities.get(visitor.getCapabilityType());
-//			return (R) visitor.visit(capability);
-//		}
+		T capability = getCapability(visitor.getCapabilityType());
+		if(capability != null) {
+			return (R) visitor.visit(capability);
+		}
 		return unsupportedValue;
 	}
 	
@@ -305,7 +277,33 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 		}
 		return true;
 	}
-	
+
+	// Capability helpers : TODO Move to custom CapabilityHolder class
+	private <T extends ICapability> T getFirstSupportedCapability(Class<T> capability, java.util.List<Class<? extends ICapability>> compats) {
+		for(Class<? extends ICapability> compat : compats) {
+			try {
+				// TODO: Move validation to registration
+				Constructor<? extends ICapability> com = compat.getDeclaredConstructor(new Class[] {this.getClass(), IClient.class});
+				ICapability comInst = com.newInstance(this, client);
+				if(comInst.isSupported()) {
+					return (T) comInst;
+				}
+			} catch(Exception e) {
+				throw new IllegalStateException("Unsupported ICapability registered on " + this.getKind(), e);
+			}
+		}
+		return null;
+	}
+
+	private <T extends ICapability> java.util.List<Class<? extends ICapability>> filterCompatibleCapabilities(Class<T> capability) {
+		java.util.List<Class<? extends ICapability>> compats = new ArrayList<Class<? extends ICapability>>();
+		for(Class<? extends ICapability> cap : capabilities) {
+			if(capability.isAssignableFrom(cap)) {
+				compats.add(cap);
+			}
+		}
+		return compats;
+	}
 }
 
 
