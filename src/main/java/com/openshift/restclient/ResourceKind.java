@@ -41,7 +41,7 @@ public enum ResourceKind {
 	ReplicationController("replicationcontrollers"),
 	ResourceQuota("resourcequotas"), 
 	Service("services"), 
-
+	Secret("secrets"), 
 	/*
 	 * These are not true resources that can be used (mostly) in
 	 * RESTful operations

@@ -72,11 +72,22 @@ public class Base64Coder {
 	 * @return the decoded string
 	 */
 	public static String decode(String encoded) {
-		if (StringUtils.isEmpty(encoded)) {
-			return encoded;
-		}
-		byte[] encodedBytes = DatatypeConverter.parseBase64Binary(encoded);
-		return new String(encodedBytes);
+		byte[] encodedBytes = decodeBinary(encoded);
+		return (encodedBytes == null) ? encoded : new String(DatatypeConverter.parseBase64Binary(encoded));
 	}
 
+	/**
+	 * Decodes the given base64 encoded string. Returns <code>null</code> if the
+	 * given string is <code>null</code>.
+	 * 
+	 * @param encoded
+	 *            the base64 encoded string
+	 * @return the decoded binary data
+	 */
+	public static byte[] decodeBinary(String encoded) {
+		if (StringUtils.isEmpty(encoded)) {
+			return null;
+		}
+		return DatatypeConverter.parseBase64Binary(encoded);
+	}
 }

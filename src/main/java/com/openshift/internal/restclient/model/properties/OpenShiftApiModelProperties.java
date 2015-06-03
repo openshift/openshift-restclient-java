@@ -141,5 +141,7 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(TEMPLATE_ITEMS, new String[]{"objects"});
 
 		put(USER_FULLNAME, new String[]{"fullName"});
+		put(SECRET_TYPE, new String[]{"type"});
+		put(SECRET_DATA, new String[]{"data"});
 	}};
 }

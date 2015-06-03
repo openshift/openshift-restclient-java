@@ -66,4 +66,7 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String TEMPLATE_ITEMS = "template.items";
 	
 	static final String USER_FULLNAME= "user.fullname";
+
+	static final String SECRET_TYPE = "secret.type";
+	static final String SECRET_DATA = "secret.data";
 }
