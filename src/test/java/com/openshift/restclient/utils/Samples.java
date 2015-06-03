@@ -43,7 +43,8 @@ public enum Samples {
 	V1BETA3_SERVICE("openshift3/v1beta3_service.json"), 
 	V1BETA3_TEMPLATE("openshift3/v1beta3_template.json"), 
 	V1BETA3_Status("openshift3/v1beta3_status.json"),
-	V1BETA3_USER("openshift3/v1beta3_user.json"); 
+	V1BETA3_USER("openshift3/v1beta3_user.json"),
+	V1BETA3_SECRET("openshift3/v1beta3_secret.json");
 	
 	private static final String SAMPLES_FOLDER = "/samples/";
 

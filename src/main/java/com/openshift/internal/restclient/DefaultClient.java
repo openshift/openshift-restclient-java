@@ -359,6 +359,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			typeMappings.put(ResourceKind.ReplicationController, k8eEndpoint);
 			typeMappings.put(ResourceKind.ResourceQuota, k8eEndpoint);
 			typeMappings.put(ResourceKind.Service, k8eEndpoint);
+			typeMappings.put(ResourceKind.Secret, k8eEndpoint);
 		}
 		return typeMappings;
 	}

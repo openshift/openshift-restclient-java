@@ -33,6 +33,7 @@ import com.openshift.internal.restclient.model.Project;
 import com.openshift.internal.restclient.model.ReplicationController;
 import com.openshift.internal.restclient.model.ResourceQuota;
 import com.openshift.internal.restclient.model.Route;
+import com.openshift.internal.restclient.model.Secret;
 import com.openshift.internal.restclient.model.Service;
 import com.openshift.internal.restclient.model.Status;
 import com.openshift.internal.restclient.model.authorization.OpenshiftPolicy;
@@ -93,6 +94,7 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.ReplicationController, ReplicationController.class);
 		IMPL_MAP.put(ResourceKind.Status, Status.class);
 		IMPL_MAP.put(ResourceKind.Service, Service.class);
+		IMPL_MAP.put(ResourceKind.Secret, Secret.class);
 	}
 	private IClient client;
 	
