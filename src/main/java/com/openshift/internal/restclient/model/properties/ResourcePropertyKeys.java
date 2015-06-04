@@ -51,6 +51,7 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String ROUTE_HOST = "route.host";
 	static final String ROUTE_PATH = "route.path";
 	static final String ROUTE_SERVICE_NAME = "route.serviceName";
+	static final String ROUTE_TLS = "route.tls";
 	static final String ROUTE_TLS_TERMINATION_TYPE = "route.tls.termination";
 	static final String ROUTE_TLS_CERTIFICATE = "route.tls.certificate";
 	static final String ROUTE_TLS_KEY = "route.tls.key";

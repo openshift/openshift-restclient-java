@@ -68,6 +68,7 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(ROUTE_HOST, new String[] { "host" });
 		put(ROUTE_PATH, new String[] { "path" });
 		put(ROUTE_SERVICE_NAME, new String[] { "serviceName" });
+		put(ROUTE_TLS, new String[]{ "tls" });
 		put(ROUTE_TLS_TERMINATION_TYPE, new String[]{ "tls", "termination" });
 		put(ROUTE_TLS_CERTIFICATE, new String[]{ "tls", "certificate" });
 		put(ROUTE_TLS_KEY, new String[]{ "tls", "key" });
@@ -131,6 +132,7 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(ROUTE_HOST, new String[] {"spec", "host" });
 		put(ROUTE_PATH, new String[] { "spec", "path" });
 		put(ROUTE_SERVICE_NAME, new String[] {"spec", "to", "name" });
+		put(ROUTE_TLS, new String[]{ "spec", "tls" });
 		put(ROUTE_TLS_TERMINATION_TYPE, new String[]{"spec",  "tls", "termination" });
 		put(ROUTE_TLS_CERTIFICATE, new String[]{"spec",  "tls", "certificate" });
 		put(ROUTE_TLS_KEY, new String[]{ "spec", "tls", "key" });

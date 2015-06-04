@@ -34,12 +34,20 @@ public class RouteTest{
 	private static final String VERSION = "v1beta3";
 	private static final Samples sample = Samples.V1BETA3_ROUTE;
 	private IRoute route;
+	private IClient client;
 	
 	@Before
 	public void setUp(){
-		IClient client = mock(IClient.class);
+		client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(sample.getContentAsString());
 		route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Route));
+	}
+	
+	@Test
+	public void getTLSConfigWhenUndefined() {
+		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_ROUTE_WO_TLS.getContentAsString());
+		route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Route));
+		assertNull(route.getTLSConfig());
 	}
 	
 	@Test
@@ -77,5 +85,6 @@ public class RouteTest{
 		assertEquals("theCACert", tls.getCACertificate());
 		assertEquals("theKey", tls.getKey());
 	}
+
 
 }
