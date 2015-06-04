@@ -116,10 +116,10 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends IResource> List<T> list(ResourceKind kind, String namespace, Map<String, String> labels) {
-		if(!getTypeMappings().containsKey(kind))
-			// TODO: replace with specific runtime exception
-			throw new RuntimeException("No OpenShift resource endpoint for type: " + kind);
 		try {
+			if(!getTypeMappings().containsKey(kind))
+				// TODO: replace with specific runtime exception
+				throw new RuntimeException("No OpenShift resource endpoint for type: " + kind);
 			URLBuilder builder = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(kind)
 				.namespace(namespace);
