@@ -1,0 +1,25 @@
+{
+    "kind": "Route",
+    "apiVersion": "v1beta3",
+    "metadata": {
+        "name": "route-edge",
+        "namespace": "int-test-8805",
+        "selfLink": "/osapi/v1beta1/routes/route-edge?namespace=int-test-8805",
+        "uid": "3282de5a-f5b7-11e4-a898-080027893417",
+        "resourceVersion": "1697",
+        "creationTimestamp": "2015-05-08T19:19:50Z",
+        "labels": {
+            "mytemplate": "myvalue",
+            "template": "application-template-stibuild"
+        }
+    },
+    "spec": {
+        "host": "www.example.com",
+        "path": "/abc",
+        "to": {
+            "kind": "Service",
+            "name": "frontend"
+        },
+    },
+    "status": {}
+}

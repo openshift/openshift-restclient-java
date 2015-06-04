@@ -40,6 +40,7 @@ public enum Samples {
 	V1BETA3_POD("openshift3/v1beta3_pod.json"), 
 	V1BETA3_REPLICATION_CONTROLLER("openshift3/v1beta3_replication_controller.json"), 
 	V1BETA3_ROUTE("openshift3/v1beta3_route.json"), 
+	V1BETA3_ROUTE_WO_TLS("openshift3/v1beta3_route_wo_tls.json"), 
 	V1BETA3_SERVICE("openshift3/v1beta3_service.json"), 
 	V1BETA3_TEMPLATE("openshift3/v1beta3_template.json"), 
 	V1BETA3_Status("openshift3/v1beta3_status.json"),
