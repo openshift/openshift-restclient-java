@@ -279,13 +279,30 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 	}
 
 	// Capability helpers : TODO Move to custom CapabilityHolder class
+	@SuppressWarnings("unchecked")
 	private <T extends ICapability> T getFirstSupportedCapability(Class<T> capability, java.util.List<Class<? extends ICapability>> compats) {
 		for(Class<? extends ICapability> compat : compats) {
 			try {
 				// TODO: Move validation to registration
-				Constructor<? extends ICapability> com = compat.getDeclaredConstructor(new Class[] {this.getClass(), IClient.class});
-				ICapability comInst = com.newInstance(this, client);
-				if(comInst.isSupported()) {
+				Object comInst = null;
+				for(Constructor<?> com : compat.getDeclaredConstructors()) {
+					Class<?>[] parameters = com.getParameterTypes();
+					if(parameters.length == 1) {
+						if(parameters[0].isAssignableFrom(this.getClass())) {
+							comInst = com.newInstance(this);
+						} else {
+							if(parameters[0] == IClient.class) {
+								comInst = com.newInstance(client);
+							}
+						}
+					}
+					else if(parameters.length == 2) {
+						if(parameters[0].isAssignableFrom(this.getClass()) && parameters[1] == IClient.class) {
+							comInst = com.newInstance(this, client);
+						}
+					}
+				}
+				if(comInst != null && ((ICapability)comInst).isSupported()) {
 					return (T) comInst;
 				}
 			} catch(Exception e) {

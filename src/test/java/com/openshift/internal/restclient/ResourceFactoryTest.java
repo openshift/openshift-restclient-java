@@ -60,6 +60,14 @@ public class ResourceFactoryTest {
 	}
 
 	@Test
+	public void testSupportsCapabilityFalse() throws Exception {
+		ResourceFactory factory = new ResourceFactory(mock(IClient.class));
+
+		IProject project = factory.create(OpenShiftAPIVersion.v1beta3.toString(), ResourceKind.Project);
+		Assert.assertFalse(project.supports(ITestCapability.class));
+	}
+
+	@Test
 	public void testGetCapability() throws Exception {
 		ResourceFactory factory = new ResourceFactory(mock(IClient.class));
 		factory.registerCapabilities(ResourceKind.Project, Test2Capabillity.class);

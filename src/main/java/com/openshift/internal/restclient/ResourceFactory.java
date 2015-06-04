@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.fest.util.Arrays;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.capability.resources.ClientCapability;
@@ -114,15 +113,14 @@ public class ResourceFactory implements IResourceFactory{
 		factory.registerCapabilities(ResourceKind.Service, ServiceSinglePortCapability.class);
 
 		// Register global capabilities
-		Class<? extends ICapability>[] resourceCapabilities = Arrays.array(
-				TemplateTraceability.class,
-				DeploymentConfigTraceability.class,
-				DeploymentTraceability.class,
-				TagCapability.class,
-				ClientCapability.class
-		);
 		for(ResourceKind kind : ResourceKind.values()) {
-			factory.registerCapabilities(kind, resourceCapabilities);
+			factory.registerCapabilities(kind,
+					TemplateTraceability.class,
+					DeploymentConfigTraceability.class,
+					DeploymentTraceability.class,
+					TagCapability.class,
+					ClientCapability.class
+			);
 		}
 	}
 
