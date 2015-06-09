@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
@@ -36,6 +37,15 @@ public class TemplateTest {
 		params.add(param("abc","xyz"));
 		params.add(param("123","456"));
 		template = new Template(node, client, OpenShiftApiModelProperties.V1BETA3_OPENSHIFT_MAP);
+	}
+	
+	@Test
+	public void addObjectLabel() {
+		final String key = "objectLabelKey";
+		final String value = "objectLabelValue";
+		template.addObjectLabel(key, value);
+		Map<String, String> labels = template.getObjectLabels();
+		assertEquals(value, labels.get(key));
 	}
 
 	@Test

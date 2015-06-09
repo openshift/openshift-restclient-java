@@ -53,10 +53,6 @@ public class V1Beta1TemplateTest{
 	public void testGetParameters() {
 		assertEquals("Exp. the number of items to be more than zero",5, template.getParameters().size());
 	}
-	
-	@Test
-	public void testGetLabels() {
-		assertEquals("Exp. to retrieve the labels",1, template.getLabels().size());
-	}
+
 
 }

@@ -10,12 +10,14 @@ package com.openshift.internal.restclient.model.template;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.restclient.KubernetesAPIVersion;
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.properties.KubernetesApiModelProperties;
 import com.openshift.internal.util.JBossDmrExtentions;
@@ -34,20 +36,16 @@ public class Template extends KubernetesResource implements ITemplate{
 		super(node, client, propertyKeys);
 	}
 	
-	/**
-	 * Template is an OS kind that compiles to kubernetes v1beta1 structure
-	 * for labels.
-	 * TODO: remove method when we move to v1beta3
-	 */
 	@Override
-	public Map<String, String> getLabels() {
-//		final String version = getNode().get("apiVersion").asString();
-//		if(KubernetesAPIVersion.v1beta1.toString().equals(version)) {
-			return JBossDmrExtentions.asMap(getNode(), KubernetesApiModelProperties.V1BETA1_KUBERNETES_MAP, LABELS);
-//		}
-//		return super.getLabels();
+	public Map<String, String> getObjectLabels() {
+		return Collections.unmodifiableMap(asMap(TEMPLATE_OBJECT_LABELS));
 	}
-
+	
+	@Override
+	public void addObjectLabel(String key, String value) {
+		ModelNode labels = getNode().get(getPath(TEMPLATE_OBJECT_LABELS));
+		labels.get(key).set(value);
+	}
 
 	@Override
 	public Map<String, IParameter> getParameters() {

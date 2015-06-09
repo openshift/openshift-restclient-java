@@ -65,6 +65,7 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	
 	static final String TEMPLATE_PARAMETERS = "template.parameters";
 	static final String TEMPLATE_ITEMS = "template.items";
+	static final String TEMPLATE_OBJECT_LABELS = "template.object.labels";
 	
 	static final String USER_FULLNAME= "user.fullname";
 

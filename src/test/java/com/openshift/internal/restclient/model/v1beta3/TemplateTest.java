@@ -67,7 +67,14 @@ public class TemplateTest{
 	
 	@Test
 	public void testGetLabels() {
-		assertEquals("Exp. to retrieve the labels",1, template.getLabels().size());
+		assertEquals("Exp. to retrieve the labels",2, template.getLabels().size());
+		assertEquals("bar", template.getLabels().get("foo"));
+	}
+
+	@Test
+	public void testGetObjectLabels() {
+		assertEquals("Exp. to retrieve the object labels",1, template.getObjectLabels().size());
+		assertEquals("application-template-stibuild", template.getObjectLabels().get("template"));
 	}
 
 }
