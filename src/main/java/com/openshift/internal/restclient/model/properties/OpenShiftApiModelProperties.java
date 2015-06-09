@@ -131,7 +131,7 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		
 		put(IMAGESTREAM_DOCKER_IMAGE_REPO, new String[]{"status","dockerImageRepository"});
 		
-		put(PROJECT_DISPLAY_NAME, new String[]{"displayName"});
+		put(PROJECT_DISPLAY_NAME, new String[]{"metadata","annotations","displayName"});
 		
 		put(ROUTE_HOST, new String[] {"spec", "host" });
 		put(ROUTE_PATH, new String[] { "spec", "path" });
