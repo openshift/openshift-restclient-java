@@ -201,7 +201,11 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 		}
 		return property;
 	}
-
+	
+	protected String asString(ModelNode node, String subKey) {
+		return JBossDmrExtentions.asString(node, propertyKeys, subKey);
+	}
+	
 	protected Map<String, String> asMap(String property){
 		return JBossDmrExtentions.asMap(this.node, propertyKeys, property);
 	}

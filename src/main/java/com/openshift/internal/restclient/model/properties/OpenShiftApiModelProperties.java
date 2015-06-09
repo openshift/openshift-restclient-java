@@ -49,6 +49,8 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(BUILDCONFIG_STI_CLEAN, new String[]{"parameters","strategy", "stiStrategy", "clean"});
 		put(BUILDCONFIG_STI_ENV, new String[]{"parameters","strategy", "stiStrategy", "env"});
 		put(BUILDCONFIG_TRIGGERS, new String[]{"triggers"});
+		put(BUILD_CONFIG_WEBHOOK_GITHUB_SECRET, new String[]{"github","secret"});
+		put(BUILD_CONFIG_WEBHOOK_GENERIC_SECRET, new String[]{"generic","secret"});
 		put(BUILD_CONFIG_IMAGECHANGE_IMAGE, new String[]{"imageChange","image"});
 		put(BUILD_CONFIG_IMAGECHANGE_NAME, new String[]{"imageChange", "from","name"});
 		put(BUILD_CONFIG_IMAGECHANGE_TAG, new String[]{"imageChange","tag"});
@@ -113,6 +115,8 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(BUILDCONFIG_STI_INCREMENTAL, new String[]{"spec","strategy", "stiStrategy", "incremental"});
 		put(BUILDCONFIG_STI_ENV, new String[]{"spec","strategy", "stiStrategy", "env"});
 		put(BUILDCONFIG_TRIGGERS, new String[]{"spec","triggers"});
+		put(BUILD_CONFIG_WEBHOOK_GITHUB_SECRET, new String[]{"github","secret"});
+		put(BUILD_CONFIG_WEBHOOK_GENERIC_SECRET, new String[]{"generic","secret"});
 		put(BUILD_CONFIG_IMAGECHANGE_IMAGE, new String[]{"imageChange","image"});
 		put(BUILD_CONFIG_IMAGECHANGE_NAME, new String[]{"imageChange", "from","name"});
 		put(BUILD_CONFIG_IMAGECHANGE_TAG, new String[]{"imageChange","tag"});

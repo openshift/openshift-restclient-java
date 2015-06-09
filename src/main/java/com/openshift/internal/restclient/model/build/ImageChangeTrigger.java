@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.build;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.build.BuildTriggerType;
 import com.openshift.restclient.model.build.IImageChangeTrigger;
@@ -23,8 +24,8 @@ public class ImageChangeTrigger implements IImageChangeTrigger {
 
 	public ImageChangeTrigger(String image, String from, String tag) {
 		this.tag = tag;
-		this.image = new DockerImageURI(image);
-		this.from = new DockerImageURI(from);
+		this.image = isNotBlank(image) ? new DockerImageURI(image) : null;
+		this.from = isNotBlank(from) ? new DockerImageURI(from) : null;
 	}
 
 	@Override

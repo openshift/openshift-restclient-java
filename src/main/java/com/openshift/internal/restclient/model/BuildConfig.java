@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
@@ -21,10 +22,7 @@ import com.openshift.internal.restclient.model.build.GitBuildSource;
 import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
 import com.openshift.internal.restclient.model.build.STIBuildStrategy;
 import com.openshift.internal.restclient.model.build.WebhookTrigger;
-import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
-import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.build.BuildSourceType;
@@ -60,17 +58,16 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		for (ModelNode node : list) {
 			switch(BuildTriggerType.valueOf(node.get("type").asString())){
 				case generic:
-					triggers.add(new WebhookTrigger(BuildTriggerType.generic, node.get(new String[]{"generic","secret"}).asString(), name, url, version,getNamespace()));
+					triggers.add(new WebhookTrigger(BuildTriggerType.generic, asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), name, url, version,getNamespace()));
 					break;
 				case github:
-					triggers.add(new WebhookTrigger(BuildTriggerType.github, node.get(new String[]{"github","secret"}).asString(), name, url, version, getNamespace()));
+					triggers.add(new WebhookTrigger(BuildTriggerType.github, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), name, url, version, getNamespace()));
 					break;
 				case imageChange:
-					Map<String, String[]> keys = ResourcePropertiesRegistry.getInstance().get(version, ResourceKind.BuildConfig);
 					triggers.add(new ImageChangeTrigger(
-							JBossDmrExtentions.asString(node, keys, BUILD_CONFIG_IMAGECHANGE_IMAGE),
-							JBossDmrExtentions.asString(node, keys, BUILD_CONFIG_IMAGECHANGE_NAME),
-							JBossDmrExtentions.asString(node, keys, BUILD_CONFIG_IMAGECHANGE_TAG))
+							asString(node, BUILD_CONFIG_IMAGECHANGE_IMAGE),
+							asString(node, BUILD_CONFIG_IMAGECHANGE_NAME),
+							asString(node, BUILD_CONFIG_IMAGECHANGE_TAG))
 					);
 					break;
 				default:
@@ -89,26 +86,31 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 				throw new IllegalArgumentException("IBuildTrigger of type generic does not implement IWebhookTrigger");
 			}
 			IWebhookTrigger generic = (IWebhookTrigger)trigger;
-			triggerNode.get(new String[] {"generic", "secret"}).set(generic.getSecret());
+			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GENERIC_SECRET)).set(generic.getSecret());
 			break;
 		case github:
 			if(!(trigger instanceof IWebhookTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type github does not implement IWebhookTrigger");
 			}
 			IWebhookTrigger github = (IWebhookTrigger)trigger;
-			triggerNode.get(new String[] {"github", "secret"}).set(github.getSecret());
+			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GITHUB_SECRET)).set(github.getSecret());
 			break;
 		case imageChange:
 			if(!(trigger instanceof IImageChangeTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type imageChange does not implement IImageChangeTrigger");
 			}
 			IImageChangeTrigger image = (IImageChangeTrigger)trigger;
-			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_IMAGE)).set(image.getImage().toString());
-			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_NAME)).set(image.getFrom().toString());
-			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_TAG)).set(image.getTag());
+			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_IMAGE)).set(defaultIfNull(image.getImage()));
+			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_NAME)).set(defaultIfNull(image.getFrom()));
+			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_TAG)).set(StringUtils.defaultIfBlank(image.getTag(), ""));
 			break;
 		}
 		triggerNode.get("type").set(trigger.getType().name());
+	}
+	
+	private String defaultIfNull(DockerImageURI uri) {
+		if(uri == null) return "";
+		return uri.toString();
 	}
 
 	@Override

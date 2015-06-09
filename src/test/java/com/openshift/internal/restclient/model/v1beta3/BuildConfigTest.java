@@ -127,8 +127,8 @@ public class BuildConfigTest {
 
 	private void assertBuildTriggers(IBuildTrigger[] triggers) {
 		IBuildTrigger [] exp = new IBuildTrigger[]{
-				new WebhookTrigger(BuildTriggerType.github, "secret101","foo", "https://localhost:8443", "v1beta3","foo"),
-				new WebhookTrigger(BuildTriggerType.generic, "secret101","foo", "https://localhost:8443", "v1beta3","foo"),
+				new WebhookTrigger(BuildTriggerType.github, "secret101","ruby-sample-build", "https://localhost:8443", "v1beta3","test"),
+				new WebhookTrigger(BuildTriggerType.generic, "secret101","ruby-sample-build", "https://localhost:8443", "v1beta3","test"),
 				new ImageChangeTrigger("", "", "")
 		};
 		assertArrayEquals(exp, triggers);

@@ -36,6 +36,8 @@ public interface BuildConfigPropertyKeys {
 	
 	static final String BUILDCONFIG_TRIGGERS = "buildconfig.triggers";
 	
+	static final String BUILD_CONFIG_WEBHOOK_GITHUB_SECRET = "buildconfig.webhook.github.secret";
+	static final String BUILD_CONFIG_WEBHOOK_GENERIC_SECRET = "buildconfig.webhook.generic.secret";
 	static final String BUILD_CONFIG_IMAGECHANGE_IMAGE = "buildconfig.imagechange.image";
 	static final String BUILD_CONFIG_IMAGECHANGE_NAME = "buildconfig.imagechange.name";
 	static final String BUILD_CONFIG_IMAGECHANGE_TAG = "buildconfig.imagechange.tag";
