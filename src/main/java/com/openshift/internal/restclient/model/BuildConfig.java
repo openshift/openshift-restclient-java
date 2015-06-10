@@ -21,6 +21,7 @@ import com.openshift.internal.restclient.model.build.DockerBuildStrategy;
 import com.openshift.internal.restclient.model.build.GitBuildSource;
 import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
 import com.openshift.internal.restclient.model.build.STIBuildStrategy;
+import com.openshift.internal.restclient.model.build.SourceBuildStrategy;
 import com.openshift.internal.restclient.model.build.WebhookTrigger;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
@@ -166,6 +167,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			}
 			break;
 		case STI:
+		case Source:
 			if ( !(strategy instanceof ISTIBuildStrategy)) {
 				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement ISTIBuildStrategy");
 			}
@@ -221,18 +223,20 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 						getEnvMap(BUILDCONFIG_CUSTOM_ENV)
 					);
 		case STI:
-			boolean incremental = false;
+		case Source:
 			if(OpenShiftAPIVersion.v1beta1.name().equals(getApiVersion())) {
-				incremental = !asBoolean(BUILDCONFIG_STI_CLEAN);
-			} else if(OpenShiftAPIVersion.v1beta3.name().equals(getApiVersion())) {
-				incremental = asBoolean(BUILDCONFIG_STI_INCREMENTAL);
+				return (T) new STIBuildStrategy(asString(BUILDCONFIG_STI_IMAGE),
+						asString(BUILDCONFIG_STI_SCRIPTS),
+						!asBoolean(BUILDCONFIG_STI_CLEAN),
+						getEnvMap(BUILDCONFIG_STI_ENV)
+						);
 			}
-
-			return (T) new STIBuildStrategy(asString(BUILDCONFIG_STI_IMAGE),
+			return (T) new SourceBuildStrategy(asString(BUILDCONFIG_STI_IMAGE),
 					asString(BUILDCONFIG_STI_SCRIPTS),
-					incremental,
+					asBoolean(BUILDCONFIG_STI_INCREMENTAL),
 					getEnvMap(BUILDCONFIG_STI_ENV)
 					);
+
 		case Docker:
 			return (T) new DockerBuildStrategy(
 					asString(BUILDCONFIG_DOCKER_CONTEXTDIR),

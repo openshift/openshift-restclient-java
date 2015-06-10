@@ -15,6 +15,7 @@ import com.openshift.restclient.images.DockerImageURI;
 /**
  * @author Jeff Cantrill
  */
+@Deprecated
 public interface ISTIBuildStrategy extends IBuildStrategy {
 	
 	/**

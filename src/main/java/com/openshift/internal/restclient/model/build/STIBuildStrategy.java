@@ -17,6 +17,7 @@ import com.openshift.restclient.model.build.ISTIBuildStrategy;
 /**
  * @author Jeff Cantrill
  */
+@Deprecated
 public class STIBuildStrategy implements ISTIBuildStrategy{
 
 	private DockerImageURI image;

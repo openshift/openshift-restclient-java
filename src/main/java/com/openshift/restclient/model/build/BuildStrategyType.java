@@ -16,6 +16,8 @@ package com.openshift.restclient.model.build;
 // TODO: evalute switching to a class/constants since enums are not extendable
 public enum BuildStrategyType {
 	Docker,
+	@Deprecated
 	STI,
+	Source,
 	Custom
 }

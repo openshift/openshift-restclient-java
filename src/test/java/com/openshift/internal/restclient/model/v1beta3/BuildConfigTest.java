@@ -83,7 +83,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void getOutputRespositoryName(){
-		assertEquals("origin-ruby-sample", config.getOutputRepositoryName());
+		assertEquals("origin-ruby-sample:latest", config.getOutputRepositoryName());
 	}
 	
 	@Test
@@ -111,7 +111,7 @@ public class BuildConfigTest {
 	@Test
 	public void getSTIBuildStrategy() {
 		IBuildStrategy strategy = config.getBuildStrategy();
-		assertSTIBuildStrategy(strategy);
+		assertSourceBuildStrategy(strategy);
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class BuildConfigTest {
 		env.put("foo", "bar");
 		writeConfig.setBuildStrategy(new STIBuildStrategy("ruby-20-centos7:latest", "alocation", true, env));
 
-		assertSTIBuildStrategy(reCreateBuildConfig(writeConfig).getBuildStrategy());
+		assertSourceBuildStrategy(reCreateBuildConfig(writeConfig).getBuildStrategy());
 	}
 
 	private void assertBuildTriggers(IBuildTrigger[] triggers) {
@@ -143,8 +143,8 @@ public class BuildConfigTest {
 		assertEquals("Exp. to get the source ref","", git.getRef());
 	}
 
-	private void assertSTIBuildStrategy(IBuildStrategy strategy) {
-		assertEquals(BuildStrategyType.STI, strategy.getType());
+	private void assertSourceBuildStrategy(IBuildStrategy strategy) {
+		assertEquals(BuildStrategyType.Source, strategy.getType());
 		assertTrue(strategy instanceof ISTIBuildStrategy);
 
 		ISTIBuildStrategy sti = (ISTIBuildStrategy)strategy;
