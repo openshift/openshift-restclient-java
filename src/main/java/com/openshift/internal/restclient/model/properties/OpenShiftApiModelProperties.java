@@ -110,10 +110,10 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(BUILDCONFIG_DOCKER_NOCACHE, new String[]{"spec","strategy", "dockerStrategy", "noCache"});
 		put(BUILDCONFIG_DOCKER_BASEIMAGE, new String[]{"spec","strategy", "dockerStrategy","baseImage"});
 		put(BUILDCONFIG_OUTPUT_REPO, new String[]{"spec","output", "to","name"});
-		put(BUILDCONFIG_STI_IMAGE, new String[]{"spec","strategy", "stiStrategy", "from","name"});
-		put(BUILDCONFIG_STI_SCRIPTS, new String[]{"spec","strategy", "stiStrategy", "scripts"});
-		put(BUILDCONFIG_STI_INCREMENTAL, new String[]{"spec","strategy", "stiStrategy", "incremental"});
-		put(BUILDCONFIG_STI_ENV, new String[]{"spec","strategy", "stiStrategy", "env"});
+		put(BUILDCONFIG_STI_IMAGE, new String[]{"spec","strategy", "sourceStrategy", "from","name"});
+		put(BUILDCONFIG_STI_SCRIPTS, new String[]{"spec","strategy", "sourceStrategy", "scripts"});
+		put(BUILDCONFIG_STI_INCREMENTAL, new String[]{"spec","strategy", "sourceStrategy", "incremental"});
+		put(BUILDCONFIG_STI_ENV, new String[]{"spec","strategy", "sourceStrategy", "env"});
 		put(BUILDCONFIG_TRIGGERS, new String[]{"spec","triggers"});
 		put(BUILD_CONFIG_WEBHOOK_GITHUB_SECRET, new String[]{"github","secret"});
 		put(BUILD_CONFIG_WEBHOOK_GENERIC_SECRET, new String[]{"generic","secret"});

@@ -4,11 +4,12 @@
     "metadata": {
         "name": "ruby-sample-build",
         "namespace": "test",
-        "selfLink": "/osapi/v1beta1/buildConfigs/ruby-sample-build?namespace=test",
-        "uid": "87bc17dc-f41a-11e4-bc91-080027893417",
-        "resourceVersion": "58372",
-        "creationTimestamp": "2015-05-06T18:05:51Z",
+        "selfLink": "/osapi/v1beta3/namespaces/test/buildconfigs/ruby-sample-build",
+        "uid": "a87b6692-00a5-11e5-8ebb-080027893417",
+        "resourceVersion": "259",
+        "creationTimestamp": "2015-05-22T17:12:00Z",
         "labels": {
+            "mylabel": "abe",
             "name": "ruby-sample-build",
             "template": "application-template-stibuild"
         }
@@ -41,26 +42,24 @@
             }
         },
         "strategy": {
-            "type": "STI",
-            "stiStrategy": {
+            "type": "Source",
+            "sourceStrategy": {
                 "from": {
                     "kind": "ImageStreamTag",
                     "name": "ruby-20-centos7:latest"
                 },
-                "incremental": true,
                 "scripts" : "alocation",
-                "env" : [
-                    {
-                        "name" : "foo",
-                        "value" : "bar"
-                    }
-                ]
+                "env" : [{
+                	"name" : "foo",
+                	"value" : "bar"
+                }],
+                "incremental": true
             }
         },
         "output": {
             "to": {
-                "kind": "ImageStream",
-                "name": "origin-ruby-sample"
+                "kind": "ImageStreamTag",
+                "name": "origin-ruby-sample:latest"
             }
         },
         "resources": {}
