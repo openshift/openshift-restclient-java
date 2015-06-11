@@ -6,13 +6,15 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift.internal.restclient.model.v1beta3;
+package com.openshift.internal.restclient.model.v1;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.io.ByteArrayInputStream;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +32,8 @@ import com.openshift.restclient.utils.Samples;
  */
 public class SecretTest{
 
-	private static final String VERSION = "v1beta3";
-	private static final Samples sample = Samples.V1BETA3_SECRET;
+	private static final String VERSION = "v1";
+	private static final Samples sample = Samples.V1_SECRET;
 	private ISecret secret;
 	
 	@Before
@@ -43,13 +45,12 @@ public class SecretTest{
 	
 	@Test
 	public void testSecretType() {
-		assertEquals("Opaque", secret.getType());
+		assertEquals("kubernetes.io/dockercfg", secret.getType());
 	}
 
 	@Test
 	public void testGetData() {
-		assertEquals("value-1\r\n", new String(secret.getData("id-rsa.pub")));
-		assertEquals("value-2\r\n\r\n", new String(secret.getData("id-rsa")));
+		assertTrue(StringUtils.isNotBlank(new String(secret.getData(".dockercfg"))));
 	}
 
 	@Test

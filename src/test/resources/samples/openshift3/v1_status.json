@@ -1,0 +1,10 @@
+{
+  "kind": "Status",
+  "apiVersion": "v1",
+  "metadata": {},
+  "status": "Failure",
+  "message": "Unable to determine kind and namespace from url, /osapi/users",
+  "reason": "Forbidden",
+  "details": {},
+  "code": 403
+}

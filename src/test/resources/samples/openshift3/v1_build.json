@@ -1,0 +1,58 @@
+{
+    "kind": "Build",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "ruby-sample-build-1",
+        "namespace": "test",
+        "selfLink": "/osapi/v1beta3/namespaces/test/builds/ruby-sample-build-1",
+        "uid": "5ee1950d-0fab-11e5-9467-080027893417",
+        "resourceVersion": "427",
+        "creationTimestamp": "2015-06-10T20:00:41Z",
+        "labels": {
+            "buildconfig": "ruby-sample-build",
+            "foo": "bar",
+            "name": "ruby-sample-build",
+            "template": "application-template-stibuild"
+        }
+    },
+    "spec": {
+        "serviceAccount": "builder",
+        "source": {
+            "type": "Git",
+            "git": {
+                "uri": "git://github.com/openshift/ruby-hello-world.git"
+            }
+        },
+        "strategy": {
+            "type": "Source",
+            "sourceStrategy": {
+                "from": {
+                    "kind": "DockerImage",
+                    "name": "openshift/ruby-20-centos7:latest"
+                },
+                "incremental": true
+            }
+        },
+        "output": {
+            "to": {
+                "kind": "ImageStreamTag",
+                "name": "origin-ruby-sample:latest"
+            },
+            "pushSecret": {
+                "name": "builder-dockercfg-pukcp"
+            }
+        },
+        "resources": {}
+    },
+    "status": {
+        "phase": "Running",
+        "startTimestamp": "2015-06-10T20:00:51Z",
+        "duration": 76895000000000,
+        "message" : "Some status message",
+        "config": {
+            "kind": "BuildConfig",
+            "namespace": "test",
+            "name": "ruby-sample-build"
+        }
+    }
+}

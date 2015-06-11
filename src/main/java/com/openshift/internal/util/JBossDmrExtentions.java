@@ -59,7 +59,7 @@ public class JBossDmrExtentions {
 		String [] path = propertyKeys.get(key);
 		if(path == null) throw new UnregisteredPropertyException(key);
 		ModelNode modelNode = node.get(path);
-		if( !node.isDefined()){
+		if( !modelNode.isDefined()){
 			return 0;
 		}
 		return modelNode.asInt();
@@ -77,7 +77,7 @@ public class JBossDmrExtentions {
 		String [] path = propertyKeys.get(key);
 		if(path == null) throw new UnregisteredPropertyException(key);
 		ModelNode modelNode = node.get(path);
-		if( !node.isDefined()){
+		if( !modelNode.isDefined()){
 			return "";
 		}
 		return modelNode.asString();
@@ -95,7 +95,7 @@ public class JBossDmrExtentions {
 		String [] path = propertyKeys.get(key);
 		if(path == null) throw new UnregisteredPropertyException(key);
 		ModelNode modelNode = node.get(path);
-		if( !node.isDefined()){
+		if( !modelNode.isDefined()){
 			return false;
 		}
 		return modelNode.asBoolean();
