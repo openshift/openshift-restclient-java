@@ -26,4 +26,5 @@ public interface IProject extends IResource {
 	<T extends IResource> List<T> getResources(ResourceKind kind);
 
 	String getDisplayName();
+	
 }
