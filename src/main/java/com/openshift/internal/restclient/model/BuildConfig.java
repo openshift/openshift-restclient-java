@@ -57,15 +57,19 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		final String url = getClient() != null ? getClient().getBaseURL().toString() : "";
 		final String version = getClient() != null ? getClient().getOpenShiftAPIVersion() : "";
 		for (ModelNode node : list) {
-			switch(BuildTriggerType.valueOf(node.get("type").asString())){
+			BuildTriggerType type = BuildTriggerType.valueOf(node.get("type").asString());
+			switch(type){
 				case generic:
-					triggers.add(new WebhookTrigger(BuildTriggerType.generic, asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), name, url, version,getNamespace()));
+				case Generic:
+					triggers.add(new WebhookTrigger(type, asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), name, url, version,getNamespace()));
 					break;
 				case github:
-					triggers.add(new WebhookTrigger(BuildTriggerType.github, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), name, url, version, getNamespace()));
+				case GitHub:
+					triggers.add(new WebhookTrigger(type, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), name, url, version, getNamespace()));
 					break;
 				case imageChange:
-					triggers.add(new ImageChangeTrigger(
+				case ImageChange:
+					triggers.add(new ImageChangeTrigger(type,
 							asString(node, BUILD_CONFIG_IMAGECHANGE_IMAGE),
 							asString(node, BUILD_CONFIG_IMAGECHANGE_NAME),
 							asString(node, BUILD_CONFIG_IMAGECHANGE_TAG))
@@ -83,6 +87,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		ModelNode triggerNode = triggers.add();
 		switch(trigger.getType()) {
 		case generic:
+		case Generic:
 			if(!(trigger instanceof IWebhookTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type generic does not implement IWebhookTrigger");
 			}
@@ -90,6 +95,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GENERIC_SECRET)).set(generic.getSecret());
 			break;
 		case github:
+		case GitHub:
 			if(!(trigger instanceof IWebhookTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type github does not implement IWebhookTrigger");
 			}
@@ -97,6 +103,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GITHUB_SECRET)).set(github.getSecret());
 			break;
 		case imageChange:
+		case ImageChange:
 			if(!(trigger instanceof IImageChangeTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type imageChange does not implement IImageChangeTrigger");
 			}
@@ -180,7 +187,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			}
 			if(OpenShiftAPIVersion.v1beta1.name().equals(getApiVersion())) {
 				set(BUILDCONFIG_STI_CLEAN, sti.forceClean());
-			} else if(OpenShiftAPIVersion.v1beta3.name().equals(getApiVersion())) {
+			} else{
 				set(BUILDCONFIG_STI_INCREMENTAL, sti.incremental());
 			}
 			if(sti.getEnvironmentVariables() != null) {

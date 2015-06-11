@@ -18,7 +18,6 @@ import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.secret.ISecret;
-import com.openshift.restclient.model.secret.SecretType;
 import com.openshift.restclient.utils.Base64Coder;
 
 /**

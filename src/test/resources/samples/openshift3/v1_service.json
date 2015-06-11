@@ -1,0 +1,36 @@
+{
+    "kind": "Service",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "database",
+        "namespace": "test",
+        "selfLink": "/api/v1/namespaces/test/services/database",
+        "uid": "5e05f1e0-0fab-11e5-9467-080027893417",
+        "resourceVersion": "389",
+        "creationTimestamp": "2015-06-10T20:00:39Z",
+        "labels": {
+            "foo": "bar",
+            "template": "application-template-stibuild"
+        }
+    },
+    "spec": {
+        "ports": [
+            {
+                "name": "db",
+                "protocol": "TCP",
+                "port": 5434,
+                "targetPort": 3306,
+                "nodePort": 0
+            }
+        ],
+        "selector": {
+            "name": "database"
+        },
+        "portalIP": "172.30.57.114",
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+    },
+    "status": {
+        "loadBalancer": {}
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "kind": "User",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "test-admin",
+        "selfLink": "/osapi/v1beta3/users/test-admin",
+        "uid": "94b42e96-0faa-11e5-9467-080027893417",
+        "resourceVersion": "335",
+        "creationTimestamp": "2015-06-10T19:55:01Z"
+    },
+    "fullName" : "Foo Master",
+    "identities": [
+        "anypassword:test-admin"
+    ],
+    "groups": null
+}

@@ -1,0 +1,87 @@
+{
+    "kind": "ReplicationController",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "database-1",
+        "namespace": "test",
+        "selfLink": "/api/v1/namespaces/test/replicationcontrollers/database-1",
+        "uid": "5e1d24e4-0fab-11e5-9467-080027893417",
+        "resourceVersion": "422",
+        "creationTimestamp": "2015-06-10T20:00:39Z",
+        "labels": {
+            "foo": "bar",
+            "template": "application-template-stibuild"
+        },
+        "annotations": {
+            "kubectl.kubernetes.io/desired-replicas": "1",
+            "openshift.io/deployer-pod.name": "database-1-deploy",
+            "openshift.io/deployment-config.latest-version": "1",
+            "openshift.io/deployment-config.name": "database",
+            "openshift.io/deployment.phase": "Running",
+            "openshift.io/encoded-deployment-config": "{\"kind\":\"DeploymentConfig\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"database\",\"namespace\":\"test\",\"selfLink\":\"/oapi/v1/namespaces/test/deploymentconfigs/database\",\"uid\":\"5e11c89c-0fab-11e5-9467-080027893417\",\"resourceVersion\":\"391\",\"creationTimestamp\":\"2015-06-10T20:00:39Z\",\"labels\":{\"foo\":\"bar\",\"template\":\"application-template-stibuild\"}},\"spec\":{\"strategy\":{\"type\":\"Recreate\",\"recreateParams\":{\"pre\":{\"failurePolicy\":\"Abort\",\"execNewPod\":{\"command\":[\"/bin/true\"],\"env\":[{\"name\":\"CUSTOM_VAR1\",\"value\":\"custom_value1\"}],\"containerName\":\"ruby-helloworld-database\"}},\"post\":{\"failurePolicy\":\"Ignore\",\"execNewPod\":{\"command\":[\"/bin/false\"],\"env\":[{\"name\":\"CUSTOM_VAR2\",\"value\":\"custom_value2\"}],\"containerName\":\"ruby-helloworld-database\"}}},\"resources\":{}},\"triggers\":[{\"type\":\"ConfigChange\"}],\"replicas\":1,\"selector\":{\"name\":\"database\"},\"template\":{\"metadata\":{\"creationTimestamp\":null,\"labels\":{\"name\":\"database\"}},\"spec\":{\"containers\":[{\"name\":\"ruby-helloworld-database\",\"image\":\"openshift/mysql-55-centos7:latest\",\"ports\":[{\"containerPort\":3306,\"protocol\":\"TCP\"}],\"env\":[{\"name\":\"MYSQL_USER\",\"value\":\"user0EM\"},{\"name\":\"MYSQL_PASSWORD\",\"value\":\"uWA3nqHK\"},{\"name\":\"MYSQL_DATABASE\",\"value\":\"root\"}],\"resources\":{},\"terminationMessagePath\":\"/dev/termination-log\",\"imagePullPolicy\":\"Always\",\"securityContext\":{\"capabilities\":{},\"privileged\":false}}],\"restartPolicy\":\"Always\",\"dnsPolicy\":\"ClusterFirst\"}}},\"status\":{\"latestVersion\":1,\"details\":{\"causes\":[{\"type\":\"ConfigChange\"}]}}}"
+        }
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "deployment": "database-1",
+            "deploymentconfig": "database",
+            "name": "database"
+        },
+        "template": {
+            "metadata": {
+                "creationTimestamp": null,
+                "labels": {
+                    "deployment": "database-1",
+                    "deploymentconfig": "database",
+                    "name": "database"
+                },
+                "annotations": {
+                    "openshift.io/deployment-config.latest-version": "1",
+                    "openshift.io/deployment-config.name": "database",
+                    "openshift.io/deployment.name": "database-1"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "name": "ruby-helloworld-database",
+                        "image": "openshift/mysql-55-centos7:latest",
+                        "ports": [
+                            {
+                                "containerPort": 3306,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "env": [
+                            {
+                                "name": "MYSQL_USER",
+                                "value": "user0EM"
+                            },
+                            {
+                                "name": "MYSQL_PASSWORD",
+                                "value": "uWA3nqHK"
+                            },
+                            {
+                                "name": "MYSQL_DATABASE",
+                                "value": "root"
+                            }
+                        ],
+                        "resources": {},
+                        "terminationMessagePath": "/dev/termination-log",
+                        "imagePullPolicy": "Always",
+                        "securityContext": {
+                            "capabilities": {},
+                            "privileged": false
+                        }
+                    }
+                ],
+                "restartPolicy": "Always",
+                "dnsPolicy": "ClusterFirst"
+            }
+        }
+    },
+    "status": {
+        "replicas": 2
+    }
+}

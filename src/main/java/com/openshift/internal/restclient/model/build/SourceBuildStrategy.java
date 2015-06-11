@@ -13,13 +13,14 @@ package com.openshift.internal.restclient.model.build;
 import java.util.Map;
 
 import com.openshift.restclient.model.build.BuildStrategyType;
+import com.openshift.restclient.model.build.ISourceBuildStrategy;
 
 /**
  * 
  * @author jeff.cantrill
  *
  */
-public class SourceBuildStrategy extends STIBuildStrategy {
+public class SourceBuildStrategy extends STIBuildStrategy implements ISourceBuildStrategy{
 
 	public SourceBuildStrategy(String image, String scriptsLocation, boolean incremental, Map<String, String> envVars) {
 		super(image, scriptsLocation, incremental, envVars);

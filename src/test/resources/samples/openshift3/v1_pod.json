@@ -1,0 +1,109 @@
+{
+    "kind": "Pod",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "database-1-deploy",
+        "namespace": "test",
+        "selfLink": "/api/v1/namespaces/test/pods/database-1-deploy",
+        "uid": "5e2042ed-0fab-11e5-9467-080027893417",
+        "resourceVersion": "423",
+        "creationTimestamp": "2015-06-10T20:00:39Z",
+        "labels": {
+            "openshift.io/deployer-pod-for.name": "database-1"
+        },
+        "annotations": {
+            "openshift.io/deployment.name": "database-1"
+        }
+    },
+    "spec": {
+        "volumes": [
+            {
+                "name": "deployer-token-22jov",
+                "secret": {
+                    "secretName": "deployer-token-22jov"
+                },
+                "rbd": null
+            }
+        ],
+        "containers": [
+            {
+                "name": "deployment",
+                "image": "openshift/origin-deployer:v0.6",
+                "env": [
+                    {
+                        "name": "KUBERNETES_MASTER",
+                        "value": "https://10.0.2.15:8443"
+                    },
+                    {
+                        "name": "OPENSHIFT_MASTER",
+                        "value": "https://10.0.2.15:8443"
+                    },
+                    {
+                        "name": "BEARER_TOKEN_FILE",
+                        "value": "/var/run/secrets/kubernetes.io/serviceaccount/token"
+                    },
+                    {
+                        "name": "OPENSHIFT_CA_DATA",
+                        "value": "-----BEGIN CERTIFICATE-----\nMIIC5jCCAdCgAwIBAgIBATALBgkqhkiG9w0BAQswJjEkMCIGA1UEAwwbb3BlbnNo\naWZ0LXNpZ25lckAxNDMzOTY0NzE3MB4XDTE1MDYxMDE5MzE1NloXDTE2MDYwOTE5\nMzE1N1owJjEkMCIGA1UEAwwbb3BlbnNoaWZ0LXNpZ25lckAxNDMzOTY0NzE3MIIB\nIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7/+692L7lY1kZjzLdGhCb7n6\nNg/3BlzENb/mVBfULEZBMNhaQabGtf0AgKVEz9iGIJq4oGhnjG+DZSoXD07F6dNK\nLBeHcmR1LU6lm/AyUydhfc5w9RXzwGx4A9NAesICZQHxIrUVltALzWF+JGBjVsT+\n+OMtLmQZRdoLfhP5k7Qb5rgvfKG68b0ZIUe9+sd9un06Uf3nwYCy4OMF6IHjGm0i\nZfyDh0eDKCshMMhiac4XLJXVLYZ2ArjEAzsn750gCP0QQ/lXzeZ8Iw7gMrdYZ/2F\nH2pZ9RbWHg9SDswsrg7yDVZG+7XAyUVxt/q1sBto1vedkg59voIz9RSnC+sZ9wID\nAQABoyMwITAOBgNVHQ8BAf8EBAMCAKQwDwYDVR0TAQH/BAUwAwEB/zALBgkqhkiG\n9w0BAQsDggEBACrxmUfzZpEMHKugEsLAKcvDCF3pn68ygrFvtpclRYO8EsFVaiYk\niPGM+pwxB6ML4T0cMNjPesazWlGYIgE8BW8jHDp1fUvVPsWoYoUAEzY/4iqOIp4B\nawP+TnKahJUuazNmlwXbH+KsVl2LX2sNj6L/b2bnsGELlV6PREa1BJCl/VbJEu+o\nZuQT6Dzn/SLPuozKdr4ngwFEJW2L840gRvGqaXAH5NO3d7eslO26775FRk9zyJzs\nM+/ng8gmzcIE8DsPaaB2B5ftjNSeRm+EhyjH5oQ/jfjfD6yc1kPh11+LzQsKf87S\n7sIrOhEK0Zll9wHzmM79XfQ5l1G9TuuqFCU=\n-----END CERTIFICATE-----\n"
+                    },
+                    {
+                        "name": "OPENSHIFT_DEPLOYMENT_NAME",
+                        "value": "database-1"
+                    },
+                    {
+                        "name": "OPENSHIFT_DEPLOYMENT_NAMESPACE",
+                        "value": "test"
+                    }
+                ],
+                "resources": {},
+                "volumeMounts": [
+                    {
+                        "name": "deployer-token-22jov",
+                        "readOnly": true,
+                        "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount"
+                    }
+                ],
+                "terminationMessagePath": "/dev/termination-log",
+                "imagePullPolicy": "IfNotPresent"
+            }
+        ],
+        "restartPolicy": "Never",
+        "activeDeadlineSeconds": 21600,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccount": "deployer",
+        "host": "openshiftdev.local",
+        "imagePullSecrets": [
+            {
+                "name": "deployer-dockercfg-hy366"
+            }
+        ]
+    },
+    "status": {
+        "phase": "Running",
+        "conditions": [
+            {
+                "type": "Ready",
+                "status": "True"
+            }
+        ],
+        "hostIP": "127.0.0.1",
+        "podIP": "1.2.3.4",
+        "startTime": "2015-06-10T20:00:39Z",
+        "containerStatuses": [
+            {
+                "name": "deployment",
+                "state": {
+                    "running": {
+                        "startedAt": null
+                    }
+                },
+                "lastState": {},
+                "ready": true,
+                "restartCount": 0,
+                "image": "testimage",
+                "imageID": "docker://",
+                "containerID": "docker:///k8s_deployment.1b812727_database-1-deploy_test_5e2042ed-0fab-11e5-9467-080027893417_ec349f0e"
+            }
+        ]
+    }
+}
