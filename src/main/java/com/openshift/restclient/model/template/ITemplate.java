@@ -40,4 +40,21 @@ public interface ITemplate extends IResource {
 	 * @param parameters
 	 */
 	void updateParameterValues(Collection<IParameter> parameters);
+	
+	/**
+	 * Retrieves the labels that are applied to the objects of the
+	 * template when it is processed.
+	 * 
+	 * @return Unmodifiable map of the item labels
+	 */
+	Map<String, String> getObjectLabels();
+	
+	/**
+	 * Add or update a label that is applied to the objects of the
+	 * template when it is processed
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	void addObjectLabel(String key, String value);
 }

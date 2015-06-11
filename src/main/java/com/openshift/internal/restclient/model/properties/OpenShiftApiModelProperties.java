@@ -79,6 +79,7 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 
 		put(TEMPLATE_PARAMETERS, new String[]{"parameters"});
 		put(TEMPLATE_ITEMS, new String[]{"items"});
+		put(TEMPLATE_OBJECT_LABELS, new String[]{"labels"});
 		
 		put(USER_FULLNAME, new String[]{"fullName"});
 
@@ -145,6 +146,7 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		
 		put(TEMPLATE_PARAMETERS, new String[]{"parameters"});
 		put(TEMPLATE_ITEMS, new String[]{"objects"});
+		put(TEMPLATE_OBJECT_LABELS, new String[]{"labels"});
 
 		put(USER_FULLNAME, new String[]{"fullName"});
 		put(SECRET_TYPE, new String[]{"type"});

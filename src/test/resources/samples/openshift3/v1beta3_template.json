@@ -3,6 +3,10 @@
     "apiVersion": "v1beta3",
     "metadata": {
         "name": "ruby-helloworld-sample",
+        "labels" : {
+        	"foo" : "bar",
+        	"xyz" : "abc"
+        },
         "namespace": "test",
         "annotations": {
             "description": "This example shows how to create a simple ruby application in openshift origin v3",

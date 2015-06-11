@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
 
 /**
  * Helper extensions to those provided
@@ -25,42 +24,78 @@ public class JBossDmrExtentions {
 	private JBossDmrExtentions (){
 	}
 
-	public static Map<String, String> asMap(ModelNode root, Map<String, String []> propertyKeys, String property){
+	/**
+	 * 
+	 * @param root
+	 * @param propertyKeys
+	 * @param key
+	 * @return
+	 * @throws UnregisteredPropertyException   if the property is not found in the property map
+	 */
+	public static Map<String, String> asMap(ModelNode root, Map<String, String []> propertyKeys, String key){
 		HashMap<String, String> map = new HashMap<String, String>();
 		if(propertyKeys != null){
-			String [] path = propertyKeys.get(property);
+			String [] path = propertyKeys.get(key);
+			if(path == null) throw new UnregisteredPropertyException(key);
 			ModelNode node = root.get(path);
 			if( !node.isDefined())
 				return map;
-			for (String key : node.keys()) {
-				map.put(key, node.get(key).asString());
+			for (String k : node.keys()) {
+				map.put(k, node.get(k).asString());
 			}
 		}
 		return map;
 	}
 	
+	/**
+	 * 
+	 * @param node
+	 * @param propertyKeys
+	 * @param key
+	 * @return
+	 * @throws UnregisteredPropertyException   if the property is not found in the property map
+	 */
 	public static int asInt(ModelNode node, Map<String, String []> propertyKeys, String key){
-		String [] property = propertyKeys.get(key);
-		ModelNode modelNode = node.get(property);
-		if(modelNode.getType() == ModelType.UNDEFINED){
+		String [] path = propertyKeys.get(key);
+		if(path == null) throw new UnregisteredPropertyException(key);
+		ModelNode modelNode = node.get(path);
+		if( !node.isDefined()){
 			return 0;
 		}
 		return modelNode.asInt();
 	}
 	
+	/**
+	 * 
+	 * @param node
+	 * @param propertyKeys
+	 * @param key
+	 * @return
+	 * @throws UnregisteredPropertyException   if the property is not found in the property map
+	 */
 	public static String asString(ModelNode node, Map<String, String []> propertyKeys, String key){
 		String [] path = propertyKeys.get(key);
+		if(path == null) throw new UnregisteredPropertyException(key);
 		ModelNode modelNode = node.get(path);
-		if(modelNode.getType() == ModelType.UNDEFINED){
+		if( !node.isDefined()){
 			return "";
 		}
 		return modelNode.asString();
 	}
 	
+	/**
+	 * 
+	 * @param node
+	 * @param propertyKeys
+	 * @param key
+	 * @return
+	 * @throws UnregisteredPropertyException   if the property is not found in the property map
+	 */
 	public static boolean asBoolean(ModelNode node, Map<String, String []> propertyKeys, String key) {
 		String [] path = propertyKeys.get(key);
+		if(path == null) throw new UnregisteredPropertyException(key);
 		ModelNode modelNode = node.get(path);
-		if(modelNode.getType() == ModelType.UNDEFINED){
+		if( !node.isDefined()){
 			return false;
 		}
 		return modelNode.asBoolean();
