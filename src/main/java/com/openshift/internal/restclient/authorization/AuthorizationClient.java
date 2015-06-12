@@ -27,6 +27,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -35,6 +36,7 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
+import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +58,8 @@ import com.openshift.restclient.http.IHttpClient;
  */
 public class AuthorizationClient implements IAuthorizationClient {
 	private static final Logger LOG = LoggerFactory.getLogger(IAuthorizationClient.class);
+	
+	private static final int TIMEOUT = 10 * 1000; //10 seconds
 	
 	private SSLContext sslContext;
 	private X509HostnameVerifier hostnameVerifier = new AllowAllHostnameVerifier();
@@ -106,12 +110,19 @@ public class AuthorizationClient implements IAuthorizationClient {
 		CloseableHttpClient client = null;
 		try {
 			OpenShiftAuthorizationRedirectStrategy redirectStrategy = new OpenShiftAuthorizationRedirectStrategy(openshiftClient);
+			RequestConfig defaultRequestConfig = RequestConfig.custom()
+					.setSocketTimeout(TIMEOUT)
+					.setConnectTimeout(TIMEOUT)
+					.setConnectionRequestTimeout(TIMEOUT)
+					.setStaleConnectionCheckEnabled(true)
+					.build();
 			client = HttpClients.custom()
 					.setRedirectStrategy(redirectStrategy)
 					.setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()))
 					.setHostnameVerifier(hostnameVerifier)
 					.setDefaultCredentialsProvider(credentialsProvider)
 					.setSslcontext(sslContext)
+					.setDefaultRequestConfig(defaultRequestConfig)
 					.build();
 			HttpGet request =
 					new HttpGet(
