@@ -52,6 +52,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceFactoryException;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.UnsupportedVersionException;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -145,6 +146,8 @@ public class ResourceFactory implements IResourceFactory{
 			String version = node.get(APIVERSION).asString();
 			ResourceKind kind = ResourceKind.valueOf(node.get(KIND).asString());
 			return create(node, version, kind);
+		} catch (UnsupportedVersionException e) {
+			throw e;
 		}catch(Exception e) {
 			throw new ResourceFactoryException(e, "There was an exception creating the resource from: %s", response);
 		}
@@ -162,6 +165,8 @@ public class ResourceFactory implements IResourceFactory{
 			Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind);
 			Constructor<? extends IResource> constructor =  IMPL_MAP.get(kind).getConstructor(ModelNode.class, IClient.class, Map.class);
 			return (T) constructor.newInstance(node, client, properyKeyMap);
+		} catch (UnsupportedVersionException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new ResourceFactoryException(e,"Unable to create %s resource kind %s from %s", version, kind, node);
 		}

@@ -14,17 +14,24 @@ import static com.openshift.internal.restclient.model.properties.KubernetesApiMo
 import static com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP;
 import static com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties.V1BETA3_OPENSHIFT_MAP;
 import static com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties.V1_OPENSHIFT_MAP;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.openshift.internal.restclient.APIModelVersion;
 import com.openshift.internal.restclient.KubernetesAPIVersion;
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.restclient.IncompatibleApiVersionsException;
+import com.openshift.restclient.ResourceFactoryException;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.UnsupportedVersionException;
 
 /**
  * Registry of keys to property paths by version for each API resource type 
@@ -129,7 +136,14 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 	public Map<String, String []> get(final String apiVersion, final ResourceKind kind) {
 		final VersionKey key = new VersionKey(apiVersion, kind);
 		if(!versionPropertyMap.containsKey(key)){
-			throw new RuntimeException(String.format("Version '%s' not supported for kind '%s'", apiVersion, kind));
+			Collection<String> versions = new ArrayList<String>();
+			for (VersionKey version : versionPropertyMap.keySet()) {
+				if(version.kind.equals(kind)) {
+					versions.add(version.version);
+				}
+			}
+			String kindVersions = StringUtils.join(versions, ",");
+			throw new UnsupportedVersionException("Version '%s' not supported for kind '%s'. Supported Versions are: %s", apiVersion, kind, kindVersions);
 		}
 		return versionPropertyMap.get(key);
 	}

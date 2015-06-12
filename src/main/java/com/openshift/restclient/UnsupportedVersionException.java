@@ -18,4 +18,8 @@ public class UnsupportedVersionException extends OpenShiftException {
 	public UnsupportedVersionException(String version){
 		super(String.format("OpenShift API version '%s' is not supported by this client", version));
 	}
+
+	public UnsupportedVersionException(String message, Object... arguments) {
+		super(message, arguments);
+	}
 }
