@@ -60,6 +60,7 @@ public class KubernetesResourceTest {
 	}
 	
 	private KubernetesResource createKubernetesResource(String modelVersion, ModelNode node) {
+
 		return new KubernetesResource(node, null,
 				ResourcePropertiesRegistry.getInstance().get(modelVersion, ResourceKind.Service)) {};
 	}
@@ -77,32 +78,6 @@ public class KubernetesResourceTest {
 	@Test
 	public void isAnnotatedReturnsFalseForUnKnownAnnotation() {
 		assertFalse(resource.isAnnotatedWith("bar"));
-	}
-
-	@Test
-	public void supportsIsFalseForUnsupportedCapability() {
-		assertFalse("Expected to not support capability because IClient is null",resource.supports(IDeploymentTraceability.class));
-	}
-
-	@Test
-	public void getCapabilityReturnsNonNullWhenSupportedCapability() {
-		assertTrue("Exp. to support capability since resource has template annotation", resource.supports(ITemplateTraceability.class));
-		assertNotNull(resource.getCapability(ITemplateTraceability.class));
-	}
-	
-	@Test
-	public void testAcceptVisitor(){
-		final List<Boolean> visited = new ArrayList<Boolean>();
-		resource.accept(new CapabilityVisitor<ITemplateTraceability, Object>(){
-
-			@Override
-			public Object  visit(ITemplateTraceability capability) {
-				visited.add(Boolean.TRUE);
-				return (Object)null;
-			}
-			
-		}, new Object());
-		assertEquals("Exp. the visitor to be visited", 1, visited.size());
 	}
 
 	@Test

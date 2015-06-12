@@ -8,20 +8,18 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.v1beta1;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.Service;
-import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IService;
 import com.openshift.restclient.utils.Samples;
 
@@ -36,8 +34,7 @@ public class V1Beta1ServiceTest{
 	@Before
 	public void setUp(){
 		IClient client = mock(IClient.class);
-		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_SERVICE.getContentAsString());
-		service = new Service(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Service));
+		service = new ResourceFactory(client).create(Samples.V1BETA1_SERVICE.getContentAsString());
 	}
 	
 	@Test

@@ -20,7 +20,7 @@ import java.lang.reflect.ParameterizedType;
  */
 public abstract class CapabilityVisitor<T extends ICapability, R> {
 	
-	private Type type;
+	private Class<T> type;
 	
 	/**
 	 * Visits the capability
@@ -33,13 +33,13 @@ public abstract class CapabilityVisitor<T extends ICapability, R> {
 	 * Gets the Capability type
 	 * @return
 	 */
-	public final Type getCapabilityType(){
+	public final Class<T> getCapabilityType(){
 		if(type == null) {
 			Type superclass = getClass().getGenericSuperclass();
 			if (superclass instanceof Class) {
 				throw new RuntimeException("Missing type parameter.");
 			}
-			this.type = ((ParameterizedType) superclass).getActualTypeArguments()[0];
+			this.type = (Class<T>)((ParameterizedType) superclass).getActualTypeArguments()[0];
 		}
         return type;
 	}

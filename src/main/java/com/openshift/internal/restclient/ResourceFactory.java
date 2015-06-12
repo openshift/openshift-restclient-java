@@ -21,12 +21,21 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.restclient.capability.resources.ClientCapability;
+import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
+import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
+import com.openshift.internal.restclient.capability.resources.ProjectTemplateListCapability;
+import com.openshift.internal.restclient.capability.resources.ProjectTemplateProcessing;
+import com.openshift.internal.restclient.capability.resources.ServiceSinglePortCapability;
+import com.openshift.internal.restclient.capability.resources.TagCapability;
+import com.openshift.internal.restclient.capability.resources.TemplateTraceability;
 import com.openshift.internal.restclient.model.Build;
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.internal.restclient.model.Config;
 import com.openshift.internal.restclient.model.DeploymentConfig;
 import com.openshift.internal.restclient.model.ImageStream;
 import com.openshift.internal.restclient.model.KubernetesEvent;
+import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.LimitRange;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.internal.restclient.model.Project;
@@ -52,6 +61,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceFactoryException;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -96,12 +106,59 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.Service, Service.class);
 		IMPL_MAP.put(ResourceKind.Secret, Secret.class);
 	}
+
+	@SuppressWarnings("unchecked")
+	private void addBuildInCapabilities(ResourceFactory factory) {
+		factory.registerCapabilities(ResourceKind.Project, ProjectTemplateProcessing.class);
+		factory.registerCapabilities(ResourceKind.Project, ProjectTemplateListCapability.class);
+
+		factory.registerCapabilities(ResourceKind.Service, ServiceSinglePortCapability.class);
+
+		// Register global capabilities
+		for(ResourceKind kind : ResourceKind.values()) {
+			factory.registerCapabilities(kind,
+					TemplateTraceability.class,
+					DeploymentConfigTraceability.class,
+					DeploymentTraceability.class,
+					TagCapability.class,
+					ClientCapability.class
+			);
+		}
+	}
+
 	private IClient client;
+	private final Map<ResourceKind, List<Class<? extends ICapability>>> resourceCapabillities;
 	
 	public ResourceFactory(IClient client) {
 		this.client = client;
+		this.resourceCapabillities = new HashMap<ResourceKind, List<Class<? extends ICapability>>>();
+		addBuildInCapabilities(this);
 	}
 	
+	@Override
+	public void registerCapabilities(ResourceKind kind, Class<? extends ICapability>... capabilities) {
+		if(kind == null) {
+			throw new IllegalArgumentException("Kind must be specified");
+		}
+		if(capabilities == null || capabilities.length == 0) {
+			return;
+		}
+		List<Class<? extends ICapability>> registeredCap = resourceCapabillities.get(kind);
+		if(registeredCap == null) {
+			registeredCap = new ArrayList<Class<? extends ICapability>>();
+		}
+		Collections.addAll(registeredCap, capabilities);
+		resourceCapabillities.put(kind, registeredCap);
+	}
+
+	public List<Class<? extends ICapability>> getCapabilities(ResourceKind kind) {
+		List<Class<? extends ICapability>> capabilities = resourceCapabillities.get(kind);
+		if(capabilities == null) {
+			capabilities = new ArrayList<Class<? extends ICapability>>();
+		}
+		return capabilities;
+	}
+
 	public static Map<ResourceKind, Class<? extends IResource>> getImplMap(){
 		return Collections.unmodifiableMap(IMPL_MAP);
 	}
@@ -161,9 +218,20 @@ public class ResourceFactory implements IResourceFactory{
 			node.get(KIND).set(kind.toString());
 			Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind);
 			Constructor<? extends IResource> constructor =  IMPL_MAP.get(kind).getConstructor(ModelNode.class, IClient.class, Map.class);
-			return (T) constructor.newInstance(node, client, properyKeyMap);
+			T resource = (T) constructor.newInstance(node, client, properyKeyMap);
+
+			addCapabilities(resource);
+
+			return resource;
 		} catch (Exception e) {
 			throw new ResourceFactoryException(e,"Unable to create %s resource kind %s from %s", version, kind, node);
+		}
+	}
+
+	private void addCapabilities(IResource resource) {
+		if(resource instanceof KubernetesResource) {
+			KubernetesResource kresource = (KubernetesResource)resource;
+			kresource.addCapabilities(getCapabilities(resource.getKind()));
 		}
 	}
 	

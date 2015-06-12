@@ -11,6 +11,7 @@ package com.openshift.restclient;
 import java.io.InputStream;
 import java.util.List;
 
+import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -21,6 +22,12 @@ import com.openshift.restclient.model.IResource;
  */
 public interface IResourceFactory {
 	
+	/**
+	 * @param resource
+	 * @param capabilities
+	 */
+	void registerCapabilities(ResourceKind kind, Class<? extends ICapability>... capabilities);
+
 	/**
 	 * Create a list of resources of the given kind
 	 * from a response string

@@ -8,10 +8,12 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
-
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,40 +37,37 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 	
 	private ModelNode node;
 	private IClient client;
-	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
+	private Collection<Class<? extends ICapability>> capabilities = new ArrayList<Class<? extends ICapability>>();
 	private Map<String, String []> propertyKeys;
 	
 	protected KubernetesResource(ModelNode node, IClient client, Map<String, String []> propertyKeys){
 		this.node = node;
 		this.client = client;
 		this.propertyKeys = propertyKeys;
-		initializeCapabilities(capabilities, this, client);
 	}
 
-	@SuppressWarnings("unchecked")
+	public void addCapabilities(Collection<Class<? extends ICapability>> capabilities) {
+		this.capabilities.addAll(capabilities);
+	}
+
 	@Override
 	public <T extends ICapability> T getCapability(Class<T> capability) {
-		return (T) capabilities.get(capability);
+		return getFirstSupportedCapability(capability, filterCompatibleCapabilities(capability));
 	}
-	
+
 	public Set<Class<? extends ICapability>> getCapabilities(){
-		return Collections.unmodifiableSet(capabilities.keySet());
-	}
-	
-	protected Map<Class<? extends ICapability>, ICapability> getModifiableCapabilities(){
-		return capabilities;
+		return Collections.unmodifiableSet(new HashSet<Class<? extends ICapability>>(capabilities));
 	}
 	
 	@Override
 	public boolean supports(Class<? extends ICapability> capability) {
-		return capabilities.containsKey(capability);
+		return filterCompatibleCapabilities(capability).size() > 0;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ICapability, R> R accept(CapabilityVisitor<T, R> visitor, R unsupportedValue){
-		if(capabilities.containsKey(visitor.getCapabilityType())){
-			T capability = (T) capabilities.get(visitor.getCapabilityType());
+		T capability = getCapability(visitor.getCapabilityType());
+		if(capability != null) {
 			return (R) visitor.visit(capability);
 		}
 		return unsupportedValue;
@@ -282,7 +281,50 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 		}
 		return true;
 	}
-	
+
+	// Capability helpers : TODO Move to custom CapabilityHolder class
+	@SuppressWarnings("unchecked")
+	private <T extends ICapability> T getFirstSupportedCapability(Class<T> capability, java.util.List<Class<? extends ICapability>> compats) {
+		for(Class<? extends ICapability> compat : compats) {
+			try {
+				// TODO: Move validation to registration
+				Object comInst = null;
+				for(Constructor<?> com : compat.getDeclaredConstructors()) {
+					Class<?>[] parameters = com.getParameterTypes();
+					if(parameters.length == 1) {
+						if(parameters[0].isAssignableFrom(this.getClass())) {
+							comInst = com.newInstance(this);
+						} else {
+							if(parameters[0] == IClient.class) {
+								comInst = com.newInstance(client);
+							}
+						}
+					}
+					else if(parameters.length == 2) {
+						if(parameters[0].isAssignableFrom(this.getClass()) && parameters[1] == IClient.class) {
+							comInst = com.newInstance(this, client);
+						}
+					}
+				}
+				if(comInst != null && ((ICapability)comInst).isSupported()) {
+					return (T) comInst;
+				}
+			} catch(Exception e) {
+				throw new IllegalStateException("Unsupported ICapability registered on " + this.getKind(), e);
+			}
+		}
+		return null;
+	}
+
+	private <T extends ICapability> java.util.List<Class<? extends ICapability>> filterCompatibleCapabilities(Class<T> capability) {
+		java.util.List<Class<? extends ICapability>> compats = new ArrayList<Class<? extends ICapability>>();
+		for(Class<? extends ICapability> cap : capabilities) {
+			if(capability.isAssignableFrom(cap)) {
+				compats.add(cap);
+			}
+		}
+		return compats;
+	}
 }
 
 
