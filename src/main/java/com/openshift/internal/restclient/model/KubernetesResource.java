@@ -24,6 +24,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
+import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -37,6 +38,7 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 	private IClient client;
 	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
 	private Map<String, String []> propertyKeys;
+	private IProject project;
 	
 	protected KubernetesResource(ModelNode node, IClient client, Map<String, String []> propertyKeys){
 		this.node = node;
@@ -74,6 +76,14 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 		return unsupportedValue;
 	}
 	
+	@Override
+	public IProject getProject() {
+		if(this.project == null) {
+			this.project = client.get(ResourceKind.Project, getNamespace(), ""); 
+		}
+		return this.project;
+	}
+
 	@Override
 	public Map<String, String> getAnnotations() {
 		return asMap(ANNOTATIONS);
