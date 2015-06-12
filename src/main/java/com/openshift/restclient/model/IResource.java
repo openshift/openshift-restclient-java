@@ -60,6 +60,13 @@ public interface IResource extends ICapable {
 	String getNamespace();
 	
 	/**
+	 * Return the project of the resource which
+	 * corresponds to the namespace
+	 * @return
+	 */
+	IProject getProject();
+	
+	/**
 	 * Retrieves the labels associated with the resource
 	 * @return
 	 */
