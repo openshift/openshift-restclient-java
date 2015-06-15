@@ -36,7 +36,7 @@ public class ReplicationControllerTest {
 	public static void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_REPLICATION_CONTROLLER.getContentAsString());
-		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta3", ResourceKind.ReplicationController));
+		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta3", ResourceKind.REPLICATION_CONTROLLER));
 	}
 	
 	@Test

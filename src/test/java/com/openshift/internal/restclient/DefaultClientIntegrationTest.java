@@ -55,7 +55,7 @@ public class DefaultClientIntegrationTest {
 		Project project = null;
 		
 		try {
-			project = factory.create(VERSION, ResourceKind.Project);
+			project = factory.create(VERSION, ResourceKind.PROJECT);
 			project.setName(helper.generateNamespace());
 			template = factory.create(Samples.V1BETA3_TEMPLATE.getContentAsString());
 			template.setNamespace(project.getName());
@@ -63,7 +63,7 @@ public class DefaultClientIntegrationTest {
 			project = client.create(project);
 			template = client.create(template, project.getNamespace());
 			
-			List<ITemplate> list = client.list(ResourceKind.Template, project.getName());
+			List<ITemplate> list = client.list(ResourceKind.TEMPLATE, project.getName());
 			assertEquals(1, list.size());
 			for (ITemplate t : list) {
 				LOG.debug(t.toString());
@@ -78,15 +78,15 @@ public class DefaultClientIntegrationTest {
 	public void testResourceLifeCycle() throws MalformedURLException {
 		
 		
-		IProject project = factory.create(VERSION, ResourceKind.Project);
+		IProject project = factory.create(VERSION, ResourceKind.PROJECT);
 		((Project) project).setName(helper.generateNamespace());
 		LOG.debug(String.format("Stubbing project: %s", project));
 		
-		IProject other = factory.create(VERSION, ResourceKind.Project);
+		IProject other = factory.create(VERSION, ResourceKind.PROJECT);
 		((Project) other).setName(helper.generateNamespace());
 		LOG.debug(String.format("Stubbing project: %s", project));
 		
-		Service service = factory.create(VERSION, ResourceKind.Service);
+		Service service = factory.create(VERSION, ResourceKind.SERVICE);
 		service.setNamespace(project.getName()); //this will be the project's namespace
 		service.setName("some-service");
 		service.setContainerPort(6767);
@@ -94,7 +94,7 @@ public class DefaultClientIntegrationTest {
 		service.setSelector("name", "barpod");
 		LOG.debug(String.format("Stubbing service: %s", service));
 
-		Service otherService = factory.create(VERSION, ResourceKind.Service);
+		Service otherService = factory.create(VERSION, ResourceKind.SERVICE);
 		otherService.setNamespace(other.getName()); //this will be the project's namespace
 		otherService.setName("some-other-service");
 		otherService.setContainerPort(8787);
@@ -119,15 +119,15 @@ public class DefaultClientIntegrationTest {
 			LOG.debug(String.format("Created service: %s", otherService));
 			
 			LOG.debug("Listing projects");
-			List<Project> projects = client.list(ResourceKind.Project);
+			List<Project> projects = client.list(ResourceKind.PROJECT);
 			LOG.debug(String.format("Listed projects: %s", projects));
 			
 			LOG.debug(String.format("Listing services with namespace: %s", project.getNamespace()));
-			List<Service> services = client.list(ResourceKind.Service, project.getNamespace());
+			List<Service> services = client.list(ResourceKind.SERVICE, project.getNamespace());
 			LOG.debug(String.format("Listed services: %s", services));
 			
 			LOG.debug(String.format("Getting service: %s", otherService.getName()));
-			Service s = client.get(ResourceKind.Service, otherService.getName(), otherService.getNamespace());
+			Service s = client.get(ResourceKind.SERVICE, otherService.getName(), otherService.getNamespace());
 			LOG.debug(String.format("Retrieved service: %s", s.getName()));
 			
 			assertEquals("Expected there to be only one service returned", 1, services.size());

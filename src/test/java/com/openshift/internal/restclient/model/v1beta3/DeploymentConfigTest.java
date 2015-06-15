@@ -37,7 +37,7 @@ public class DeploymentConfigTest {
 	public static void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_DEPLOYMENT_CONIFIG.getContentAsString());
-		config = new DeploymentConfig(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.DeploymentConfig));
+		config = new DeploymentConfig(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.DEPLOYMENT_CONFIG));
 	}
 	
 	@Test 

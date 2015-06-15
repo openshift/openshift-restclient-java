@@ -33,7 +33,7 @@ public class STIBuildStrategy implements ISTIBuildStrategy{
 	}
 
 	@Override
-	public BuildStrategyType getType() {
+	public String getType() {
 		return BuildStrategyType.STI;
 	}
 

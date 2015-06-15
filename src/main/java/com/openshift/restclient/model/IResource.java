@@ -32,7 +32,7 @@ public interface IResource extends ICapable {
 	 * Returns the resource kind
 	 * @return
 	 */
-	ResourceKind getKind();
+	String getKind();
 	
 	/**
 	 * returns the version of this resource

@@ -51,7 +51,7 @@ public class BuildConfigTest implements BuildConfigPropertyKeys {
 		node.get(key).get("customStrategy").get("env").add(env);
 		
 		IBuildStrategy strategy = config.getBuildStrategy();
-		assertEquals(BuildStrategyType.Custom, strategy.getType());
+		assertEquals(BuildStrategyType.CUSTOM, strategy.getType());
 		ICustomBuildStrategy custom = (ICustomBuildStrategy) strategy;
 		assertEquals(new DockerImageURI("thebaseImage"), custom.getImage());
 		assertTrue(custom.exposeDockerSocket());
@@ -68,7 +68,7 @@ public class BuildConfigTest implements BuildConfigPropertyKeys {
 		node.get(OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_BASEIMAGE)).set("thebaseImage");
 		
 		IBuildStrategy strategy = config.getBuildStrategy();
-		assertEquals(BuildStrategyType.Docker, strategy.getType());
+		assertEquals(BuildStrategyType.DOCKER, strategy.getType());
 		IDockerBuildStrategy docker = (IDockerBuildStrategy) strategy;
 		assertEquals("aContextDir", docker.getContextDir());
 		assertTrue(docker.isNoCache());

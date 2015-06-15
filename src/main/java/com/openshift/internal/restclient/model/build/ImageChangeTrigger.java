@@ -21,13 +21,13 @@ public class ImageChangeTrigger implements IImageChangeTrigger {
 	private String tag;
 	private DockerImageURI image;
 	private DockerImageURI from;
-	private final BuildTriggerType type;
+	private final String type;
 
 	public ImageChangeTrigger(String image, String from, String tag) {
 		this(BuildTriggerType.imageChange, image, from, tag);
 	}
 	
-	public ImageChangeTrigger(BuildTriggerType type, String image, String from, String tag) {
+	public ImageChangeTrigger(String type, String image, String from, String tag) {
 		this.type = type;
 		this.tag = tag;
 		this.image = isNotBlank(image) ? new DockerImageURI(image) : null;
@@ -35,7 +35,7 @@ public class ImageChangeTrigger implements IImageChangeTrigger {
 	}
 
 	@Override
-	public BuildTriggerType getType() {
+	public String getType() {
 		return type;
 	}
 

@@ -57,19 +57,21 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		final String url = getClient() != null ? getClient().getBaseURL().toString() : "";
 		final String version = getClient() != null ? getClient().getOpenShiftAPIVersion() : "";
 		for (ModelNode node : list) {
-			BuildTriggerType type = BuildTriggerType.valueOf(node.get("type").asString());
+			String type = node.get("type").asString();
 			switch(type){
-				case generic:
-				case Generic:
-					triggers.add(new WebhookTrigger(type, asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), name, url, version,getNamespace()));
+				case BuildTriggerType.generic:
+				case BuildTriggerType.GENERIC:
+					triggers.add(new WebhookTrigger(
+							version.equals(OpenShiftAPIVersion.v1beta1.toString()) ? BuildTriggerType.generic : BuildTriggerType.GENERIC,
+									asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), name, url, version,getNamespace()));
 					break;
-				case github:
-				case GitHub:
-					triggers.add(new WebhookTrigger(type, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), name, url, version, getNamespace()));
+				case BuildTriggerType.github:
+				case BuildTriggerType.GITHUB:
+					triggers.add(new WebhookTrigger(version.equals(OpenShiftAPIVersion.v1beta1.toString()) ? BuildTriggerType.github : BuildTriggerType.GITHUB, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), name, url, version, getNamespace()));
 					break;
-				case imageChange:
-				case ImageChange:
-					triggers.add(new ImageChangeTrigger(type,
+				case BuildTriggerType.imageChange:
+				case BuildTriggerType.IMAGE_CHANGE:
+					triggers.add(new ImageChangeTrigger(version.equals(OpenShiftAPIVersion.v1beta1.toString()) ? BuildTriggerType.imageChange : BuildTriggerType.IMAGE_CHANGE,
 							asString(node, BUILD_CONFIG_IMAGECHANGE_IMAGE),
 							asString(node, BUILD_CONFIG_IMAGECHANGE_NAME),
 							asString(node, BUILD_CONFIG_IMAGECHANGE_TAG))
@@ -86,24 +88,24 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		ModelNode triggers = get(BUILDCONFIG_TRIGGERS);
 		ModelNode triggerNode = triggers.add();
 		switch(trigger.getType()) {
-		case generic:
-		case Generic:
+		case BuildTriggerType.generic:
+		case BuildTriggerType.GENERIC:
 			if(!(trigger instanceof IWebhookTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type generic does not implement IWebhookTrigger");
 			}
 			IWebhookTrigger generic = (IWebhookTrigger)trigger;
 			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GENERIC_SECRET)).set(generic.getSecret());
 			break;
-		case github:
-		case GitHub:
+		case BuildTriggerType.github:
+		case BuildTriggerType.GITHUB:
 			if(!(trigger instanceof IWebhookTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type github does not implement IWebhookTrigger");
 			}
 			IWebhookTrigger github = (IWebhookTrigger)trigger;
 			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GITHUB_SECRET)).set(github.getSecret());
 			break;
-		case imageChange:
-		case ImageChange:
+		case BuildTriggerType.imageChange:
+		case BuildTriggerType.IMAGE_CHANGE:
 			if(!(trigger instanceof IImageChangeTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type imageChange does not implement IImageChangeTrigger");
 			}
@@ -113,7 +115,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_TAG)).set(StringUtils.defaultIfBlank(image.getTag(), ""));
 			break;
 		}
-		triggerNode.get("type").set(trigger.getType().name());
+		triggerNode.get("type").set(trigger.getType());
 	}
 	
 	private String defaultIfNull(DockerImageURI uri) {
@@ -133,8 +135,8 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends IBuildSource> T getBuildSource() {
-		switch(BuildSourceType.valueOf(asString(BUILDCONFIG_SOURCE_TYPE))){
-		case Git:
+		switch(asString(BUILDCONFIG_SOURCE_TYPE)){
+		case BuildSourceType.GIT:
 			return (T) new GitBuildSource(asString(BUILDCONFIG_SOURCE_URI), asString(BUILDCONFIG_SOURCE_REF));
 		default:
 		}
@@ -144,7 +146,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	@Override
 	public void setBuildSource(IBuildSource source){
 		switch(source.getType()) {
-		case Git:
+		case BuildSourceType.GIT:
 			if(!(source instanceof IGitBuildSource)) {
 				throw new IllegalArgumentException("IBuildSource of type Git does not implement IGitBuildSource");
 			}
@@ -153,14 +155,14 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			break;
 		}
 		set(BUILDCONFIG_SOURCE_URI, source.getURI());
-		set(BUILDCONFIG_SOURCE_TYPE, source.getType().name());
+		set(BUILDCONFIG_SOURCE_TYPE, source.getType().toString());
 	}
 	
 	@Override
 	public void setBuildStrategy(IBuildStrategy strategy) {
 		// Remove other strategies if already set?
 		switch(strategy.getType()) {
-		case Custom:
+		case BuildStrategyType.CUSTOM:
 			if ( !(strategy instanceof ICustomBuildStrategy)) {
 				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement ICustomBuildStrategy");
 			}
@@ -173,8 +175,8 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 				setEnvMap(BUILDCONFIG_CUSTOM_ENV, custom.getEnvironmentVariables());
 			}
 			break;
-		case STI:
-		case Source:
+		case BuildStrategyType.STI:
+		case BuildStrategyType.SOURCE:
 			if ( !(strategy instanceof ISTIBuildStrategy)) {
 				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement ISTIBuildStrategy");
 			}
@@ -194,7 +196,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 				setEnvMap(BUILDCONFIG_STI_ENV, sti.getEnvironmentVariables());
 			}
 			break;
-		case Docker:
+		case BuildStrategyType.DOCKER:
 			if ( !(strategy instanceof IDockerBuildStrategy)) {
 				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement IDockerBuildStrategy");
 			}
@@ -209,7 +211,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			break;
 		}
 
-		set(BUILDCONFIG_TYPE, strategy.getType().name());
+		set(BUILDCONFIG_TYPE, strategy.getType());
 	}
 	
 	public void setOutput(DockerImageURI imageUri){
@@ -222,15 +224,15 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	@SuppressWarnings("unchecked")
 	@Override
 	public  <T extends IBuildStrategy> T getBuildStrategy() {
-		switch(BuildStrategyType.valueOf(asString(BUILDCONFIG_TYPE))){
-		case Custom:
+		switch(asString(BUILDCONFIG_TYPE)){
+		case BuildStrategyType.CUSTOM:
 			return (T) new CustomBuildStrategy(
 						asString(BUILDCONFIG_CUSTOM_IMAGE),
 						asBoolean(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET),
 						getEnvMap(BUILDCONFIG_CUSTOM_ENV)
 					);
-		case STI:
-		case Source:
+		case BuildStrategyType.STI:
+		case BuildStrategyType.SOURCE:
 			if(OpenShiftAPIVersion.v1beta1.name().equals(getApiVersion())) {
 				return (T) new STIBuildStrategy(asString(BUILDCONFIG_STI_IMAGE),
 						asString(BUILDCONFIG_STI_SCRIPTS),
@@ -244,7 +246,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 					getEnvMap(BUILDCONFIG_STI_ENV)
 					);
 
-		case Docker:
+		case BuildStrategyType.DOCKER:
 			return (T) new DockerBuildStrategy(
 					asString(BUILDCONFIG_DOCKER_CONTEXTDIR),
 					asBoolean(BUILDCONFIG_DOCKER_NOCACHE),

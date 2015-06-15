@@ -57,7 +57,7 @@ public class Project extends KubernetesResource implements IProject{
 	}
 
 	@Override
-	public <T extends IResource> List<T> getResources(ResourceKind kind){
+	public <T extends IResource> List<T> getResources(String kind){
 		if(getClient() == null) return new ArrayList<T>();
 		return getClient().list(kind, getName());
 	}

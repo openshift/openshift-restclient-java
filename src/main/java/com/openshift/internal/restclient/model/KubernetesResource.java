@@ -32,7 +32,7 @@ import com.openshift.restclient.model.IResource;
  * 
  * @author Jeff Cantrill
  */
-public abstract class KubernetesResource implements IResource, ResourcePropertyKeys {
+public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	
 	private ModelNode node;
 	private IClient client;
@@ -79,7 +79,7 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 	@Override
 	public IProject getProject() {
 		if(this.project == null) {
-			this.project = client.get(ResourceKind.Project, getNamespace(), ""); 
+			this.project = client.get(ResourceKind.PROJECT, getNamespace(), ""); 
 		}
 		return this.project;
 	}
@@ -116,10 +116,10 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 	}
 	
 	@Override
-	public ResourceKind getKind(){
+	public String getKind(){
 		ModelNode kindNode = get(ResourcePropertyKeys.KIND);
 		if(kindNode.isDefined()){
-			return ResourceKind.valueOf(kindNode.asString());
+			return kindNode.asString();
 		}
 		return null;
 	}
@@ -246,7 +246,7 @@ public abstract class KubernetesResource implements IResource, ResourcePropertyK
 	public int hashCode() {
 		String namespace = getNamespace();
 		String name = getName();
-		ResourceKind kind = getKind();
+		String kind = getKind();
 		final int prime = 31;
 		return prime * (namespace.hashCode() + name.hashCode() + kind.hashCode()); 
 	}

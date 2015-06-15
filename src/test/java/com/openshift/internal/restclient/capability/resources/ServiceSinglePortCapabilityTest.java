@@ -43,7 +43,7 @@ public class ServiceSinglePortCapabilityTest {
 		Samples sample = version.equals(V1BETA1) ? Samples.V1BETA1_SERVICE : Samples.V1BETA3_SERVICE;
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(sample.getContentAsString());
-		Service service = new Service(node, client, ResourcePropertiesRegistry.getInstance().get(version, ResourceKind.Service));
+		Service service = new Service(node, client, ResourcePropertiesRegistry.getInstance().get(version, ResourceKind.SERVICE));
 		return new ServiceSinglePortCapability(service);
 	}
 	

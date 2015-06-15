@@ -62,7 +62,7 @@ public class BuildConfigTest {
 	}
 
 	private static Map<String, String[]> getPropertyKeys() {
-		return ResourcePropertiesRegistry.getInstance().get("v1beta3", ResourceKind.BuildConfig);
+		return ResourcePropertiesRegistry.getInstance().get("v1beta3", ResourceKind.BUILD_CONFIG);
 	}
 	
 	@Test
@@ -72,7 +72,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void addBuildTriggers() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BuildConfig);
+		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BUILD_CONFIG);
 
 		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.github, "secret101", null, null, null,null));
 		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.generic, "secret101", null, null, null, null));
@@ -99,7 +99,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void setGitBuildSource() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BuildConfig);
+		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BUILD_CONFIG);
 
 		Map<String, String> env = new HashMap<String, String>();
 		env.put("foo", "bar");
@@ -116,7 +116,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void setSTIBuildStrategy() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BuildConfig);
+		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BUILD_CONFIG);
 
 		Map<String, String> env = new HashMap<String, String>();
 		env.put("foo", "bar");
@@ -127,15 +127,15 @@ public class BuildConfigTest {
 
 	private void assertBuildTriggers(IBuildTrigger[] triggers) {
 		IBuildTrigger [] exp = new IBuildTrigger[]{
-				new WebhookTrigger(BuildTriggerType.github, "secret101","ruby-sample-build", "https://localhost:8443", "v1beta3","test"),
-				new WebhookTrigger(BuildTriggerType.generic, "secret101","ruby-sample-build", "https://localhost:8443", "v1beta3","test"),
+				new WebhookTrigger(BuildTriggerType.GITHUB, "secret101","ruby-sample-build", "https://localhost:8443", "v1beta3","test"),
+				new WebhookTrigger(BuildTriggerType.GENERIC, "secret101","ruby-sample-build", "https://localhost:8443", "v1beta3","test"),
 				new ImageChangeTrigger("", "", "")
 		};
 		assertArrayEquals(exp, triggers);
 	}
 
 	private void assertGitBuildSource(IBuildSource source) {
-		assertEquals(BuildSourceType.Git, source.getType());
+		assertEquals(BuildSourceType.GIT, source.getType());
 		assertEquals("git://github.com/openshift/ruby-hello-world.git", source.getURI());
 		assertTrue(source instanceof IGitBuildSource);
 
@@ -144,7 +144,7 @@ public class BuildConfigTest {
 	}
 
 	private void assertSourceBuildStrategy(IBuildStrategy strategy) {
-		assertEquals(BuildStrategyType.Source, strategy.getType());
+		assertEquals(BuildStrategyType.SOURCE, strategy.getType());
 		assertTrue(strategy instanceof ISTIBuildStrategy);
 
 		ISTIBuildStrategy sti = (ISTIBuildStrategy)strategy;

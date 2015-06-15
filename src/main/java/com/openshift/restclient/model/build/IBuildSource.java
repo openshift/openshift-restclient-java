@@ -13,7 +13,11 @@ package com.openshift.restclient.model.build;
  */
 public interface IBuildSource {
 	
-	BuildSourceType getType();
+	/**
+	 * The BuildSourceType
+	 * @return {@link BuildSourceType}
+	 */
+	String getType();
 	
 	/**
 	 * The URI to the source repo

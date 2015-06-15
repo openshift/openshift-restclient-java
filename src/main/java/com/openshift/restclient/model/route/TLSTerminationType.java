@@ -8,28 +8,15 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.internal.restclient.model.build;
-
-import java.util.Map;
-
-import com.openshift.restclient.model.build.BuildStrategyType;
-import com.openshift.restclient.model.build.ISourceBuildStrategy;
+package com.openshift.restclient.model.route;
 
 /**
  * 
  * @author jeff.cantrill
  *
  */
-public class SourceBuildStrategy extends STIBuildStrategy implements ISourceBuildStrategy{
-
-	public SourceBuildStrategy(String image, String scriptsLocation, boolean incremental, Map<String, String> envVars) {
-		super(image, scriptsLocation, incremental, envVars);
-	}
-
-	@Override
-	public String getType() {
-		return BuildStrategyType.SOURCE;
-	}
-	
-	
+public interface TLSTerminationType {
+	static final String EDGE = "edge";
+	static final String PASSTHROUGH = "passthrough";
+	static final String REENCRYPT = "reencrypt";
 }

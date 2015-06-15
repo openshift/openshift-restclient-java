@@ -29,8 +29,8 @@ public class DockerBuildStrategy implements IDockerBuildStrategy {
 	}
 
 	@Override
-	public BuildStrategyType getType() {
-		return BuildStrategyType.Docker;
+	public String getType() {
+		return BuildStrategyType.DOCKER;
 	}
 
 	@Override

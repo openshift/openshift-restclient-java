@@ -54,7 +54,7 @@ public class ProjectTemplateProcessing implements IProjectTemplateProcessing {
 
 	@Override
 	public Collection<IResource> apply(ITemplate template) {
-		IList resources = client.getResourceFactory().create(template.getApiVersion(), ResourceKind.List);
+		IList resources = client.getResourceFactory().create(template.getApiVersion(), ResourceKind.LIST);
 		resources.addAll(template.getItems());
 		return client.create(resources, this.namespace);
 	}

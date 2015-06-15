@@ -35,7 +35,7 @@ public class ResourceTest {
 	public void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_SERVICE.getContentAsString());
-		resource = new KubernetesResource(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Service)) {};
+		resource = new KubernetesResource(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.SERVICE)) {};
 	}
 	
 	@Test
@@ -48,7 +48,7 @@ public class ResourceTest {
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_SERVICE.getContentAsString());
 		node.get("metadata").remove("namespace");
-		resource = new Build(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Project));
+		resource = new Build(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT));
 		assertEquals("", resource.getNamespace());
 	}
 

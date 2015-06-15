@@ -25,8 +25,8 @@ public class GitBuildSource implements IGitBuildSource {
 	}
 	
 	@Override
-	public BuildSourceType getType() {
-		return BuildSourceType.Git;
+	public String getType() {
+		return BuildSourceType.GIT;
 	}
 
 	@Override

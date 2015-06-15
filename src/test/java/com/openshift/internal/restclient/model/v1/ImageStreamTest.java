@@ -34,7 +34,7 @@ public class ImageStreamTest {
 	public static void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM.getContentAsString());
-		repo = new ImageStream(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ImageStream));
+		repo = new ImageStream(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM));
 	}
 	
 	@Test

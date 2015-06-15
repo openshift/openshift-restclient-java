@@ -29,7 +29,7 @@ public interface IResourceFactory {
 	 * @return
 	 * @throws ResourceFactoryException  if it is unable to create resources
 	 */
-	List<IResource> createList(String json, ResourceKind kind);
+	List<IResource> createList(String json, String kind);
 	
 	/**
 	 * Create a resource from a response string
@@ -38,6 +38,8 @@ public interface IResourceFactory {
 	 * @throws ResourceFactoryException  if it is unable to create resources
 	 */
 	<T extends IResource> T create(String response) ;
+
+	<T extends IResource> T create(String response, boolean strict) ;
 
 	/**
 	 * Create a resource from a response string
@@ -48,13 +50,18 @@ public interface IResourceFactory {
 	 */
 	<T extends IResource> T create(InputStream input) ;
 
+	<T extends IResource> T create(InputStream input, boolean strict) ;
+
 	/**
 	 * Create a resource for a given version and kind
 	 * @param version
 	 * @param kind
 	 * @return
 	 */
-	<T extends IResource> T create(String version, ResourceKind kind);
+	<T extends IResource> T create(String version, String kind);
+
+	<T extends IResource> T create(String version, String kind, boolean strict);
+
 	
 	
 }

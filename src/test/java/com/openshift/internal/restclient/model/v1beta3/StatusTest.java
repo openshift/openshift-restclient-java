@@ -34,7 +34,7 @@ public class StatusTest{
 	public static void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_Status.getContentAsString());
-		status = new Status(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta3", ResourceKind.Status));
+		status = new Status(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta3", ResourceKind.STATUS));
 	}
 	
 	@Test

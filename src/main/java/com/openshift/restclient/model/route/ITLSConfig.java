@@ -14,17 +14,14 @@ package com.openshift.restclient.model.route;
  * @author Jeff Cantrill
  */
 public interface ITLSConfig {
-	public enum TLSTerminationType {
-		edge, passthrough, reencrypt
-	}
-
+	
 	/**
-	 * Returns the termination type. Termination indicates termination type. If termination type is not set,
+	 * Returns the termination type. If termination type is not set,
 	 * any termination config will be ignored.
 	 * 
 	 * @return Termination type.
 	 */
-	TLSTerminationType getTerminationType();
+	String getTerminationType();
 
 	/**
 	 * Sets the termination type to this config.
@@ -34,7 +31,7 @@ public interface ITLSConfig {
 	 * @param type
 	 *            termination type
 	 */
-	void setTerminationType(TLSTerminationType type);
+	void setTerminationType(String type);
 
 	/**
 	 * Retrieves the certificate contents.

@@ -13,5 +13,9 @@ package com.openshift.restclient.model.build;
  */
 public interface IBuildStrategy {
 	
-	BuildStrategyType getType();
+	/**
+	 * The type of build Strategy
+	 * @return {@link BuildStrategyType}
+	 */
+	String getType();
 }

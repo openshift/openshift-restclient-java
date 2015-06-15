@@ -33,7 +33,7 @@ public class V1Beta1BuildTest {
 	public static void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_BUILD.getContentAsString());
-		build = new Build(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Build));
+		build = new Build(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.BUILD));
 	}
 	
 	@Test

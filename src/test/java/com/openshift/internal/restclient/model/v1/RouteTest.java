@@ -22,7 +22,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.route.IRoute;
 import com.openshift.restclient.model.route.ITLSConfig;
-import com.openshift.restclient.model.route.ITLSConfig.TLSTerminationType;
+import com.openshift.restclient.model.route.TLSTerminationType;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -40,13 +40,13 @@ public class RouteTest{
 	public void setUp(){
 		client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(sample.getContentAsString());
-		route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Route));
+		route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
 	}
 	
 	@Test
 	public void getTLSConfigWhenUndefined() {
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_ROUTE_WO_TLS.getContentAsString());
-		route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Route));
+		route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
 		assertNull(route.getTLSConfig());
 	}
 	
@@ -80,7 +80,7 @@ public class RouteTest{
 	@Test
 	public void getTLSConfig() throws Exception {
 		ITLSConfig tls = route.getTLSConfig();
-		assertEquals(TLSTerminationType.edge, tls.getTerminationType());
+		assertEquals(TLSTerminationType.EDGE, tls.getTerminationType());
 		assertEquals("theCert", tls.getCertificate());
 		assertEquals("theCACert", tls.getCACertificate());
 		assertEquals("theKey", tls.getKey());

@@ -38,18 +38,18 @@ public class ProjectTest {
 	
 	@Before
 	public void setup(){
-		project = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta1.toString(), ResourceKind.Project);
+		project = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta1.toString(), ResourceKind.PROJECT);
 		project.setName("aprojectname");
 	}
 	
 	@Test
 	public void getResourcesShouldUseProjectNameForNamespaceWhenGettingResources() {
 		ArrayList<IService> services = new ArrayList<IService>();
-		when(client.<IService>list(eq(ResourceKind.Service), anyString())).thenReturn(services);
-		List<IService> resources = project.getResources(ResourceKind.Service);
+		when(client.<IService>list(eq(ResourceKind.SERVICE), anyString())).thenReturn(services);
+		List<IService> resources = project.getResources(ResourceKind.SERVICE);
 		
 		assertEquals("Exp. a list of services", services, resources);
-		verify(client).list(eq(ResourceKind.Service), eq(project.getName()));
+		verify(client).list(eq(ResourceKind.SERVICE), eq(project.getName()));
 	}
 
 }

@@ -28,7 +28,7 @@ public class DeploymentConfigTraceability extends AssociationCapability implemen
 
 	@Override
 	public IDeploymentConfig getDeploymentConfig() {
-		return getAssociatedResource(ResourceKind.DeploymentConfig);
+		return getAssociatedResource(ResourceKind.DEPLOYMENT_CONFIG);
 	}
 
 	@Override

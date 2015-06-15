@@ -33,7 +33,7 @@ public class V1Beta1PodTest {
 	public static void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_POD.getContentAsString());
-		pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.Pod));
+		pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.POD));
 	}
 	
 	@Test

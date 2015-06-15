@@ -54,14 +54,14 @@ public class KubernetesResourceTest {
 		node.get(ResourcePropertyKeys.NAME).set("bartender");
 		node.get(ResourcePropertyKeys.NAMESPACE).set("foofighters");
 		// return dummy kind to avoid NPE
-		node.get(ResourcePropertyKeys.KIND).set(ResourceKind.List.toString());
+		node.get(ResourcePropertyKeys.KIND).set(ResourceKind.LIST.toString());
 
 		return node;
 	}
 	
 	private KubernetesResource createKubernetesResource(String modelVersion, ModelNode node) {
 		return new KubernetesResource(node, null,
-				ResourcePropertiesRegistry.getInstance().get(modelVersion, ResourceKind.Service)) {};
+				ResourcePropertiesRegistry.getInstance().get(modelVersion, ResourceKind.SERVICE)) {};
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class KubernetesResourceTest {
 		int hashCodeBeforeChange = resource.hashCode();
 		
 		// operation
-		node.get(ResourcePropertyKeys.KIND).set(ResourceKind.Event.toString());
+		node.get(ResourcePropertyKeys.KIND).set(ResourceKind.EVENT.toString());
 		
 		// verification
 		int hashCodeAfterChange = resource.hashCode();
@@ -203,7 +203,7 @@ public class KubernetesResourceTest {
 		assertEquals(resource, otherResource);
 
 		// operation
-		otherResource.set(ResourcePropertyKeys.KIND, ResourceKind.Event.toString());
+		otherResource.set(ResourcePropertyKeys.KIND, ResourceKind.EVENT.toString());
 		
 		// verification
 		assertThat(resource).isNotEqualTo(otherResource);

@@ -33,26 +33,26 @@ public class URLBuilderTest {
 	
 	private static final String BASE_URL = "https://localhost:8443";
 	private URLBuilder builder;
-	private Map<ResourceKind, String> mappings = new HashMap<ResourceKind, String>();
+	private Map<String, String> mappings = new HashMap<String, String>();
 	
 	@Before
 	public void setup() throws MalformedURLException {
-		mappings.put(ResourceKind.Service, "api/v1beta3");
-		mappings.put(ResourceKind.Pod, "api/v1beta1");
+		mappings.put(ResourceKind.SERVICE, "api/v1beta3");
+		mappings.put(ResourceKind.POD, "api/v1beta1");
 		builder = new URLBuilder(new URL(BASE_URL), mappings);
 		
 	}
 	
 	@Test
 	public void testV1Beta1() {
-		IResource resource = givenAResource(ResourceKind.Pod, KubernetesAPIVersion.v1beta1);
+		IResource resource = givenAResource(ResourceKind.POD, KubernetesAPIVersion.v1beta1);
 		String url = whenBuildingTheURLFor(resource, "foo");
 		assertEquals(String.format("%s/api/v1beta1/pods/bar?namespace=foo", BASE_URL),url.toString());
 	}
 
 	@Test
 	public void testV1Beta3() {
-		IResource resource = givenAResource(ResourceKind.Service, KubernetesAPIVersion.v1beta3);
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3);
 		String url = whenBuildingTheURLFor(resource, "foo");
 		
 		assertEquals(String.format("%s/api/v1beta3/namespaces/foo/services/bar", BASE_URL),url.toString());
@@ -60,7 +60,7 @@ public class URLBuilderTest {
 
 	@Test
 	public void testV1Beta3WithoutANamespace() {
-		IResource resource = givenAResource(ResourceKind.Service, KubernetesAPIVersion.v1beta3);
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3);
 		String url = whenBuildingTheURLFor(resource, "");
 		
 		assertEquals(String.format("%s/api/v1beta3/services/bar", BASE_URL),url.toString());
@@ -73,7 +73,7 @@ public class URLBuilderTest {
 			.build().toString();
 	}
 	
-	private IResource givenAResource(ResourceKind kind, KubernetesAPIVersion version) {
+	private IResource givenAResource(String kind, KubernetesAPIVersion version) {
 		IResource resource = mock(IResource.class);
 		when(resource.getApiVersion()).thenReturn(version.toString());
 		when(resource.getKind()).thenReturn(kind);

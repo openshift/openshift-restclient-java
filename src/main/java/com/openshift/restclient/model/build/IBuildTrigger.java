@@ -13,5 +13,5 @@ package com.openshift.restclient.model.build;
  */
 public interface IBuildTrigger {
 	
-	BuildTriggerType getType();
+	String getType();
 }

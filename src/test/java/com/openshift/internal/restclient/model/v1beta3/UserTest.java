@@ -35,7 +35,7 @@ public class UserTest{
 	public void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_USER.getContentAsString());
-		resource = new OpenShiftUser(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.User));
+		resource = new OpenShiftUser(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.USER));
 	}
 	
 	@Test

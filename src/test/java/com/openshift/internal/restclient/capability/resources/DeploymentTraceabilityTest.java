@@ -41,7 +41,7 @@ public class DeploymentTraceabilityTest {
 		
 		when(resource.getNamespace()).thenReturn("mynamespace");
 		
-		when(client.get(eq(ResourceKind.ReplicationController), eq("foobar"), eq("mynamespace")))
+		when(client.get(eq(ResourceKind.REPLICATION_CONTROLLER), eq("foobar"), eq("mynamespace")))
 			.thenReturn(deployment);
 	}
 	
@@ -52,7 +52,7 @@ public class DeploymentTraceabilityTest {
 
 		assertEquals("Exp. to get the deployment", deployment, capability.getDeployment());
 		
-		verify(client).get(eq(ResourceKind.ReplicationController), eq("foobar"), eq("mynamespace"));
+		verify(client).get(eq(ResourceKind.REPLICATION_CONTROLLER), eq("foobar"), eq("mynamespace"));
 	}
 
 	@Test

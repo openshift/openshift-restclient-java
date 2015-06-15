@@ -36,7 +36,7 @@ public class ProjectTest{
 	public void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_PROJECT.getContentAsString());
-		service = new Project(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Project));
+		service = new Project(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT));
 	}
 	
 	@Test

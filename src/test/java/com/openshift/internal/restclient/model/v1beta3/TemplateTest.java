@@ -41,7 +41,7 @@ public class TemplateTest{
 		IClient client = mock(IClient.class);
 		when(client.getResourceFactory()).thenReturn(new ResourceFactory(client));
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_TEMPLATE.getContentAsString());
-		template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Template));
+		template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.TEMPLATE));
 	}
 	@Test
 	public void testGetApiVersion() {

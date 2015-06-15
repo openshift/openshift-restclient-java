@@ -43,7 +43,7 @@ public abstract class AssociationCapability extends AnnotationCapability{
 	 * @param kind
 	 * @return
 	 */
-	protected <T extends IResource> T getAssociatedResource(ResourceKind kind){
+	protected <T extends IResource> T getAssociatedResource(String kind){
 		if(!isSupported()) return null;
 		String name = getResource().getAnnotation(getAnnotationKey());
 		return getClient().get(kind, name, getResource().getNamespace());

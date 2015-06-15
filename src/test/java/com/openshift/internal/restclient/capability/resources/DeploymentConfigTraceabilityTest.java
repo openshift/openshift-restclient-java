@@ -42,7 +42,7 @@ public class DeploymentConfigTraceabilityTest {
 		
 		when(resource.getNamespace()).thenReturn("mynamespace");
 		
-		when(client.get(eq(ResourceKind.DeploymentConfig), eq("foobar"), eq("mynamespace")))
+		when(client.get(eq(ResourceKind.DEPLOYMENT_CONFIG), eq("foobar"), eq("mynamespace")))
 			.thenReturn(config);
 	}
 	
@@ -53,7 +53,7 @@ public class DeploymentConfigTraceabilityTest {
 
 		assertEquals("Exp. to get the deploymentConfig", config, capability.getDeploymentConfig());
 		
-		verify(client).get(eq(ResourceKind.DeploymentConfig), eq("foobar"), eq("mynamespace"));
+		verify(client).get(eq(ResourceKind.DEPLOYMENT_CONFIG), eq("foobar"), eq("mynamespace"));
 	}
 
 	@Test

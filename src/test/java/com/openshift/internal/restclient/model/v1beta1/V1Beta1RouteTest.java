@@ -22,7 +22,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.route.IRoute;
 import com.openshift.restclient.model.route.ITLSConfig;
-import com.openshift.restclient.model.route.ITLSConfig.TLSTerminationType;
+import com.openshift.restclient.model.route.TLSTerminationType;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -38,7 +38,7 @@ public class V1Beta1RouteTest{
 	public void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_ROUTE.getContentAsString());
-		route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Route));
+		route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
 	}
 	
 	@Test
@@ -71,7 +71,7 @@ public class V1Beta1RouteTest{
 	@Test
 	public void getTLSConfig() throws Exception {
 		ITLSConfig tls = route.getTLSConfig();
-		assertEquals(TLSTerminationType.edge, tls.getTerminationType());
+		assertEquals(TLSTerminationType.EDGE, tls.getTerminationType());
 		assertEquals("theCert", tls.getCertificate());
 		assertEquals("theCACert", tls.getCACertificate());
 		assertEquals("theKey", tls.getKey());

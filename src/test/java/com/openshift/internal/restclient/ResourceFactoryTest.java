@@ -31,14 +31,14 @@ public class ResourceFactoryTest {
 	 */
 	@Test
 	public void testV1Beta3Implementations() {
-		List<ResourceKind> v1beta3Exlusions = Arrays.asList(new ResourceKind [] {
-				ResourceKind.Config, 
-				ResourceKind.ProcessedTemplates, 
-				ResourceKind.TemplateConfig
+		List<String> v1beta3Exlusions = Arrays.asList(new String [] {
+				ResourceKind.CONFIG, 
+				ResourceKind.PROCESSED_TEMPLATES, 
+				ResourceKind.TEMPLATE_CONFIG
 		});
 		ResourceFactory factory = new ResourceFactory(mock(IClient.class));
 		final String version = OpenShiftAPIVersion.v1beta3.toString();
-		for (ResourceKind kind : ResourceKind.values()) {
+		for (String kind : ResourceKind.values()) {
 			if(!v1beta3Exlusions.contains(kind)) {
 				factory.create(version, kind);
 			}

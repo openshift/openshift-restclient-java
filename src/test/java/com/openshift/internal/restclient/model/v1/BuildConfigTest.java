@@ -62,7 +62,7 @@ public class BuildConfigTest {
 	}
 
 	private static Map<String, String[]> getPropertyKeys() {
-		return ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.BuildConfig);
+		return ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.BUILD_CONFIG);
 	}
 	
 	@Test
@@ -72,10 +72,10 @@ public class BuildConfigTest {
 
 	@Test
 	public void addBuildTriggers() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(VERSION, ResourceKind.BuildConfig);
+		BuildConfig writeConfig = new ResourceFactory(client).create(VERSION, ResourceKind.BUILD_CONFIG);
 
-		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GitHub, "secret101", "ruby-sample-build", "https://localhost:8443", VERSION,"test"));
-		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.Generic, "secret101", "ruby-sample-build", "https://localhost:8443", VERSION,"test"));
+		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GITHUB, "secret101", "ruby-sample-build", "https://localhost:8443", VERSION,"test"));
+		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GENERIC, "secret101", "ruby-sample-build", "https://localhost:8443", VERSION,"test"));
 		writeConfig.addBuildTrigger(new ImageChangeTrigger("", "", ""));
 
 		assertBuildTriggers(reCreateBuildConfig(writeConfig).getBuildTriggers().toArray(new IBuildTrigger[]{}));
@@ -99,7 +99,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void setGitBuildSource() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(VERSION, ResourceKind.BuildConfig);
+		BuildConfig writeConfig = new ResourceFactory(client).create(VERSION, ResourceKind.BUILD_CONFIG);
 
 		Map<String, String> env = new HashMap<String, String>();
 		env.put("foo", "bar");
@@ -116,7 +116,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void setSourceBuildStrategy() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(VERSION, ResourceKind.BuildConfig);
+		BuildConfig writeConfig = new ResourceFactory(client).create(VERSION, ResourceKind.BUILD_CONFIG);
 
 		Map<String, String> env = new HashMap<String, String>();
 		env.put("foo", "bar");
@@ -127,15 +127,15 @@ public class BuildConfigTest {
 
 	private void assertBuildTriggers(IBuildTrigger[] triggers) {
 		IBuildTrigger [] exp = new IBuildTrigger[]{
-				new WebhookTrigger(BuildTriggerType.GitHub, "secret101","ruby-sample-build", "https://localhost:8443", VERSION,"test"),
-				new WebhookTrigger(BuildTriggerType.Generic, "secret101","ruby-sample-build", "https://localhost:8443", VERSION,"test"),
+				new WebhookTrigger(BuildTriggerType.GITHUB, "secret101","ruby-sample-build", "https://localhost:8443", VERSION,"test"),
+				new WebhookTrigger(BuildTriggerType.GENERIC, "secret101","ruby-sample-build", "https://localhost:8443", VERSION,"test"),
 				new ImageChangeTrigger("", "", "")
 		};
 		assertArrayEquals(exp, triggers);
 	}
 
 	private void assertGitBuildSource(IBuildSource source) {
-		assertEquals(BuildSourceType.Git, source.getType());
+		assertEquals(BuildSourceType.GIT, source.getType());
 		assertEquals("git://github.com/openshift/ruby-hello-world.git", source.getURI());
 		assertTrue(source instanceof IGitBuildSource);
 
@@ -144,7 +144,7 @@ public class BuildConfigTest {
 	}
 
 	private void assertSourceBuildStrategy(IBuildStrategy strategy) {
-		assertEquals(BuildStrategyType.Source, strategy.getType());
+		assertEquals(BuildStrategyType.SOURCE, strategy.getType());
 		assertTrue(strategy instanceof ISourceBuildStrategy);
 
 		ISourceBuildStrategy source = (ISourceBuildStrategy)strategy;

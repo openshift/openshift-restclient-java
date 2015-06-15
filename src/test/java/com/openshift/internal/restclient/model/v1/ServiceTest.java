@@ -38,7 +38,7 @@ public class ServiceTest{
 	public void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_SERVICE.getContentAsString());
-		service = new Service(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Service));
+		service = new Service(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.SERVICE));
 	}
 	
 	@Test

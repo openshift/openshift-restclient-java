@@ -48,7 +48,7 @@ public class V1Beta1BuildConfigTest {
 		when(client.getBaseURL()).thenReturn(new URL("https://localhost:8443"));
 		when(client.getOpenShiftAPIVersion()).thenReturn("v1beta1");
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_BUILD_CONFIG.getContentAsString());
-		config = new BuildConfig(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.BuildConfig));
+		config = new BuildConfig(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.BUILD_CONFIG));
 	}
 	
 	@Test
@@ -74,7 +74,7 @@ public class V1Beta1BuildConfigTest {
 	@Test
 	public void getGitBuildSource(){
 		IGitBuildSource source = config.<IGitBuildSource>getBuildSource();
-		assertEquals(BuildSourceType.Git, source.getType());
+		assertEquals(BuildSourceType.GIT, source.getType());
 		assertEquals("git@github.com:jcantrill/javaparks.git", source.getURI());
 		assertEquals("Exp. to get the source ref","", source.getRef());
 	}

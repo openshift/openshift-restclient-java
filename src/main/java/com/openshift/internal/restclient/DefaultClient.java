@@ -66,7 +66,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	private static final String apiEndpoint = "api";
 	private static final String osApiEndpoint = "osapi";
 	
-	private final Map<ResourceKind, String> typeMappings = new HashMap<ResourceKind, String>();
+	private final Map<String, String> typeMappings = new HashMap<String, String>();
 	private String openShiftVersion;
 	private String kubernetesVersion;
 	private IAuthorizationStrategy strategy;
@@ -104,18 +104,18 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	};
 	
 	@Override
-	public <T extends IResource> List<T> list(ResourceKind kind) {
+	public <T extends IResource> List<T> list(String kind) {
 		return list(kind,""); //assumes namespace=default
 	}
 	
 	@Override
-	public <T extends IResource> List<T> list(ResourceKind kind, String namespace) {
+	public <T extends IResource> List<T> list(String kind, String namespace) {
 		return list(kind, namespace, new HashMap<String, String>());
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends IResource> List<T> list(ResourceKind kind, String namespace, Map<String, String> labels) {
+	public <T extends IResource> List<T> list(String kind, String namespace, Map<String, String> labels) {
 		try {
 			if(!getTypeMappings().containsKey(kind))
 				// TODO: replace with specific runtime exception
@@ -170,9 +170,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	
 	@Override
 	public <T extends IResource> T create(T resource, String namespace) {
-		if(resource.getKind() == ResourceKind.List) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
+		if(resource.getKind() == ResourceKind.LIST) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		try {
-			namespace = resource.getKind() == ResourceKind.Project ? "" : namespace;
+			namespace = resource.getKind() == ResourceKind.PROJECT ? "" : namespace;
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(resource.getKind())
 				.namespace(namespace)
@@ -189,7 +189,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	
 	@Override
 	public <T extends IResource> T update(T resource) {
-		if(resource.getKind() == ResourceKind.List) throw new UnsupportedOperationException("Update operation not supported for resource type 'List'");
+		if(resource.getKind() == ResourceKind.LIST) throw new UnsupportedOperationException("Update operation not supported for resource type 'List'");
 		try {
 			final URL endpoint = new URLBuilder(getBaseURL(), getTypeMappings())
 				.resource(resource)
@@ -207,9 +207,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 
 	@Override
 	public <T extends IResource> void delete(T resource) {
-		if(resource.getKind() == ResourceKind.List) throw new UnsupportedOperationException("Delete operation not supported for resource type 'List'");
+		if(resource.getKind() == ResourceKind.LIST) throw new UnsupportedOperationException("Delete operation not supported for resource type 'List'");
 		try {
-			String namespace = resource.getKind() == ResourceKind.Project ? "" : resource.getNamespace();
+			String namespace = resource.getKind() == ResourceKind.PROJECT ? "" : resource.getNamespace();
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.resource(resource)
 				.namespace(namespace)
@@ -226,9 +226,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	}
 
 	@Override
-	public <T extends IResource> T get(ResourceKind kind, String name, String namespace) {
+	public <T extends IResource> T get(String kind, String name, String namespace) {
 		try {
-			namespace = kind == ResourceKind.Project ? "" : namespace;
+			namespace = kind == ResourceKind.PROJECT ? "" : namespace;
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(kind)
 				.name(name)
@@ -326,40 +326,40 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		}
 	}
 
-	private Map<ResourceKind, String> getTypeMappings(){
+	private Map<String, String> getTypeMappings(){
 		if(typeMappings.isEmpty()){
 			//OpenShift endpoints
 			final String osEndpoint = String.format("%s/%s", osApiEndpoint, getOpenShiftAPIVersion());
-			typeMappings.put(ResourceKind.Build, osEndpoint);
-			typeMappings.put(ResourceKind.BuildConfig, osEndpoint);
-			typeMappings.put(ResourceKind.DeploymentConfig, osEndpoint);
-			typeMappings.put(ResourceKind.ImageStream, osEndpoint);
-			typeMappings.put(ResourceKind.OAuthAccessToken, osEndpoint);
-			typeMappings.put(ResourceKind.OAuthAuthorizeToken, osEndpoint);
-			typeMappings.put(ResourceKind.OAuthClient, osEndpoint);
-			typeMappings.put(ResourceKind.OAuthClientAuthorization, osEndpoint);
-			typeMappings.put(ResourceKind.Policy, osEndpoint);
-			typeMappings.put(ResourceKind.PolicyBinding, osEndpoint);
-			typeMappings.put(ResourceKind.Project, osEndpoint);
-			typeMappings.put(ResourceKind.ProjectRequest, osEndpoint);
-			typeMappings.put(ResourceKind.Role, osEndpoint);
-			typeMappings.put(ResourceKind.RoleBinding, osEndpoint);
-			typeMappings.put(ResourceKind.Route, osEndpoint);
-			typeMappings.put(ResourceKind.Template, osEndpoint);
-			typeMappings.put(ResourceKind.User, osEndpoint);
+			typeMappings.put(ResourceKind.BUILD, osEndpoint);
+			typeMappings.put(ResourceKind.BUILD_CONFIG, osEndpoint);
+			typeMappings.put(ResourceKind.DEPLOYMENT_CONFIG, osEndpoint);
+			typeMappings.put(ResourceKind.IMAGE_STREAM, osEndpoint);
+			typeMappings.put(ResourceKind.OAUTH_ACCESS_TOKEN, osEndpoint);
+			typeMappings.put(ResourceKind.OAUTH_AUTHORIZE_TOKEN, osEndpoint);
+			typeMappings.put(ResourceKind.OAUTH_CLIENT, osEndpoint);
+			typeMappings.put(ResourceKind.OAUTH_CLIENT_AUTHORIZATION, osEndpoint);
+			typeMappings.put(ResourceKind.POLICY, osEndpoint);
+			typeMappings.put(ResourceKind.POLICY_BINDING, osEndpoint);
+			typeMappings.put(ResourceKind.PROJECT, osEndpoint);
+			typeMappings.put(ResourceKind.PROJECT_REQUEST, osEndpoint);
+			typeMappings.put(ResourceKind.ROLE, osEndpoint);
+			typeMappings.put(ResourceKind.ROLE_BINDING, osEndpoint);
+			typeMappings.put(ResourceKind.ROUTE, osEndpoint);
+			typeMappings.put(ResourceKind.TEMPLATE, osEndpoint);
+			typeMappings.put(ResourceKind.USER, osEndpoint);
 			//not real kinds
-			typeMappings.put(ResourceKind.TemplateConfig, osEndpoint);
-			typeMappings.put(ResourceKind.ProcessedTemplates, osEndpoint);
+			typeMappings.put(ResourceKind.TEMPLATE_CONFIG, osEndpoint);
+			typeMappings.put(ResourceKind.PROCESSED_TEMPLATES, osEndpoint);
 			
 			//Kubernetes endpoints
 			final String k8eEndpoint = String.format("%s/%s", apiEndpoint, getKubernetesVersion());
-			typeMappings.put(ResourceKind.Event, k8eEndpoint);
-			typeMappings.put(ResourceKind.Pod, k8eEndpoint);
-			typeMappings.put(ResourceKind.LimitRange, k8eEndpoint);
-			typeMappings.put(ResourceKind.ReplicationController, k8eEndpoint);
-			typeMappings.put(ResourceKind.ResourceQuota, k8eEndpoint);
-			typeMappings.put(ResourceKind.Service, k8eEndpoint);
-			typeMappings.put(ResourceKind.Secret, k8eEndpoint);
+			typeMappings.put(ResourceKind.EVENT, k8eEndpoint);
+			typeMappings.put(ResourceKind.POD, k8eEndpoint);
+			typeMappings.put(ResourceKind.LIMIT_RANGE, k8eEndpoint);
+			typeMappings.put(ResourceKind.REPLICATION_CONTROLLER, k8eEndpoint);
+			typeMappings.put(ResourceKind.RESOURCE_QUOTA, k8eEndpoint);
+			typeMappings.put(ResourceKind.SERVICE, k8eEndpoint);
+			typeMappings.put(ResourceKind.SECRET, k8eEndpoint);
 		}
 		return typeMappings;
 	}
@@ -399,7 +399,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 
 	@Override
 	public IUser getCurrentUser() {
-		return get(ResourceKind.User, "~", "");
+		return get(ResourceKind.USER, "~", "");
 	}
 
 	@Override

@@ -34,21 +34,55 @@ import com.openshift.restclient.model.IResource;
 public class URLBuilder {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(URLBuilder.class);
+	private static final Map<String, String> kindMap = new HashMap<String, String>();
+	
+	static {
+		//OpenShift Kinds
+		kindMap.put(ResourceKind.BUILD, "builds");
+		kindMap.put(ResourceKind.BUILD_CONFIG, "buildconfigs");
+		kindMap.put(ResourceKind.DEPLOYMENT_CONFIG,"deploymentconfigs");
+		kindMap.put(ResourceKind.IMAGE_STREAM, "imagestreams");
+		kindMap.put(ResourceKind.OAUTH_ACCESS_TOKEN,"oauthaccesstokens");
+		kindMap.put(ResourceKind.OAUTH_AUTHORIZE_TOKEN,"oauthauthorizetokens");
+		kindMap.put(ResourceKind.OAUTH_CLIENT, "oauthclients");
+		kindMap.put(ResourceKind.OAUTH_CLIENT_AUTHORIZATION, "oauthclientauthorizations");
+		kindMap.put(ResourceKind.POLICY,"policies");
+		kindMap.put(ResourceKind.POLICY_BINDING,"policybindings");
+		kindMap.put(ResourceKind.PROJECT, "projects");
+		kindMap.put(ResourceKind.PROJECT_REQUEST, "projectrequests");
+		kindMap.put(ResourceKind.ROLE, "roles");
+		kindMap.put(ResourceKind.ROLE_BINDING, "rolebindings");
+		kindMap.put(ResourceKind.ROUTE,"routes");
+		kindMap.put(ResourceKind.TEMPLATE, "templates");
+		kindMap.put(ResourceKind.USER, "users");
+		
+		//Kubernetes Kinds
+		kindMap.put(ResourceKind.EVENT, "events");
+		kindMap.put(ResourceKind.LIMIT_RANGE,"limitranges");
+		kindMap.put(ResourceKind.POD, "pods");
+		kindMap.put(ResourceKind.REPLICATION_CONTROLLER, "replicationcontrollers");
+		kindMap.put(ResourceKind.RESOURCE_QUOTA, "resourcequotas"); 
+		kindMap.put(ResourceKind.SERVICE, "services"); 
+		kindMap.put(ResourceKind.SECRET, "secrets"); 
+
+		kindMap.put(ResourceKind.TEMPLATE_CONFIG, "templateconfig");//mechanism for processing templates pre v1beta3
+		kindMap.put(ResourceKind.PROCESSED_TEMPLATES, "processedtemplates");//mechanism for processing templates
+	}
 	
 	private String baseUrl;
-	private ResourceKind kind;
+	private String kind;
 	private String name;
 	private Map<String, String> params = new HashMap<String, String>();
-	private final Map<ResourceKind, String> typeMappings;
+	private final Map<String, String> typeMappings;
 
 	private String namespace;
 
-	URLBuilder(URL baseUrl, Map<ResourceKind, String> typeMappings, IResource resource) {
+	URLBuilder(URL baseUrl, Map<String, String> typeMappings, IResource resource) {
 		this(baseUrl, typeMappings);
 		resource(resource);
 	}
 	
-	URLBuilder(URL baseUrl, Map<ResourceKind, String> typeMappings) {
+	URLBuilder(URL baseUrl, Map<String, String> typeMappings) {
 		this.baseUrl = baseUrl.toString();
 		this.typeMappings = typeMappings;
 	}
@@ -68,7 +102,10 @@ public class URLBuilder {
 		return this;
 	}
 
-	URLBuilder kind(ResourceKind kind) {
+	URLBuilder kind(String kind) {
+		if(!kindMap.containsKey(kind)) {
+			throw new IllegalArgumentException(String.format("There is no registered endpoint for kind %s", kind));
+		}
 		this.kind = kind;
 		return this;
 	}
@@ -76,7 +113,7 @@ public class URLBuilder {
 	URLBuilder resource(IResource resource) {
 		if (resource == null) return this;
 		this.name = resource.getName();
-		this.kind = resource.getKind();
+		kind(resource.getKind());
 		return this;
 	}
 
@@ -122,7 +159,7 @@ public class URLBuilder {
 			url.append("/namespaces/")
 				.append(namespace);
 		}
-		url.append("/").append(kind.pluralize());
+		url.append("/").append(kindMap.get(kind));
 		if (name != null) {
 			url.append("/").append(name);
 		}
@@ -132,7 +169,7 @@ public class URLBuilder {
 	private URL buildWithNamespaceAsQueryParam(StringBuilder url) {
 		url.append("/")
 			.append(typeMappings.get(kind)).append("/")
-			.append(kind.pluralize());
+			.append(kindMap.get(kind));
 		if (name != null) {
 			url.append("/").append(name);
 		}

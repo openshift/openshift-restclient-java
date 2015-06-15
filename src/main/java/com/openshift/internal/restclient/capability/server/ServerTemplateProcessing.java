@@ -65,8 +65,8 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 		}
 		
 		@Override
-		public ResourceKind getKind() {
-			return ResourceKind.ProcessedTemplates;
+		public String getKind() {
+			return ResourceKind.PROCESSED_TEMPLATES;
 		}
 
 		@Override

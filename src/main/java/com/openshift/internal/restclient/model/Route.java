@@ -78,14 +78,13 @@ public class Route extends KubernetesResource implements IRoute {
 	private class TLSConfig implements ITLSConfig {
 
 		@Override
-		public TLSTerminationType getTerminationType() {
-			return TLSTerminationType
-					.valueOf(asString(ROUTE_TLS_TERMINATION_TYPE));
+		public String getTerminationType() {
+			return asString(ROUTE_TLS_TERMINATION_TYPE);
 		}
 
 		@Override
-		public void setTerminationType(TLSTerminationType type) {
-			get(ROUTE_TLS_TERMINATION_TYPE).set(type.toString());
+		public void setTerminationType(String type) {
+			get(ROUTE_TLS_TERMINATION_TYPE).set(type);
 		}
 
 		@Override

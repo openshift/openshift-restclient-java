@@ -10,8 +10,6 @@ package com.openshift.restclient.model;
 
 import java.util.List;
 
-import com.openshift.restclient.ResourceKind;
-
 /**
  * @author Jeff Cantrill
  */
@@ -23,7 +21,7 @@ public interface IProject extends IResource {
 	 * @param kind
 	 * @return List<IResources>
 	 */
-	<T extends IResource> List<T> getResources(ResourceKind kind);
+	<T extends IResource> List<T> getResources(String kind);
 
 	String getDisplayName();
 	

@@ -29,8 +29,8 @@ public class CustomBuildStrategy implements ICustomBuildStrategy {
 		this.env = env;
 	}
 	@Override
-	public BuildStrategyType getType() {
-		return BuildStrategyType.Custom;
+	public String getType() {
+		return BuildStrategyType.CUSTOM;
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public class DeploymentTraceability extends AssociationCapability implements IDe
 
 	@Override
 	public IReplicationController getDeployment() {
-		return getAssociatedResource(ResourceKind.ReplicationController);
+		return getAssociatedResource(ResourceKind.REPLICATION_CONTROLLER);
 	}
 
 	@Override

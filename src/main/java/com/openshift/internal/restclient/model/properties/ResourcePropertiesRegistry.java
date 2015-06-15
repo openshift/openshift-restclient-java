@@ -29,7 +29,6 @@ import com.openshift.internal.restclient.APIModelVersion;
 import com.openshift.internal.restclient.KubernetesAPIVersion;
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.restclient.IncompatibleApiVersionsException;
-import com.openshift.restclient.ResourceFactoryException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedVersionException;
 
@@ -43,83 +42,94 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 	private static ResourcePropertiesRegistry instance;
 	
 	private final Map<VersionKey, Map<String, String []>> versionPropertyMap = new HashMap<VersionKey, Map<String, String []>>();
+	
+	@SuppressWarnings("serial")
+	static final Map<String, String []> UNREGISTERED_MAP = new HashMap<String, String []>(){{
+		//common properties
+		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
+		put(APIVERSION, new String [] {"apiVersion"});
+		put(CREATION_TIMESTAMP, new String []  {"metadata", "creationTimestamp"});
+		put(LABELS, new String []  { "metadata","labels"});
+		put(NAME , new String []  {"metadata", "name"});
+		put(NAMESPACE, new String []  {"metadata", "namespace"});
+	}};
 
 	@SuppressWarnings("deprecation")
 	private ResourcePropertiesRegistry(){
 		//v1beta1
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.Pod), V1BETA1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.ReplicationController), V1BETA1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.Service), V1BETA1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.Status), V1BETA1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.POD), V1BETA1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.REPLICATION_CONTROLLER), V1BETA1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.SERVICE), V1BETA1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.STATUS), V1BETA1_KUBERNETES_MAP);
 
 		
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Build), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.BuildConfig), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Config), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.DeploymentConfig), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.ImageStream), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Project), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Route), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.Template), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.User), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.BUILD), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.BUILD_CONFIG), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.CONFIG), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.DEPLOYMENT_CONFIG), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.IMAGE_STREAM), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.PROJECT), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.ROUTE), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.TEMPLATE), V1BETA1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.USER), V1BETA1_OPENSHIFT_MAP);
 		
 		//v1beta3
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.Event), V1BETA3_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.LimitRange), V1BETA3_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.Pod), V1BETA3_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.ReplicationController), V1BETA3_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.ResourceQuota), V1BETA3_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.Service), V1BETA3_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.Status), V1BETA3_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.EVENT), V1BETA3_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.LIMIT_RANGE), V1BETA3_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.POD), V1BETA3_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.REPLICATION_CONTROLLER), V1BETA3_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.RESOURCE_QUOTA), V1BETA3_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.SERVICE), V1BETA3_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.STATUS), V1BETA3_KUBERNETES_MAP);
 
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Build), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.BuildConfig), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.List), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.DeploymentConfig), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.ImageStream), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.OAuthAccessToken), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.OAuthAuthorizeToken), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.OAuthClient), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.OAuthClientAuthorization), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Policy), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.PolicyBinding), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Project), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.ProjectRequest), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Role), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.RoleBinding), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Route), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Template), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.User), V1BETA3_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.Secret), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.BUILD), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.BUILD_CONFIG), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.LIST), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.DEPLOYMENT_CONFIG), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.IMAGE_STREAM), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.OAUTH_ACCESS_TOKEN), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.OAUTH_AUTHORIZE_TOKEN), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.OAUTH_CLIENT), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.OAUTH_CLIENT_AUTHORIZATION), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.POLICY), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.POLICY_BINDING), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.PROJECT), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.PROJECT_REQUEST), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.ROLE), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.ROLE_BINDING), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.ROUTE), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.TEMPLATE), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.USER), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.SECRET), V1BETA3_OPENSHIFT_MAP);
 
 		//v1
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.Event), V1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.LimitRange), V1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.Pod), V1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.ReplicationController), V1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.ResourceQuota), V1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.Service), V1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.Status), V1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.EVENT), V1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.LIMIT_RANGE), V1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.POD), V1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.REPLICATION_CONTROLLER), V1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.RESOURCE_QUOTA), V1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.SERVICE), V1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.STATUS), V1_KUBERNETES_MAP);
 		
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.Build), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.BuildConfig), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.List), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.DeploymentConfig), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.ImageStream), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.OAuthAccessToken), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.OAuthAuthorizeToken), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.OAuthClient), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.OAuthClientAuthorization), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.Policy), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.PolicyBinding), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.Project), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.ProjectRequest), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.Role), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.RoleBinding), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.Route), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.Template), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.User), V1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.Secret), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.BUILD), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.BUILD_CONFIG), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.LIST), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.DEPLOYMENT_CONFIG), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.IMAGE_STREAM), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.OAUTH_ACCESS_TOKEN), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.OAUTH_AUTHORIZE_TOKEN), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.OAUTH_CLIENT), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.OAUTH_CLIENT_AUTHORIZATION), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.POLICY), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.POLICY_BINDING), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.PROJECT), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.PROJECT_REQUEST), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.ROLE), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.ROLE_BINDING), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.ROUTE), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.TEMPLATE), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.USER), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.SECRET), V1_OPENSHIFT_MAP);
 		
 	}
 	
@@ -130,12 +140,21 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		return instance;
 	}
 	
+	public Map<String, String []> get(final String apiVersion, final String kind) {
+		return get(apiVersion, kind, false);
+	}
 	/**
 	 * Retrieve a given resource property map for a given version
+	 * @param apiVersion
+	 * @param kind
+	 * @param strict    true if it should throw an error when properties are not found; false otherwise
+	 * 
+	 * @return The set of paths for the properties of the resource
 	 */
-	public Map<String, String []> get(final String apiVersion, final ResourceKind kind) {
+	public Map<String, String []> get(final String apiVersion, final String kind, boolean strict) {
 		final VersionKey key = new VersionKey(apiVersion, kind);
 		if(!versionPropertyMap.containsKey(key)){
+			if(!strict) return UNREGISTERED_MAP;
 			Collection<String> versions = new ArrayList<String>();
 			for (VersionKey version : versionPropertyMap.keySet()) {
 				if(version.kind.equals(kind)) {
@@ -190,13 +209,13 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 	
 	private static class VersionKey {
 		private String version;
-		private ResourceKind kind;
+		private String kind;
 
-		VersionKey(APIModelVersion version, ResourceKind kind){
+		VersionKey(APIModelVersion version, String kind){
 			this(version.toString(), kind);
 		}
 
-		VersionKey(String version, ResourceKind kind){
+		VersionKey(String version, String kind){
 			this.version = version.toString();
 			this.kind = kind;
 		}

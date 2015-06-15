@@ -46,19 +46,19 @@ public class DefaultClientTest {
 	private URL baseUrl; 
 	
 	private void givenAPodList(){
-		podFrontEnd = factory.create("v1beta1", ResourceKind.Pod);
+		podFrontEnd = factory.create("v1beta1", ResourceKind.POD);
 		podFrontEnd.setName("frontend");
 		podFrontEnd.setNamespace("aNamespace");
 		podFrontEnd.addLabel("name", "frontend");
 		podFrontEnd.addLabel("env", "production");
 		
-		podBackEnd = factory.create("v1beta1", ResourceKind.Pod);
+		podBackEnd = factory.create("v1beta1", ResourceKind.POD);
 		podBackEnd.setName("backend");
 		podBackEnd.setNamespace("aNamespace");
 		podBackEnd.addLabel("name", "backend");
 		podBackEnd.addLabel("env", "production");
 		
-		Pod otherPod = factory.create("v1beta1", ResourceKind.Pod);
+		Pod otherPod = factory.create("v1beta1", ResourceKind.POD);
 		otherPod.setName("other");
 		otherPod.setNamespace("aNamespace");
 		otherPod.addLabel("env", "production");
@@ -99,7 +99,7 @@ public class DefaultClientTest {
 			put("name","backend");
 			put("env","production");
 		}};
-		List<IPod> pods = client.list(ResourceKind.Pod, "aNamespace", labels);
+		List<IPod> pods = client.list(ResourceKind.POD, "aNamespace", labels);
 		assertEquals("Expected 1 pod to be returned", 1, pods.size());
 		assertEquals("Expected the frontend pod", podBackEnd, pods.get(0));
 	}
@@ -116,7 +116,7 @@ public class DefaultClientTest {
 	public void testListResourceFilteringNoMatch() throws Exception {
 		Map<String, String> labels = new HashMap<String, String>();
 		labels.put("foo", "bar");
-		List<IPod> pods = client.list(ResourceKind.Pod, "aNamespace", labels);
+		List<IPod> pods = client.list(ResourceKind.POD, "aNamespace", labels);
 		assertEquals("Expected no pod to be returned", 0, pods.size());
 	}
 
@@ -126,7 +126,7 @@ public class DefaultClientTest {
 		Map<String, String> labels = new HashMap<String, String>(){{
 			put("name","frontend");
 		}};
-		List<IPod> pods = client.list(ResourceKind.Pod, "aNamespace", labels);
+		List<IPod> pods = client.list(ResourceKind.POD, "aNamespace", labels);
 		assertEquals("Expected 1 pod to be returned", 1, pods.size());
 		assertEquals("Expected the backend pod", podFrontEnd, pods.get(0));
 	}
@@ -137,7 +137,7 @@ public class DefaultClientTest {
 		Map<String, String> labels = new HashMap<String, String>(){{
 			put("env","production");
 		}};
-		List<IPod> pods = client.list(ResourceKind.Pod, "aNamespace", labels);
+		List<IPod> pods = client.list(ResourceKind.POD, "aNamespace", labels);
 		assertEquals("Expected all pods to be returned", 3, pods.size());
 	}
 

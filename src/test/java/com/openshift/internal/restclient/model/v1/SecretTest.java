@@ -40,7 +40,7 @@ public class SecretTest{
 	public void setUp() {
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(sample.getContentAsString());
-		secret = new Secret(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.Secret));
+		secret = new Secret(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.SECRET));
 	}
 	
 	@Test

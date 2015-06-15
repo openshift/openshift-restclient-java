@@ -36,7 +36,7 @@ public class V1Beta1DeploymentConfigTest {
 	public static void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_DEPLOYMENT_CONIFIG.getContentAsString());
-		config = new DeploymentConfig(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.DeploymentConfig));
+		config = new DeploymentConfig(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.DEPLOYMENT_CONFIG));
 	}
 	
 	@Test 

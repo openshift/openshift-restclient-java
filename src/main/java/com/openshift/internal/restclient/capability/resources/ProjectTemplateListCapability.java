@@ -39,12 +39,12 @@ public class ProjectTemplateListCapability implements IProjectTemplateList {
 
 	@Override
 	public Collection<ITemplate> getTemplates() {
-		return client.<ITemplate>list(ResourceKind.Template, project.getNamespace());
+		return client.<ITemplate>list(ResourceKind.TEMPLATE, project.getNamespace());
 	}
 
 	@Override
 	public Collection<ITemplate> getCommonTemplates() {
-		return client.<ITemplate>list(ResourceKind.Template,COMMON_NAMESPACE);
+		return client.<ITemplate>list(ResourceKind.TEMPLATE,COMMON_NAMESPACE);
 	}
 	
 	

@@ -34,7 +34,7 @@ public interface IClient extends ICapable, IAuthorizationClient{
 	 * @param kind
 	 * @return
 	 */
-	<T extends IResource> List<T> list(ResourceKind kind);
+	<T extends IResource> List<T> list(String kind);
 
 	
 	/**
@@ -44,7 +44,7 @@ public interface IClient extends ICapable, IAuthorizationClient{
 	 * @param namespace    The namespace to scope the possible results of this list
 	 * @return
 	 */
-	<T extends IResource> List<T> list(ResourceKind kind, String namespace);
+	<T extends IResource> List<T> list(String kind, String namespace);
 	
 	/**
 	 * Lists the given given resource kind scoping it to a specific namespace
@@ -54,7 +54,7 @@ public interface IClient extends ICapable, IAuthorizationClient{
 	 * @param labels             The label used to filter the resource
 	 * @return
 	 */
-	<T extends IResource> List<T> list(ResourceKind kind, String namespace, Map<String, String> labels);
+	<T extends IResource> List<T> list(String kind, String namespace, Map<String, String> labels);
 
 	/**
 	 * 
@@ -63,7 +63,7 @@ public interface IClient extends ICapable, IAuthorizationClient{
 	 * @return
 	 * @throws OpenShiftException if operation not supported for resource type
 	 */
-	<T extends IResource> T get(ResourceKind kind, String name, String namespace);
+	<T extends IResource> T get(String kind, String name, String namespace);
 	
 	/**
 	 * Creates the given resource in the namespace defined on the 

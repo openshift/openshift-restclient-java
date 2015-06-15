@@ -17,14 +17,14 @@ import com.openshift.restclient.model.build.IWebhookTrigger;
  */
 public class WebhookTrigger implements IWebhookTrigger {
 
-	private BuildTriggerType type;
+	private String type;
 	private String secret;
 	private String resourceName;
 	private String baseURL;
 	private String apiVersion;
 	private String namespace;
 
-	public WebhookTrigger(BuildTriggerType triggerType, String secret, String resourceName, String baseURL, String apiVersion, String namespace) {
+	public WebhookTrigger(String triggerType, String secret, String resourceName, String baseURL, String apiVersion, String namespace) {
 		this.type = triggerType;
 		this.secret = secret;
 		this.resourceName = resourceName;
@@ -34,7 +34,7 @@ public class WebhookTrigger implements IWebhookTrigger {
 	}
 
 	@Override
-	public BuildTriggerType getType() {
+	public String getType() {
 		return type;
 	}
 

@@ -27,6 +27,7 @@ import com.openshift.internal.restclient.model.Config;
 import com.openshift.internal.restclient.model.DeploymentConfig;
 import com.openshift.internal.restclient.model.ImageStream;
 import com.openshift.internal.restclient.model.KubernetesEvent;
+import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.LimitRange;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.internal.restclient.model.Project;
@@ -64,38 +65,42 @@ public class ResourceFactory implements IResourceFactory{
 	
 	private static final String KIND = "kind";
 	private static final String APIVERSION = "apiVersion";
-	private static final Map<ResourceKind, Class<? extends IResource>> IMPL_MAP = new HashMap<ResourceKind, Class<? extends IResource>>();
+	private static final Map<String, Class<? extends IResource>> IMPL_MAP = new HashMap<String, Class<? extends IResource>>();
 	static {
 		//OpenShift kinds
-		IMPL_MAP.put(ResourceKind.Build, Build.class);
-		IMPL_MAP.put(ResourceKind.BuildConfig, BuildConfig.class);
-		IMPL_MAP.put(ResourceKind.Config, Config.class);
-		IMPL_MAP.put(ResourceKind.DeploymentConfig, DeploymentConfig.class);
-		IMPL_MAP.put(ResourceKind.ImageStream, ImageStream.class);
-		IMPL_MAP.put(ResourceKind.List, com.openshift.internal.restclient.model.List.class);
-		IMPL_MAP.put(ResourceKind.OAuthAccessToken, OAuthAccessToken.class);
-		IMPL_MAP.put(ResourceKind.OAuthAuthorizeToken, OAuthAuthorizeToken.class);
-		IMPL_MAP.put(ResourceKind.OAuthClient, OAuthClient.class);
-		IMPL_MAP.put(ResourceKind.OAuthClientAuthorization, OAuthClientAuthorization.class);
-		IMPL_MAP.put(ResourceKind.Project, Project.class);
-		IMPL_MAP.put(ResourceKind.ProjectRequest, OpenshiftProjectRequest.class);
-		IMPL_MAP.put(ResourceKind.Policy, OpenshiftPolicy.class);
-		IMPL_MAP.put(ResourceKind.PolicyBinding, PolicyBinding.class);
-		IMPL_MAP.put(ResourceKind.Role, OpenshiftRole.class);
-		IMPL_MAP.put(ResourceKind.RoleBinding, RoleBinding.class);
-		IMPL_MAP.put(ResourceKind.Route, Route.class);
-		IMPL_MAP.put(ResourceKind.Template, Template.class);
-		IMPL_MAP.put(ResourceKind.User, OpenShiftUser.class);
+		IMPL_MAP.put(ResourceKind.BUILD, Build.class);
+		IMPL_MAP.put(ResourceKind.BUILD_CONFIG, BuildConfig.class);
+		IMPL_MAP.put(ResourceKind.CONFIG, Config.class);
+		IMPL_MAP.put(ResourceKind.DEPLOYMENT_CONFIG, DeploymentConfig.class);
+		IMPL_MAP.put(ResourceKind.IMAGE_STREAM, ImageStream.class);
+		IMPL_MAP.put(ResourceKind.LIST, com.openshift.internal.restclient.model.List.class);
+		IMPL_MAP.put(ResourceKind.OAUTH_ACCESS_TOKEN, OAuthAccessToken.class);
+		IMPL_MAP.put(ResourceKind.OAUTH_AUTHORIZE_TOKEN, OAuthAuthorizeToken.class);
+		IMPL_MAP.put(ResourceKind.OAUTH_CLIENT, OAuthClient.class);
+		IMPL_MAP.put(ResourceKind.OAUTH_CLIENT_AUTHORIZATION, OAuthClientAuthorization.class);
+		IMPL_MAP.put(ResourceKind.PROJECT, Project.class);
+		IMPL_MAP.put(ResourceKind.PROJECT_REQUEST, OpenshiftProjectRequest.class);
+		IMPL_MAP.put(ResourceKind.POLICY, OpenshiftPolicy.class);
+		IMPL_MAP.put(ResourceKind.POLICY_BINDING, PolicyBinding.class);
+		IMPL_MAP.put(ResourceKind.ROLE, OpenshiftRole.class);
+		IMPL_MAP.put(ResourceKind.ROLE_BINDING, RoleBinding.class);
+		IMPL_MAP.put(ResourceKind.ROUTE, Route.class);
+		IMPL_MAP.put(ResourceKind.TEMPLATE, Template.class);
+		IMPL_MAP.put(ResourceKind.USER, OpenShiftUser.class);
 		
 		//Kubernetes Kinds
-		IMPL_MAP.put(ResourceKind.Event, KubernetesEvent.class);
-		IMPL_MAP.put(ResourceKind.LimitRange, LimitRange.class);
-		IMPL_MAP.put(ResourceKind.Pod, Pod.class);
-		IMPL_MAP.put(ResourceKind.ResourceQuota, ResourceQuota.class);
-		IMPL_MAP.put(ResourceKind.ReplicationController, ReplicationController.class);
-		IMPL_MAP.put(ResourceKind.Status, Status.class);
-		IMPL_MAP.put(ResourceKind.Service, Service.class);
-		IMPL_MAP.put(ResourceKind.Secret, Secret.class);
+		IMPL_MAP.put(ResourceKind.EVENT, KubernetesEvent.class);
+		IMPL_MAP.put(ResourceKind.LIMIT_RANGE, LimitRange.class);
+		IMPL_MAP.put(ResourceKind.POD, Pod.class);
+		IMPL_MAP.put(ResourceKind.RESOURCE_QUOTA, ResourceQuota.class);
+		IMPL_MAP.put(ResourceKind.REPLICATION_CONTROLLER, ReplicationController.class);
+		IMPL_MAP.put(ResourceKind.STATUS, Status.class);
+		IMPL_MAP.put(ResourceKind.SERVICE, Service.class);
+		IMPL_MAP.put(ResourceKind.SECRET, Secret.class);
+		
+		//fallback
+		IMPL_MAP.put(ResourceKind.UNRECOGNIZED, KubernetesResource.class);
+		
 	}
 	private IClient client;
 	
@@ -103,11 +108,11 @@ public class ResourceFactory implements IResourceFactory{
 		this.client = client;
 	}
 	
-	public static Map<ResourceKind, Class<? extends IResource>> getImplMap(){
+	public static Map<String, Class<? extends IResource>> getImplMap(){
 		return Collections.unmodifiableMap(IMPL_MAP);
 	}
 
-	public List<IResource> createList(String json, ResourceKind kind){
+	public List<IResource> createList(String json, String kind){
 		ModelNode data = ModelNode.fromJSONString(json);
 		final String dataKind = data.get(KIND).asString();
 		if(!(kind.toString() + "List").equals(dataKind)){
@@ -122,47 +127,66 @@ public class ResourceFactory implements IResourceFactory{
 		}
 	}
 
-	private List<IResource> buildList(final String version, List<ModelNode> items, ResourceKind kind) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private List<IResource> buildList(final String version, List<ModelNode> items, String kind) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		List<IResource> resources = new ArrayList<IResource>(items.size());
 		for (ModelNode item : items) {
-			resources.add(create(item, version, kind));
+			resources.add(create(item, version, kind, false));
 		}
 		return resources;
 	}
-
+	
 	@Override
 	public <T extends IResource> T create(InputStream input) {
+		return create(input, false);
+	}
+
+	@Override
+	public <T extends IResource> T create(InputStream input, boolean strict) {
 		try {
 			String resource = IOUtils.toString(input, "UTF-8");
-			return create(resource);
+			return create(resource, strict);
 		} catch (IOException e) {
 			throw new ResourceFactoryException(e, "There was an exception creating the resource from the InputStream");
 		}
 	}
-
+	
+	
+	@Override
 	public <T extends IResource> T create(String response) {
+		return create(response, false);
+	}
+
+	@Override
+	public <T extends IResource> T create(String response, boolean strict) {
 		try {
 			ModelNode node = ModelNode.fromJSONString(response);
 			String version = node.get(APIVERSION).asString();
-			ResourceKind kind = ResourceKind.valueOf(node.get(KIND).asString());
-			return create(node, version, kind);
+			String kind = node.get(KIND).asString();
+			return create(node, version, kind, strict);
 		} catch (UnsupportedVersionException e) {
 			throw e;
 		}catch(Exception e) {
 			throw new ResourceFactoryException(e, "There was an exception creating the resource from: %s", response);
 		}
 	}
+	
+	
+	@Override
+	public <T extends IResource> T create(String version, String kind) {
+		return create(version, kind, false);
+	}
 
-	public <T extends IResource> T create(String version, ResourceKind kind) {
-		return create(new ModelNode(), version, kind);
+	@Override
+	public <T extends IResource> T create(String version, String kind, boolean strict) {
+		return create(new ModelNode(), version, kind, strict);
 	}
 
 	@SuppressWarnings("unchecked")
-	private  <T extends IResource> T create(ModelNode node, String version, ResourceKind kind) {
+	private  <T extends IResource> T create(ModelNode node, String version, String kind, boolean strict) {
 		try {
 			node.get(APIVERSION).set(version);
 			node.get(KIND).set(kind.toString());
-			Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind);
+			Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind, strict);
 			Constructor<? extends IResource> constructor =  IMPL_MAP.get(kind).getConstructor(ModelNode.class, IClient.class, Map.class);
 			return (T) constructor.newInstance(node, client, properyKeyMap);
 		} catch (UnsupportedVersionException e) {

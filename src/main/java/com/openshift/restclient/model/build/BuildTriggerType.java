@@ -11,17 +11,18 @@ package com.openshift.restclient.model.build;
 /**
  * @author Jeff Cantrill
  */
-// TODO: evaluate switching to class/constants since enums are not extendable
-public enum BuildTriggerType {
+public interface BuildTriggerType {
 	@Deprecated
-	generic,
+	static final String generic = "generic";
+	
 	@Deprecated
-	github,
+	static final String github = "github";
+	
 	@Deprecated
-	imageChange,
+	static final String imageChange = "imageChange";
 
-	Generic,
-	GitHub,
-	ImageChange;
+	static final String GENERIC = "Generic";
+	static final String GITHUB = "GitHub";
+	static final String IMAGE_CHANGE = "ImageChange";
 	
 }
