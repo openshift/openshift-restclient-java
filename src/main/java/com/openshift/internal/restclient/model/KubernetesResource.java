@@ -262,7 +262,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		else {
 			KubernetesResource other = (KubernetesResource) obj; 
 			if (getKind() != null){
-				if (getKind() != other.getKind()) {
+				if (!getKind().equals(other.getKind())) {
 					return false;
 				}
 			} else {
