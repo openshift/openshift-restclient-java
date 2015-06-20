@@ -170,9 +170,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	
 	@Override
 	public <T extends IResource> T create(T resource, String namespace) {
-		if(resource.getKind() == ResourceKind.LIST) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
+		if(ResourceKind.LIST.equals(resource.getKind())) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		try {
-			namespace = resource.getKind() == ResourceKind.PROJECT ? "" : namespace;
+			namespace = ResourceKind.PROJECT.equals(resource.getKind()) ? "" : namespace;
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(resource.getKind())
 				.namespace(namespace)
@@ -189,7 +189,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	
 	@Override
 	public <T extends IResource> T update(T resource) {
-		if(resource.getKind() == ResourceKind.LIST) throw new UnsupportedOperationException("Update operation not supported for resource type 'List'");
+		if(ResourceKind.LIST.equals(resource.getKind())) throw new UnsupportedOperationException("Update operation not supported for resource type 'List'");
 		try {
 			final URL endpoint = new URLBuilder(getBaseURL(), getTypeMappings())
 				.resource(resource)
@@ -207,9 +207,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 
 	@Override
 	public <T extends IResource> void delete(T resource) {
-		if(resource.getKind() == ResourceKind.LIST) throw new UnsupportedOperationException("Delete operation not supported for resource type 'List'");
+		if(ResourceKind.LIST.equals(resource.getKind())) throw new UnsupportedOperationException("Delete operation not supported for resource type 'List'");
 		try {
-			String namespace = resource.getKind() == ResourceKind.PROJECT ? "" : resource.getNamespace();
+			String namespace = ResourceKind.PROJECT.equals(resource.getKind()) ? "" : resource.getNamespace();
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.resource(resource)
 				.namespace(namespace)
@@ -228,7 +228,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	@Override
 	public <T extends IResource> T get(String kind, String name, String namespace) {
 		try {
-			namespace = kind == ResourceKind.PROJECT ? "" : namespace;
+			namespace = ResourceKind.PROJECT.equals(kind) ? "" : namespace;
 			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
 				.kind(kind)
 				.name(name)
