@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.openshift.internal.restclient.model.ServiceAccount;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
@@ -102,6 +103,7 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.STATUS, Status.class);
 		IMPL_MAP.put(ResourceKind.SERVICE, Service.class);
 		IMPL_MAP.put(ResourceKind.SECRET, Secret.class);
+		IMPL_MAP.put(ResourceKind.SERVICE_ACCOUNT, ServiceAccount.class);
 		
 		//fallback
 		IMPL_MAP.put(ResourceKind.UNRECOGNIZED, KubernetesResource.class);
