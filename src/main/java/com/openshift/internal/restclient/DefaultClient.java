@@ -129,9 +129,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			List<T> items = (List<T>) factory.createList(response, kind);
 			return filterItems(items, labels); //client filter until we can figure out how to restrict with a server call
 		} catch (HttpClientException e){
-			throw handleHttpClientException("Exception listing the resources", e);
+			throw createOpenShiftException(String.format("Could not list %s resources in namespace %s: %s", kind, namespace, e.getMessage()), e);
 		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "SocketTimeout listing resources");
+			throw new OpenShiftException(e, "Socket timeout listing resources");
 		} 
 	}
 	
@@ -181,9 +181,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			LOGGER.debug(response);
 			return factory.create(response);
 		} catch (HttpClientException e){
-			throw handleHttpClientException("Exception creating the resource", e);
+			throw createOpenShiftException(String.format("Could not create resource %s in namespace %s: %s", resource.getName(), namespace, e.getMessage()), e);
 		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "SocketTimeout creating resource %", resource.getName());
+			throw new OpenShiftException(e, "Socket timeout creating resource %s", resource.getName());
 		}
 	}
 	
@@ -199,9 +199,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			LOGGER.debug(response);
 			return factory.create(response);
 		} catch (HttpClientException e){
-			throw handleHttpClientException("Exception updating the resource", e);
+			throw createOpenShiftException(String.format("Could not update resource %s: %s", resource.getName(), e.getMessage()), e);
 		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "SocketTimeout updating resource %", resource.getName());
+			throw new OpenShiftException(e, "Socket timeout updating resource %s", resource.getName());
 		}
 	}
 
@@ -214,14 +214,14 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 				.resource(resource)
 				.namespace(namespace)
 				.build();
-			LOGGER.debug(String.format("Deleting resource: %s", endpoint));
+			LOGGER.debug(String.format("Deleting resource %s", endpoint));
 			String response = client.delete(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT);
 			LOGGER.debug(response);
 			//TODO return response object here
 		} catch (HttpClientException e){
-			throw handleHttpClientException("Exception deleting the resource", e);
+			throw createOpenShiftException(String.format("Could not delete resource %s: %s", resource.getName(), e.getMessage()), e);
 		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "SocketTimeout deleting resource %", resource.getName());
+			throw new OpenShiftException(e, "SocketTimeout deleting resource %s", resource.getName());
 		} 
 	}
 
@@ -238,9 +238,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			LOGGER.debug(response);
 			return factory.create(response);
 		} catch (HttpClientException e){
-			throw handleHttpClientException("Exception getting the resource", e);
+			throw createOpenShiftException(String.format("Could not get resource %s in namespace %s: %s", name, namespace, e.getMessage()), e);
 		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "SocketTimeout getting resource %", name);
+			throw new OpenShiftException(e, "SocketTimeout getting resource %s", name);
 		} 
 	}
 
@@ -381,9 +381,10 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		return this.strategy;
 	}
 
-	private OpenShiftException handleHttpClientException(String message, HttpClientException e) {
+	private OpenShiftException createOpenShiftException(String message, HttpClientException e) {
 		LOGGER.debug(message, e);
-		if (e.getMessage().startsWith("{")) {
+		if (e.getMessage() != null
+				&& e.getMessage().startsWith("{")) {
 			Status status = factory.create(e.getMessage());
 			if(status.getCode() == STATUS_FORBIDDEN) {
 				return new ResourceForbiddenException(status.getMessage(), e);
