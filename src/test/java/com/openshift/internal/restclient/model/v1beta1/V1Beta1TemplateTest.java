@@ -35,7 +35,7 @@ public class V1Beta1TemplateTest{
 	@Before
 	public void setUp(){
 		IClient client = mock(IClient.class);
-		when(client.getResourceFactory()).thenReturn(new ResourceFactory(client));
+		when(client.getResourceFactory()).thenReturn(new ResourceFactory(client){});
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_TEMPLATE.getContentAsString());
 		template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta1", ResourceKind.TEMPLATE));
 	}

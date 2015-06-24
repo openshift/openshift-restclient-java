@@ -72,10 +72,10 @@ public class BuildConfigTest {
 
 	@Test
 	public void addBuildTriggers() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BUILD_CONFIG);
+		BuildConfig writeConfig = new ResourceFactory(client){}.create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BUILD_CONFIG);
 
-		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.github, "secret101", null, null, null,null));
-		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.generic, "secret101", null, null, null, null));
+		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GITHUB, "secret101", null, null, null,null));
+		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GENERIC, "secret101", null, null, null, null));
 		writeConfig.addBuildTrigger(new ImageChangeTrigger("", "", ""));
 
 		assertBuildTriggers(reCreateBuildConfig(writeConfig).getBuildTriggers().toArray(new IBuildTrigger[]{}));
@@ -99,7 +99,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void setGitBuildSource() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BUILD_CONFIG);
+		BuildConfig writeConfig = new ResourceFactory(client){}.create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BUILD_CONFIG);
 
 		Map<String, String> env = new HashMap<String, String>();
 		env.put("foo", "bar");
@@ -116,7 +116,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void setSTIBuildStrategy() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BUILD_CONFIG);
+		BuildConfig writeConfig = new ResourceFactory(client){}.create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BUILD_CONFIG);
 
 		Map<String, String> env = new HashMap<String, String>();
 		env.put("foo", "bar");

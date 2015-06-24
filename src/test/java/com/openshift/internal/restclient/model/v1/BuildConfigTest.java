@@ -72,7 +72,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void addBuildTriggers() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(VERSION, ResourceKind.BUILD_CONFIG);
+		BuildConfig writeConfig = new ResourceFactory(client){}.create(VERSION, ResourceKind.BUILD_CONFIG);
 
 		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GITHUB, "secret101", "ruby-sample-build", "https://localhost:8443", VERSION,"test"));
 		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GENERIC, "secret101", "ruby-sample-build", "https://localhost:8443", VERSION,"test"));
@@ -99,7 +99,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void setGitBuildSource() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(VERSION, ResourceKind.BUILD_CONFIG);
+		BuildConfig writeConfig = new ResourceFactory(client){}.create(VERSION, ResourceKind.BUILD_CONFIG);
 
 		Map<String, String> env = new HashMap<String, String>();
 		env.put("foo", "bar");
@@ -116,7 +116,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void setSourceBuildStrategy() {
-		BuildConfig writeConfig = new ResourceFactory(client).create(VERSION, ResourceKind.BUILD_CONFIG);
+		BuildConfig writeConfig = new ResourceFactory(client){}.create(VERSION, ResourceKind.BUILD_CONFIG);
 
 		Map<String, String> env = new HashMap<String, String>();
 		env.put("foo", "bar");

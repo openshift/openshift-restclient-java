@@ -104,7 +104,7 @@ public class ResourceFactory implements IResourceFactory{
 	}
 	private IClient client;
 	
-	public ResourceFactory(IClient client) {
+	protected ResourceFactory(IClient client) {
 		this.client = client;
 	}
 	
