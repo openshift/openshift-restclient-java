@@ -33,7 +33,7 @@ public class ServiceTest {
 		IClient client = mock(IClient.class);
 		when(client.list(anyString(), anyString(), anyMap()))
 			.thenReturn(new ArrayList<IPod>());
-		IResourceFactory factory = new ResourceFactory(client);
+		IResourceFactory factory = new ResourceFactory(client){};
 		IService service = factory.create("v1beta1", ResourceKind.SERVICE);
 		service.addLabel("bar","foo");
 		service.setSelector("foo", "bar");

@@ -8,9 +8,10 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * ResourceKind are the various types of Kubernetes
@@ -70,44 +71,44 @@ public final class ResourceKind {
 	}
 	
 	static {
-		ArrayList<String> list = new ArrayList<String>();
+		Set<String> set = new HashSet<String>();
 		//OpenShift Kinds
-		list.add(BUILD);
-		list.add(BUILD_CONFIG);
-		list.add(DEPLOYMENT_CONFIG);
-		list.add(IMAGE_STREAM );
-		list.add(OAUTH_ACCESS_TOKEN);
-		list.add(OAUTH_AUTHORIZE_TOKEN);
-		list.add(OAUTH_CLIENT);
-		list.add(OAUTH_CLIENT_AUTHORIZATION);
-		list.add(POLICY);
-		list.add(POLICY_BINDING);
-		list.add(PROJECT );
-		list.add(PROJECT_REQUEST);
-		list.add(ROLE);
-		list.add(ROLE_BINDING);
-		list.add(ROUTE);
-		list.add(TEMPLATE);
-		list.add(USER);
+		set.add(BUILD);
+		set.add(BUILD_CONFIG);
+		set.add(DEPLOYMENT_CONFIG);
+		set.add(IMAGE_STREAM );
+		set.add(OAUTH_ACCESS_TOKEN);
+		set.add(OAUTH_AUTHORIZE_TOKEN);
+		set.add(OAUTH_CLIENT);
+		set.add(OAUTH_CLIENT_AUTHORIZATION);
+		set.add(POLICY);
+		set.add(POLICY_BINDING);
+		set.add(PROJECT );
+		set.add(PROJECT_REQUEST);
+		set.add(ROLE);
+		set.add(ROLE_BINDING);
+		set.add(ROUTE);
+		set.add(TEMPLATE);
+		set.add(USER);
 		
 		//Kubernetes Kinds
-		list.add(EVENT);
-		list.add(LIMIT_RANGE);
-		list.add(POD);
-		list.add(REPLICATION_CONTROLLER);
-		list.add(RESOURCE_QUOTA);
-		list.add(SERVICE);
-		list.add(SECRET);
+		set.add(EVENT);
+		set.add(LIMIT_RANGE);
+		set.add(POD);
+		set.add(REPLICATION_CONTROLLER);
+		set.add(RESOURCE_QUOTA);
+		set.add(SERVICE);
+		set.add(SECRET);
 		/*
 		 * These are not true resources that can be used (mostly) in
 		 * RESTful operations
 		 */
-		list.add(CONFIG);
-		list.add(LIST);
-		list.add(STATUS);
-		list.add(TEMPLATE_CONFIG );
-		list.add("ProcessedTemplates");
-		values = Collections.unmodifiableCollection(list);
+		set.add(CONFIG);
+		set.add(LIST);
+		set.add(STATUS);
+		set.add(TEMPLATE_CONFIG );
+		set.add("ProcessedTemplates");
+		values = Collections.unmodifiableCollection(set);
 	}
 	
 	private ResourceKind() {

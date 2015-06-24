@@ -83,8 +83,8 @@ public class ProjectTemplateProcessingTest {
 		@SuppressWarnings("unchecked")
 		Collection<IResource> resources = mock(Collection.class);
 		when(client.create(any(IList.class), anyString())).thenReturn(resources);
-		when(client.getResourceFactory()).thenReturn(new ResourceFactory(client));
-		ITemplate template = new ResourceFactory(client).create(Samples.V1BETA3_TEMPLATE.getContentAsString());
+		when(client.getResourceFactory()).thenReturn(new ResourceFactory(client) {});
+		ITemplate template = new ResourceFactory(client) {}.create(Samples.V1BETA3_TEMPLATE.getContentAsString());
 		
 		assertEquals(resources, capability.apply(template));
 		verify(client).create(any(IList.class), eq(NAMESPACE));
