@@ -32,12 +32,10 @@ public final class ClientFactory {
 	 *             if the baseURL is malformed
 	 */
 	public final IClient create(String baseUrl, ISSLCertificateCallback sslCertCallback){
-		URL url;
 		try {
-			url = new URL(baseUrl);
+			return new DefaultClient(new URL(baseUrl), sslCertCallback);
 		} catch (MalformedURLException e) {
 			throw new OpenShiftException(e, "Malformed URL '%s'", baseUrl);
 		}
-		return new DefaultClient(url, sslCertCallback);
 	}
 }
