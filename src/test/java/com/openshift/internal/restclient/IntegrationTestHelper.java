@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.NoopSSLCertificateCallback;
-import com.openshift.restclient.authorization.AuthorizationClientFactory;
 import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.model.IResource;
 
@@ -36,6 +35,11 @@ public class IntegrationTestHelper {
 
 	public IntegrationTestHelper(){
 		loadProperties();
+	}
+	
+	public String getOpenShiftLocation() {
+		return  prop.getProperty("default.openshift.location");
+		
 	}
 	
 	public String getDefaultClusterAdminUser() {

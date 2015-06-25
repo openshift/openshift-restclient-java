@@ -29,6 +29,13 @@
             {
                 "name": "deployment",
                 "image": "openshift/origin-deployer:v0.6",
+                "ports": [
+                  {
+                    "name" : "http",
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
                 "env": [
                     {
                         "name": "KUBERNETES_MASTER",

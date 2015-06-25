@@ -224,19 +224,22 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		return JBossDmrExtentions.asString(node, propertyKeys, subKey);
 	}
 	
-	protected Map<String, String> asMap(String property){
-		return JBossDmrExtentions.asMap(this.node, propertyKeys, property);
-	}
-	
 	protected int asInt(String key){
 		return JBossDmrExtentions.asInt(node, propertyKeys, key);
+	}
+	
+	protected int asInt(ModelNode node, String key){
+		return JBossDmrExtentions.asInt(node, propertyKeys, key);
+	}
+	
+	protected Map<String, String> asMap(String property){
+		return JBossDmrExtentions.asMap(this.node, propertyKeys, property);
 	}
 	
 	protected String asString(String property){
 		return JBossDmrExtentions.asString(node, propertyKeys, property);
 	}
-	
-	
+
 	protected boolean asBoolean(String property) {
 		return JBossDmrExtentions.asBoolean(node, propertyKeys, property);
 	}

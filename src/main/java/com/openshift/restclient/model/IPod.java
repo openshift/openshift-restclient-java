@@ -9,6 +9,7 @@
 package com.openshift.restclient.model;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Jeff Cantrill
@@ -41,5 +42,9 @@ public interface IPod extends IResource {
 	 */
 	String getStatus();
 	
-	
+	/**
+	 * Retrieve the set of ports that the
+	 * containers are using
+	 */
+	Set<IPort> getContainerPorts();
 }
