@@ -11,15 +11,20 @@ package com.openshift.internal.restclient.model.v1beta3;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.model.Pod;
+import com.openshift.internal.restclient.model.Port;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IPod;
+import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -58,4 +63,10 @@ public class PodTest {
 		assertEquals("172.17.0.2", pod.getIP());
 	}
 
+	@Test
+	public void getContainerPorts() {
+		Set<IPort> ports = new HashSet<IPort>();
+		ports.add(new Port("http","TCP", 8080));
+		assertEquals(ports, pod.getContainerPorts());
+	}
 }

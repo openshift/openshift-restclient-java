@@ -27,7 +27,13 @@ public interface KubernetesApiModelProperties extends ResourcePropertyKeys{
 		put(LABELS, new String []  {"metadata","labels"});
 		put(NAME , new String []  {"metadata","name"});
 		put(NAMESPACE, new String []  {"metadata","namespace"});
+		put(PORTS, new String []  {"ports"});
+
+		put(PORTS_CONTAINER_PORT, new String []  {"containerPort"});
+		put(PORTS_PROTOCOL, new String []  {"protocol"});
+		put(PORTS_NAME, new String []  {"name"});
 		
+
 		put(POD_IP, new String[]{"status","podIP"});
 		put(POD_HOST, new String[]{"status","hostIP"});
 		put(POD_STATUS, new String[]{"status","phase"});
@@ -60,6 +66,11 @@ public interface KubernetesApiModelProperties extends ResourcePropertyKeys{
 		put(LABELS, new String []  {"metadata","labels"});
 		put(NAME , new String []  {"metadata","name"});
 		put(NAMESPACE, new String []  {"metadata","namespace"});
+		put(PORTS, new String []  {"ports"});
+
+		put(PORTS_CONTAINER_PORT, new String []  {"containerPort"});
+		put(PORTS_PROTOCOL, new String []  {"protocol"});
+		put(PORTS_NAME, new String []  {"name"});
 		
 		put(POD_IP, new String[]{"status","podIP"});
 		put(POD_HOST, new String[]{"status","hostIP"});

@@ -17,11 +17,12 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String ANNOTATIONS = "annotations";
 	static final String APIVERSION  = "apiversion";
 	static final String CREATION_TIMESTAMP = "creationTimestamp";
+	static final String DISPLAYNAME = "displayName";
+	static final String KIND = "kind";
 	static final String LABELS = "labels";
 	static final String NAME = "name";
 	static final String NAMESPACE = "namespace";
-	static final String DISPLAYNAME = "displayName";
-	static final String KIND = "kind";
+	static final String PORTS = "ports";
 	
 	static final String REPLICATION_CONTROLLER_CONTAINERS = "replicationcontroller.containers";
 	static final String REPLICATION_CONTROLLER_REPLICA_COUNT = "replicationcontroller.replicacount";
@@ -63,6 +64,10 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String POD_HOST = "pod.host";
 	static final String POD_IP = "pod.ip";
 	static final String POD_STATUS = "pod.status";
+	
+	static final String PORTS_CONTAINER_PORT = "ports.containerport";
+	static final String PORTS_PROTOCOL = "ports.protocol";
+	static final String PORTS_NAME = "ports.name";
 	
 	static final String TEMPLATE_PARAMETERS = "template.parameters";
 	static final String TEMPLATE_ITEMS = "template.items";
