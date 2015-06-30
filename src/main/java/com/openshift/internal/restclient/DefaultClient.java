@@ -63,8 +63,8 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
 	private boolean capabilitiesInitialized = false;
 	
-	private static final String apiEndpoint = "api";
-	private static final String osApiEndpoint = "osapi";
+	private static final String API_ENDPOINT = "api";
+	private static final String OS_API_ENDPOINT = "osapi";
 	
 	private final Map<String, String> typeMappings = new HashMap<String, String>();
 	private String openShiftVersion;
@@ -276,11 +276,11 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	}
 
 	public List<KubernetesAPIVersion> getKubernetesVersions() {
-		return getVersion(KubernetesAPIVersion.class, apiEndpoint);
+		return getVersion(KubernetesAPIVersion.class, API_ENDPOINT);
 	}
 
 	public List<OpenShiftAPIVersion> getOpenShiftVersions() {
-		return getVersion(OpenShiftAPIVersion.class, osApiEndpoint);
+		return getVersion(OpenShiftAPIVersion.class, OS_API_ENDPOINT);
 	}
 
 	public String getKubernetesVersion() {
@@ -329,7 +329,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	private Map<String, String> getTypeMappings(){
 		if(typeMappings.isEmpty()){
 			//OpenShift endpoints
-			final String osEndpoint = String.format("%s/%s", osApiEndpoint, getOpenShiftAPIVersion());
+			final String osEndpoint = String.format("%s/%s", OS_API_ENDPOINT, getOpenShiftAPIVersion());
 			typeMappings.put(ResourceKind.BUILD, osEndpoint);
 			typeMappings.put(ResourceKind.BUILD_CONFIG, osEndpoint);
 			typeMappings.put(ResourceKind.DEPLOYMENT_CONFIG, osEndpoint);
@@ -352,7 +352,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			typeMappings.put(ResourceKind.PROCESSED_TEMPLATES, osEndpoint);
 			
 			//Kubernetes endpoints
-			final String k8eEndpoint = String.format("%s/%s", apiEndpoint, getKubernetesVersion());
+			final String k8eEndpoint = String.format("%s/%s", API_ENDPOINT, getKubernetesVersion());
 			typeMappings.put(ResourceKind.EVENT, k8eEndpoint);
 			typeMappings.put(ResourceKind.POD, k8eEndpoint);
 			typeMappings.put(ResourceKind.LIMIT_RANGE, k8eEndpoint);
