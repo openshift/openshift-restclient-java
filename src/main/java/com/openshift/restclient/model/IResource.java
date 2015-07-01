@@ -11,7 +11,6 @@ package com.openshift.restclient.model;
 import java.util.Map;
 import java.util.Set;
 
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.ICapable;
 
@@ -93,6 +92,13 @@ public interface IResource extends ICapable {
 	 * @return
 	 */
 	String getAnnotation(String key);
+	
+	/**
+	 * Set the resource annotation
+	 * @param key
+	 * @param value
+	 */
+	void setAnnoation(String key, String value);
 	
 	/**
 	 * Retrieves the annotations associated with the resource

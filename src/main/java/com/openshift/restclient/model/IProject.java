@@ -25,4 +25,10 @@ public interface IProject extends IResource {
 
 	String getDisplayName();
 	
+	void setDisplayName(String name);
+	
+	String getDescription();
+	
+	void setDescription(String value);
+	
 }

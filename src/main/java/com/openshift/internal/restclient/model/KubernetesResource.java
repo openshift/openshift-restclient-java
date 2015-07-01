@@ -96,6 +96,13 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		return annotations.get(key);
 	}
 	
+	
+	@Override
+	public void setAnnoation(String name, String value) {
+		ModelNode annotations = get(ANNOTATIONS);
+		annotations.get(name).set(value);
+	}
+
 	@Override
 	public boolean isAnnotatedWith(String key) {
 		Map<String, String> annotations = getAnnotations();

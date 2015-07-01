@@ -47,6 +47,7 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String DEPLOYMENTCONFIG_TRIGGERS = "deploymentconfig.triggers";
 	static final String DEPLOYMENTCONFIG_STRATEGY = "deploymentconfig.strategy";
 	static final String IMAGESTREAM_DOCKER_IMAGE_REPO = "imagerepo.dockerimagerepo";
+	@Deprecated
 	static final String PROJECT_DISPLAY_NAME = "project.displayname";
 	static final String ROUTE_HOST = "route.host";
 	static final String ROUTE_PATH = "route.path";

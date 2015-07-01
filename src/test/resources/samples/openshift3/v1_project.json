@@ -1,6 +1,6 @@
 {
     "kind": "Project",
-    "apiVersion": "v1beta3",
+    "apiVersion": "v1",
     "metadata": {
         "name": "test",
         "selfLink": "/osapi/v1beta3/projects/test",

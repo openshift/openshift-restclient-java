@@ -27,7 +27,10 @@ import com.openshift.restclient.model.IResource;
  * @author Jeff Cantrill
  */
 public class Project extends KubernetesResource implements IProject{
-
+	
+	private static final String ANNOTATION_DISPLAY_NAME = "openshift.io/display-name";
+	private static final String ANNOTATION_DESCRIPTION = "openshift.io/description";
+	
 	public Project(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
 		initializeCapabilities(getModifiableCapabilities(), this, getClient());
@@ -49,12 +52,25 @@ public class Project extends KubernetesResource implements IProject{
 
 	@Override
 	public String getDisplayName(){
-		return asString(PROJECT_DISPLAY_NAME);
+		return getAnnotation(ANNOTATION_DISPLAY_NAME);
 	}
 	
 	public void setDisplayName(String name) {
-		set(PROJECT_DISPLAY_NAME, name);
+		setAnnoation(ANNOTATION_DISPLAY_NAME, name);
 	}
+	
+
+	@Override
+	public String getDescription() {
+		return getAnnotation(ANNOTATION_DESCRIPTION);
+	}
+
+
+	@Override
+	public void setDescription(String value) {
+		setAnnoation(ANNOTATION_DESCRIPTION, value);
+	}
+
 
 	@Override
 	public <T extends IResource> List<T> getResources(String kind){

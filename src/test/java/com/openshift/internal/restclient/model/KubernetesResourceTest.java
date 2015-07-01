@@ -63,7 +63,12 @@ public class KubernetesResourceTest {
 		return new KubernetesResource(node, null,
 				ResourcePropertiesRegistry.getInstance().get(modelVersion, ResourceKind.SERVICE)) {};
 	}
-
+	
+	@Test
+	public void testSetAnnoation() {
+		resource.setAnnoation("black", "white");
+		assertEquals("white",resource.getAnnotation("black"));
+	}
 	@Test
 	public void testGetAnnotation() {
 		assertEquals("bar", resource.getAnnotation("foo"));

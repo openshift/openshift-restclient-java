@@ -6,7 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
-package com.openshift.internal.restclient.model.v1beta1;
+package com.openshift.internal.restclient.model.v1;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -27,21 +27,25 @@ import com.openshift.restclient.utils.Samples;
  * Test to validate the lookup paths are correct for the version
  * @author Jeff Cantrill
  */
-public class V1Beta1ProjectTest{
+public class ProjectTest{
 
-	private static final String VERSION = "v1beta1";
-	private IProject service;
+	private static final String VERSION = "v1";
+	private IProject project;
 	
 	@Before
 	public void setUp(){
 		IClient client = mock(IClient.class);
-		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA1_PROJECT.getContentAsString());
-		service = new Project(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT));
+		ModelNode node = ModelNode.fromJSONString(Samples.V1_PROJECT.getContentAsString());
+		project = new Project(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT));
+	}
+	
+	@Test
+	public void testGetDisplayName() {
+		assertEquals("OpenShift 3 Sample", project.getDisplayName());
 	}
 
-// TODO Deprecate as server no longer provides v1beta1
-//	@Test
-//	public void testGetDisplayName() {
-//		assertEquals("OpenShift 3 Sample", service.getDisplayName());
-//	}
+	@Test
+	public void testGetDescription() {
+		assertEquals("This is an example project to demonstrate OpenShift v3", project.getDescription());
+	}
 }

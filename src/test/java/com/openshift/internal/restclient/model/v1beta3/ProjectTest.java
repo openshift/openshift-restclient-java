@@ -30,17 +30,22 @@ import com.openshift.restclient.utils.Samples;
 public class ProjectTest{
 
 	private static final String VERSION = "v1beta3";
-	private IProject service;
+	private IProject project;
 	
 	@Before
 	public void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_PROJECT.getContentAsString());
-		service = new Project(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT));
+		project = new Project(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT));
 	}
 	
 	@Test
 	public void testGetDisplayName() {
-		assertEquals("OpenShift 3 Sample", service.getDisplayName());
+		assertEquals("OpenShift 3 Sample", project.getDisplayName());
+	}
+
+	@Test
+	public void testGetDescription() {
+		assertEquals("This is an example project to demonstrate OpenShift v3", project.getDescription());
 	}
 }

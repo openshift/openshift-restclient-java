@@ -55,6 +55,7 @@ public enum Samples {
 	V1_IMAGE_STREAM("openshift3/v1_image_stream.json"), 
 	V1_BUILD("openshift3/v1_build.json"), 
 	V1_POD("openshift3/v1_pod.json"), 
+	V1_PROJECT("openshift3/v1_project.json"), 
 	V1_REPLICATION_CONTROLLER("openshift3/v1_replication_controller.json"), 
 	V1_ROUTE("openshift3/v1_route.json"), 
 	V1_ROUTE_WO_TLS("openshift3/v1_route_wo_tls.json"), 
