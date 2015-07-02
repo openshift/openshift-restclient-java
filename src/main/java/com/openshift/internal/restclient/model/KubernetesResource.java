@@ -99,6 +99,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	
 	@Override
 	public void setAnnoation(String name, String value) {
+		if(value == null) return;
 		ModelNode annotations = get(ANNOTATIONS);
 		annotations.get(name).set(value);
 	}

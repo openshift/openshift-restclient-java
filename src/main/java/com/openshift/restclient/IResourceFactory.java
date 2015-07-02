@@ -53,7 +53,7 @@ public interface IResourceFactory {
 	<T extends IResource> T create(InputStream input, boolean strict) ;
 
 	/**
-	 * Create a resource for a given version and kind
+	 * Create(or stub) a resource for a given version and kind
 	 * @param version
 	 * @param kind
 	 * @return
@@ -62,6 +62,12 @@ public interface IResourceFactory {
 
 	<T extends IResource> T create(String version, String kind, boolean strict);
 
-	
+	/**
+	 * Stub out the given resource kind using a version determined by the factory
+	 * @param kind
+	 * @param name
+	 * @return
+	 */
+	<T extends IResource> T stub(String kind, String name);
 	
 }

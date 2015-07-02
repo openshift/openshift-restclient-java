@@ -65,10 +65,16 @@ public class KubernetesResourceTest {
 	}
 	
 	@Test
+	public void testSetAnnoationWithNullValueShouldReturnGracefully() {
+		resource.setAnnoation("black",null);
+	}
+	
+	@Test
 	public void testSetAnnoation() {
 		resource.setAnnoation("black", "white");
 		assertEquals("white",resource.getAnnotation("black"));
 	}
+
 	@Test
 	public void testGetAnnotation() {
 		assertEquals("bar", resource.getAnnotation("foo"));

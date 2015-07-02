@@ -49,6 +49,7 @@ import com.openshift.internal.restclient.model.project.OpenshiftProjectRequest;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.internal.restclient.model.user.OpenShiftUser;
+import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceFactoryException;
@@ -195,5 +196,18 @@ public class ResourceFactory implements IResourceFactory{
 			throw new ResourceFactoryException(e,"Unable to create %s resource kind %s from %s", version, kind, node);
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends IResource> T stub(String kind, String name) {
+		
+		//TODO get k8e or os
+		String version = client.getOpenShiftAPIVersion();
+		KubernetesResource resource = (KubernetesResource) create(version, kind, true);
+		resource.setName(name);
+		return (T) resource;
+	}
+
+	
 	
 }
