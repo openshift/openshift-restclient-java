@@ -10,8 +10,14 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,8 +29,6 @@ import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.openshift.internal.restclient.DefaultClient;
-import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
@@ -45,6 +49,27 @@ public class DefaultClientTest {
 	private IResourceFactory factory;
 	private URL baseUrl; 
 	
+	@Before
+	public void setUp() throws Exception{
+		this.baseUrl = new URL("http://myopenshift");
+		URL kubeApi = new URL(baseUrl, "api");
+		URL osApi = new URL(baseUrl, "osapi");
+		givenAClient();
+		givenAPodList();
+		when(httpClient.get(any(URL.class), anyInt()))
+			.thenReturn(response.toJSONString(false));
+		when(httpClient.get(eq(kubeApi), anyInt()))
+			.thenReturn("{\"versions\": [ \"v1beta1\"]}");
+		when(httpClient.get(eq(osApi), anyInt()))
+			.thenReturn("{\"versions\": [ \"v1beta1\"]}");
+	}
+
+	private void givenAClient() throws MalformedURLException{
+		httpClient = mock(IHttpClient.class);
+		client = new DefaultClient(baseUrl, httpClient, null);
+		factory = new ResourceFactory(client);
+	}
+
 	private void givenAPodList(){
 		podFrontEnd = factory.create("v1beta1", ResourceKind.POD);
 		podFrontEnd.setName("frontend");
@@ -71,27 +96,7 @@ public class DefaultClientTest {
 		items.add(otherPod.getNode());
 		items.add(podBackEnd.getNode());
 	}
-	
-	private void givenAClient() throws MalformedURLException{
-		httpClient = mock(IHttpClient.class);
-		client = new DefaultClient(baseUrl, httpClient, null);
-		factory = new ResourceFactory(client);
-	}
-	
-	@Before
-	public void setUp() throws Exception{
-		baseUrl = new URL("http://myopenshift");
-		URL kubeApi = new URL(baseUrl, "api");
-		URL osApi = new URL(baseUrl, "osapi");
-		givenAClient();
-		givenAPodList();
-		when(httpClient.get(any(URL.class), anyInt()))
-			.thenReturn(response.toJSONString(false));
-		when(httpClient.get(eq(kubeApi), anyInt()))
-			.thenReturn("{\"versions\": [ \"v1beta1\"]}");
-		when(httpClient.get(eq(osApi), anyInt()))
-			.thenReturn("{\"versions\": [ \"v1beta1\"]}");
-	}
+
 	@SuppressWarnings("serial")
 	@Test
 	public void testListResourceFilteringWithExactMatch() throws Exception {
@@ -141,4 +146,12 @@ public class DefaultClientTest {
 		assertEquals("Expected all pods to be returned", 3, pods.size());
 	}
 
+	@Test
+	public void testDefaultClientEquals() throws Exception {
+		DefaultClient sameUrlClient = new DefaultClient(baseUrl, null);
+		assertThat(client).isEqualTo(sameUrlClient);
+
+		DefaultClient differentUrlClient = new DefaultClient(new URL("http://localhost:8443"), null);
+		assertThat(client).isNotEqualTo(differentUrlClient);
+	}
 }

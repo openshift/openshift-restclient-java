@@ -417,6 +417,43 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	public void setSSLCertificateCallback(ISSLCertificateCallback callback) {
 		this.authClient.setSSLCertificateCallback(callback);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((baseUrl == null) ? 0 : baseUrl.hashCode());
+		result = prime * result + ((kubernetesVersion == null) ? 0 : kubernetesVersion.hashCode());
+		result = prime * result + ((openShiftVersion == null) ? 0 : openShiftVersion.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof DefaultClient))
+			return false;
+		DefaultClient other = (DefaultClient) obj;
+		if (baseUrl == null) {
+			if (other.baseUrl != null)
+				return false;
+		} else if (!baseUrl.equals(other.baseUrl))
+			return false;
+		if (kubernetesVersion == null) {
+			if (other.kubernetesVersion != null)
+				return false;
+		} else if (!kubernetesVersion.equals(other.kubernetesVersion))
+			return false;
+		if (openShiftVersion == null) {
+			if (other.openShiftVersion != null)
+				return false;
+		} else if (!openShiftVersion.equals(other.openShiftVersion))
+			return false;
+		return true;
+	}
 	
 	
 }
