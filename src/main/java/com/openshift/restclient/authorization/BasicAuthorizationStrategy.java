@@ -42,6 +42,7 @@ public class BasicAuthorizationStrategy implements IAuthorizationStrategy{
 		return username;
 	}
 	
+	@Override
 	public String getToken() {
 		return token;
 	}

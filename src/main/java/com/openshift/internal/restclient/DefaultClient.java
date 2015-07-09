@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -383,11 +384,16 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 
 	private OpenShiftException createOpenShiftException(String message, HttpClientException e) {
 		LOGGER.debug(message, e);
+		final String token = strategy != null ? strategy.getToken() : "";
 		if (e.getMessage() != null
 				&& e.getMessage().startsWith("{")) {
 			Status status = factory.create(e.getMessage());
 			if(status.getCode() == STATUS_FORBIDDEN) {
-				return new ResourceForbiddenException(status.getMessage(), e);
+				if(StringUtils.isNotBlank(token)) { //truly forbidden
+					return new ResourceForbiddenException(status.getMessage(), e);
+				}else {
+					return new com.openshift.restclient.authorization.UnauthorizedException(authClient.getAuthorizationDetails(this.baseUrl.toString()));
+				}
 			}
 			return new OpenShiftException(e, status, message);
 		} else {

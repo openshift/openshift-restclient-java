@@ -36,4 +36,12 @@ public class KerbrosBrokerAuthorizationStrategy implements	IAuthorizationStrateg
 	public void accept(IAuthorizationStrategyVisitor visitor) {
 	}
 
+	@Override
+	public String getToken() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+
 }
