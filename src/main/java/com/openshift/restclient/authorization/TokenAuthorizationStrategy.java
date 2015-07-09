@@ -28,6 +28,7 @@ public class TokenAuthorizationStrategy implements IAuthorizationStrategy {
 		request.setProperty(IHttpClient.PROPERTY_AUTHORIZATION, String.format("%s %s", IHttpClient.AUTHORIZATION_BEARER, token));
 	}
 	
+	@Override
 	public String getToken(){
 		return this.token;
 	}

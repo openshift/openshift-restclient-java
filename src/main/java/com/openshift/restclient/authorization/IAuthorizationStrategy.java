@@ -25,4 +25,10 @@ public interface IAuthorizationStrategy{
 	
 	
 	void accept(IAuthorizationStrategyVisitor visitor);
+	
+	/**
+	 * Return the token that is used for authentication
+	 * @return
+	 */
+	String getToken();
 }
