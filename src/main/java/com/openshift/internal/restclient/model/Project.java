@@ -56,7 +56,7 @@ public class Project extends KubernetesResource implements IProject{
 	}
 	
 	public void setDisplayName(String name) {
-		setAnnoation(ANNOTATION_DISPLAY_NAME, name);
+		setAnnotation(ANNOTATION_DISPLAY_NAME, name);
 	}
 	
 
@@ -68,7 +68,7 @@ public class Project extends KubernetesResource implements IProject{
 
 	@Override
 	public void setDescription(String value) {
-		setAnnoation(ANNOTATION_DESCRIPTION, value);
+		setAnnotation(ANNOTATION_DESCRIPTION, value);
 	}
 
 

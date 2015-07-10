@@ -66,12 +66,12 @@ public class KubernetesResourceTest {
 	
 	@Test
 	public void testSetAnnoationWithNullValueShouldReturnGracefully() {
-		resource.setAnnoation("black",null);
+		resource.setAnnotation("black",null);
 	}
 	
 	@Test
 	public void testSetAnnoation() {
-		resource.setAnnoation("black", "white");
+		resource.setAnnotation("black", "white");
 		assertEquals("white",resource.getAnnotation("black"));
 	}
 

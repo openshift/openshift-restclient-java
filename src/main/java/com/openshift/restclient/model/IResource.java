@@ -98,7 +98,7 @@ public interface IResource extends ICapable {
 	 * @param key
 	 * @param value
 	 */
-	void setAnnoation(String key, String value);
+	void setAnnotation(String key, String value);
 	
 	/**
 	 * Retrieves the annotations associated with the resource
