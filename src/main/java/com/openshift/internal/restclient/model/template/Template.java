@@ -49,11 +49,14 @@ public class Template extends KubernetesResource implements ITemplate{
 
 	@Override
 	public Map<String, IParameter> getParameters() {
-		Collection<ModelNode> nodes = get(TEMPLATE_PARAMETERS).asList();
-		Map<String, IParameter> params = new HashMap<String, IParameter>(nodes.size());
-		for (ModelNode node : nodes) {
-			Parameter p = new Parameter(node);
-			params.put(p.getName(), p);
+		Map<String, IParameter> params = new HashMap<String, IParameter>();
+		ModelNode modelNode = get(TEMPLATE_PARAMETERS);
+		if(modelNode.isDefined()) {
+			Collection<ModelNode> nodes = modelNode.asList();
+			for (ModelNode node : nodes) {
+				Parameter p = new Parameter(node);
+				params.put(p.getName(), p);
+			}
 		}
 		return params;
 	}

@@ -40,6 +40,12 @@ public class TemplateTest {
 	}
 	
 	@Test
+	public void testGetParametersWhenNotDefined() {
+		template = new Template(new ModelNode(), client, OpenShiftApiModelProperties.V1_OPENSHIFT_MAP);
+		assertNotNull(template.getParameters());
+	}
+	
+	@Test
 	public void addObjectLabel() {
 		final String key = "objectLabelKey";
 		final String value = "objectLabelValue";
