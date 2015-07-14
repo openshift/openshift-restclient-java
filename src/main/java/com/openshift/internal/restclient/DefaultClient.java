@@ -187,6 +187,27 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			throw new OpenShiftException(e, "Socket timeout creating resource %s", resource.getName());
 		}
 	}
+
+	@Override
+	public <T extends IResource> T create(String kind, String namespace, String name, String subresource, IResource payload) {
+		if(ResourceKind.LIST.equals(kind)) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
+		try {
+			namespace = ResourceKind.PROJECT.equals(kind) ? "" : namespace;
+			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
+					.kind(kind)
+					.name(name)
+					.namespace(namespace)
+					.subresource(subresource)
+					.build();
+			String response = client.post(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT, payload);
+			LOGGER.debug(response);
+			return factory.create(response);
+		} catch (HttpClientException e){
+			throw createOpenShiftException(String.format("Could not create %s resource %s in namespace %s for subresource %s: %s", kind, name, namespace, subresource, e.getMessage()), e);
+		} catch (SocketTimeoutException e) {
+			throw new OpenShiftException(e, "Socket timeout creating resource %s", name);
+		}
+	}
 	
 	@Override
 	public <T extends IResource> T update(T resource) {

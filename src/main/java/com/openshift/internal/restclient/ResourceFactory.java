@@ -41,6 +41,7 @@ import com.openshift.internal.restclient.model.authorization.OpenshiftPolicy;
 import com.openshift.internal.restclient.model.authorization.OpenshiftRole;
 import com.openshift.internal.restclient.model.authorization.PolicyBinding;
 import com.openshift.internal.restclient.model.authorization.RoleBinding;
+import com.openshift.internal.restclient.model.build.BuildRequest;
 import com.openshift.internal.restclient.model.oauth.OAuthAccessToken;
 import com.openshift.internal.restclient.model.oauth.OAuthAuthorizeToken;
 import com.openshift.internal.restclient.model.oauth.OAuthClient;
@@ -71,6 +72,7 @@ public class ResourceFactory implements IResourceFactory{
 		//OpenShift kinds
 		IMPL_MAP.put(ResourceKind.BUILD, Build.class);
 		IMPL_MAP.put(ResourceKind.BUILD_CONFIG, BuildConfig.class);
+		IMPL_MAP.put(ResourceKind.BUILD_REQUEST, BuildRequest.class);
 		IMPL_MAP.put(ResourceKind.CONFIG, Config.class);
 		IMPL_MAP.put(ResourceKind.DEPLOYMENT_CONFIG, DeploymentConfig.class);
 		IMPL_MAP.put(ResourceKind.IMAGE_STREAM, ImageStream.class);

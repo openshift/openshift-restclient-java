@@ -83,6 +83,17 @@ public interface IClient extends ICapable, IAuthorizationClient{
 	<T extends IResource> T create(T resource, String namespace);
 	
 	/**
+	 * Creates the given resource in the given namespace using the subresource
+	 * @param kind
+	 * @param namespace
+	 * @param name
+	 * @param subresource
+	 * @param payload
+	 * @return
+	 */
+	<T extends IResource> T create(String kind, String namespace, String name, String subresource, IResource payload);
+	
+	/**
 	 * Creates a list of resources in the given namespace
 	 * @param list  The resource definitions
 	 * @param namespace the namespace for the resources

@@ -51,6 +51,7 @@ public final class ResourceKind {
 	 * These are not true resources that can be used (mostly) in
 	 * RESTful operations
 	 */
+	public static final String BUILD_REQUEST = "BuildRequest";
 	@Deprecated
 	public static final String CONFIG = "Config";//not rest resource;
 	public static final String LIST = "List";
@@ -103,6 +104,7 @@ public final class ResourceKind {
 		 * These are not true resources that can be used (mostly) in
 		 * RESTful operations
 		 */
+		set.add(BUILD_REQUEST);
 		set.add(CONFIG);
 		set.add(LIST);
 		set.add(STATUS);

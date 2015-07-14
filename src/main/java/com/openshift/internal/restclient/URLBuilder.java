@@ -76,6 +76,7 @@ public class URLBuilder {
 	private final Map<String, String> typeMappings;
 
 	private String namespace;
+	private String subResource;
 
 	URLBuilder(URL baseUrl, Map<String, String> typeMappings, IResource resource) {
 		this(baseUrl, typeMappings);
@@ -121,6 +122,12 @@ public class URLBuilder {
 		params.put(key, value);
 		return this;
 	}
+	
+
+	URLBuilder subresource(String value) {
+		this.subResource = value;
+		return this;
+	}
 
 	/**
 	 * Builds a URL based on the information provided. Either  a resource or
@@ -163,6 +170,9 @@ public class URLBuilder {
 		if (name != null) {
 			url.append("/").append(name);
 		}
+		if(StringUtils.isNotBlank(subResource)) {
+			url.append("/").append(subResource);
+		}
 		url = appendParameters(url);
 	}
 
@@ -203,4 +213,5 @@ public class URLBuilder {
 		}
 		return url;
 	}
+
 }

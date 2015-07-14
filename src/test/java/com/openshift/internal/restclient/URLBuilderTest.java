@@ -65,6 +65,18 @@ public class URLBuilderTest {
 		
 		assertEquals(String.format("%s/api/v1beta3/services/bar", BASE_URL),url.toString());
 	}
+	@Test
+	public void testAddingASubResource() {
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3);
+		String url = builder.
+			resource(resource)
+			.namespace("foo")
+			.name("bar")
+			.subresource("aSubResource")
+			.build().toString();
+		assertEquals(String.format("%s/api/v1beta3/namespaces/foo/services/bar/aSubResource", BASE_URL),url.toString());
+	}
+	
 	private String whenBuildingTheURLFor(IResource resource, String namespace) {
 		return builder.
 			resource(resource)
