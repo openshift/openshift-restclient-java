@@ -15,14 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
-import com.openshift.internal.restclient.KubernetesAPIVersion;
 import com.openshift.internal.restclient.model.KubernetesResource;
-import com.openshift.internal.restclient.model.properties.KubernetesApiModelProperties;
-import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
+import com.openshift.restclient.capability.CapabilityVisitor;
+import com.openshift.restclient.capability.resources.ITags;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.IParameter;
 import com.openshift.restclient.model.template.ITemplate;
@@ -82,6 +82,36 @@ public class Template extends KubernetesResource implements ITemplate{
 				actuals.get(param.getName()).setValue(param.getValue());
 			}
 		}
+	}
+
+	/**
+	 * Returns <code>true</code> if this template contains the given text
+	 * in name or tags.
+	 * 
+	 * @param filterText
+	 * @param template
+	 * @return
+	 */
+	@Override
+	public boolean isMatching(final String text) {
+		if (StringUtils.isBlank(text)) {
+			return true;
+		}
+		if (getName().contains(text)) {
+			return true;
+		}
+
+		return accept(new CapabilityVisitor<ITags, Boolean>() {
+			@Override
+			public Boolean visit(ITags capability) {
+				for (String tag : capability.getTags()) {
+					if (tag.contains(text)) {
+						return true;
+					}
+				}
+				return false;
+			}
+		}, false);
 	}
 
 }

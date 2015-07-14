@@ -11,6 +11,7 @@ package com.openshift.internal.restclient.capability.server;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
@@ -49,7 +50,7 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 		return client.create(new TemplateConfigAdapter(template, namespace));
 	}
 	
-	protected static class TemplateConfigAdapter extends KubernetesResource implements ITemplate{
+	protected static class TemplateConfigAdapter extends KubernetesResource implements ITemplate {
 		
 		private ITemplate template;
 		private String namespace;
@@ -59,6 +60,7 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 			this.template = template;
 			this.namespace = namespace;
 		}
+
 		@Override
 		public String getNamespace(){
 			return namespace;
@@ -78,21 +80,40 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 		public Collection<IResource> getItems() {
 			return template.getItems();
 		}
+
 		@Override
 		public Map<String, IParameter> getParameters() {
 			return template.getParameters();
 		}
+
 		@Override
 		public void updateParameterValues(Collection<IParameter> parameters) {
 			template.updateParameterValues(parameters);
 		}
+
 		@Override
 		public Map<String, String> getObjectLabels() {
 			return template.getObjectLabels();
 		}
+
 		@Override
 		public void addObjectLabel(String key, String value) {
 			template.addObjectLabel(key, value);
+		}
+
+		@Override
+		public boolean isMatching(String text) {
+			if (StringUtils.isEmpty(text)) {
+				return true;
+			}
+			if (text.equals(getNamespace())) {
+				return true;
+			}
+			if (template == null) {
+				return false;
+			}
+			
+			return template.isMatching(text);
 		}
 		
 	}

@@ -57,4 +57,14 @@ public interface ITemplate extends IResource {
 	 * @param value
 	 */
 	void addObjectLabel(String key, String value);
+
+	/**
+	 * Returns <code>true</code> if the given resource contains the given text
+	 * in name or tags.
+	 * 
+	 * @param filterText
+	 * @param template
+	 * @return
+	 */
+	public boolean isMatching(final String filterText);
 }
