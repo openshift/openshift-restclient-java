@@ -84,6 +84,7 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.BUILD), V1BETA3_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.BUILD_CONFIG), V1BETA3_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.BUILD_REQUEST), V1BETA3_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.LIST), V1BETA3_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.DEPLOYMENT_CONFIG), V1BETA3_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta3, ResourceKind.IMAGE_STREAM), V1BETA3_OPENSHIFT_MAP);
@@ -113,6 +114,7 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.BUILD), V1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.BUILD_CONFIG), V1_OPENSHIFT_MAP);
+		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.BUILD_REQUEST), V1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.LIST), V1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.DEPLOYMENT_CONFIG), V1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.IMAGE_STREAM), V1_OPENSHIFT_MAP);

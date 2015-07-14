@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.restclient.capability.CapabilityInitializer;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IBuild;
 
@@ -22,6 +23,7 @@ public class Build extends KubernetesResource implements IBuild{
 
 	public Build(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
+		CapabilityInitializer.initializeCapabilities(getModifiableCapabilities(), this, client);
 	}
 
 	@Override

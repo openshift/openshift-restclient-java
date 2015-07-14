@@ -10,6 +10,7 @@ package com.openshift.internal.restclient.capability;
 
 import java.util.Map;
 
+import com.openshift.internal.restclient.capability.resources.BuildTrigger;
 import com.openshift.internal.restclient.capability.resources.ClientCapability;
 import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
 import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
@@ -23,6 +24,7 @@ import com.openshift.internal.restclient.capability.server.ServerTemplateProcess
 import com.openshift.internal.restclient.model.Service;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.ICapability;
+import com.openshift.restclient.capability.resources.IBuildTriggerable;
 import com.openshift.restclient.capability.resources.IClientCapability;
 import com.openshift.restclient.capability.resources.IDeploymentConfigTraceability;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
@@ -33,6 +35,8 @@ import com.openshift.restclient.capability.resources.IServiceSinglePortSupport;
 import com.openshift.restclient.capability.resources.ITags;
 import com.openshift.restclient.capability.resources.ITemplateTraceability;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
+import com.openshift.restclient.model.IBuild;
+import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
@@ -55,6 +59,24 @@ public class CapabilityInitializer {
 		if(impl.isSupported()){
 			capabilities.put(capability, impl);
 		}
+	}
+	
+	/**
+	 * Initialize Build specific capabilities
+	 * @param capabilities
+	 * @param resource
+	 */
+	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IBuild build, IClient client){
+		initializeCapability(capabilities, IBuildTriggerable.class, new BuildTrigger(build, client));
+	}
+
+	/**
+	 * Initialize BuildConfig specific capabilities
+	 * @param capabilities
+	 * @param resource
+	 */
+	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IBuildConfig buildConfig, IClient client){
+		initializeCapability(capabilities, IBuildTriggerable.class, new BuildTrigger(buildConfig, client));
 	}
 	
 	/**

@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
+import com.openshift.internal.restclient.capability.CapabilityInitializer;
 import com.openshift.internal.restclient.model.build.CustomBuildStrategy;
 import com.openshift.internal.restclient.model.build.DockerBuildStrategy;
 import com.openshift.internal.restclient.model.build.GitBuildSource;
@@ -46,7 +47,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
 	public BuildConfig(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
-		//TODO add check to kind here
+		CapabilityInitializer.initializeCapabilities(getModifiableCapabilities(), this, client);
 	}
 	
 	@Override
