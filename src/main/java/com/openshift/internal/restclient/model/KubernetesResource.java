@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -196,6 +197,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	}
 	
 	protected void set(String key, String value){
+		value = StringUtils.defaultIfBlank(value, "");
 		node.get(getPath(key)).set(value);
 	}
 
