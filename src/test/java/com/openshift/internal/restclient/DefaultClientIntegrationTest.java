@@ -34,7 +34,7 @@ import com.openshift.restclient.utils.Samples;
  */
 public class DefaultClientIntegrationTest {
 
-	private static final String VERSION = "v1beta3";
+	private static final String VERSION = "v1";
 
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultClientIntegrationTest.class);
 	
@@ -45,7 +45,7 @@ public class DefaultClientIntegrationTest {
 
 	@Before
 	public void setup () {
-		client = helper.createClient();
+		client = helper.createClientForBasicAuth();
 		factory = new ResourceFactory(client);
 	}
 	
