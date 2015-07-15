@@ -65,7 +65,8 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	private boolean capabilitiesInitialized = false;
 	
 	private static final String API_ENDPOINT = "api";
-	private static final String OS_API_ENDPOINT = "osapi";
+	private static final String OS_API_LEGACY_ENDPOINT = "osapi";
+	private static final String OS_API_ENDPOINT = "oapi";
 	
 	private final Map<String, String> typeMappings = new HashMap<String, String>();
 	private String openShiftVersion;
@@ -302,7 +303,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	}
 
 	public List<OpenShiftAPIVersion> getOpenShiftVersions() {
-		return getVersion(OpenShiftAPIVersion.class, OS_API_ENDPOINT);
+		List<OpenShiftAPIVersion> versions = getVersion(OpenShiftAPIVersion.class, OS_API_ENDPOINT);
+		versions.addAll(getVersion(OpenShiftAPIVersion.class, OS_API_LEGACY_ENDPOINT));
+		return versions;
 	}
 
 	public String getKubernetesVersion() {
@@ -351,7 +354,8 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	private Map<String, String> getTypeMappings(){
 		if(typeMappings.isEmpty()){
 			//OpenShift endpoints
-			final String osEndpoint = String.format("%s/%s", OS_API_ENDPOINT, getOpenShiftAPIVersion());
+			final String version = getOpenShiftAPIVersion();
+			final String osEndpoint = String.format("%s/%s", OpenShiftAPIVersion.v1beta3.toString().equals(version) ? OS_API_LEGACY_ENDPOINT : OS_API_ENDPOINT, version);
 			typeMappings.put(ResourceKind.BUILD, osEndpoint);
 			typeMappings.put(ResourceKind.BUILD_CONFIG, osEndpoint);
 			typeMappings.put(ResourceKind.DEPLOYMENT_CONFIG, osEndpoint);

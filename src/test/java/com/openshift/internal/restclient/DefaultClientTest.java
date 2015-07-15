@@ -48,20 +48,24 @@ public class DefaultClientTest {
 	private Pod podBackEnd;
 	private IResourceFactory factory;
 	private URL baseUrl; 
+	private static final String VERSION = "v1";
 	
 	@Before
 	public void setUp() throws Exception{
 		this.baseUrl = new URL("http://myopenshift");
 		URL kubeApi = new URL(baseUrl, "api");
-		URL osApi = new URL(baseUrl, "osapi");
+		URL osApi = new URL(baseUrl, "oapi");
+		URL osLegacyApi = new URL(baseUrl, "osapi");
 		givenAClient();
 		givenAPodList();
 		when(httpClient.get(any(URL.class), anyInt()))
 			.thenReturn(response.toJSONString(false));
 		when(httpClient.get(eq(kubeApi), anyInt()))
-			.thenReturn("{\"versions\": [ \"v1beta1\"]}");
+			.thenReturn("{\"versions\": [ \""+VERSION+"\"]}");
 		when(httpClient.get(eq(osApi), anyInt()))
-			.thenReturn("{\"versions\": [ \"v1beta1\"]}");
+			.thenReturn("{\"versions\": [ \""+VERSION+"\"]}");
+		when(httpClient.get(eq(osLegacyApi), anyInt()))
+		.thenReturn("{\"versions\": []}");
 	}
 
 	private void givenAClient() throws MalformedURLException{
@@ -71,25 +75,25 @@ public class DefaultClientTest {
 	}
 
 	private void givenAPodList(){
-		podFrontEnd = factory.create("v1beta1", ResourceKind.POD);
+		podFrontEnd = factory.create(VERSION, ResourceKind.POD);
 		podFrontEnd.setName("frontend");
 		podFrontEnd.setNamespace("aNamespace");
 		podFrontEnd.addLabel("name", "frontend");
 		podFrontEnd.addLabel("env", "production");
 		
-		podBackEnd = factory.create("v1beta1", ResourceKind.POD);
+		podBackEnd = factory.create(VERSION, ResourceKind.POD);
 		podBackEnd.setName("backend");
 		podBackEnd.setNamespace("aNamespace");
 		podBackEnd.addLabel("name", "backend");
 		podBackEnd.addLabel("env", "production");
 		
-		Pod otherPod = factory.create("v1beta1", ResourceKind.POD);
+		Pod otherPod = factory.create(VERSION, ResourceKind.POD);
 		otherPod.setName("other");
 		otherPod.setNamespace("aNamespace");
 		otherPod.addLabel("env", "production");
 		
 		response = new ModelNode();
-		response.get("apiVersion").set("v1beta1");
+		response.get("apiVersion").set(VERSION);
 		response.get("kind").set("PodList");
 		ModelNode items = response.get("items");
 		items.add(podFrontEnd.getNode());
