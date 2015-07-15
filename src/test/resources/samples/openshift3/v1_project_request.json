@@ -1,0 +1,9 @@
+{
+    "kind": "ProjectRequest",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "test",
+    },
+    "displayName": "the display name",
+    "description": "The project description"
+}

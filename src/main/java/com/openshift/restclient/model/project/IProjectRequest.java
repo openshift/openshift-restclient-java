@@ -16,5 +16,13 @@ import com.openshift.restclient.model.IResource;
  * @author jeff.cantrill
  */
 public interface IProjectRequest extends IResource {
+	
+	void setDisplayName(String name);
+	
+	String getDisplayName();
+
+	void setDescription(String name);
+	
+	String getDescription();
 
 }

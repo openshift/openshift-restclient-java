@@ -18,6 +18,7 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String APIVERSION  = "apiversion";
 	static final String CREATION_TIMESTAMP = "creationTimestamp";
 	static final String DISPLAYNAME = "displayName";
+	static final String DESCRIPTION = "description";
 	static final String KIND = "kind";
 	static final String LABELS = "labels";
 	static final String NAME = "name";

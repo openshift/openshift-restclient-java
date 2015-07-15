@@ -91,6 +91,9 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
 		put(APIVERSION, new String [] {"apiVersion"});
 		put(CREATION_TIMESTAMP, new String []  {"metadata", "creationTimestamp"});
+		put(DESCRIPTION, new String []  { "description"});
+		put(DISPLAYNAME, new String []  { "displayName"});
+		put(LABELS, new String []  { "metadata","labels"});
 		put(LABELS, new String []  { "metadata","labels"});
 		put(NAME , new String []  {"metadata", "name"});
 		put(NAMESPACE, new String []  {"metadata", "namespace"});
@@ -159,6 +162,8 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
 		put(APIVERSION, new String [] {"apiVersion"});
 		put(CREATION_TIMESTAMP, new String []  {"metadata", "creationTimestamp"});
+		put(DESCRIPTION, new String []  { "description"});
+		put(DISPLAYNAME, new String []  { "displayName"});
 		put(LABELS, new String []  { "metadata","labels"});
 		put(NAME , new String []  {"metadata", "name"});
 		put(NAMESPACE, new String []  {"metadata", "namespace"});

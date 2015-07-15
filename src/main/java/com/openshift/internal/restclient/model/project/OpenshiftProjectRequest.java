@@ -22,7 +22,26 @@ public class OpenshiftProjectRequest extends KubernetesResource implements IProj
 
 	public OpenshiftProjectRequest(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
 		super(node, client, propertyKeys);
-		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void setDisplayName(String name) {
+		set(DISPLAYNAME, name);
+	}
+
+	@Override
+	public String getDisplayName() {
+		return asString(DISPLAYNAME);
+	}
+
+	@Override
+	public void setDescription(String description) {
+		set(DESCRIPTION, description);
+	}
+
+	@Override
+	public String getDescription() {
+		return asString(DESCRIPTION);
 	}
 
 }
