@@ -209,7 +209,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			case STATUS_NOT_FOUND:
 				return new NotFoundException(errorMessage, ioe);
 			default:
-				return new HttpClientException(errorMessage, ioe);
+				return new HttpClientException(errorMessage, ioe, responseCode);
 			}
 		} catch (SocketTimeoutException e) {
 			throw e;

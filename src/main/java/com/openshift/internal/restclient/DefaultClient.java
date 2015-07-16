@@ -348,6 +348,13 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		} catch (SocketTimeoutException e) {
 			LOGGER.error("Exception", e);
 			throw new OpenShiftException(e,"");
+		//HACK - This gets us around a server issue
+		} catch (HttpClientException e) {
+			if(e.getResponseCode() != 403) {
+				throw e;
+			}
+			LOGGER.error("Unauthorized exception. Can system:anonymous get the API endpoint", e);
+			return new ArrayList<T>();
 		}
 	}
 

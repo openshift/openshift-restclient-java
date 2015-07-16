@@ -16,9 +16,15 @@ package com.openshift.internal.restclient.http;
 public class HttpClientException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
+	private int code = -1;
 
 	public  HttpClientException(String message, Throwable cause) {
 		super(message, cause);
+	}
+
+	public  HttpClientException(String message, Throwable cause, int code) {
+		super(message, cause);
+		this.code  = code;
 	}
 
 	public HttpClientException(String message) {
@@ -27,6 +33,10 @@ public class HttpClientException extends RuntimeException {
 
 	public HttpClientException(Throwable cause) {
 		super(cause);
+	}
+	
+	public int getResponseCode() {
+		return code;
 	}
 
 }
