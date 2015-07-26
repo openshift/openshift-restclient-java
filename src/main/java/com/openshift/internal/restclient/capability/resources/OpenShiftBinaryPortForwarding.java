@@ -103,9 +103,15 @@ public class OpenShiftBinaryPortForwarding implements IPortForwardable {
 	}
 	
 	private void checkProcessIsAlive() throws IOException {
-		Thread.yield();
-		if(!process.isAlive() && process.exitValue() != 0) {
-			throw new OpenShiftException("Port forwarding process exited: %s", IOUtils.toString(process.getErrorStream()));
+		try {
+			Thread.sleep(1000);
+			if(!process.isAlive() && process.exitValue() != 0) {
+				throw new OpenShiftException("Port forwarding process exited: %s", IOUtils.toString(process.getErrorStream()));
+			}
+		} catch (InterruptedException e) {
+			if(!process.isAlive() && process.exitValue() != 0) {
+				throw new OpenShiftException("Port forwarding process exited: %s", IOUtils.toString(process.getErrorStream()));
+			}
 		}
 	}
 	
