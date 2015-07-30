@@ -154,7 +154,7 @@ public class OpenShiftBinaryPortForwarding implements IPortForwardable {
 	@Override
 	public synchronized void stop() {
 		if(process == null) return;
-		this.pairs = null;
+		this.pairs = new PortPair[] {};
 		if(!process.isAlive()) {
 			LOG.debug("PortForward exit code {}", process.exitValue());
 			try {
