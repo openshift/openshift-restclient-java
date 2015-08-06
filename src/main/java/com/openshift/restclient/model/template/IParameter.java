@@ -52,4 +52,10 @@ public interface IParameter {
 	 * @return
 	 */
 	String getFrom();
+	
+	/**
+	 * Returns true if parameter is required; false otherwise
+	 * @return
+	 */
+	boolean isRequired();
 }

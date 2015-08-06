@@ -28,4 +28,25 @@ public class ParameterTest {
 	public void testGetGeneratorNameWhenUndefined() {
 		assertEquals("", param.getGeneratorName());
 	}
+	
+	@Test
+	public void testIsRequiredUndefined() {
+		assertFalse(param.isRequired());
+	}
+	@Test
+	public void testIsRequiredFalse() {
+		ModelNode node = new ModelNode();
+		node.get("required").set(false);
+		param = new Parameter(node);
+		assertFalse(param.isRequired());
+	}
+
+	@Test
+	public void testIsRequired() {
+		ModelNode node = new ModelNode();
+		node.get("required").set(true);
+		param = new Parameter(node);
+		assertTrue(param.isRequired());
+	}
+	
 }

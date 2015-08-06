@@ -435,7 +435,8 @@
             "name": "MYSQL_PASSWORD",
             "description": "database password",
             "generate": "expression",
-            "from": "[a-zA-Z0-9]{8}"
+            "from": "[a-zA-Z0-9]{8}",
+            "required" : true
         },
         {
             "name": "MYSQL_DATABASE",

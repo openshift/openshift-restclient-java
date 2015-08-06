@@ -60,6 +60,14 @@ public class Parameter implements IParameter{
 		return asString("from");
 	}
 	
+	@Override
+	public boolean isRequired() {
+		if(node.hasDefined("required")) {
+			return node.get("required").asBoolean();
+		}
+		return false;
+	}
+
 	private String asString(String key) {
 		ModelNode value = node.get(key);
 		if(value.isDefined())
