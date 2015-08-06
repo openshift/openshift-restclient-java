@@ -63,6 +63,7 @@ public class TemplateTest{
 		assertEquals("[a-zA-Z0-9]{8}",param.getFrom());
 		assertEquals("expression",param.getGeneratorName());
 		assertEquals("database password",param.getDescription());
+		assertTrue("required", param.isRequired());
 	}
 	
 	@Test
