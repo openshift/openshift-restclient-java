@@ -39,7 +39,8 @@
             "type": "Git",
             "git": {
                 "uri": "git://github.com/openshift/ruby-hello-world.git"
-            }
+            },
+            "contextDir" : "foobar"
         },
         "strategy": {
             "type": "Source",

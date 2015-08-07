@@ -137,7 +137,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	public <T extends IBuildSource> T getBuildSource() {
 		switch(asString(BUILDCONFIG_SOURCE_TYPE)){
 		case BuildSourceType.GIT:
-			return (T) new GitBuildSource(asString(BUILDCONFIG_SOURCE_URI), asString(BUILDCONFIG_SOURCE_REF));
+			return (T) new GitBuildSource(asString(BUILDCONFIG_SOURCE_URI), asString(BUILDCONFIG_SOURCE_REF), asString(BUILDCONFIG_SOURCE_CONTEXTDIR));
 		default:
 		}
 		return null;
@@ -156,6 +156,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		}
 		set(BUILDCONFIG_SOURCE_URI, source.getURI());
 		set(BUILDCONFIG_SOURCE_TYPE, source.getType().toString());
+		set(BUILDCONFIG_SOURCE_CONTEXTDIR, source.getContextDir());
 	}
 	
 	@Override

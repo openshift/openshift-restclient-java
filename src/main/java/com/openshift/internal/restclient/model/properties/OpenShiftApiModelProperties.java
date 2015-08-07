@@ -35,6 +35,7 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(BUILD_PODNAME, new String[]{"podName"});
 		put(BUILD_STATUS, new String[]{"status","phase"});
 		
+		put(BUILDCONFIG_SOURCE_CONTEXTDIR, new String[]{"spec","source","contextDir"});
 		put(BUILDCONFIG_SOURCE_TYPE, new String[]{"spec","source","type"});
 		put(BUILDCONFIG_SOURCE_URI, new String[]{"spec","source","git","uri"});
 		put(BUILDCONFIG_SOURCE_REF, new String[]{"spec","source","git","ref"});
@@ -104,7 +105,8 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(BUILD_MESSAGE, new String[]{"status","message"});
 		put(BUILD_PODNAME, new String[]{"podName"});
 		put(BUILD_STATUS, new String[]{"status","phase"});
-		
+
+		put(BUILDCONFIG_SOURCE_CONTEXTDIR, new String[]{"spec","source","contextDir"});
 		put(BUILDCONFIG_SOURCE_TYPE, new String[]{"spec","source","type"});
 		put(BUILDCONFIG_SOURCE_URI, new String[]{"spec","source","git","uri"});
 		put(BUILDCONFIG_SOURCE_REF, new String[]{"spec","source","git","ref"});

@@ -24,4 +24,12 @@ public interface IBuildSource {
 	 * @return
 	 */
 	String getURI();
+
+	/**
+	 * The sub-directory relative to the repo root where the source code for the application exists. 
+	 * This allows to have buildable sources in directory other than root of repository.  
+	 * 
+	 * @return
+	 */
+	String getContextDir();
 }

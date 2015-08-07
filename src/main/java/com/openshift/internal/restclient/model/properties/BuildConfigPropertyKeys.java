@@ -12,6 +12,7 @@ package com.openshift.internal.restclient.model.properties;
  * @author Jeff Cantrill
  */
 public interface BuildConfigPropertyKeys {
+	static final String BUILDCONFIG_SOURCE_CONTEXTDIR = "buildconfig.source.contextdir";
 	static final String BUILDCONFIG_SOURCE_TYPE = "buildconfig.source.type";
 	static final String BUILDCONFIG_SOURCE_REF = "buildconfig.source.ref";
 	static final String BUILDCONFIG_SOURCE_URI = "buildconfig.sourceuri";
