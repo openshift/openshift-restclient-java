@@ -18,10 +18,12 @@ public class GitBuildSource implements IGitBuildSource {
 
 	private String ref;
 	private String uri;
+	private String contextDir;
 
-	public GitBuildSource(String uri, String ref){
+	public GitBuildSource(String uri, String ref, String contextDir){
 		this.ref = ref;
 		this.uri = uri;
+		this.contextDir = contextDir;
 	}
 	
 	@Override
@@ -37,6 +39,11 @@ public class GitBuildSource implements IGitBuildSource {
 	@Override
 	public String getRef() {
 		return ref;
+	}
+
+	@Override
+	public String getContextDir() {
+		return contextDir;
 	}
 
 }

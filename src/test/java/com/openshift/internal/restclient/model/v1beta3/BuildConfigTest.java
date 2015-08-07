@@ -103,7 +103,7 @@ public class BuildConfigTest {
 
 		Map<String, String> env = new HashMap<String, String>();
 		env.put("foo", "bar");
-		writeConfig.setBuildSource(new GitBuildSource("git://github.com/openshift/ruby-hello-world.git", ""));
+		writeConfig.setBuildSource(new GitBuildSource("git://github.com/openshift/ruby-hello-world.git", "", "foobar"));
 
 		assertGitBuildSource(reCreateBuildConfig(writeConfig).getBuildSource());
 	}
@@ -137,6 +137,7 @@ public class BuildConfigTest {
 	private void assertGitBuildSource(IBuildSource source) {
 		assertEquals(BuildSourceType.GIT, source.getType());
 		assertEquals("git://github.com/openshift/ruby-hello-world.git", source.getURI());
+		assertEquals("foobar", source.getContextDir());
 		assertTrue(source instanceof IGitBuildSource);
 
 		IGitBuildSource git = (IGitBuildSource)source;
