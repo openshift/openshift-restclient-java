@@ -95,33 +95,4 @@ public interface KubernetesApiModelProperties extends ResourcePropertyKeys{
 		put(STATUS_STATUS, new String [] {"status"});
 	}};
 	
-	@SuppressWarnings("serial")
-	@Deprecated
-	static final Map<String, String []> V1BETA1_KUBERNETES_MAP = new HashMap<String, String []>(){
-	{
-		put(ANNOTATIONS, new String [] {"annotations"});
-		put(APIVERSION, new String [] {"apiVersion"});
-		put(CREATION_TIMESTAMP, new String []  {"creationTimestamp"});
-		put(KIND, new String[] { "kind" });
-		put(LABELS, new String []  {"labels"});
-		put(NAME , new String []  {"id"});
-		put(NAMESPACE, new String []  {"namespace"});
-		
-		put(REPLICATION_CONTROLLER_REPLICA_COUNT, new String [] {"desiredState", "replicas"});
-		put(REPLICATION_CONTROLLER_REPLICA_SELECTOR, new String [] {"desiredState", "replicaSelector"});
-		put(REPLICATION_CONTROLLER_CONTAINERS, new String [] {"desiredState", "podTemplate","desiredState","manifest","containers"});
-		put(REPLICATION_CONTROLLER_CURRENT_REPLICA_COUNT, new String [] {"currentState", "replicas"});
-		
-		put(POD_IP, new String[]{"currentState","podIP"});
-		put(POD_HOST, new String[]{"currentState","host"});
-		put(POD_STATUS, new String[]{"currentState","status"});
-		put(POD_CONTAINERS, new String[]{"desiredState","manifest","containers"});
-		put(SERVICE_CONTAINER_PORT, new String [] {"containerPort"});
-		put(SERVICE_PORT, new String [] {"port"});
-		put(SERVICE_SELECTOR, new String [] {"selector"});
-		put(SERVICE_PORTALIP, new String [] {"portalIP"});
-		put(STATUS_MESSAGE, new String [] {"message"});
-		put(STATUS_CODE, new String [] {"code"});
-		put(STATUS_STATUS, new String [] {"status"});
-	}};
 }

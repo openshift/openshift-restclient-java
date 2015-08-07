@@ -38,18 +38,10 @@ public class URLBuilderTest {
 	@Before
 	public void setup() throws MalformedURLException {
 		mappings.put(ResourceKind.SERVICE, "api/v1beta3");
-		mappings.put(ResourceKind.POD, "api/v1beta1");
 		builder = new URLBuilder(new URL(BASE_URL), mappings);
 		
 	}
 	
-	@Test
-	public void testV1Beta1() {
-		IResource resource = givenAResource(ResourceKind.POD, KubernetesAPIVersion.v1beta1);
-		String url = whenBuildingTheURLFor(resource, "foo");
-		assertEquals(String.format("%s/api/v1beta1/pods/bar?namespace=foo", BASE_URL),url.toString());
-	}
-
 	@Test
 	public void testV1Beta3() {
 		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3);

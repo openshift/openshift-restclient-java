@@ -36,7 +36,7 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 	
 	@Override
 	public boolean isSupported() {
-		return !OpenShiftAPIVersion.v1beta1.toString().equals(client.getOpenShiftAPIVersion());
+		return true;
 	}
 
 	@Override

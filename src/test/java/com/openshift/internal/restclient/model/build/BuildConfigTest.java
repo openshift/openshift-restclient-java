@@ -36,12 +36,12 @@ public class BuildConfigTest implements BuildConfigPropertyKeys {
 	
 	@Before
 	public void setup(){
-		config = new BuildConfig(node, client, OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP);
+		config = new BuildConfig(node, client, OpenShiftApiModelProperties.V1_OPENSHIFT_MAP);
 	}
 	
 	@Test
 	public void testGetCustomBuildStrategy(){
-		String[] key = new String[]{"parameters", "strategy"};
+		String[] key = new String[]{"spec", "strategy"};
 		node.get(key).get("type").set("Custom");
 		node.get(key).get("customStrategy").get("exposeDockerSocket").set(true);
 		node.get(key).get("customStrategy").get("image").set("thebaseImage");
@@ -62,10 +62,10 @@ public class BuildConfigTest implements BuildConfigPropertyKeys {
 	
 	@Test
 	public void testGetDockerBuildStrategy() {
-		node.get(OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_TYPE)).set("Docker");
-		node.get(OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_CONTEXTDIR)).set("aContextDir");
-		node.get(OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_NOCACHE)).set(true);
-		node.get(OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_BASEIMAGE)).set("thebaseImage");
+		node.get(OpenShiftApiModelProperties.V1_OPENSHIFT_MAP.get(BUILDCONFIG_TYPE)).set("Docker");
+		node.get(OpenShiftApiModelProperties.V1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_CONTEXTDIR)).set("aContextDir");
+		node.get(OpenShiftApiModelProperties.V1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_NOCACHE)).set(true);
+		node.get(OpenShiftApiModelProperties.V1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_BASEIMAGE)).set("thebaseImage");
 		
 		IBuildStrategy strategy = config.getBuildStrategy();
 		assertEquals(BuildStrategyType.DOCKER, strategy.getType());
