@@ -62,17 +62,16 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			switch(type){
 				case BuildTriggerType.generic:
 				case BuildTriggerType.GENERIC:
-					triggers.add(new WebhookTrigger(
-							version.equals(OpenShiftAPIVersion.v1beta1.toString()) ? BuildTriggerType.generic : BuildTriggerType.GENERIC,
+					triggers.add(new WebhookTrigger(BuildTriggerType.GENERIC,
 									asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), name, url, version,getNamespace()));
 					break;
 				case BuildTriggerType.github:
 				case BuildTriggerType.GITHUB:
-					triggers.add(new WebhookTrigger(version.equals(OpenShiftAPIVersion.v1beta1.toString()) ? BuildTriggerType.github : BuildTriggerType.GITHUB, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), name, url, version, getNamespace()));
+					triggers.add(new WebhookTrigger(BuildTriggerType.GITHUB, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), name, url, version, getNamespace()));
 					break;
 				case BuildTriggerType.imageChange:
 				case BuildTriggerType.IMAGE_CHANGE:
-					triggers.add(new ImageChangeTrigger(version.equals(OpenShiftAPIVersion.v1beta1.toString()) ? BuildTriggerType.imageChange : BuildTriggerType.IMAGE_CHANGE,
+					triggers.add(new ImageChangeTrigger(BuildTriggerType.IMAGE_CHANGE,
 							asString(node, BUILD_CONFIG_IMAGECHANGE_IMAGE),
 							asString(node, BUILD_CONFIG_IMAGECHANGE_NAME),
 							asString(node, BUILD_CONFIG_IMAGECHANGE_TAG))
@@ -188,11 +187,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			if(sti.getScriptsLocation() != null) {
 				set(BUILDCONFIG_STI_SCRIPTS, sti.getScriptsLocation());
 			}
-			if(OpenShiftAPIVersion.v1beta1.name().equals(getApiVersion())) {
-				set(BUILDCONFIG_STI_CLEAN, sti.forceClean());
-			} else{
-				set(BUILDCONFIG_STI_INCREMENTAL, sti.incremental());
-			}
+			set(BUILDCONFIG_STI_INCREMENTAL, sti.incremental());
 			if(sti.getEnvironmentVariables() != null) {
 				setEnvMap(BUILDCONFIG_STI_ENV, sti.getEnvironmentVariables());
 			}
@@ -234,13 +229,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 					);
 		case BuildStrategyType.STI:
 		case BuildStrategyType.SOURCE:
-			if(OpenShiftAPIVersion.v1beta1.name().equals(getApiVersion())) {
-				return (T) new STIBuildStrategy(asString(BUILDCONFIG_STI_IMAGE),
-						asString(BUILDCONFIG_STI_SCRIPTS),
-						!asBoolean(BUILDCONFIG_STI_CLEAN),
-						getEnvMap(BUILDCONFIG_STI_ENV)
-						);
-			}
 			return (T) new SourceBuildStrategy(asString(BUILDCONFIG_STI_IMAGE),
 					asString(BUILDCONFIG_STI_SCRIPTS),
 					asBoolean(BUILDCONFIG_STI_INCREMENTAL),

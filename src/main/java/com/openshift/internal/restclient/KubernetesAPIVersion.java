@@ -15,8 +15,6 @@ package com.openshift.internal.restclient;
  * @author Jeff Cantrill
  */
 public enum KubernetesAPIVersion implements APIModelVersion{
-	@Deprecated
-	v1beta1(1), 
 	v1beta3(2),
 	v1(3);
 	

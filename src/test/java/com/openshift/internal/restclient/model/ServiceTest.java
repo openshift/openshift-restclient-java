@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
@@ -34,7 +35,7 @@ public class ServiceTest {
 		when(client.list(anyString(), anyString(), anyMap()))
 			.thenReturn(new ArrayList<IPod>());
 		IResourceFactory factory = new ResourceFactory(client){};
-		IService service = factory.create("v1beta1", ResourceKind.SERVICE);
+		IService service = factory.create(OpenShiftAPIVersion.v1.name(), ResourceKind.SERVICE);
 		service.addLabel("bar","foo");
 		service.setSelector("foo", "bar");
 		

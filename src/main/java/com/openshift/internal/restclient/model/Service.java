@@ -22,7 +22,6 @@ import org.jboss.dmr.ModelType;
 
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.capability.resources.IServiceSinglePortSupport;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IService;
 
@@ -41,11 +40,6 @@ public class Service extends KubernetesResource implements IService {
 	
 	@Override
 	public void setPort(int port){
-		if(supports(IServiceSinglePortSupport.class)) {
-			IServiceSinglePortSupport capability = getCapability(IServiceSinglePortSupport.class);
-			capability.setPort(port);
-			return;
-		}
 		ModelNode nodePort = getLowestPort();
 		if(nodePort == null) {
 			nodePort = get(SERVICE_PORT).add();
@@ -55,10 +49,6 @@ public class Service extends KubernetesResource implements IService {
 	
 	@Override
 	public int getPort(){
-		if(supports(IServiceSinglePortSupport.class)) {
-			IServiceSinglePortSupport capability = getCapability(IServiceSinglePortSupport.class);
-			return capability.getPort();
-		}
 		ModelNode port = getLowestPort();
 		return port != null ? port.get(PROPERTY_PORT).asInt() : 0;
 	}
@@ -99,11 +89,6 @@ public class Service extends KubernetesResource implements IService {
 
 	@Override
 	public void setContainerPort(int port){
-		if(supports(IServiceSinglePortSupport.class)) {
-			IServiceSinglePortSupport capability = getCapability(IServiceSinglePortSupport.class);
-			capability.setContainerPort(port);
-			return;
-		}
 		ModelNode nodePort = getLowestPort();
 		if(nodePort == null) {
 			nodePort = get(SERVICE_PORT).add();
@@ -113,10 +98,6 @@ public class Service extends KubernetesResource implements IService {
 	
 	@Override
 	public int getContainerPort(){
-		if(supports(IServiceSinglePortSupport.class)) {
-			IServiceSinglePortSupport capability = getCapability(IServiceSinglePortSupport.class);
-			return capability.getContainerPort();
-		}
 		ModelNode port = getLowestPort();
 		return port != null ? port.get(PROPERTY_TARGET_PORT).asInt() : 0;
 	}

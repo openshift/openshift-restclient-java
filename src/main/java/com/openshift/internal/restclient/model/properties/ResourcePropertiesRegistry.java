@@ -8,10 +8,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.properties;
 
-import static com.openshift.internal.restclient.model.properties.KubernetesApiModelProperties.V1BETA1_KUBERNETES_MAP;
 import static com.openshift.internal.restclient.model.properties.KubernetesApiModelProperties.V1BETA3_KUBERNETES_MAP;
 import static com.openshift.internal.restclient.model.properties.KubernetesApiModelProperties.V1_KUBERNETES_MAP;
-import static com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties.V1BETA1_OPENSHIFT_MAP;
 import static com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties.V1BETA3_OPENSHIFT_MAP;
 import static com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties.V1_OPENSHIFT_MAP;
 
@@ -56,23 +54,6 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 
 	@SuppressWarnings("deprecation")
 	private ResourcePropertiesRegistry(){
-		//v1beta1
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.POD), V1BETA1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.REPLICATION_CONTROLLER), V1BETA1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.SERVICE), V1BETA1_KUBERNETES_MAP);
-		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta1, ResourceKind.STATUS), V1BETA1_KUBERNETES_MAP);
-
-		
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.BUILD), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.BUILD_CONFIG), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.CONFIG), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.DEPLOYMENT_CONFIG), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.IMAGE_STREAM), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.PROJECT), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.ROUTE), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.TEMPLATE), V1BETA1_OPENSHIFT_MAP);
-		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1beta1, ResourceKind.USER), V1BETA1_OPENSHIFT_MAP);
-		
 		//v1beta3
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.EVENT), V1BETA3_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.LIMIT_RANGE), V1BETA3_KUBERNETES_MAP);

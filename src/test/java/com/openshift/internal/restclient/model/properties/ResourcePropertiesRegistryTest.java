@@ -36,46 +36,46 @@ public class ResourcePropertiesRegistryTest {
 	
 	@Test
 	public void theClientShouldUseTheSameVersionWhenTheyAreTheSame() {
-		List<KubernetesAPIVersion> serverVersions = Arrays.asList(new KubernetesAPIVersion[] {KubernetesAPIVersion.v1beta1, KubernetesAPIVersion.v1beta3});
-		assertEquals(KubernetesAPIVersion.v1beta3, registry.getMaxSupportedKubernetesVersion(serverVersions));
+		List<KubernetesAPIVersion> serverVersions = Arrays.asList(new KubernetesAPIVersion[] {KubernetesAPIVersion.v1, KubernetesAPIVersion.v1beta3});
+		assertEquals(KubernetesAPIVersion.v1, registry.getMaxSupportedKubernetesVersion(serverVersions));
 	}
 	
 	@Test
 	public void theClientShouldUseTheServerVersionWhenTheServerIsBehindTheClient() {
-		when(registry.getSupportedKubernetesVersions()).thenReturn(new KubernetesAPIVersion [] {KubernetesAPIVersion.v1beta1, KubernetesAPIVersion.v1beta3});
-		List<KubernetesAPIVersion> serverVersions = Arrays.asList(new KubernetesAPIVersion[] {KubernetesAPIVersion.v1beta1});
+		when(registry.getSupportedKubernetesVersions()).thenReturn(new KubernetesAPIVersion [] {KubernetesAPIVersion.v1, KubernetesAPIVersion.v1beta3});
+		List<KubernetesAPIVersion> serverVersions = Arrays.asList(new KubernetesAPIVersion[] {KubernetesAPIVersion.v1beta3});
 		
-		assertEquals(KubernetesAPIVersion.v1beta1, registry.getMaxSupportedKubernetesVersion(serverVersions));
+		assertEquals(KubernetesAPIVersion.v1beta3, registry.getMaxSupportedKubernetesVersion(serverVersions));
 	}
 
 	@Test
 	public void theClientShouldUseTheClientVersionVersionWhenTheClientIsBehindTheServer() {
-		List<KubernetesAPIVersion> serverVersions = Arrays.asList(new KubernetesAPIVersion[] {KubernetesAPIVersion.v1beta1, KubernetesAPIVersion.v1beta3});
-		when(registry.getSupportedKubernetesVersions()).thenReturn(new KubernetesAPIVersion [] {KubernetesAPIVersion.v1beta1});
+		List<KubernetesAPIVersion> serverVersions = Arrays.asList(new KubernetesAPIVersion[] {KubernetesAPIVersion.v1, KubernetesAPIVersion.v1beta3});
+		when(registry.getSupportedKubernetesVersions()).thenReturn(new KubernetesAPIVersion [] {KubernetesAPIVersion.v1beta3});
 		
-		assertEquals(KubernetesAPIVersion.v1beta1, registry.getMaxSupportedKubernetesVersion(serverVersions));
+		assertEquals(KubernetesAPIVersion.v1beta3, registry.getMaxSupportedKubernetesVersion(serverVersions));
 	}
 
 	@Test
 	public void theClientShouldUseTheSameOpenShiftAPIVersionWhenTheyAreTheSame() {
-		List<OpenShiftAPIVersion> serverVersions = Arrays.asList(new OpenShiftAPIVersion[] {OpenShiftAPIVersion.v1beta1, OpenShiftAPIVersion.v1beta3});
-		assertEquals(OpenShiftAPIVersion.v1beta3, registry.getMaxSupportedOpenShiftVersion(serverVersions));
+		List<OpenShiftAPIVersion> serverVersions = Arrays.asList(new OpenShiftAPIVersion[] {OpenShiftAPIVersion.v1, OpenShiftAPIVersion.v1beta3});
+		assertEquals(OpenShiftAPIVersion.v1, registry.getMaxSupportedOpenShiftVersion(serverVersions));
 	}
 	
 	@Test
 	public void theClientShouldUseTheOpenShiftAPIServerVersionWhenTheServerIsBehindTheClient() {
-		when(registry.getSupportedOpenShiftVersions()).thenReturn(new OpenShiftAPIVersion [] {OpenShiftAPIVersion.v1beta1, OpenShiftAPIVersion.v1beta3});
-		List<OpenShiftAPIVersion> serverVersions = Arrays.asList(new OpenShiftAPIVersion[] {OpenShiftAPIVersion.v1beta1});
+		when(registry.getSupportedOpenShiftVersions()).thenReturn(new OpenShiftAPIVersion [] {OpenShiftAPIVersion.v1, OpenShiftAPIVersion.v1beta3});
+		List<OpenShiftAPIVersion> serverVersions = Arrays.asList(new OpenShiftAPIVersion[] {OpenShiftAPIVersion.v1beta3});
 		
-		assertEquals(OpenShiftAPIVersion.v1beta1, registry.getMaxSupportedOpenShiftVersion(serverVersions));
+		assertEquals(OpenShiftAPIVersion.v1beta3, registry.getMaxSupportedOpenShiftVersion(serverVersions));
 	}
 	
 	@Test
 	public void theClientShouldUseTheOpenShiftAPIClientVersionVersionWhenTheClientIsBehindTheServer() {
-		List<OpenShiftAPIVersion> serverVersions = Arrays.asList(new OpenShiftAPIVersion[] {OpenShiftAPIVersion.v1beta1, OpenShiftAPIVersion.v1beta3});
-		when(registry.getSupportedOpenShiftVersions()).thenReturn(new OpenShiftAPIVersion [] {OpenShiftAPIVersion.v1beta1});
+		List<OpenShiftAPIVersion> serverVersions = Arrays.asList(new OpenShiftAPIVersion[] {OpenShiftAPIVersion.v1, OpenShiftAPIVersion.v1beta3});
+		when(registry.getSupportedOpenShiftVersions()).thenReturn(new OpenShiftAPIVersion [] {OpenShiftAPIVersion.v1beta3});
 		
-		assertEquals(OpenShiftAPIVersion.v1beta1, registry.getMaxSupportedOpenShiftVersion(serverVersions));
+		assertEquals(OpenShiftAPIVersion.v1beta3, registry.getMaxSupportedOpenShiftVersion(serverVersions));
 	}
 
 }
