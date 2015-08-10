@@ -20,9 +20,6 @@ import com.openshift.restclient.model.IPort;
  */
 public interface IPortForwardable extends ICapability {
 
-	static final String OPENSHIFT_BINARY_LOCATION = "openshift.restclient.oc.location";
-	
-	
 	/**
 	 * Forward the ports to a pod.  This is a non-blocking call
 	 * @param pairs
