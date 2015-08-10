@@ -13,6 +13,8 @@ package com.openshift.restclient.capability;
  */
 public interface ICapability {
 	
+	static final String OPENSHIFT_BINARY_LOCATION = "openshift.restclient.oc.location";
+	
 	/**
 	 * Allow the implementation of the capability to determine
 	 * if it is supported on the OpenShift server.  Implementations

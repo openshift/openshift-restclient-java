@@ -14,6 +14,7 @@ import com.openshift.internal.restclient.capability.resources.BuildTrigger;
 import com.openshift.internal.restclient.capability.resources.ClientCapability;
 import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
 import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
+import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPodLogRetrieval;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPortForwarding;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateListCapability;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateProcessing;
@@ -27,6 +28,7 @@ import com.openshift.restclient.capability.resources.IBuildTriggerable;
 import com.openshift.restclient.capability.resources.IClientCapability;
 import com.openshift.restclient.capability.resources.IDeploymentConfigTraceability;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
+import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.capability.resources.IProjectTemplateList;
 import com.openshift.restclient.capability.resources.IProjectTemplateProcessing;
@@ -84,6 +86,7 @@ public class CapabilityInitializer {
 	 */
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IPod pod, IClient client){
 		initializeCapability(capabilities, IPortForwardable.class, new OpenShiftBinaryPortForwarding(pod, client));
+		initializeCapability(capabilities, IPodLogRetrieval.class, new OpenShiftBinaryPodLogRetrieval(pod, client));
 	}
 
 	/**
