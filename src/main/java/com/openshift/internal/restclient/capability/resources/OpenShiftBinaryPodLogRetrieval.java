@@ -24,13 +24,11 @@ public class OpenShiftBinaryPodLogRetrieval extends AbstractOpenShiftBinaryCapab
 	
 
 	private IPod pod;
-	private IClient client;
 	private boolean follow;
 
 	public OpenShiftBinaryPodLogRetrieval(IPod pod, IClient client) {
-		super();
+		super(client);
 		this.pod = pod;
-		this.client = client;
 	}
 	
 	@Override
@@ -70,13 +68,14 @@ public class OpenShiftBinaryPodLogRetrieval extends AbstractOpenShiftBinaryCapab
 		StringBuilder args = new StringBuilder(location);
 		args.append(" logs ")
 			.append("--insecure-skip-tls-verify=true ")
-			.append("--server=").append(client.getBaseURL()).append(" ")
+			.append("--server=").append(getClient().getBaseURL()).append(" ")
 			.append(" ").append(pod.getName()).append(" ")
 			.append("-n ").append(pod.getNamespace()).append(" ");
+		addToken(args);
 		if(follow) {
 			args.append(" -f ");
 		}
 		return StringUtils.split(args.toString(), " ");
 	}
-
+	
 }

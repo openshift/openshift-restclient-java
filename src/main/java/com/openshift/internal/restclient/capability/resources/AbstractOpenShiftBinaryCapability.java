@@ -17,7 +17,12 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.openshift.restclient.IClient;
 import com.openshift.restclient.OpenShiftException;
+import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
+import com.openshift.restclient.authorization.IAuthorizationStrategyVisitor;
+import com.openshift.restclient.authorization.KerbrosBrokerAuthorizationStrategy;
+import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.resources.LocationNotFoundException;
 
@@ -32,6 +37,12 @@ public abstract class AbstractOpenShiftBinaryCapability implements ICapability {
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractOpenShiftBinaryCapability.class);
 	
 	private Process process;
+
+	private IClient client;
+	
+	protected AbstractOpenShiftBinaryCapability(IClient client) {
+		this.client = client;
+	}
 
 	/**
 	 * Cleanup required when stopping the process
@@ -51,6 +62,9 @@ public abstract class AbstractOpenShiftBinaryCapability implements ICapability {
 	 */
 	protected abstract String [] buildArgs(String location);
 	
+	protected IClient getClient() {
+		return client;
+	}
 
 	protected AbstractOpenShiftBinaryCapability() {
 		addShutdownHook();
@@ -68,6 +82,28 @@ public abstract class AbstractOpenShiftBinaryCapability implements ICapability {
 			}
 		};
 		Runtime.getRuntime().addShutdownHook(new Thread(runnable));
+	}
+	
+	protected StringBuilder addToken(final StringBuilder builder) {
+		builder.append("--token=");
+		client.getAuthorizationStrategy().accept(new IAuthorizationStrategyVisitor() {
+			
+			@Override
+			public void visit(TokenAuthorizationStrategy strategy) {
+				builder.append(strategy.getToken());
+			}
+			
+			@Override
+			public void visit(KerbrosBrokerAuthorizationStrategy strategy) {
+			}
+			
+			@Override
+			public void visit(BasicAuthorizationStrategy strategy) {
+				builder.append(strategy.getToken());
+			}
+		});
+		builder.append(" ");
+		return builder;
 	}
 	
 	public final void start() {
