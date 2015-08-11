@@ -28,5 +28,10 @@ public interface IPodLogRetrieval extends ICapability {
 	 * @return  the log output stream
 	 */
 	InputStream getLogs(boolean follow);
+	
+	/**
+	 * Stop retrieving logs
+	 */
+	void stop();
 
 }

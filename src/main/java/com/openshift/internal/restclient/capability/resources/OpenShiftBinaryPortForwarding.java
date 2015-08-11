@@ -13,10 +13,6 @@ package com.openshift.internal.restclient.capability.resources;
 import org.apache.commons.lang.StringUtils;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
-import com.openshift.restclient.authorization.IAuthorizationStrategyVisitor;
-import com.openshift.restclient.authorization.KerbrosBrokerAuthorizationStrategy;
-import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.model.IPod;
 
@@ -29,14 +25,12 @@ import com.openshift.restclient.model.IPod;
 public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapability implements IPortForwardable {
 	
 	
-	private IClient client;
 	private IPod pod;
 	private PortPair[] pairs = new PortPair[] {};
 
 	public OpenShiftBinaryPortForwarding(IPod pod, IClient client) {
-		super();
+		super(client);
 		this.pod = pod;
-		this.client = client;
 	}
 	
 	
@@ -82,7 +76,7 @@ public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapabi
 		StringBuilder args = new StringBuilder(location);
 		args.append(" port-forward ")
 			.append("--insecure-skip-tls-verify=true ")
-			.append("--server=").append(client.getBaseURL()).append(" ");
+			.append("--server=").append(getClient().getBaseURL()).append(" ");
 			addToken(args)
 			.append("-n ").append(pod.getNamespace()).append(" ")
 			.append("-p ").append(pod.getName()).append(" ");
@@ -90,28 +84,6 @@ public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapabi
 			args.append(pair.getLocalPort()).append(":").append(pair.getRemotePort()).append(" ");
 		}
 		return StringUtils.split(args.toString(), " ");
-	}
-	
-	private StringBuilder addToken(final StringBuilder builder) {
-		builder.append("--token=");
-		client.getAuthorizationStrategy().accept(new IAuthorizationStrategyVisitor() {
-			
-			@Override
-			public void visit(TokenAuthorizationStrategy strategy) {
-				builder.append(strategy.getToken());
-			}
-			
-			@Override
-			public void visit(KerbrosBrokerAuthorizationStrategy strategy) {
-			}
-			
-			@Override
-			public void visit(BasicAuthorizationStrategy strategy) {
-				builder.append(strategy.getToken());
-			}
-		});
-		builder.append(" ");
-		return builder;
 	}
 	
 }
