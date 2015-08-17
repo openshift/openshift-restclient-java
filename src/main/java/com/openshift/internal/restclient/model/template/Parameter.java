@@ -74,4 +74,62 @@ public class Parameter implements IParameter{
 			return value.asString();
 		return "";
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + 
+				((getFrom() == null) ? 0 : getFrom().hashCode())
+				+ ((getGeneratorName() == null) ? 0 : getGeneratorName().hashCode())
+				+ ((getName() == null) ? 0 : getName().hashCode())
+				+ ((getValue() == null) ? 0 : getValue().hashCode())
+				+ Boolean.valueOf(isRequired()).hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Parameter other = (Parameter) obj;
+		if (getFrom() == null) {
+			if (other.getFrom() != null) {
+				return false;
+			}
+		} else if (!getFrom().equals(other.getFrom())) {
+			return false;
+		}
+		if (getGeneratorName() == null) {
+			if (other.getGeneratorName() != null) {
+				return false;
+			}
+		} else if (!getGeneratorName().equals(other.getGeneratorName())) {
+			return false;
+		}
+		if (getName() == null) {
+			if (other.getName() != null) {
+				return false;
+			}
+		} else if (!getName().equals(other.getName())) {
+			return false;
+		}
+		if (getValue() == null) {
+			if (other.getValue() != null) {
+				return false;
+			}
+		} else if (!getValue().equals(other.getValue())) {
+			return false;
+		}
+		if (isRequired() != other.isRequired()) {
+			return false;
+		}
+		return true;
+	}
+
+
 }
