@@ -126,6 +126,13 @@ public interface IClient extends ICapable, IAuthorizationClient{
 	URL getBaseURL();
 	
 	/**
+	 * 
+	 * @param resource
+	 * @return the uri to the resource (e.g. for crafting webhooks)
+	 */
+	String getResourceURI(IResource resource);
+	
+	/**
 	 * Returns the OpenShift API version for this client
 	 * @return
 	 * @throws UnsupportedVersionException

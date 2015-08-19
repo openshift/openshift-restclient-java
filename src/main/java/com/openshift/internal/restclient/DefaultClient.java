@@ -105,6 +105,12 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		return factory;
 	};
 	
+	
+	@Override
+	public String getResourceURI(IResource resource) {
+		return new URLBuilder(getBaseURL(), getTypeMappings(), resource).build().toString();
+	}
+
 	@Override
 	public <T extends IResource> List<T> list(String kind) {
 		return list(kind,""); //assumes namespace=default

@@ -74,8 +74,8 @@ public class BuildConfigTest {
 	public void addBuildTriggers() {
 		BuildConfig writeConfig = new ResourceFactory(client){}.create(OpenShiftAPIVersion.v1beta3.name(), ResourceKind.BUILD_CONFIG);
 
-		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GITHUB, "secret101", null, null, null,null));
-		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GENERIC, "secret101", null, null, null, null));
+		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GITHUB, "secret101", null));
+		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GENERIC, "secret101", null));
 		writeConfig.addBuildTrigger(new ImageChangeTrigger("", "", ""));
 
 		assertBuildTriggers(reCreateBuildConfig(writeConfig).getBuildTriggers().toArray(new IBuildTrigger[]{}));
@@ -127,8 +127,8 @@ public class BuildConfigTest {
 
 	private void assertBuildTriggers(IBuildTrigger[] triggers) {
 		IBuildTrigger [] exp = new IBuildTrigger[]{
-				new WebhookTrigger(BuildTriggerType.GITHUB, "secret101","ruby-sample-build", "https://localhost:8443", "v1beta3","test"),
-				new WebhookTrigger(BuildTriggerType.GENERIC, "secret101","ruby-sample-build", "https://localhost:8443", "v1beta3","test"),
+				new WebhookTrigger(BuildTriggerType.GITHUB, "secret101","https://localhost:8443"),
+				new WebhookTrigger(BuildTriggerType.GENERIC, "secret101","https://localhost:8443"),
 				new ImageChangeTrigger("", "", "")
 		};
 		assertArrayEquals(exp, triggers);

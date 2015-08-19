@@ -29,13 +29,13 @@ public class WebhookTriggerTest {
 	}
 	@Test
 	public void testGetWebhookUrlWhenResourceHasBaseURL() {
-		trigger = new WebhookTrigger(BuildTriggerType.GENERIC, "secret101","foo","https://localhost:8443","v1beta1","test");
-		assertEquals("https://localhost:8443/osapi/v1beta1/buildConfigHooks/foo/secret101/Generic?namespace=test", trigger.getWebhookURL());
+		trigger = new WebhookTrigger(BuildTriggerType.GENERIC, "secret101","https://localhost:8443/oapi/v1/namespaces/test/buildconfigs/foo");
+		assertEquals("https://localhost:8443/oapi/v1/namespaces/test/buildconfigs/foo/webhooks/secret101/generic", trigger.getWebhookURL());
 	}
 	
 	@Test
 	public void testGetWebhookUrlWhenResourceDoesNotHaveBaseURL(){
-		trigger = new WebhookTrigger(BuildTriggerType.GENERIC, "secret101","foo"," ","v1beta1","test");
+		trigger = new WebhookTrigger(BuildTriggerType.GENERIC, "secret101"," ");
 		assertEquals("",trigger.getWebhookURL());
 	}
 }
