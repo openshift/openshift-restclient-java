@@ -54,20 +54,18 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	public List<IBuildTrigger> getBuildTriggers() {
 		List<IBuildTrigger> triggers = new ArrayList<IBuildTrigger>();
 		List<ModelNode> list = get(BUILDCONFIG_TRIGGERS).asList();
-		final String name = getName();
-		final String url = getClient() != null ? getClient().getBaseURL().toString() : "";
-		final String version = getClient() != null ? getClient().getOpenShiftAPIVersion() : "";
+		final String url = getClient() != null ? getClient().getResourceURI(this) : "";
 		for (ModelNode node : list) {
 			String type = node.get("type").asString();
 			switch(type){
 				case BuildTriggerType.generic:
 				case BuildTriggerType.GENERIC:
 					triggers.add(new WebhookTrigger(BuildTriggerType.GENERIC,
-									asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), name, url, version,getNamespace()));
+									asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), url));
 					break;
 				case BuildTriggerType.github:
 				case BuildTriggerType.GITHUB:
-					triggers.add(new WebhookTrigger(BuildTriggerType.GITHUB, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), name, url, version, getNamespace()));
+					triggers.add(new WebhookTrigger(BuildTriggerType.GITHUB, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), url));
 					break;
 				case BuildTriggerType.imageChange:
 				case BuildTriggerType.IMAGE_CHANGE:

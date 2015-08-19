@@ -9,7 +9,6 @@
 package com.openshift.internal.restclient.model.build;
 
 import org.apache.commons.lang.StringUtils;
-import com.openshift.restclient.model.build.BuildTriggerType;
 import com.openshift.restclient.model.build.IWebhookTrigger;
 
 /**
@@ -19,18 +18,12 @@ public class WebhookTrigger implements IWebhookTrigger {
 
 	private String type;
 	private String secret;
-	private String resourceName;
 	private String baseURL;
-	private String apiVersion;
-	private String namespace;
 
-	public WebhookTrigger(String triggerType, String secret, String resourceName, String baseURL, String apiVersion, String namespace) {
+	public WebhookTrigger(String triggerType, String secret, String baseURL) {
 		this.type = triggerType;
 		this.secret = secret;
-		this.resourceName = resourceName;
 		this.baseURL = baseURL;
-		this.apiVersion = apiVersion;
-		this.namespace = namespace;
 	}
 
 	@Override
@@ -48,14 +41,12 @@ public class WebhookTrigger implements IWebhookTrigger {
 		if(StringUtils.isBlank(baseURL)){
 			return "";
 		}
-		return String.format("%s/osapi/%s/buildConfigHooks/%s/%s/%s?namespace=%s",
+		
+		return String.format("%s/webhooks/%s/%s",
 					baseURL,
-					apiVersion,
-					resourceName,
 					secret,
-					type.toString(),
-					namespace
-				);
+					type.toString()
+				).toLowerCase();
 	}
 
 	@Override
