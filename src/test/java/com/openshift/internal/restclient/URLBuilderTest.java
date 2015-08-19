@@ -44,7 +44,7 @@ public class URLBuilderTest {
 	
 	@Test
 	public void testV1Beta3() {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3);
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3,"foo");
 		String url = whenBuildingTheURLFor(resource, "foo");
 		
 		assertEquals(String.format("%s/api/v1beta3/namespaces/foo/services/bar", BASE_URL),url.toString());
@@ -52,17 +52,16 @@ public class URLBuilderTest {
 
 	@Test
 	public void testV1Beta3WithoutANamespace() {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3);
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3,null);
 		String url = whenBuildingTheURLFor(resource, "");
 		
 		assertEquals(String.format("%s/api/v1beta3/services/bar", BASE_URL),url.toString());
 	}
 	@Test
 	public void testAddingASubResource() {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3);
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3, "foo");
 		String url = builder.
 			resource(resource)
-			.namespace("foo")
 			.name("bar")
 			.subresource("aSubResource")
 			.build().toString();
@@ -77,10 +76,11 @@ public class URLBuilderTest {
 			.build().toString();
 	}
 	
-	private IResource givenAResource(String kind, KubernetesAPIVersion version) {
+	private IResource givenAResource(String kind, KubernetesAPIVersion version, String namespace) {
 		IResource resource = mock(IResource.class);
 		when(resource.getApiVersion()).thenReturn(version.toString());
 		when(resource.getKind()).thenReturn(kind);
+		when(resource.getNamespace()).thenReturn(namespace);
 		return resource;
 	}
 }
