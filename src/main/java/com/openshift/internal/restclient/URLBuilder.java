@@ -84,7 +84,7 @@ public class URLBuilder {
 	}
 	
 	URLBuilder(URL baseUrl, Map<String, String> typeMappings) {
-		this.baseUrl = baseUrl.toString();
+		this.baseUrl = baseUrl.toString().replaceAll("/*$", "");
 		this.typeMappings = typeMappings;
 	}
 	

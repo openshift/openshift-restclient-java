@@ -43,6 +43,15 @@ public class URLBuilderTest {
 	}
 	
 	@Test
+	public void testBaseURLWithTrailingSlash() throws Exception {
+		builder = new URLBuilder(new URL(BASE_URL + "///"), mappings);
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3,"foo");
+		
+		String url = whenBuildingTheURLFor(resource, "foo");
+		assertEquals(String.format("%s/api/v1beta3/namespaces/foo/services/bar", BASE_URL),url.toString());
+	}
+
+	@Test
 	public void testV1Beta3() {
 		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3,"foo");
 		String url = whenBuildingTheURLFor(resource, "foo");
