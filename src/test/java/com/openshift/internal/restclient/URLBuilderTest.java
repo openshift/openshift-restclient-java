@@ -38,10 +38,22 @@ public class URLBuilderTest {
 	@Before
 	public void setup() throws MalformedURLException {
 		mappings.put(ResourceKind.SERVICE, "api/v1beta3");
+		mappings.put(ResourceKind.PROJECT, "osapi/v1beta3");
 		builder = new URLBuilder(new URL(BASE_URL), mappings);
 		
 	}
 	
+	@Test
+	public void testBuildingURLForAProjectUsingResource() throws Exception {
+		IResource resource = givenAResource(ResourceKind.PROJECT, KubernetesAPIVersion.v1beta3,"foo");
+		
+		String url = builder.
+				resource(resource)
+				.name("foo")
+				.build().toString();
+		assertEquals(String.format("%s/osapi/v1beta3/projects/foo", BASE_URL),url.toString());
+	}
+
 	@Test
 	public void testBaseURLWithTrailingSlash() throws Exception {
 		builder = new URLBuilder(new URL(BASE_URL + "///"), mappings);

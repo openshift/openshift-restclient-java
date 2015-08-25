@@ -163,7 +163,7 @@ public class URLBuilder {
 	private void buildWithNamespaceInPath(StringBuilder url) {
 		url.append("/")
 			.append(typeMappings.get(kind));
-		if(namespace != null) {
+		if(namespace != null && !ResourceKind.PROJECT.equals(kind)) {
 			url.append("/namespaces/")
 				.append(namespace);
 		}
