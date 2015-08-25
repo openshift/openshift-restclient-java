@@ -25,6 +25,12 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(APIVERSION, new String [] {"apiVersion"});
 		put(CREATION_TIMESTAMP, new String []  {"metadata", "creationTimestamp"});
 		put(DESCRIPTION, new String []  { "description"});
+		put(IMAGE, new String []  { "image"});
+		put(PORTS, new String []  { "ports"});
+		put(ENV, new String []  { "env"});
+		put(CONTAINER_PORT, new String []  { "containerPort"});
+		put(PROTOCOL, new String []  { "protocol"});
+		put(VALUE, new String []  { "value"});
 		put(DISPLAYNAME, new String []  { "displayName"});
 		put(LABELS, new String []  { "metadata","labels"});
 		put(LABELS, new String []  { "metadata","labels"});
@@ -59,20 +65,27 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(BUILD_CONFIG_IMAGECHANGE_NAME, new String[]{"imageChange", "from","name"});
 		put(BUILD_CONFIG_IMAGECHANGE_TAG, new String[]{"imageChange","tag"});
 		
-		put(DEPLOYMENTCONFIG_CONTAINERS, new String[]{"template","controllerTemplate","podTemplate","desiredState","manifest","containers"});
+		put(DEPLOYMENTCONFIG_CONTAINERS, new String[]{"spec","template","spec","containers"});
+		put(DEPLOYMENTCONFIG_VOLUMES, new String[]{"spec","template","spec","volumes"});
 		put(DEPLOYMENTCONFIG_REPLICAS, new String[]{"spec","replicas"});
 		put(DEPLOYMENTCONFIG_REPLICA_SELECTOR, new String[]{"spec","selector"});
+		put(DEPLOYMENTCONFIG_TEMPLATE_LABELS, new String[]{"spec","template","metadata","labels"});
 		put(DEPLOYMENTCONFIG_TRIGGERS, new String[]{"spec","triggers"});
 		put(DEPLOYMENTCONFIG_STRATEGY, new String[]{"spec","strategy","type"});
+		put(DEPLOYMENTCONFIG_TRIGGER_IMAGECHANGE_AUTO, new String[]{"imageChangeParams","automatic"});
+		put(DEPLOYMENTCONFIG_TRIGGER_CONTAINERS, new String[]{"imageChangeParams","containerNames"});
+		put(DEPLOYMENTCONFIG_TRIGGER_FROM, new String[]{"imageChangeParams","from","name"});
+		put(DEPLOYMENTCONFIG_TRIGGER_FROM_KIND, new String[]{"imageChangeParams","from","kind"});
 
 		put(KIND, new String[]{"kind"});
 		
-		put(IMAGESTREAM_DOCKER_IMAGE_REPO, new String[]{"status","dockerImageRepository"});
+		put(IMAGESTREAM_DOCKER_IMAGE_REPO, new String[]{"spec","dockerImageRepository"});
 		
 		put(PROJECT_DISPLAY_NAME, new String[]{"metadata","annotations","displayName"});
 		
 		put(ROUTE_HOST, new String[] {"spec", "host" });
 		put(ROUTE_PATH, new String[] { "spec", "path" });
+		put(ROUTE_KIND, new String[] {"spec", "to", "kind" });
 		put(ROUTE_SERVICE_NAME, new String[] {"spec", "to", "name" });
 		put(ROUTE_TLS, new String[]{ "spec", "tls" });
 		put(ROUTE_TLS_TERMINATION_TYPE, new String[]{"spec",  "tls", "termination" });
@@ -85,6 +98,8 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(TEMPLATE_ITEMS, new String[]{"objects"});
 		put(TEMPLATE_OBJECT_LABELS, new String[]{"labels"});
 
+		put(TYPE, new String[]{"type"});
+		
 		put(USER_FULLNAME, new String[]{"fullName"});
 		put(SECRET_TYPE, new String[]{"type"});
 		put(SECRET_DATA, new String[]{"data"});
@@ -97,6 +112,12 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(APIVERSION, new String [] {"apiVersion"});
 		put(CREATION_TIMESTAMP, new String []  {"metadata", "creationTimestamp"});
 		put(DESCRIPTION, new String []  { "description"});
+		put(IMAGE, new String []  { "image"});
+		put(PORTS, new String []  { "ports"});
+		put(ENV, new String []  { "env"});
+		put(CONTAINER_PORT, new String []  { "containerPort"});
+		put(PROTOCOL, new String []  { "protocol"});
+		put(VALUE, new String []  { "value"});
 		put(DISPLAYNAME, new String []  { "displayName"});
 		put(LABELS, new String []  { "metadata","labels"});
 		put(NAME , new String []  {"metadata", "name"});
@@ -130,20 +151,27 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(BUILD_CONFIG_IMAGECHANGE_NAME, new String[]{"imageChange", "from","name"});
 		put(BUILD_CONFIG_IMAGECHANGE_TAG, new String[]{"imageChange","tag"});
 		
-		put(DEPLOYMENTCONFIG_CONTAINERS, new String[]{"template","controllerTemplate","podTemplate","desiredState","manifest","containers"});
+		put(DEPLOYMENTCONFIG_CONTAINERS, new String[]{"spec","template","spec","containers"});
+		put(DEPLOYMENTCONFIG_VOLUMES, new String[]{"spec","template","spec","volumes"});
 		put(DEPLOYMENTCONFIG_REPLICAS, new String[]{"spec","replicas"});
 		put(DEPLOYMENTCONFIG_REPLICA_SELECTOR, new String[]{"spec","selector"});
+		put(DEPLOYMENTCONFIG_TEMPLATE_LABELS, new String[]{"spec","template","metadata","labels"});
 		put(DEPLOYMENTCONFIG_TRIGGERS, new String[]{"spec","triggers"});
 		put(DEPLOYMENTCONFIG_STRATEGY, new String[]{"spec","strategy","type"});
+		put(DEPLOYMENTCONFIG_TRIGGER_IMAGECHANGE_AUTO, new String[]{"imageChangeParams","automatic"});
+		put(DEPLOYMENTCONFIG_TRIGGER_CONTAINERS, new String[]{"imageChangeParams","containerNames"});
+		put(DEPLOYMENTCONFIG_TRIGGER_FROM, new String[]{"imageChangeParams","from","name"});
+		put(DEPLOYMENTCONFIG_TRIGGER_FROM_KIND, new String[]{"imageChangeParams","from","kind"});
 		
 		put(KIND, new String[]{"kind"});
 		
-		put(IMAGESTREAM_DOCKER_IMAGE_REPO, new String[]{"status","dockerImageRepository"});
+		put(IMAGESTREAM_DOCKER_IMAGE_REPO, new String[]{"spec","dockerImageRepository"});
 		
 		put(PROJECT_DISPLAY_NAME, new String[]{"displayName"});
 		
 		put(ROUTE_HOST, new String[] {"spec", "host" });
 		put(ROUTE_PATH, new String[] { "spec", "path" });
+		put(ROUTE_KIND, new String[] {"spec", "to", "kind" });
 		put(ROUTE_SERVICE_NAME, new String[] {"spec", "to", "name" });
 		put(ROUTE_TLS, new String[]{ "spec", "tls" });
 		put(ROUTE_TLS_TERMINATION_TYPE, new String[]{"spec",  "tls", "termination" });
@@ -155,6 +183,8 @@ public interface OpenShiftApiModelProperties extends ResourcePropertyKeys{
 		put(TEMPLATE_PARAMETERS, new String[]{"parameters"});
 		put(TEMPLATE_ITEMS, new String[]{"objects"});
 		put(TEMPLATE_OBJECT_LABELS, new String[]{"labels"});
+		
+		put(TYPE, new String[]{"type"});
 		
 		put(USER_FULLNAME, new String[]{"fullName"});
 		put(SECRET_TYPE, new String[]{"type"});

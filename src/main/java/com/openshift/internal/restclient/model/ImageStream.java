@@ -29,6 +29,7 @@ public class ImageStream extends KubernetesResource implements IImageStream {
 		super(node, client, propertyKeys);
 	}
 
+	@Override
 	public void setDockerImageRepository(DockerImageURI uri) {
 		set(IMAGESTREAM_DOCKER_IMAGE_REPO, uri.getAbsoluteUri());		
 	}

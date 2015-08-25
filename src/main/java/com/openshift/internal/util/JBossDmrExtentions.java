@@ -10,6 +10,7 @@ package com.openshift.internal.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jboss.dmr.ModelNode;
 
@@ -22,6 +23,46 @@ import org.jboss.dmr.ModelNode;
 public class JBossDmrExtentions {
 	
 	private JBossDmrExtentions (){
+	}
+	
+	
+	public static void set(ModelNode node, Map<String, String []> propertyKeys, String key, boolean value){
+		if(propertyKeys == null) return;
+		String [] path = propertyKeys.get(key);
+		if(path == null) throw new UnregisteredPropertyException(key);
+		ModelNode modelNode = node.get(path);
+		modelNode.set(value);
+	}
+
+	public static void set(ModelNode node, Map<String, String []> propertyKeys, String key, String value){
+		if(propertyKeys == null) return;
+		String [] path = propertyKeys.get(key);
+		if(path == null) throw new UnregisteredPropertyException(key);
+		set(node, path, value);
+	}
+
+	public static void set(ModelNode node, String [] path, String value){
+		if(value == null) return;
+		ModelNode modelNode = node.get(path);
+		modelNode.set(value);
+	}
+	
+	public static void set(ModelNode node, Map<String, String []> propertyKeys, String key, int value) {
+		if(propertyKeys == null) return;
+		String [] path = propertyKeys.get(key);
+		if(path == null) throw new UnregisteredPropertyException(key);
+		ModelNode modelNode = node.get(path);
+		modelNode.set(value);
+	}
+
+	public static void set(ModelNode node, Map<String, String []> propertyKeys, String key, Map<String, String> values) {
+		if(propertyKeys == null) return;
+		String [] path = propertyKeys.get(key);
+		if(path == null) throw new UnregisteredPropertyException(key);
+		ModelNode modelNode = node.get(path);
+		for (Entry<String, String> entry : values.entrySet()) {
+			modelNode.get(entry.getKey()).set(entry.getValue());
+		}
 	}
 
 	/**
@@ -101,4 +142,15 @@ public class JBossDmrExtentions {
 		return modelNode.asBoolean();
 	}
 
+	public static ModelNode get(ModelNode node, Map<String, String []> propertyKeys, String key){
+		return node.get(getPath(propertyKeys,key));
+	}
+	
+	public static String[] getPath(Map<String, String []> propertyKeys, String key) {
+		String [] property = propertyKeys.get(key);
+		if (property == null) {
+			throw new UnregisteredPropertyException(key);
+		}
+		return property;
+	}
 }

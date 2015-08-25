@@ -69,9 +69,7 @@ public class Pod extends KubernetesResource implements IPod {
 				ModelNode containerPorts = container.get(getPath(PORTS));
 				if(containerPorts.getType() == ModelType.LIST) {
 					for (ModelNode portNode : containerPorts.asList()) {
-						ports.add(new Port(asString(portNode, PORTS_NAME),
-								asString(portNode, PORTS_PROTOCOL), 
-								asInt(portNode, PORTS_CONTAINER_PORT)));
+						ports.add(new Port(portNode));
 					}
 				}
 			}

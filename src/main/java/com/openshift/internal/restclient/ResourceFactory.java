@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.model.Build;
@@ -201,13 +202,20 @@ public class ResourceFactory implements IResourceFactory{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends IResource> T stub(String kind, String name) {
-		
+	public <T extends IResource> T stub(String kind, String name, String namespace) {
 		//TODO get k8e or os
 		String version = client.getOpenShiftAPIVersion();
 		KubernetesResource resource = (KubernetesResource) create(version, kind, true);
 		resource.setName(name);
+		if(StringUtils.isNotEmpty(namespace)) {
+			resource.setNamespace(namespace);
+		}
 		return (T) resource;
+	}
+
+	@Override
+	public <T extends IResource> T stub(String kind, String name) {
+		return stub(kind, name, null);
 	}
 
 	
