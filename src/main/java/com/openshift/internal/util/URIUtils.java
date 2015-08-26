@@ -8,10 +8,14 @@
  ******************************************************************************/
 package com.openshift.internal.util;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 
 /**
  * Helper methods for manipulating URIs
@@ -34,15 +38,16 @@ public class URIUtils {
 	}
 	
 	public static Map<String, String> splitFragment(URI uri){
-		HashMap<String, String> fragments = new HashMap<String, String>();
-		String fragment = uri.getFragment();
-		if(fragment != null){
-			String [] entries = fragment.split("&");
-			for (String entry : entries) {
-				String[] pair = entry.split("=");
-				fragments.put(pair[0], pair[1]);
+		return splitQuery(uri.getFragment());
+	}
+	
+	public static Map<String,String> splitQuery(String q) {
+		HashMap<String, String> params = new HashMap<String, String>();
+		if (q != null) {
+			for (NameValuePair pair : URLEncodedUtils.parse(q, StandardCharsets.UTF_8)) {
+				params.put(pair.getName(), pair.getValue());
 			}
 		}
-		return fragments;
+		return params;
 	}
 }
