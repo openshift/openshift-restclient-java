@@ -37,6 +37,16 @@ public class AuthorizationDetails implements IAuthorizationDetails {
 		this.link = link;
 	}
 
+	public AuthorizationDetails(String error, String errorDetails) {
+		this.message = "Unknown authorization error";
+		if (error != null) {
+			this.message = error;
+		}
+		if (errorDetails != null) {
+			this.message = this.message + ": " + errorDetails;
+		}
+	}
+
 	public AuthorizationDetails(Header[] headers) {
 		for (Header header : headers) {
 			final String name = header.getName();
