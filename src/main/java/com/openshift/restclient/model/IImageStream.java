@@ -21,4 +21,6 @@ public interface IImageStream extends IResource{
 	 * @return
 	 */
 	DockerImageURI getDockerImageRepository();
+	
+	void setDockerImageRepository(DockerImageURI imageUri);
 }

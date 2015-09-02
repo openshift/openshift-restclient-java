@@ -19,6 +19,13 @@
                 "protocol": "TCP",
                 "port": 5434,
                 "targetPort": 3306
+            },
+            {
+            	"name": "other",
+            	"protocol": "TCP",
+            	"port": 9999,
+            	"targetPort": 8888,
+            	"nodePort": 0
             }
         ],
         "selector": {

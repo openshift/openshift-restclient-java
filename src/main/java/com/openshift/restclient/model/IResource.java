@@ -106,4 +106,16 @@ public interface IResource extends ICapable {
 	 */
 	Map<String, String> getAnnotations();
 
+	/**
+	 * 
+	 * @return the json string representing the resource
+	 */
+	String toJson();
+	
+	/**
+	 * 
+	 * @param compact true if the string should be compact; default: false
+	 * @return the json string representing the resource
+	 */
+	String toJson(boolean compact);
 }

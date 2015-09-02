@@ -178,6 +178,9 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	
 	/*---------- utility methods ------*/
 	protected ModelNode get(String key){
+		return get(node, key);
+	}
+	protected ModelNode get(ModelNode node, String key){
 		return node.get(getPath(key));
 	}
 
@@ -192,17 +195,32 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		return values;
 	}
 
+	protected void set(String key, Map<String, String> values) {
+		JBossDmrExtentions.set(node, propertyKeys, key, values);
+	}
+	
 	protected void set(String key, int value) {
-		node.get(getPath(key)).set(value);
+		JBossDmrExtentions.set(node, propertyKeys, key, value);
+	}
+	
+	protected void set(ModelNode node, String key, int value) {
+		JBossDmrExtentions.set(node, propertyKeys, key, value);
 	}
 	
 	protected void set(String key, String value){
-		value = StringUtils.defaultIfBlank(value, "");
-		node.get(getPath(key)).set(value);
+		JBossDmrExtentions.set(node, propertyKeys, key, value);
+	}
+
+	protected void set(ModelNode node, String key, String value){
+		JBossDmrExtentions.set(node, propertyKeys, key, value);
 	}
 
 	protected void set(String key, boolean value){
-		node.get(getPath(key)).set(value);
+		JBossDmrExtentions.set(node, propertyKeys, key, value);
+	}
+	
+	protected void set(ModelNode node, String key, boolean value){
+		JBossDmrExtentions.set(node, propertyKeys, key, value);
 	}
 
 	protected void setEnvMap(String key, Map<String, String> values) {
@@ -305,6 +323,17 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		}
 		return true;
 	}
+
+	@Override
+	public String toJson() {
+		return toJson(false);
+	}
+
+	@Override
+	public String toJson(boolean compact) {
+		return node.toJSONString(compact);
+	}
+
 	
 }
 

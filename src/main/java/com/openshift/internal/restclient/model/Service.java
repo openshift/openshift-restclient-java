@@ -10,7 +10,6 @@ package com.openshift.internal.restclient.model;
 
 import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,14 +23,13 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IService;
+import com.openshift.restclient.model.IServicePort;
 
 /**
  * @author Jeff Cantrill
  */
 public class Service extends KubernetesResource implements IService {
 
-	private static final String PROPERTY_TARGET_PORT = "targetPort";
-	private static final String PROPERTY_PORT = "port";
 
 	public Service(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
@@ -40,33 +38,57 @@ public class Service extends KubernetesResource implements IService {
 	
 	@Override
 	public void setPort(int port){
-		ModelNode nodePort = getLowestPort();
-		if(nodePort == null) {
-			nodePort = get(SERVICE_PORT).add();
+		IServicePort lowestPort = getLowestPort();
+		if(lowestPort == null) {
+			lowestPort = addPort();
 		}
-		nodePort.get(PROPERTY_PORT).set(port);
+		lowestPort.setPort(port);
+	}
+	
+	private IServicePort addPort() {
+		return new ServicePort(get(SERVICE_PORT).add());
 	}
 	
 	@Override
 	public int getPort(){
-		ModelNode port = getLowestPort();
-		return port != null ? port.get(PROPERTY_PORT).asInt() : 0;
+		IServicePort port = getLowestPort();
+		return port != null ? port.getPort() : 0;
 	}
 	
-	private ModelNode getLowestPort() {
-		if(get(SERVICE_PORT).getType() == ModelType.UNDEFINED) return null;
-		List<ModelNode> ports = new ArrayList<ModelNode>(get(SERVICE_PORT).asList());
-		Collections.sort(ports, new Comparator<ModelNode>() {
-			@Override
-			public int compare(ModelNode node0, ModelNode node1) {
-				BigInteger port0 = node0.get(PROPERTY_PORT).asBigInteger();
-				BigInteger port1 = node1.get(PROPERTY_PORT).asBigInteger();
-				return port0.compareTo(port1);
-			}
-		});
+	private IServicePort getLowestPort() {
+		List<IServicePort> ports = getPorts();
 		return ports.size() == 0 ? null : ports.get(0);
 	}
+	@Override
+	public List<IServicePort> getPorts() {
+		return getPorts(false);
+	}
 	
+	private List<IServicePort> getPorts(boolean modifiable) {
+		List<IServicePort> ports = new ArrayList<>();
+		if(get(SERVICE_PORT).getType() == ModelType.UNDEFINED) return ports;
+		for (ModelNode node : get(SERVICE_PORT).asList()) {
+			ports.add(new ServicePort(node));
+		}
+		Collections.sort(ports, new Comparator<IServicePort>() {
+			@Override
+			public int compare(IServicePort first, IServicePort second) {
+				Integer port0 = first.getPort();
+				Integer port1 = second.getPort();
+				return port0.compareTo(port1);
+			}
+		});	
+		return modifiable ? ports : Collections.unmodifiableList(ports);
+	}
+
+	@Override
+	public void setPorts(List<IServicePort> ports) {
+		ModelNode portspec = get(SERVICE_PORT).clear();
+		for (IServicePort port : ports) {
+			new ServicePort(portspec.add(), port);
+		}
+	}
+
 	@Override
 	public Map<String, String> getSelector(){
 		return asMap(SERVICE_SELECTOR);
@@ -88,18 +110,18 @@ public class Service extends KubernetesResource implements IService {
 	}
 
 	@Override
-	public void setContainerPort(int port){
-		ModelNode nodePort = getLowestPort();
-		if(nodePort == null) {
-			nodePort = get(SERVICE_PORT).add();
+	public void setTargetPort(int port) {
+		IServicePort portspec = getLowestPort();
+		if(portspec == null) {
+			portspec = addPort();
 		}
-		nodePort.get(PROPERTY_TARGET_PORT).set(port);
+		portspec.setTargetPort(port);
 	}
 	
 	@Override
-	public int getContainerPort(){
-		ModelNode port = getLowestPort();
-		return port != null ? port.get(PROPERTY_TARGET_PORT).asInt() : 0;
+	public int getTargetPort() {
+		IServicePort port = getLowestPort();
+		return port != null ? port.getTargetPort() : 0;
 	}
 
 	@Override

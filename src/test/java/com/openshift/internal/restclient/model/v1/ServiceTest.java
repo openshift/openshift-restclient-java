@@ -11,6 +11,7 @@ package com.openshift.internal.restclient.model.v1;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,11 +19,13 @@ import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.internal.restclient.model.PortFactory;
 import com.openshift.internal.restclient.model.Service;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IService;
+import com.openshift.restclient.model.IServicePort;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -47,14 +50,14 @@ public class ServiceTest{
 	}
 
 	@Test
-	public void testGetContainerPort() {
-		assertEquals(3306, service.getContainerPort());
+	public void testGetTargetPort() {
+		assertEquals(3306, service.getTargetPort());
 	}
 
 	@Test
-	public void testSetContainerPort() {
-		service.setContainerPort(5030);
-		assertEquals(5030, service.getContainerPort());
+	public void testSetTargetPort() {
+		service.setTargetPort(5030);
+		assertEquals(5030, service.getTargetPort());
 	}
 
 	@Test
@@ -107,4 +110,22 @@ public class ServiceTest{
 		// verification
 		assertEquals("foo", service.getNamespace());
 	}
+	
+	@Test
+	public void testGetPorts() {
+		IServicePort [] ports = service.getPorts().toArray(new IServicePort[] {});
+		assertEquals(2, ports.length);
+		assertEquals(PortFactory.createServicePort("db", "TCP", 5434, 3306), ports[0]);
+		assertEquals(PortFactory.createServicePort("other", "TCP", 9999, 8888), ports[1]);
+	}
+
+	@Test
+	public void testSetPorts() {
+		IServicePort port = PortFactory.createServicePort("newport", "TCP", 4444, 5555);
+		service.setPorts(Arrays.asList(port));
+		IServicePort [] ports = service.getPorts().toArray(new IServicePort[] {});
+		assertEquals(1, service.getPorts().size());
+		assertEquals(port, ports[0]);
+	}
+	
 }

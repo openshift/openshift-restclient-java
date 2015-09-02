@@ -9,9 +9,13 @@
 package com.openshift.internal.restclient.model;
 
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.jboss.dmr.ModelNode;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
@@ -21,21 +25,44 @@ import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IService;
+import com.openshift.restclient.model.IServicePort;
 
 /**
  * @author Jeff Cantrill
  */
 public class ServiceTest {
 
+	private IService service;
+	private IClient client;
+
+	@Before
+	public void setup() {
+		client = mock(IClient.class);
+		when(client.getOpenShiftAPIVersion()).thenReturn(OpenShiftAPIVersion.v1.name());
+		IResourceFactory factory = new ResourceFactory(client){};
+		service = factory.stub(ResourceKind.SERVICE, OpenShiftAPIVersion.v1.name());
+	}
+	
+	@Test
+	public void testSetPorts() {
+		List<IServicePort> ports = new ArrayList<>();
+		ServicePort port = new ServicePort(new ModelNode());
+		port.setName("foo");
+		port.setTargetPort(12345);
+		port.setProtocol("tcp");
+		ports.add(port);
+		service.setPorts(ports);
+		assertEquals(1,service.getPorts().size());
+		assertEquals("foo", service.getPorts().get(0).getName());
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetPods() {
 		//setup
-		IClient client = mock(IClient.class);
 		when(client.list(anyString(), anyString(), anyMap()))
 			.thenReturn(new ArrayList<IPod>());
-		IResourceFactory factory = new ResourceFactory(client){};
-		IService service = factory.create(OpenShiftAPIVersion.v1.name(), ResourceKind.SERVICE);
+		
 		service.addLabel("bar","foo");
 		service.setSelector("foo", "bar");
 		

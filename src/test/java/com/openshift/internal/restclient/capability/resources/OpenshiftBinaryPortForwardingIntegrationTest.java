@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
+import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +48,9 @@ public class OpenshiftBinaryPortForwardingIntegrationTest {
 		IClient client = helper.createClient();
 		IResourceFactory resourceFactory = client.getResourceFactory();
 		Pod pod = (Pod) resourceFactory.create("v1", ResourceKind.POD);
-		final IPort port = new Port("http", "TCP", 8080);
+		final Port port = new Port(new ModelNode());
+		port.setProtocol("tcp");
+		port.setContainerPort(8080);
 		pod.setName("hello-openshift");
 		pod.setNamespace("test");
 		

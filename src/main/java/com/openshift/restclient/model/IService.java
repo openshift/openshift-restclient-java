@@ -16,14 +16,14 @@ import java.util.Map;
  * 
  * @author Jeff Cantrill
  */
-public interface IService  extends IResource{
+public interface IService extends IResource{
 
 	/**
 	 * Sets the container port exposed by the image  
 	 * @param port
 	 */
-	void setContainerPort(int port);
-
+	void setTargetPort(int port);
+	
 	/**
 	 * Sets the exposed port that is mapped to a
 	 * running image
@@ -32,7 +32,7 @@ public interface IService  extends IResource{
 	void setPort(int port);
 
 	/**
-	 * Returns the exposed port that is mapped to
+	 * Returns the first exposed port that is mapped to
 	 * a running image
 	 * @return
 	 */
@@ -60,13 +60,8 @@ public interface IService  extends IResource{
 	 */
 	Map<String, String> getSelector();
 
-	/**
-	 * Returns a port where the container is
-	 * receiving traffic
-	 * @return
-	 */
-	int getContainerPort();
-
+	int getTargetPort();
+	
 	/**
 	 * Returns the IP of the service.
 	 * @return
@@ -78,5 +73,16 @@ public interface IService  extends IResource{
 	 * @return
 	 */
 	List<IPod> getPods();
+	
+	/**
+	 * Get the collection of ports for the service
+	 * @return
+	 */
+	List<IServicePort> getPorts();
+	
+	/**
+	 * Set the collection of ports for the service 
+	 */
+	void setPorts(List<IServicePort> ports);
 
 }

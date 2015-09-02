@@ -23,10 +23,13 @@ public class DockerImageURI {
 	private String tag;
 	
 	public DockerImageURI(String registryHost, String userName, String name){
+		this(registryHost, userName, name, LATEST);
+	}
+	public DockerImageURI(String registryHost, String userName, String name, String imageTag){
 		this.registryHost = registryHost;
 		this.userName = userName;
 		this.name = name;
-		this.tag = LATEST;
+		this.tag = imageTag;
 	}
 
 	public DockerImageURI(String tag){
@@ -94,6 +97,10 @@ public class DockerImageURI {
 	
 	public String getUriWithoutHost() {
 		return buildUri(null, userName, name, tag);
+	}
+
+	public String getNameAndTag() {
+		return buildUri(null, null, name, tag);
 	}
 	
 	private String buildUri(String host, String user, String name, String tag){

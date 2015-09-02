@@ -13,17 +13,23 @@ package com.openshift.internal.restclient.model.properties;
  * 
  * @author Jeff Cantrill
  */
-public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
+public interface ResourcePropertyKeys extends BuildConfigPropertyKeys, DeploymentConfigPropertyKeys{
 	static final String ANNOTATIONS = "annotations";
 	static final String APIVERSION  = "apiversion";
 	static final String CREATION_TIMESTAMP = "creationTimestamp";
+	static final String CONTAINER_PORT = "containerPort";
 	static final String DISPLAYNAME = "displayName";
 	static final String DESCRIPTION = "description";
+	static final String IMAGE = "image";
+	static final String ENV = "env";
 	static final String KIND = "kind";
 	static final String LABELS = "labels";
 	static final String NAME = "name";
 	static final String NAMESPACE = "namespace";
 	static final String PORTS = "ports";
+	static final String PROTOCOL = "protocol";
+	static final String VALUE = "value";
+	static final String TYPE = "type";
 	
 	static final String REPLICATION_CONTROLLER_CONTAINERS = "replicationcontroller.containers";
 	static final String REPLICATION_CONTROLLER_REPLICA_COUNT = "replicationcontroller.replicacount";
@@ -43,16 +49,13 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys{
 	static final String BUILD_MESSAGE	= "build.message";
 	static final String BUILD_PODNAME	= "build.podname";
 	
-	static final String DEPLOYMENTCONFIG_CONTAINERS = "deploymentconfig.containers";
-	static final String DEPLOYMENTCONFIG_REPLICAS = "deploymentconfig.replicas";
-	static final String DEPLOYMENTCONFIG_REPLICA_SELECTOR = "deploymentconfig.replica.selector";
-	static final String DEPLOYMENTCONFIG_TRIGGERS = "deploymentconfig.triggers";
-	static final String DEPLOYMENTCONFIG_STRATEGY = "deploymentconfig.strategy";
 	static final String IMAGESTREAM_DOCKER_IMAGE_REPO = "imagerepo.dockerimagerepo";
+
 	@Deprecated
 	static final String PROJECT_DISPLAY_NAME = "project.displayname";
 	static final String ROUTE_HOST = "route.host";
 	static final String ROUTE_PATH = "route.path";
+	static final String ROUTE_KIND = "route.kind";
 	static final String ROUTE_SERVICE_NAME = "route.serviceName";
 	static final String ROUTE_TLS = "route.tls";
 	static final String ROUTE_TLS_TERMINATION_TYPE = "route.tls.termination";

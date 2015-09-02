@@ -12,7 +12,9 @@
             "template": "application-template-stibuild"
         }
     },
-    "spec": {},
+    "spec": {
+    	"dockerImageRepository": "172.30.159.174:5000/test/origin-ruby-sample"
+    },
     "status": {
         "dockerImageRepository": "172.30.159.174:5000/test/origin-ruby-sample"
     }

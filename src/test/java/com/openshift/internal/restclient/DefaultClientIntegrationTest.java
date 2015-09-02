@@ -89,7 +89,7 @@ public class DefaultClientIntegrationTest {
 		Service service = factory.create(VERSION, ResourceKind.SERVICE);
 		service.setNamespace(project.getName()); //this will be the project's namespace
 		service.setName("some-service");
-		service.setContainerPort(6767);
+		service.setTargetPort(6767);
 		service.setPort(6767);
 		service.setSelector("name", "barpod");
 		LOG.debug(String.format("Stubbing service: %s", service));
@@ -97,7 +97,7 @@ public class DefaultClientIntegrationTest {
 		Service otherService = factory.create(VERSION, ResourceKind.SERVICE);
 		otherService.setNamespace(other.getName()); //this will be the project's namespace
 		otherService.setName("some-other-service");
-		otherService.setContainerPort(8787);
+		otherService.setTargetPort(8787);
 		otherService.setPort(8787);
 		otherService.setSelector("name", "foopod");
 		

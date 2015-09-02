@@ -42,4 +42,11 @@ public class ImageStreamTest {
 		assertEquals(new DockerImageURI("172.30.244.213:5000/test/origin-ruby-sample"), repo.getDockerImageRepository());
 	}
 
+	@Test
+	public void setDockerImageRepository() {
+		DockerImageURI newUri = new DockerImageURI("172.30.244.213:5000/tests/origin-ruby-sample");
+		repo.setDockerImageRepository(newUri);
+		assertEquals(newUri, repo.getDockerImageRepository());
+	}
+
 }

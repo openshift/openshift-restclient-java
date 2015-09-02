@@ -66,7 +66,11 @@ public class PodTest {
 	@Test
 	public void getContainerPorts() {
 		Set<IPort> ports = new HashSet<IPort>();
-		ports.add(new Port("http","TCP", 8080));
+		Port port = new Port(new ModelNode());
+		port.setName("http");
+		port.setProtocol("TCP");
+		port.setContainerPort(8080);
+		ports.add(port);
 		assertEquals(ports, pod.getContainerPorts());
 	}
 

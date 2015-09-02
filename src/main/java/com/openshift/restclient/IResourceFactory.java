@@ -69,5 +69,7 @@ public interface IResourceFactory {
 	 * @return
 	 */
 	<T extends IResource> T stub(String kind, String name);
+
+	<T extends IResource> T stub(String kind, String name, String namespace);
 	
 }

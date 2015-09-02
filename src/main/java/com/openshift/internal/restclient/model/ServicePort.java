@@ -10,82 +10,98 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import static com.openshift.internal.util.JBossDmrExtentions.*;
+import static com.openshift.internal.util.JBossDmrExtentions.asInt;
+import static com.openshift.internal.util.JBossDmrExtentions.asString;
+import static com.openshift.internal.util.JBossDmrExtentions.set;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 
-import com.openshift.restclient.model.IPort;
+import com.openshift.restclient.model.IServicePort;
 
 /**
- * 
  * @author jeff.cantrill
- *
  */
-public class Port implements IPort {
-	
+public class ServicePort extends ModelNodeAdapter implements IServicePort {
 	private static final String PROPERTY_NAME = "name";
+	private static final String PROPERTY_PORT = "port";
 	private static final String PROPERTY_PROTOCOL = "protocol";
-	private static final String PROPERTY_CONTAINER_PORT = "containerPort";
+	private static final String PROPERTY_TARGET_PORT = "targetPort";
 	private static final Map<String, String []> KEY_MAP = new HashMap<>();
 
 	static {
 		KEY_MAP.put(PROPERTY_NAME, new String[] {PROPERTY_NAME});
+		KEY_MAP.put(PROPERTY_PORT, new String[] {PROPERTY_PORT});
 		KEY_MAP.put(PROPERTY_PROTOCOL, new String[] {PROPERTY_PROTOCOL});
-		KEY_MAP.put(PROPERTY_CONTAINER_PORT, new String[] {PROPERTY_CONTAINER_PORT});
+		KEY_MAP.put(PROPERTY_TARGET_PORT, new String[] {PROPERTY_TARGET_PORT});
 	}
 
-	private ModelNode node;
-
-	public Port(ModelNode node) {
-		this.node = node;
+	public ServicePort(ModelNode node) {
+		super(node, KEY_MAP);
 	}
-
-	public Port(ModelNode node, IPort port) {
+	
+	/**
+	 * copy constructor
+	 * @param the node to copy
+	 * @param spec
+	 */
+	public ServicePort(ModelNode node, IServicePort port) {
 		this(node);
-		set(node, KEY_MAP,PROPERTY_NAME, port.getName());
-		set(node, KEY_MAP,PROPERTY_PROTOCOL, port.getProtocol());
-		set(node, KEY_MAP,PROPERTY_CONTAINER_PORT, port.getContainerPort());
+		setName(port.getName());
+		setPort(port.getPort());
+		setProtocol(port.getProtocol());
+		setTargetPort(port.getTargetPort());
 	}
-	
-	public ModelNode getNode() {
-		return this.node;
-	}
-	
+
 	@Override
 	public String getName() {
-		return asString(node, KEY_MAP, PROPERTY_NAME);
+		return asString(getNode(), KEY_MAP, PROPERTY_NAME);
 	}
 
+	@Override
 	public void setName(String name) {
-		set(node, KEY_MAP, PROPERTY_NAME, name);
+		set(getNode(), KEY_MAP, PROPERTY_NAME, name);
 	}
 
-	public void setContainerPort(int port) {
-		set(node, KEY_MAP, PROPERTY_CONTAINER_PORT, port);
+	@Override
+	public int getTargetPort() {
+		return asInt(getNode(), KEY_MAP, PROPERTY_TARGET_PORT);
 	}
 	
 	@Override
-	public int getContainerPort() {
-		return asInt(node, KEY_MAP, PROPERTY_CONTAINER_PORT);
+	public void setTargetPort(int port) {
+		set(getNode(), KEY_MAP, PROPERTY_TARGET_PORT, port);
 	}
 
-	public void setProtocol(String name) {
-		set(node, KEY_MAP, PROPERTY_PROTOCOL, name);
+
+	@Override
+	public void setPort(int port) {
+		set(getNode(), KEY_MAP, PROPERTY_PORT, port);
 	}
-	
+
+	@Override
+	public int getPort() {
+		return asInt(getNode(), KEY_MAP, PROPERTY_PORT);
+	}
+
 	@Override
 	public String getProtocol() {
-		return asString(node, KEY_MAP, PROPERTY_PROTOCOL);
+		return asString(getNode(), KEY_MAP, PROPERTY_PROTOCOL);
 	}
+
+	public void setProtocol(String proto) {
+		set(getNode(), KEY_MAP, PROPERTY_PROTOCOL, proto);
+	}
+
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + getContainerPort();
+		result = prime * result + getPort();
+		result = prime * result + getTargetPort();
 		result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
 		result = prime * result + ((getProtocol() == null) ? 0 : getProtocol().hashCode());
 		return result;
@@ -99,8 +115,10 @@ public class Port implements IPort {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Port other = (Port) obj;
-		if (getContainerPort() != other.getContainerPort())
+		ServicePort other = (ServicePort) obj;
+		if (getPort() != other.getPort())
+			return false;
+		if (getTargetPort() != other.getTargetPort())
 			return false;
 		if (getName() == null) {
 			if (other.getName() != null)
@@ -113,6 +131,11 @@ public class Port implements IPort {
 		} else if (!getProtocol().equals(other.getProtocol()))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return toJson(false);
 	}
 	
 	
