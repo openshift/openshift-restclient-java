@@ -51,7 +51,6 @@ import com.openshift.internal.restclient.model.project.OpenshiftProjectRequest;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.internal.restclient.model.user.OpenShiftUser;
-import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceFactoryException;
@@ -108,7 +107,7 @@ public class ResourceFactory implements IResourceFactory{
 	}
 	private IClient client;
 	
-	protected ResourceFactory(IClient client) {
+	public ResourceFactory(IClient client) {
 		this.client = client;
 	}
 	
@@ -140,12 +139,13 @@ public class ResourceFactory implements IResourceFactory{
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T extends IResource> T create(InputStream input) {
-		return create(input, false);
+		return (T) create(input, false);
 	}
 
 	@Override
-	public <T extends IResource> T create(InputStream input, boolean strict) {
+	public IResource create(InputStream input, boolean strict) {
 		try {
 			String resource = IOUtils.toString(input, "UTF-8");
 			return create(resource, strict);
@@ -156,12 +156,13 @@ public class ResourceFactory implements IResourceFactory{
 	
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T extends IResource> T create(String response) {
-		return create(response, false);
+		return (T) create(response, false);
 	}
 
 	@Override
-	public <T extends IResource> T create(String response, boolean strict) {
+	public IResource create(String response, boolean strict) {
 		try {
 			ModelNode node = ModelNode.fromJSONString(response);
 			String version = node.get(APIVERSION).asString();
@@ -176,23 +177,26 @@ public class ResourceFactory implements IResourceFactory{
 	
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T extends IResource> T create(String version, String kind) {
-		return create(version, kind, false);
+		return (T) create(version, kind, false);
 	}
 
 	@Override
-	public <T extends IResource> T create(String version, String kind, boolean strict) {
+	public IResource create(String version, String kind, boolean strict) {
 		return create(new ModelNode(), version, kind, strict);
 	}
 
-	@SuppressWarnings("unchecked")
-	private  <T extends IResource> T create(ModelNode node, String version, String kind, boolean strict) {
+	private IResource create(ModelNode node, String version, String kind, boolean strict) {
 		try {
 			node.get(APIVERSION).set(version);
 			node.get(KIND).set(kind.toString());
 			Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind, strict);
-			Constructor<? extends IResource> constructor =  IMPL_MAP.get(kind).getConstructor(ModelNode.class, IClient.class, Map.class);
-			return (T) constructor.newInstance(node, client, properyKeyMap);
+			if(IMPL_MAP.containsKey(kind)) {
+				Constructor<? extends IResource> constructor =  IMPL_MAP.get(kind).getConstructor(ModelNode.class, IClient.class, Map.class);
+				return constructor.newInstance(node, client, properyKeyMap);
+			}
+			return new KubernetesResource(node, client, properyKeyMap);
 		} catch (UnsupportedVersionException e) {
 			throw e;
 		} catch (Exception e) {

@@ -36,6 +36,7 @@ public enum Samples {
 	V1BETA3_Status("openshift3/v1beta3_status.json"),
 	V1BETA3_USER("openshift3/v1beta3_user.json"),
 	V1BETA3_SECRET("openshift3/v1beta3_secret.json"),
+	V1BETA3_UNRECOGNIZED("openshift3/v1_unrecognized.json"),
 
 	//v1
 	V1_BUILD_CONFIG("openshift3/v1_build_config.json"),
@@ -52,7 +53,8 @@ public enum Samples {
 	V1_TEMPLATE("openshift3/v1_template.json"), 
 	V1_Status("openshift3/v1_status.json"),
 	V1_USER("openshift3/v1_user.json"),
-	V1_SECRET("openshift3/v1_secret.json");
+	V1_SECRET("openshift3/v1_secret.json"),
+	V1_UNRECOGNIZED("openshift3/v1_unrecognized.json");
 	
 	private static final String SAMPLES_FOLDER = "/samples/";
 

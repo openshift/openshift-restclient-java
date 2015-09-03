@@ -39,7 +39,7 @@ public interface IResourceFactory {
 	 */
 	<T extends IResource> T create(String response) ;
 
-	<T extends IResource> T create(String response, boolean strict) ;
+	IResource create(String response, boolean strict) ;
 
 	/**
 	 * Create a resource from a response string
@@ -50,7 +50,7 @@ public interface IResourceFactory {
 	 */
 	<T extends IResource> T create(InputStream input) ;
 
-	<T extends IResource> T create(InputStream input, boolean strict) ;
+	IResource create(InputStream input, boolean strict) ;
 
 	/**
 	 * Create(or stub) a resource for a given version and kind
@@ -60,7 +60,7 @@ public interface IResourceFactory {
 	 */
 	<T extends IResource> T create(String version, String kind);
 
-	<T extends IResource> T create(String version, String kind, boolean strict);
+	IResource create(String version, String kind, boolean strict);
 
 	/**
 	 * Stub out the given resource kind using a version determined by the factory

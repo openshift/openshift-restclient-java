@@ -47,6 +47,7 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		put(ANNOTATIONS, new String [] {"metadata", "annotations"});
 		put(APIVERSION, new String [] {"apiVersion"});
 		put(CREATION_TIMESTAMP, new String []  {"metadata", "creationTimestamp"});
+		put(KIND, new String[]{"kind"});
 		put(LABELS, new String []  { "metadata","labels"});
 		put(NAME , new String []  {"metadata", "name"});
 		put(NAMESPACE, new String []  {"metadata", "namespace"});
@@ -113,7 +114,6 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.TEMPLATE), V1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.USER), V1_OPENSHIFT_MAP);
 		versionPropertyMap.put(new VersionKey(OpenShiftAPIVersion.v1, ResourceKind.SECRET), V1_OPENSHIFT_MAP);
-		
 	}
 	
 	public static final ResourcePropertiesRegistry getInstance(){
