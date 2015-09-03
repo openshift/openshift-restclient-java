@@ -41,7 +41,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	private Map<String, String []> propertyKeys;
 	private IProject project;
 	
-	protected KubernetesResource(ModelNode node, IClient client, Map<String, String []> propertyKeys){
+	public KubernetesResource(ModelNode node, IClient client, Map<String, String []> propertyKeys){
 		this.node = node;
 		this.client = client;
 		this.propertyKeys = propertyKeys;
