@@ -51,6 +51,7 @@ import com.openshift.internal.restclient.model.project.OpenshiftProjectRequest;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.internal.restclient.model.user.OpenShiftUser;
+import com.openshift.internal.restclient.model.volume.PersistentVolumeClaim;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceFactoryException;
@@ -95,6 +96,7 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.EVENT, KubernetesEvent.class);
 		IMPL_MAP.put(ResourceKind.LIMIT_RANGE, LimitRange.class);
 		IMPL_MAP.put(ResourceKind.POD, Pod.class);
+		IMPL_MAP.put(ResourceKind.PVC, PersistentVolumeClaim.class);
 		IMPL_MAP.put(ResourceKind.RESOURCE_QUOTA, ResourceQuota.class);
 		IMPL_MAP.put(ResourceKind.REPLICATION_CONTROLLER, ReplicationController.class);
 		IMPL_MAP.put(ResourceKind.STATUS, Status.class);

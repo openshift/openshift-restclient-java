@@ -1,0 +1,28 @@
+{
+    "kind": "PersistentVolumeClaim",
+    "apiVersion": "v1beta3",
+    "metadata": {
+        "name": "my-amq-claim",
+        "namespace": "hello-world",
+        "selfLink": "/api/v1beta3/namespaces/hello-world/persistentvolumeclaims/my-amq-claim",
+        "uid": "8e0d2780-531a-11e5-8a7f-080027893417",
+        "resourceVersion": "74493",
+        "creationTimestamp": "2015-09-04T15:35:22Z",
+        "labels": {
+            "application": "foo"
+        }
+    },
+    "spec": {
+        "accessModes": [
+            "ReadWriteOnce"
+        ],
+        "resources": {
+            "requests": {
+                "storage": "15m"
+            }
+        }
+    },
+    "status": {
+        "phase": "Pending"
+    }
+}

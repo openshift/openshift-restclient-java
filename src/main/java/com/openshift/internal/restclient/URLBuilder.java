@@ -37,6 +37,7 @@ public class URLBuilder {
 	private static final Map<String, String> kindMap = new HashMap<String, String>();
 	
 	static {
+		//TODO https://issues.jboss.org/browse/OSJC-218
 		//OpenShift Kinds
 		kindMap.put(ResourceKind.BUILD, "builds");
 		kindMap.put(ResourceKind.BUILD_CONFIG, "buildconfigs");
@@ -48,6 +49,7 @@ public class URLBuilder {
 		kindMap.put(ResourceKind.OAUTH_CLIENT_AUTHORIZATION, "oauthclientauthorizations");
 		kindMap.put(ResourceKind.POLICY,"policies");
 		kindMap.put(ResourceKind.POLICY_BINDING,"policybindings");
+		kindMap.put(ResourceKind.PVC,"persistentvolumeclaims");
 		kindMap.put(ResourceKind.PROJECT, "projects");
 		kindMap.put(ResourceKind.PROJECT_REQUEST, "projectrequests");
 		kindMap.put(ResourceKind.ROLE, "roles");

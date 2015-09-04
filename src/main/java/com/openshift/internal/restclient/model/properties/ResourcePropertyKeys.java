@@ -44,6 +44,7 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys, Deploymen
 	static final String STATUS_MESSAGE = "status.message";
 	static final String STATUS_CODE = "status.code";
 	static final String STATUS_STATUS = "status.status";
+	static final String STATUS_PHASE = "status.phase";
 	
 	static final String BUILD_STATUS	= "build.status";
 	static final String BUILD_MESSAGE	= "build.message";
@@ -72,6 +73,9 @@ public interface ResourcePropertyKeys extends BuildConfigPropertyKeys, Deploymen
 	static final String PORTS_CONTAINER_PORT = "ports.containerport";
 	static final String PORTS_PROTOCOL = "ports.protocol";
 	static final String PORTS_NAME = "ports.name";
+	
+	static final String PVC_ACCESS_MODES = "pvc.accessmodes";
+	static final String PVC_REQUESTED_STORAGE = "pvc.requested.storage";
 	
 	static final String TEMPLATE_PARAMETERS = "template.parameters";
 	static final String TEMPLATE_ITEMS = "template.items";

@@ -59,6 +59,7 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.EVENT), V1BETA3_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.LIMIT_RANGE), V1BETA3_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.POD), V1BETA3_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.PVC), V1BETA3_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.REPLICATION_CONTROLLER), V1BETA3_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.RESOURCE_QUOTA), V1BETA3_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1beta3, ResourceKind.SERVICE), V1BETA3_KUBERNETES_MAP);
@@ -89,6 +90,7 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.EVENT), V1_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.LIMIT_RANGE), V1_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.POD), V1_KUBERNETES_MAP);
+		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.PVC), V1_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.REPLICATION_CONTROLLER), V1_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.RESOURCE_QUOTA), V1_KUBERNETES_MAP);
 		versionPropertyMap.put(new VersionKey(KubernetesAPIVersion.v1, ResourceKind.SERVICE), V1_KUBERNETES_MAP);
