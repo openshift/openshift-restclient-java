@@ -159,7 +159,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		List<IResource> results = new ArrayList<IResource>(list.getItems().size());
 		for (IResource resource : list.getItems()) {
 			try{
-				results.add(create(resource, namespace));
+				results.add(createVersion(resource, namespace, resource.getApiVersion()));
 			}catch(OpenShiftException e){
 				if(e.getStatus() != null){
 					results.add(e.getStatus());
@@ -176,8 +176,13 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		return create(resource, resource.getNamespace());
 	}
 	
+		
 	@Override
 	public <T extends IResource> T create(T resource, String namespace) {
+		return createVersion(resource, namespace, null);
+	}
+	
+	private <T extends IResource> T createVersion(T resource, String namespace, String version) {
 		if(ResourceKind.LIST.equals(resource.getKind())) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		try {
 			namespace = ResourceKind.PROJECT.equals(resource.getKind()) ? "" : namespace;
@@ -363,11 +368,13 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			return new ArrayList<T>();
 		}
 	}
-
 	private Map<String, String> getTypeMappings(){
+		return getTypeMappings(null);
+	}
+	private Map<String, String> getTypeMappings(String apiVersion){
 		if(typeMappings.isEmpty()){
 			//OpenShift endpoints
-			final String version = getOpenShiftAPIVersion();
+			final String version = StringUtils.defaultIfEmpty(apiVersion, getOpenShiftAPIVersion());
 			final String osEndpoint = String.format("%s/%s", OpenShiftAPIVersion.v1beta3.toString().equals(version) ? OS_API_LEGACY_ENDPOINT : OS_API_ENDPOINT, version);
 			typeMappings.put(ResourceKind.BUILD, osEndpoint);
 			typeMappings.put(ResourceKind.BUILD_CONFIG, osEndpoint);
@@ -391,7 +398,8 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			typeMappings.put(ResourceKind.PROCESSED_TEMPLATES, osEndpoint);
 			
 			//Kubernetes endpoints
-			final String k8eEndpoint = String.format("%s/%s", API_ENDPOINT, getKubernetesVersion());
+			final String k8eApiVersion = StringUtils.defaultIfEmpty(apiVersion, getKubernetesVersion());
+			final String k8eEndpoint = String.format("%s/%s", API_ENDPOINT, k8eApiVersion);
 			typeMappings.put(ResourceKind.EVENT, k8eEndpoint);
 			typeMappings.put(ResourceKind.POD, k8eEndpoint);
 			typeMappings.put(ResourceKind.PVC, k8eEndpoint);
