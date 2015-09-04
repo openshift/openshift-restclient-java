@@ -38,6 +38,9 @@ public interface KubernetesApiModelProperties extends ResourcePropertyKeys{
 		put(POD_HOST, new String[]{"status","hostIP"});
 		put(POD_STATUS, new String[]{"status","phase"});
 		put(POD_CONTAINERS, new String[]{"spec","containers"});
+
+		put(PVC_ACCESS_MODES, new String[]{"spec","accessModes"});
+		put(PVC_REQUESTED_STORAGE, new String[]{"spec","resources", "requests", "storage"});
 		
 		put(REPLICATION_CONTROLLER_REPLICA_COUNT, new String [] {"spec", "replicas"});
 		put(REPLICATION_CONTROLLER_REPLICA_SELECTOR, new String [] {"spec", "selector"});
@@ -55,6 +58,7 @@ public interface KubernetesApiModelProperties extends ResourcePropertyKeys{
 		put(STATUS_MESSAGE, new String [] {"message"});
 		put(STATUS_CODE, new String [] {"code"});
 		put(STATUS_STATUS, new String [] {"status"});
+		put(STATUS_PHASE, new String [] {"status", "phase"});
 	}};
 
 	@SuppressWarnings("serial")
@@ -76,6 +80,9 @@ public interface KubernetesApiModelProperties extends ResourcePropertyKeys{
 		put(POD_HOST, new String[]{"status","hostIP"});
 		put(POD_STATUS, new String[]{"status","phase"});
 		put(POD_CONTAINERS, new String[]{"spec","containers"});
+
+		put(PVC_ACCESS_MODES, new String[]{"spec","accessModes"});
+		put(PVC_REQUESTED_STORAGE, new String[]{"spec","resources", "requests", "storage"});
 		
 		put(REPLICATION_CONTROLLER_REPLICA_COUNT, new String [] {"spec", "replicas"});
 		put(REPLICATION_CONTROLLER_REPLICA_SELECTOR, new String [] {"spec", "selector"});
@@ -93,6 +100,8 @@ public interface KubernetesApiModelProperties extends ResourcePropertyKeys{
 		put(STATUS_MESSAGE, new String [] {"message"});
 		put(STATUS_CODE, new String [] {"code"});
 		put(STATUS_STATUS, new String [] {"status"});
+		put(STATUS_PHASE, new String [] {"status", "phase"});
+
 	}};
 	
 }
