@@ -11,8 +11,13 @@ package com.openshift.internal.restclient.model;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
+import com.openshift.internal.util.JBossDmrExtentions;
+import com.openshift.restclient.ResourceKind;
 
 /**
  * Tests that have logic and not specific to a particular api version
@@ -25,7 +30,9 @@ public class StatusTest {
 	
 	@Before
 	public void setup() {
-		status = spy(new Status(null,null,null));
+		ModelNode root = new ModelNode();
+		JBossDmrExtentions.set(root, JBossDmrExtentions.getPath(ResourcePropertyKeys.KIND), ResourceKind.STATUS);
+		status = spy(new Status(root,null,null));
 	}
 	
 	@Test

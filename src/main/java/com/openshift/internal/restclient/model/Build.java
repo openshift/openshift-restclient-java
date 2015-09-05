@@ -20,6 +20,11 @@ import com.openshift.restclient.model.IBuild;
  * @author Jeff Cantrill
  */
 public class Build extends KubernetesResource implements IBuild{
+	
+	private static final String BUILD_MESSAGE = "status.message";
+	private static final String BUILD_PODNAME = "podName";
+	private static final String BUILD_STATUS = "status.phase";
+
 
 	public Build(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);

@@ -28,7 +28,6 @@ import com.openshift.internal.restclient.model.build.GitBuildSource;
 import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
 import com.openshift.internal.restclient.model.build.SourceBuildStrategy;
 import com.openshift.internal.restclient.model.build.WebhookTrigger;
-import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
@@ -58,13 +57,9 @@ public class BuildConfigTest {
 		when(client.getBaseURL()).thenReturn(new URL("https://localhost:8443"));
 		when(client.getOpenShiftAPIVersion()).thenReturn(VERSION);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_BUILD_CONFIG.getContentAsString());
-		config = new BuildConfig(node, client, getPropertyKeys());
+		config = new BuildConfig(node, client, null);
 	}
 
-	private static Map<String, String[]> getPropertyKeys() {
-		return ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.BUILD_CONFIG);
-	}
-	
 	@Test
 	public void getBuildTriggers(){
 		assertBuildTriggers(config.getBuildTriggers().toArray(new IBuildTrigger[]{}));
@@ -158,6 +153,6 @@ public class BuildConfigTest {
 	}
 
 	private BuildConfig reCreateBuildConfig(BuildConfig config) {
-		return new BuildConfig(config.getNode(), client, getPropertyKeys());
+		return new BuildConfig(config.getNode(), client, null);
 	}
 }

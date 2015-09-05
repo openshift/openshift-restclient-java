@@ -23,6 +23,12 @@ import com.openshift.restclient.model.IReplicationController;
  */
 public class ReplicationController extends KubernetesResource implements IReplicationController{
 
+	private static final String REPLICATION_CONTROLLER_REPLICA_COUNT = "spec.replicas";
+	private static final String REPLICATION_CONTROLLER_REPLICA_SELECTOR = "spec.selector";
+	private static final String REPLICATION_CONTROLLER_CONTAINERS = "spec.template.spec.containers";
+	private static final String REPLICATION_CONTROLLER_CURRENT_REPLICA_COUNT = "status.replicas";
+		
+
 	public ReplicationController(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
 	}

@@ -9,6 +9,7 @@
 package com.openshift.internal.restclient.model.build;
 
 import static org.junit.Assert.*;
+import static com.openshift.internal.util.JBossDmrExtentions.*;
 
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
@@ -16,9 +17,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import com.openshift.internal.restclient.model.BuildConfig;
-import com.openshift.internal.restclient.model.properties.BuildConfigPropertyKeys;
-import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
-import com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.build.BuildStrategyType;
@@ -29,14 +27,14 @@ import com.openshift.restclient.model.build.IDockerBuildStrategy;
 /**
  * @author Jeff Cantrill
  */
-public class BuildConfigTest implements BuildConfigPropertyKeys {
+public class BuildConfigTest {
 	@Mock private IClient client;
 	private BuildConfig config;
 	private ModelNode node = new ModelNode();
 	
 	@Before
 	public void setup(){
-		config = new BuildConfig(node, client, OpenShiftApiModelProperties.V1_OPENSHIFT_MAP);
+		config = new BuildConfig(node, client, null);
 	}
 	
 	@Test
@@ -62,10 +60,10 @@ public class BuildConfigTest implements BuildConfigPropertyKeys {
 	
 	@Test
 	public void testGetDockerBuildStrategy() {
-		node.get(OpenShiftApiModelProperties.V1_OPENSHIFT_MAP.get(BUILDCONFIG_TYPE)).set("Docker");
-		node.get(OpenShiftApiModelProperties.V1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_CONTEXTDIR)).set("aContextDir");
-		node.get(OpenShiftApiModelProperties.V1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_NOCACHE)).set(true);
-		node.get(OpenShiftApiModelProperties.V1_OPENSHIFT_MAP.get(BUILDCONFIG_DOCKER_BASEIMAGE)).set("thebaseImage");
+		node.get(getPath(BuildConfig.BUILDCONFIG_TYPE)).set("Docker");
+		node.get(getPath(BuildConfig.BUILDCONFIG_DOCKER_CONTEXTDIR)).set("aContextDir");
+		node.get(getPath(BuildConfig.BUILDCONFIG_DOCKER_NOCACHE)).set(true);
+		node.get(getPath(BuildConfig.BUILDCONFIG_DOCKER_BASEIMAGE)).set("thebaseImage");
 		
 		IBuildStrategy strategy = config.getBuildStrategy();
 		assertEquals(BuildStrategyType.DOCKER, strategy.getType());

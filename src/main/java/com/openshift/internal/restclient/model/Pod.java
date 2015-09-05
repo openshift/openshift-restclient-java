@@ -29,6 +29,11 @@ import com.openshift.restclient.model.IPort;
  */
 public class Pod extends KubernetesResource implements IPod {
 
+	private static final String POD_IP = "status.podIP";
+	private static final String POD_HOST = "status.hostIP";
+	private static final String POD_STATUS = "status.phase";
+	private static final String POD_CONTAINERS = "spec.containers";
+
 	public Pod(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
 		initializeCapabilities(getModifiableCapabilities(), this, client);

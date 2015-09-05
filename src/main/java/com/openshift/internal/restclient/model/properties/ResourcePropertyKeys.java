@@ -13,76 +13,21 @@ package com.openshift.internal.restclient.model.properties;
  * 
  * @author Jeff Cantrill
  */
-public interface ResourcePropertyKeys extends BuildConfigPropertyKeys, DeploymentConfigPropertyKeys{
-	static final String ANNOTATIONS = "annotations";
-	static final String APIVERSION  = "apiversion";
-	static final String CREATION_TIMESTAMP = "creationTimestamp";
-	static final String CONTAINER_PORT = "containerPort";
-	static final String DISPLAYNAME = "displayName";
-	static final String DESCRIPTION = "description";
-	static final String IMAGE = "image";
-	static final String ENV = "env";
+public interface ResourcePropertyKeys {
+	
+	static final String APIVERSION  = "apiVersion";
 	static final String KIND = "kind";
-	static final String LABELS = "labels";
+
+	static final String ANNOTATIONS = "metadata.annotations";
+	static final String CREATION_TIMESTAMP = "metadata.creationTimestamp";
+	static final String LABELS = "metadata.labels";
+	static final String METADATA_NAME = "metadata.name";
+	static final String NAMESPACE = "metadata.namespace";
+
 	static final String NAME = "name";
-	static final String NAMESPACE = "namespace";
+	static final String OBJECTS = "objects";
 	static final String PORTS = "ports";
 	static final String PROTOCOL = "protocol";
 	static final String VALUE = "value";
 	static final String TYPE = "type";
-	
-	static final String REPLICATION_CONTROLLER_CONTAINERS = "replicationcontroller.containers";
-	static final String REPLICATION_CONTROLLER_REPLICA_COUNT = "replicationcontroller.replicacount";
-	static final String REPLICATION_CONTROLLER_CURRENT_REPLICA_COUNT = "replicationcontroller.replicacount.current";
-	static final String REPLICATION_CONTROLLER_REPLICA_SELECTOR = "replicationcontroller.selector";
-	
-	static final String SERVICE_CONTAINER_PORT = "service.containerport";
-	static final String SERVICE_PORT = "service.port";
-	static final String SERVICE_SELECTOR = "service.selector";
-	static final String SERVICE_PORTALIP = "service.portalIP";
-	
-	static final String STATUS_MESSAGE = "status.message";
-	static final String STATUS_CODE = "status.code";
-	static final String STATUS_STATUS = "status.status";
-	static final String STATUS_PHASE = "status.phase";
-	
-	static final String BUILD_STATUS	= "build.status";
-	static final String BUILD_MESSAGE	= "build.message";
-	static final String BUILD_PODNAME	= "build.podname";
-	
-	static final String IMAGESTREAM_DOCKER_IMAGE_REPO = "imagerepo.dockerimagerepo";
-
-	@Deprecated
-	static final String PROJECT_DISPLAY_NAME = "project.displayname";
-	static final String ROUTE_HOST = "route.host";
-	static final String ROUTE_PATH = "route.path";
-	static final String ROUTE_KIND = "route.kind";
-	static final String ROUTE_SERVICE_NAME = "route.serviceName";
-	static final String ROUTE_TLS = "route.tls";
-	static final String ROUTE_TLS_TERMINATION_TYPE = "route.tls.termination";
-	static final String ROUTE_TLS_CERTIFICATE = "route.tls.certificate";
-	static final String ROUTE_TLS_KEY = "route.tls.key";
-	static final String ROUTE_TLS_CACERT = "route.tls.caCertificate";
-	static final String ROUTE_TLS_DESTINATION_CACERT = "route.tls.destinationCaCertificate";
-	
-	static final String POD_CONTAINERS = "pod.containers";
-	static final String POD_HOST = "pod.host";
-	static final String POD_IP = "pod.ip";
-	static final String POD_STATUS = "pod.status";
-	
-	static final String PORTS_CONTAINER_PORT = "ports.containerport";
-	static final String PORTS_PROTOCOL = "ports.protocol";
-	static final String PORTS_NAME = "ports.name";
-	
-	static final String PVC_ACCESS_MODES = "pvc.accessmodes";
-	static final String PVC_REQUESTED_STORAGE = "pvc.requested.storage";
-	
-	static final String TEMPLATE_PARAMETERS = "template.parameters";
-	static final String TEMPLATE_ITEMS = "template.items";
-	static final String TEMPLATE_OBJECT_LABELS = "template.object.labels";
-	
-	static final String USER_FULLNAME= "user.fullname";
-
-	static final String SECRET_TYPE = "secret.type";
-	static final String SECRET_DATA = "secret.data";
 }

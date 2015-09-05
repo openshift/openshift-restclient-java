@@ -24,6 +24,10 @@ import com.openshift.restclient.model.deploy.IDeploymentImageChangeTrigger;
 
 public class ImageChangeTrigger extends DeploymentTrigger implements IDeploymentImageChangeTrigger {
 	
+	private static final String DEPLOYMENTCONFIG_TRIGGER_IMAGECHANGE_AUTO = "imageChangeParams.automatic";
+	private static final String DEPLOYMENTCONFIG_TRIGGER_CONTAINERS = "imageChangeParams.containerNames";
+	private static final String DEPLOYMENTCONFIG_TRIGGER_FROM = "imageChangeParams.from.name";
+	private static final String DEPLOYMENTCONFIG_TRIGGER_FROM_KIND = "imageChangeParams.from.kind";
 
 	public ImageChangeTrigger(ModelNode node, Map<String, String[]> propertyKeys) {
 		super(node, propertyKeys);

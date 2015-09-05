@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import com.openshift.internal.restclient.model.properties.OpenShiftApiModelProperties;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.template.IParameter;
 import com.openshift.restclient.model.template.ITemplate;
@@ -36,12 +35,12 @@ public class TemplateTest {
 		params.add(param("foo","bar"));
 		params.add(param("abc","xyz"));
 		params.add(param("123","456"));
-		template = new Template(node, client, OpenShiftApiModelProperties.V1BETA3_OPENSHIFT_MAP);
+		template = new Template(node, client, null);
 	}
 	
 	@Test
 	public void testGetParametersWhenNotDefined() {
-		template = new Template(new ModelNode(), client, OpenShiftApiModelProperties.V1_OPENSHIFT_MAP);
+		template = new Template(new ModelNode(), client, null);
 		assertNotNull(template.getParameters());
 	}
 	

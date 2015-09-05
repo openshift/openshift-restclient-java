@@ -21,6 +21,18 @@ import com.openshift.restclient.model.route.ITLSConfig;
  * @author Jeff Cantrill
  */
 public class Route extends KubernetesResource implements IRoute {
+	
+	private static final String ROUTE_HOST = "spec.host";
+	private static final String ROUTE_PATH = "spec.path";
+	private static final String ROUTE_KIND = "spec.to.kind";
+	private static final String ROUTE_SERVICE_NAME = "spec.to.name";
+	private static final String ROUTE_TLS = "spec.tls";
+	private static final String ROUTE_TLS_TERMINATION_TYPE = "spec.tls.termination";
+	private static final String ROUTE_TLS_CERTIFICATE = "spec.tls.certificate";
+	private static final String ROUTE_TLS_KEY = "spec.tls.key";
+	private static final String ROUTE_TLS_CACERT = "spec.tls.caCertificate";
+	private static final String ROUTE_TLS_DESTINATION_CACERT = "spec.tls.destinationCACertificate";
+
 	public Route(ModelNode node, IClient client,
 			Map<String, String[]> propertyKeys) {
 		super(node, client, propertyKeys);

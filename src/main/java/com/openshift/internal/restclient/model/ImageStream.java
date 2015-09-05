@@ -21,6 +21,8 @@ import com.openshift.restclient.model.IImageStream;
  */
 public class ImageStream extends KubernetesResource implements IImageStream {
 
+	private static final String IMAGESTREAM_DOCKER_IMAGE_REPO = "spec.dockerImageRepository";
+
 	public ImageStream(){
 		this(new ModelNode(), null, null);
 	}

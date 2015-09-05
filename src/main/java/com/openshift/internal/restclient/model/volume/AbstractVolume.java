@@ -31,7 +31,6 @@ public abstract class AbstractVolume
 	
 	public AbstractVolume(ModelNode node) {
 		super(node, new HashMap<String, String []>());
-		getPropertyKeys().put(NAME, new String [] {"name"});
 	}
 
 	@Override
@@ -41,7 +40,7 @@ public abstract class AbstractVolume
 
 	@Override
 	public void setName(String name) {
-		set(getNode(), getPropertyKeys(),NAME, name);
+		set(getNode(), getPropertyKeys(), NAME, name);
 	}
 	
 	

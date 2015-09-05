@@ -28,6 +28,10 @@ import com.openshift.restclient.model.volume.IPersistentVolumeClaim;
  */
 public class PersistentVolumeClaim extends KubernetesResource implements IPersistentVolumeClaim {
 
+	private static final String PVC_ACCESS_MODES = "spec.accessModes";
+	private static final String PVC_REQUESTED_STORAGE = "spec.resources.requests.storage";
+	private static final String STATUS_PHASE = "status.phase";
+
 	public PersistentVolumeClaim(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
 		super(node, client, propertyKeys);
 	}

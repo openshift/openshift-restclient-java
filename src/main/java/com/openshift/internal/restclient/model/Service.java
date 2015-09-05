@@ -31,6 +31,9 @@ import com.openshift.restclient.model.IServicePort;
 public class Service extends KubernetesResource implements IService {
 
 
+	private static final String SERVICE_SELECTOR = "spec.selector";
+	private static final String SERVICE_PORT = "spec.ports";
+
 	public Service(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
 		initializeCapabilities(getModifiableCapabilities(), this, getClient());
@@ -126,7 +129,7 @@ public class Service extends KubernetesResource implements IService {
 
 	@Override
 	public String getPortalIP() {
-		return asString(SERVICE_PORTALIP);
+		return asString("spec.portalIP");
 	}
 
 	@Override

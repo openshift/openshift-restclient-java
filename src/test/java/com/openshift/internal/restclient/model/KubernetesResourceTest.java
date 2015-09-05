@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static com.openshift.internal.util.JBossDmrExtentions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +47,13 @@ public class KubernetesResourceTest {
 	private ModelNode createModelNode() {
 		node = new ModelNode();
 		node.get(ResourcePropertyKeys.KIND).set(ResourceKind.LIST.toString());
-		ModelNode meta = node.get("metadata");
 
-		ModelNode annotations = meta.get(ResourcePropertyKeys.ANNOTATIONS);
+		ModelNode annotations = node.get(getPath(KubernetesResource.ANNOTATIONS));
 		annotations.get("foo").set("bar");
 		annotations.get("template").set("foobar");
 		
-		meta.get(ResourcePropertyKeys.NAME).set("bartender");
-		meta.get(ResourcePropertyKeys.NAMESPACE).set("foofighters");
+		node.get(KubernetesResource.METADATA_NAME).set("bartender");
+		node.get(KubernetesResource.NAMESPACE).set("foofighters");
 		
 		return node;
 	}
@@ -134,7 +134,7 @@ public class KubernetesResourceTest {
 		int hashCodeBeforeChange = resource.hashCode();
 		
 		// operation
-		resource.set(ResourcePropertyKeys.NAME, "brucefoolee");
+		resource.set(KubernetesResource.METADATA_NAME, "brucefoolee");
 		
 		// verification
 		int hashCodeAfterChange = resource.hashCode();
@@ -187,7 +187,7 @@ public class KubernetesResourceTest {
 		assertEquals(resource, otherResource);
 
 		// operation
-		otherResource.set(ResourcePropertyKeys.NAME, "kungfoo");
+		otherResource.set(KubernetesResource.METADATA_NAME, "kungfoo");
 		
 		// verification
 		assertThat(resource).isNotEqualTo(otherResource);
@@ -200,7 +200,7 @@ public class KubernetesResourceTest {
 		assertEquals(resource, otherResource);
 
 		// operation
-		otherResource.set(ResourcePropertyKeys.NAMESPACE, "karate");
+		otherResource.set(KubernetesResource.NAMESPACE, "karate");
 		
 		// verification
 		assertThat(resource).isNotEqualTo(otherResource);

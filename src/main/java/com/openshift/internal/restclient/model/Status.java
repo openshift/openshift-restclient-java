@@ -19,6 +19,11 @@ import com.openshift.restclient.model.IStatus;
  * @author Jeff Cantrill
  */
 public class Status extends KubernetesResource implements IStatus{
+	
+	private static final String STATUS_MESSAGE = "message";
+	private static final String STATUS_CODE = "code";
+	private static final String STATUS_STATUS = "status";
+
 
 	public Status(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);

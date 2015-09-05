@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -41,10 +40,17 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	private Map<String, String []> propertyKeys;
 	private IProject project;
 	
-	public KubernetesResource(ModelNode node, IClient client, Map<String, String []> propertyKeys){
+	/**
+	 * 
+	 * @param node
+	 * @param client
+	 * @param overrideProperties  the map of properties that override the defaults
+	 */
+	public KubernetesResource(ModelNode node, IClient client, Map<String, String []> overrideProperties){
+		if(overrideProperties == null) overrideProperties = new HashMap<String, String []>();
 		this.node = node;
 		this.client = client;
-		this.propertyKeys = propertyKeys;
+		this.propertyKeys = overrideProperties;
 		initializeCapabilities(capabilities, this, client);
 	}
 
@@ -92,9 +98,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 
 	@Override
 	public String getAnnotation(String key) {
-		//TODO make efficient
-		Map<String, String> annotations = getAnnotations();
-		return annotations.get(key);
+		return getAnnotations().get(key);
 	}
 	
 	
@@ -144,11 +148,11 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	}
 	@Override
 	public String getName(){
-		return asString(NAME);
+		return asString(METADATA_NAME);
 	}
 	
 	public void setName(String name) {
-		set(NAME, name);
+		set(METADATA_NAME, name);
 	}
 	
 	@Override
@@ -233,11 +237,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	}
 
 	protected String[] getPath(String key) {
-		String [] property = propertyKeys.get(key);
-		if (property == null) {
-			throw new IllegalArgumentException(String.format("key %s is not known to the resource %s", key, getName().isEmpty()? getClass().getSimpleName() : getName()));
-		}
-		return property;
+		return JBossDmrExtentions.getPath(propertyKeys, key);
 	}
 	
 	protected String asString(ModelNode node, String subKey) {

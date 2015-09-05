@@ -51,7 +51,7 @@ public class ServerTemplateProcessingIntegrationTest {
 	public void testProcessAndApplyTemplate() throws Exception{
 		final Collection<IResource> results = new ArrayList<IResource>();
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_TEMPLATE.getContentAsString());
-		final Template template = new Template(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.TEMPLATE));
+		final Template template = new Template(node, client, null);
 		template.setNamespace(COMMON);
 		try {
 			client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {

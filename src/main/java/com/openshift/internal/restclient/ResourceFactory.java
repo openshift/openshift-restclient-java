@@ -193,7 +193,7 @@ public class ResourceFactory implements IResourceFactory{
 		try {
 			node.get(APIVERSION).set(version);
 			node.get(KIND).set(kind.toString());
-			Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind, strict);
+			Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind);
 			if(IMPL_MAP.containsKey(kind)) {
 				Constructor<? extends IResource> constructor =  IMPL_MAP.get(kind).getConstructor(ModelNode.class, IClient.class, Map.class);
 				return constructor.newInstance(node, client, properyKeyMap);

@@ -18,7 +18,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
 
