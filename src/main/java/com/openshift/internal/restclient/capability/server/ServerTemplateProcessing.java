@@ -62,6 +62,11 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 		}
 
 		@Override
+		public String getName() {
+			return template.getName();
+		}
+
+		@Override
 		public String getNamespace(){
 			return namespace;
 		}
