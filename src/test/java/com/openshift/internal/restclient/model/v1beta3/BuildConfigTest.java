@@ -58,7 +58,7 @@ public class BuildConfigTest {
 		when(client.getBaseURL()).thenReturn(new URL("https://localhost:8443"));
 		when(client.getOpenShiftAPIVersion()).thenReturn("v1beta3");
 		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_BUILD_CONFIG.getContentAsString());
-		config = new BuildConfig(node, client, getPropertyKeys());
+		config = new BuildConfig(node, client, null);
 	}
 
 	private static Map<String, String[]> getPropertyKeys() {
@@ -158,6 +158,6 @@ public class BuildConfigTest {
 	}
 
 	private BuildConfig reCreateBuildConfig(BuildConfig config) {
-		return new BuildConfig(config.getNode(), client, getPropertyKeys());
+		return new BuildConfig(config.getNode(), client, null);
 	}
 }

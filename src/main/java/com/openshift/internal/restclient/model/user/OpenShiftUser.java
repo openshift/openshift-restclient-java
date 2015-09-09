@@ -20,6 +20,8 @@ import com.openshift.restclient.model.user.IUser;
 
 public class OpenShiftUser extends KubernetesResource implements IUser {
 
+	private static final String USER_FULLNAME = "fullName";
+	
 	public OpenShiftUser(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
 		super(node, client, propertyKeys);
 	}

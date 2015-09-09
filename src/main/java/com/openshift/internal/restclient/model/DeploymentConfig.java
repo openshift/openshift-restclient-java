@@ -24,7 +24,18 @@ import com.openshift.restclient.model.deploy.IDeploymentTrigger;
  */
 public class DeploymentConfig extends KubernetesResource implements IDeploymentConfig{
 	
+	public static final String DEPLOYMENTCONFIG_CONTAINERS = "spec.template.spec.containers";
+	private static final String VOLUMES = "spec.template.spec.volumes";
+	private static final String DEPLOYMENTCONFIG_REPLICAS = "spec.replicas";
+	private static final String DEPLOYMENTCONFIG_REPLICA_SELECTOR = "spec.selector";
+	private static final String DEPLOYMENTCONFIG_TEMPLATE_LABELS = "spec.template.metadata.labels";
+	private static final String DEPLOYMENTCONFIG_TRIGGERS = "spec.triggers";
+	private static final String DEPLOYMENTCONFIG_STRATEGY = "spec.strategy.type";
+	
+	private static final String IMAGE = "image";
+	private static final String ENV = "env";
 	private static final String TYPE = "type";
+
 	private final Map<String, String[]> propertyKeys;
 
 	public DeploymentConfig(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
@@ -103,7 +114,7 @@ public class DeploymentConfig extends KubernetesResource implements IDeploymentC
 		
 		if(emptyDirVolumes.size() > 0) {
 			ModelNode volumeMounts = container.get("volumeMounts");
-			ModelNode volumes = get(DEPLOYMENTCONFIG_VOLUMES);
+			ModelNode volumes = get(VOLUMES);
 			for (String path : emptyDirVolumes) {
 				EmptyDirVolume volume = new EmptyDirVolume(volumes.add());
 				final String volName = String.format("%s-%s", name, emptyDirVolumes.indexOf(path) + 1);

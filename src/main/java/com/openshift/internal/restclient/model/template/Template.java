@@ -31,9 +31,13 @@ import com.openshift.restclient.model.template.ITemplate;
  * @author Jeff Cantrill
  */
 public class Template extends KubernetesResource implements ITemplate{
+	
+	private static final String TEMPLATE_PARAMETERS = "parameters";
+	private static final String TEMPLATE_OBJECT_LABELS = "labels";
 
-	public Template(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
+
+	public Template(ModelNode node, IClient client, Map<String, String []> overrideProperties) {
+		super(node, client, overrideProperties);
 	}
 	
 	@Override
@@ -63,7 +67,7 @@ public class Template extends KubernetesResource implements ITemplate{
 	
 	@Override
 	public Collection<IResource> getItems() {
-		Collection<ModelNode> nodes = get(TEMPLATE_ITEMS).asList();
+		Collection<ModelNode> nodes = get(OBJECTS).asList();
 		List<IResource> resources = new ArrayList<IResource>(nodes.size());
 		IResourceFactory factory = getClient().getResourceFactory();
 		if(factory != null){

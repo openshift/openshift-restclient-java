@@ -30,7 +30,7 @@ public class List extends KubernetesResource implements IList{
 	
 	@Override
 	public Collection<IResource> getItems() {
-		Collection<ModelNode> nodes = get(TEMPLATE_ITEMS).asList();
+		Collection<ModelNode> nodes = get(OBJECTS).asList();
 		java.util.List<IResource> resources = new ArrayList<IResource>(nodes.size());
 		IResourceFactory factory = getClient().getResourceFactory();
 		if(factory != null){
@@ -43,7 +43,7 @@ public class List extends KubernetesResource implements IList{
 
 	@Override
 	public void addAll(Collection<IResource> items) {
-		ModelNode itemNode = get(TEMPLATE_ITEMS);
+		ModelNode itemNode = get(OBJECTS);
 		for (IResource resource : items) {
 			itemNode.add(ModelNode.fromJSONString(resource.toString()));
 		}

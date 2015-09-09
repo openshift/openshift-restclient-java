@@ -11,6 +11,7 @@ package com.openshift.internal.restclient.model.v1;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static com.openshift.internal.util.JBossDmrExtentions.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,13 +20,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.model.DeploymentConfig;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
-import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
@@ -97,7 +96,7 @@ public class DeploymentConfigTest {
 	@Test
 	public void testAddContainer() {
 		//remove containers hack
-		String[] path = propertyKeys.get(ResourcePropertyKeys.DEPLOYMENTCONFIG_CONTAINERS);
+		String[] path = getPath(DeploymentConfig.DEPLOYMENTCONFIG_CONTAINERS);
 		node.get(path).clear();
 		
 		//setup

@@ -15,7 +15,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
-import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.capability.CapabilityInitializer;
 import com.openshift.internal.restclient.model.build.CustomBuildStrategy;
 import com.openshift.internal.restclient.model.build.DockerBuildStrategy;
@@ -44,9 +43,33 @@ import com.openshift.restclient.model.build.IWebhookTrigger;
  * @author Jeff Cantrill
  */
 public class BuildConfig extends KubernetesResource implements IBuildConfig {
+	
+	private static final String BUILDCONFIG_SOURCE_CONTEXTDIR = "spec.source.contextDir";
+	private static final String BUILDCONFIG_SOURCE_TYPE = "spec.source.type";
+	private static final String BUILDCONFIG_SOURCE_URI = "spec.source.git.uri";
+	private static final String BUILDCONFIG_SOURCE_REF = "spec.source.git.ref";
+	public static final String BUILDCONFIG_TYPE = "spec.strategy.type";
+	private static final String BUILDCONFIG_CUSTOM_IMAGE = "spec.strategy.customStrategy.image";
+	private static final String BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET = "spec.strategy.customStrategy.exposeDockerSocket";
+	private static final String BUILDCONFIG_CUSTOM_ENV = "spec.strategy.customStrategy.env";
+	public static final String BUILDCONFIG_DOCKER_CONTEXTDIR = "spec.strategy.dockerStrategy.contextDir";
+	public static final String BUILDCONFIG_DOCKER_NOCACHE = "spec.strategy.dockerStrategy.noCache";
+	public static final String BUILDCONFIG_DOCKER_BASEIMAGE = "spec.strategy.dockerStrategy.baseImage";
+	private static final String BUILDCONFIG_OUTPUT_REPO =  "spec.output.to.name";
+	private static final String BUILDCONFIG_STI_IMAGE =  "spec.strategy.sourceStrategy.from.name";
+	private static final String BUILDCONFIG_STI_SCRIPTS = "spec.strategy.sourceStrategy.scripts";
+	private static final String BUILDCONFIG_STI_INCREMENTAL = "spec.strategy.sourceStrategy.incremental";
+	private static final String BUILDCONFIG_STI_ENV = "spec.strategy.sourceStrategy.env";
+	private static final String BUILDCONFIG_TRIGGERS = "spec.triggers";
+	private static final String BUILD_CONFIG_WEBHOOK_GITHUB_SECRET = "github.secret";
+	private static final String BUILD_CONFIG_WEBHOOK_GENERIC_SECRET = "generic.secret";
+	private static final String BUILD_CONFIG_IMAGECHANGE_IMAGE = "imageChange.image";
+	private static final String BUILD_CONFIG_IMAGECHANGE_NAME = "imageChange.from.name";
+	private static final String BUILD_CONFIG_IMAGECHANGE_TAG = "imageChange.tag";
 
-	public BuildConfig(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
+
+	public BuildConfig(ModelNode node, IClient client, Map<String, String []> overrideProperties) {
+		super(node, client, null);
 		CapabilityInitializer.initializeCapabilities(getModifiableCapabilities(), this, client);
 	}
 	

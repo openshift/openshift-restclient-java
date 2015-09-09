@@ -25,14 +25,14 @@ import com.openshift.restclient.utils.Samples;
  */
 public class PVCTest {
 
-	private static final String V1 = "v1beta3";
+	private static final String VERSION = "v1beta3";
 	private IPersistentVolumeClaim claim;
 	
 	@Before
 	public void setup(){
 		IClient client = mock(IClient.class);
 		claim = new ResourceFactory(client).create(Samples.V1BETA3_PVC.getContentAsString());
-		assertEquals(V1, claim.getApiVersion());
+		assertEquals(VERSION, claim.getApiVersion());
 	}
 	
 	@Test

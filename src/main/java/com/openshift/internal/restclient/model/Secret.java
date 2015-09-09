@@ -24,6 +24,10 @@ import com.openshift.restclient.utils.Base64Coder;
  * @author Jiri Pechanec
  */
 public class Secret extends KubernetesResource implements ISecret {
+	
+	private static final String SECRET_TYPE = "type";
+	private static final String SECRET_DATA = "data";
+
 
 	public Secret(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);

@@ -20,6 +20,9 @@ import com.openshift.restclient.model.project.IProjectRequest;
 
 public class OpenshiftProjectRequest extends KubernetesResource implements IProjectRequest {
 
+	private static final String DISPLAYNAME = "displayName";
+	private static final String DESCRIPTION = "description";
+
 	public OpenshiftProjectRequest(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
 		super(node, client, propertyKeys);
 	}
