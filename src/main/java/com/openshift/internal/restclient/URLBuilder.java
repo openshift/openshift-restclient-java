@@ -65,7 +65,8 @@ public class URLBuilder {
 		kindMap.put(ResourceKind.REPLICATION_CONTROLLER, "replicationcontrollers");
 		kindMap.put(ResourceKind.RESOURCE_QUOTA, "resourcequotas"); 
 		kindMap.put(ResourceKind.SERVICE, "services"); 
-		kindMap.put(ResourceKind.SECRET, "secrets"); 
+		kindMap.put(ResourceKind.SECRET, "secrets");
+		kindMap.put(ResourceKind.SERVICE_ACCOUNT, "serviceaccounts");
 
 		kindMap.put(ResourceKind.TEMPLATE_CONFIG, "templateconfig");//mechanism for processing templates pre v1beta3
 		kindMap.put(ResourceKind.PROCESSED_TEMPLATES, "processedtemplates");//mechanism for processing templates
