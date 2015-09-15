@@ -45,8 +45,8 @@ public class WebhookTrigger implements IWebhookTrigger {
 		return String.format("%s/webhooks/%s/%s",
 					baseURL,
 					secret,
-					type.toString()
-				).toLowerCase();
+					type.toLowerCase()
+				);
 	}
 
 	@Override
