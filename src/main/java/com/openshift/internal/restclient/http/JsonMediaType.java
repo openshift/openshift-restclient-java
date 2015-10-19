@@ -95,6 +95,7 @@ public class JsonMediaType implements IMediaType {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace(node.toJSONString(true));
 		}
+		//LOGGER.debug(node.toJSONString(true)); 
 	}
 
 }

@@ -1,10 +1,2 @@
-.project
-.classpath
-.settings
-target
-bin
-.metadata
-.idea
-*.iml
-**/integrationTest.properties
+/bin
 /target/

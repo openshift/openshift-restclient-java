@@ -139,12 +139,20 @@ public class UrlConnectionHttpClient implements IHttpClient {
 					url, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
 			// PATCH not yet supported by JVM
 			setRequestMethod(httpMethod, connection);
+			LOGGER.debug(String.format("Request URL: %s", url)); 
+			LOGGER.debug(String.format("Request Properties: %s", connection.getRequestProperties()));
+			LOGGER.debug(String.format("Request Method1: %s", connection.getRequestMethod()));
 			if (!parameters.isEmpty()) {
 				connection.setDoOutput(true);
 				setRequestMediaType(requestMediaType, connection);
 				requestMediaType.writeTo(parameters, connection.getOutputStream());
+			} else {
+				LOGGER.debug("no parameter");
 			}
-			return IOUtils.toString(connection.getInputStream(), "UTF-8");
+			String result = IOUtils.toString(connection.getInputStream(), "UTF-8");
+			//LOGGER.debug(String.format("Return String: %s", result));
+			
+			return result;
 		} catch (SocketTimeoutException e) {
 			throw e;
 		} catch (IOException e) {
@@ -162,15 +170,21 @@ public class UrlConnectionHttpClient implements IHttpClient {
 					url, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
 			// PATCH not yet supported by JVM
 			setRequestMethod(httpMethod, connection);
+			LOGGER.debug(String.format("Request URL: %s", url));
 			LOGGER.debug(String.format("Request Properties: %s", connection.getRequestProperties()));
-			LOGGER.debug(String.format("Request Method: %s", connection.getRequestMethod()));
-			if(resource != null){
+			LOGGER.debug(String.format("Request Method2: %s", connection.getRequestMethod()));
+			String str = resource.toString();
+			//LOGGER.debug(String.format("Request String: %s", str)); 
+			if(resource != null){ 
 				connection.setDoOutput(true);
 				PrintWriter writer = new PrintWriter(connection.getOutputStream());
-				writer.write(resource.toString());
+				writer.write(str);
 				writer.flush();
 			}
-			return IOUtils.toString(connection.getInputStream(), "UTF-8");
+			String result = IOUtils.toString(connection.getInputStream(), "UTF-8");
+			//LOGGER.debug("Return String: %s", result);
+			
+			return result;
 		} catch (SocketTimeoutException e) {
 			throw e;
 		} catch (IOException e) {

@@ -86,7 +86,7 @@ public final class ResourceKind {
 		set.add(OAUTH_CLIENT_AUTHORIZATION);
 		set.add(POLICY);
 		set.add(POLICY_BINDING);
-		set.add(PROJECT );
+		set.add(PROJECT);
 		set.add(PROJECT_REQUEST);
 		set.add(ROLE);
 		set.add(ROLE_BINDING);
