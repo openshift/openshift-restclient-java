@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.OpenShiftContext;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.authorization.IAuthorizationStrategyVisitor;
@@ -107,10 +108,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements ICapability {
 	}
 	
 	public final void start() {
-		String location = System.getProperty(OPENSHIFT_BINARY_LOCATION);
-		if(StringUtils.isBlank(location)) {
-			throw new LocationNotFoundException(String.format("The OpenShift 'oc' binary location was not specified. Set the property %s", OPENSHIFT_BINARY_LOCATION));
-		}
+		String location = getOpenShiftBinaryLocation();
 		if(!validate()) {
 			return;
 		}
@@ -158,5 +156,17 @@ public abstract class AbstractOpenShiftBinaryCapability implements ICapability {
 		}
 		process.destroyForcibly();
 	}
-	
+
+	protected String getOpenShiftBinaryLocation() {
+		//Check the ThreadLocal for oc binary
+		String location = OpenShiftContext.get().get(ICapability.OPENSHIFT_BINARY_LOCATION);
+		if (StringUtils.isBlank(location)) {
+			//Fall back to System property
+			location = System.getProperty(OPENSHIFT_BINARY_LOCATION);
+		}
+		if(StringUtils.isBlank(location)) {
+			throw new LocationNotFoundException(String.format("The OpenShift 'oc' binary location was not specified. Set the property %s", OPENSHIFT_BINARY_LOCATION));
+		}
+		return location;
+	}
 }
