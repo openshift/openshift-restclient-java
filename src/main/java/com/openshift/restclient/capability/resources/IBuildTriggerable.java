@@ -25,5 +25,12 @@ public interface IBuildTriggerable extends ICapability {
 	 * @return The build that was triggered
 	 */
 	IBuild trigger();
+	
+	/**
+	 * Trigger a build with the given source level commit id
+	 * @param commitId
+	 * @return The build that was triggered
+	 */
+	IBuild trigger(String commitId);
 
 }

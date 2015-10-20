@@ -24,9 +24,25 @@ import com.openshift.restclient.model.build.IBuildRequest;
  *
  */
 public class BuildRequest extends KubernetesResource implements IBuildRequest{
+	
+	private static final String COMMIT = "commit";
+	private static final String GIT = "git";
+	private static final String BIGGIT = "Git";
+	private static final String TYPE = "type";
+	private static final String REVISION = "revision";
+	private static final String REVISION_GIT_COMMIT = REVISION + "." + GIT + "." + COMMIT;
+	private static final String REVISION_TYPE = REVISION + "." + TYPE;
+	
 
 	public BuildRequest(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
 		super(node, client, propertyKeys);
+	}
+
+
+	@Override
+	public void setCommitId(String commitId) {
+		set(REVISION_TYPE, BIGGIT);
+		set(REVISION_GIT_COMMIT, commitId);
 	}
 
 }

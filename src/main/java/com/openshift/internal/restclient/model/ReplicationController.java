@@ -27,6 +27,8 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	private static final String REPLICATION_CONTROLLER_REPLICA_SELECTOR = "spec.selector";
 	private static final String REPLICATION_CONTROLLER_CONTAINERS = "spec.template.spec.containers";
 	private static final String REPLICATION_CONTROLLER_CURRENT_REPLICA_COUNT = "status.replicas";
+	
+	private static final String IMAGE = "image";
 		
 
 	public ReplicationController(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
@@ -36,6 +38,13 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	@Override
 	public int getDesiredReplicaCount() {
 		return asInt(REPLICATION_CONTROLLER_REPLICA_COUNT);
+	}
+	
+	
+
+	@Override
+	public void setDesiredReplicaCount(int numOfReplicas) {
+		this.set(REPLICATION_CONTROLLER_REPLICA_COUNT, numOfReplicas);
 	}
 
 	@Override
@@ -54,7 +63,7 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		if(node.getType() != ModelType.LIST) return new ArrayList<String>();
 		Collection<String> list = new ArrayList<String>();
 		for (ModelNode entry : node.asList()) {
-			list.add(entry.get("image").asString());
+			list.add(entry.get(IMAGE).asString());
 		}
 		return list;
 	}

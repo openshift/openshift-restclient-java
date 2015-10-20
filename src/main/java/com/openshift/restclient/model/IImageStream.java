@@ -23,4 +23,19 @@ public interface IImageStream extends IResource{
 	DockerImageURI getDockerImageRepository();
 	
 	void setDockerImageRepository(DockerImageURI imageUri);
+	
+	/**
+	 * Sets a new tag in an image stream
+	 * 
+	 * @param newTag  the new tag to create
+	 * @param fromTag existing tag the new tag is based from
+	 */
+	void setTag(String newTag, String fromTag);
+	
+	/**
+	 * Gets the long imagae id for the provided tag
+	 * @param tagName   name of the image stream tag to interrogate
+	 * @return
+	 */
+	String getImageId(String tagName);
 }

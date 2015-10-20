@@ -23,6 +23,12 @@ public interface IReplicationController  extends IResource{
 	int getDesiredReplicaCount();
 	
 	/**
+	 * Sets a new desired number of replicas
+	 * @param new number of replicas
+	 */
+	void setDesiredReplicaCount(int numOfReplicas);
+	
+	/**
 	 * Returns the current number of replicas
 	 * @return
 	 */

@@ -10,6 +10,7 @@ package com.openshift.internal.restclient.capability;
 
 import java.util.Map;
 
+import com.openshift.internal.restclient.capability.resources.BuildCanceller;
 import com.openshift.internal.restclient.capability.resources.BuildTrigger;
 import com.openshift.internal.restclient.capability.resources.ClientCapability;
 import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
@@ -24,6 +25,7 @@ import com.openshift.internal.restclient.capability.server.ServerTemplateProcess
 import com.openshift.internal.restclient.model.Service;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.ICapability;
+import com.openshift.restclient.capability.resources.IBuildCancelable;
 import com.openshift.restclient.capability.resources.IBuildTriggerable;
 import com.openshift.restclient.capability.resources.IClientCapability;
 import com.openshift.restclient.capability.resources.IDeploymentConfigTraceability;
@@ -68,6 +70,7 @@ public class CapabilityInitializer {
 	 */
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IBuild build, IClient client){
 		initializeCapability(capabilities, IBuildTriggerable.class, new BuildTrigger(build, client));
+		initializeCapability(capabilities, IBuildCancelable.class, new BuildCanceller(build, client));
 	}
 
 	/**
