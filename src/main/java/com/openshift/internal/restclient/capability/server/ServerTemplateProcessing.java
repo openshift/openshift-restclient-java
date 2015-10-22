@@ -95,6 +95,13 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 		public void updateParameterValues(Collection<IParameter> parameters) {
 			template.updateParameterValues(parameters);
 		}
+		
+		
+
+		@Override
+		public void updateParameter(String key, String value) {
+			template.updateParameter(key, value);
+		}
 
 		@Override
 		public Map<String, String> getObjectLabels() {

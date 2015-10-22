@@ -41,6 +41,14 @@ public interface ITemplate extends IResource {
 	 */
 	void updateParameterValues(Collection<IParameter> parameters);
 	
+	
+	/**
+	 * Update a parameter if it exists
+	 * @param key
+	 * @param value
+	 */
+	void updateParameter(String key, String value);
+	
 	/**
 	 * Retrieves the labels that are applied to the objects of the
 	 * template when it is processed.
