@@ -15,6 +15,7 @@ import static com.openshift.internal.util.JBossDmrExtentions.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.model.IPort;
@@ -45,9 +46,11 @@ public class Port implements IPort {
 
 	public Port(ModelNode node, IPort port) {
 		this(node);
-		set(node, KEY_MAP,PROPERTY_NAME, port.getName());
-		set(node, KEY_MAP,PROPERTY_PROTOCOL, port.getProtocol());
-		set(node, KEY_MAP,PROPERTY_CONTAINER_PORT, port.getContainerPort());
+		if(StringUtils.isNotEmpty(port.getName())) {
+			setName(port.getName());
+		}
+		setProtocol(port.getProtocol());
+		setContainerPort(port.getContainerPort());
 	}
 	
 	public ModelNode getNode() {
