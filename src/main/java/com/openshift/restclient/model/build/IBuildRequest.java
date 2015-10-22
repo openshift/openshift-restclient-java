@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.restclient.model.build;
 
+
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -18,5 +19,10 @@ import com.openshift.restclient.model.IResource;
  *
  */
 public interface IBuildRequest extends IResource {
-
+	/**
+	 * Set the commit level for the git clone extraction
+	 * of the source code the build operates against
+	 * @param commitId  the specific hexadecimal commit ID associated with a git log level
+	 */
+	void setCommitId(String commitId);
 }

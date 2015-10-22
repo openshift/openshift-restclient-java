@@ -31,4 +31,11 @@ public interface IBuild extends IResource {
 	 */
 	@Deprecated
 	String getPodName();
+	
+	/**
+	 * Cancels a build if its status is not "Complete",
+	 * "Failed", or "Cancelled"
+	 * @return if the build state was in fact changed 
+	 */
+	boolean cancel();
 }

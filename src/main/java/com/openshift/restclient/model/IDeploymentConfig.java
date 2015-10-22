@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -101,4 +102,45 @@ public interface IDeploymentConfig extends IResource {
 	 * @return
 	 */
 	IDeploymentTrigger addTrigger(String type);
+	
+	/**
+	 * Get the latest version number
+	 * @return
+	 */
+	int getLatestVersionNumber();
+	
+	/**
+	 * Set the latest version number
+	 * @param new version number
+	 * 
+	 */
+	void setLatestVersionNumber(int newVersionNumber);
+	
+	/**
+	 * Return whether deployments have fired because of triggers
+	 * @return
+	 */
+	boolean haveTriggersFired();
+	
+	/**
+	 * Return whether deployments have fired based on an image trigger
+	 * for a particular image
+	 * @param imageNameTag 	the image name:tag associated with an image trigger
+	 * @return
+	 */
+	boolean didImageTrigger(String imageNameTag);
+	
+	/**
+	 * Get the image hexadecimal ID for the image tag used with the
+	 * latest image change trigger
+	 * @param imageNameTag	the image name:tag associated with an image trigger
+	 * @return
+	 */
+	String getImageHexIDForImageNameAndTag(String imageNameTag);
+	
+	/**
+	 * Get the image name:tag from a image change trigger firing
+	 * @return
+	 */
+	String getImageNameAndTagForTriggeredDeployment();
 }

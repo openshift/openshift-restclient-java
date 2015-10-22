@@ -24,6 +24,11 @@ public class Build extends KubernetesResource implements IBuild{
 	private static final String BUILD_MESSAGE = "status.message";
 	private static final String BUILD_PODNAME = "podName";
 	private static final String BUILD_STATUS = "status.phase";
+	private static final String BUILD_STATUS_CANCELLED = "status.cancelled";
+	
+	private static final String COMPLETE = "Complete";
+	private static final String FAILED = "Failed";
+	private static final String CANCELLED = "Cancelled";
 
 
 	public Build(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
@@ -44,6 +49,16 @@ public class Build extends KubernetesResource implements IBuild{
 	@Override
 	public String getPodName() {
 		return asString(BUILD_PODNAME);
+	}
+
+	@Override
+	public boolean cancel() {
+		String currentStatus = getStatus();
+		if (!currentStatus.equalsIgnoreCase(COMPLETE) && !currentStatus.equalsIgnoreCase(FAILED) && !currentStatus.equalsIgnoreCase(CANCELLED)) {
+			set(BUILD_STATUS_CANCELLED, true);
+			return true;
+		}
+		return false;
 	}
 
 	

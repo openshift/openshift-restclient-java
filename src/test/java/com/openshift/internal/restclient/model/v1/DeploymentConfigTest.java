@@ -67,6 +67,12 @@ public class DeploymentConfigTest {
 	}
 	
 	@Test
+	public void setLatestVersionNumber(){
+		config.setLatestVersionNumber(3);
+		assertEquals(3, config.getLatestVersionNumber());
+	}
+	
+	@Test
 	public void setReplicaSelector() {
 		Map<String, String> exp = new HashMap<String, String>();
 		exp.put("foo", "bar");

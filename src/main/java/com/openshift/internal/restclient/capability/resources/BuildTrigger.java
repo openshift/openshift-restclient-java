@@ -59,4 +59,13 @@ public class BuildTrigger implements IBuildTriggerable {
 		return client.create(resource.getKind(), resource.getNamespace(), resource.getName(), subresource, request);
 	}
 
+	@Override
+	public IBuild trigger(String commitId) {
+		IBuildRequest request = client.getResourceFactory().stub(ResourceKind.BUILD_REQUEST, resource.getName());
+		request.setCommitId(commitId);
+		return client.create(resource.getKind(), resource.getNamespace(), resource.getName(), subresource, request);
+	}
+	
+	
+
 }
