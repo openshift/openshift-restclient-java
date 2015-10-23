@@ -19,4 +19,10 @@ public interface IVolume {
 
 	String getName();
 	void setName(String name);
+	
+	void setMountPath(String path);
+	String getMountPath();
+	
+	void setReadOnly(boolean readonly);
+	boolean isReadOnly();
 }

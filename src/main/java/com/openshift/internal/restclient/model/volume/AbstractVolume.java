@@ -29,6 +29,9 @@ public abstract class AbstractVolume
 	extends ModelNodeAdapter 
 	implements IVolume, ResourcePropertyKeys{
 	
+	private static final String READONLY = "readOnly";
+	private static final String MOUNT_PATH = "mountPath";
+	
 	public AbstractVolume(ModelNode node) {
 		super(node, new HashMap<String, String []>());
 	}
@@ -42,6 +45,44 @@ public abstract class AbstractVolume
 	public void setName(String name) {
 		set(getNode(), getPropertyKeys(), NAME, name);
 	}
+
+	@Override
+	public void setMountPath(String path) {
+		set(getNode(), getPropertyKeys(), MOUNT_PATH, path);
+	}
+
+	@Override
+	public String getMountPath() {
+		return asString(getNode(), getPropertyKeys(), MOUNT_PATH);
+	}
+
+	@Override
+	public void setReadOnly(boolean readonly) {
+		set(getNode(), getPropertyKeys(), READONLY, readonly);
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return asBoolean(getNode(), getPropertyKeys(), READONLY);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof AbstractVolume))
+			return false;
+		AbstractVolume other = (AbstractVolume) obj;
+		return getName().equals(other.getName()) &&
+				getMountPath().equals(other.getMountPath()) &&
+				isReadOnly() == other.isReadOnly();
+	}
+
+	@Override
+	public int hashCode() {
+		int code = isReadOnly() ? 1 : 0;
+		code = code + getName().hashCode();
+		return code + getMountPath().hashCode();
+	}
+	
 	
 	
 }

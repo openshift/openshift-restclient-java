@@ -8,20 +8,27 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.v1;
 
+import static com.openshift.internal.util.JBossDmrExtentions.getPath;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.dmr.ModelNode;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.model.ReplicationController;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.model.IReplicationController;
 import com.openshift.restclient.utils.Samples;
 
@@ -32,12 +39,34 @@ public class ReplicationControllerTest {
 
 	private static final String VERSION = "v1";
 	private static IReplicationController rc;
+	private static ModelNode node;
+	private static IClient client;
 	
-	@BeforeClass
-	public static void setup(){
-		IClient client = mock(IClient.class);
-		ModelNode node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
+	@Before
+	public void setup(){
+		client = mock(IClient.class);
+		node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
 		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
+	}
+	
+	@Test
+	public void setReplicaSelector() {
+		Map<String, String> exp = new HashMap<String, String>();
+		exp.put("foo", "bar");
+		node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
+		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
+		rc.setReplicaSelector(exp);
+		assertEquals(exp, rc.getReplicaSelector());
+	}
+
+	@Test
+	public void setReplicaSelectorWithKeyValue() {
+		Map<String, String> exp = new HashMap<String, String>();
+		exp.put("foo", "bar");
+		node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
+		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
+		rc.setReplicaSelector("foo","bar");
+		assertEquals(exp, rc.getReplicaSelector());
 	}
 	
 	@Test
@@ -53,6 +82,15 @@ public class ReplicationControllerTest {
 	public void getDesiredReplicaCount(){
 		assertEquals(1, rc.getDesiredReplicaCount());
 	}
+
+	@Test
+	public void setDesiredReplicaCount(){
+		rc.setDesiredReplicaCount(9);
+		assertEquals(9, rc.getDesiredReplicaCount());
+
+		rc.setReplicas(6);
+		assertEquals(6, rc.getDesiredReplicaCount());
+	}
 	
 	@Test
 	public void getCurrentReplicaCount(){
@@ -64,4 +102,37 @@ public class ReplicationControllerTest {
 		String [] exp = new String []{"openshift/mysql-55-centos7:latest"};
 		assertArrayEquals(exp , rc.getImages().toArray());
 	}
+	
+	@Test
+	public void testAddContainer() {
+		//remove containers hack
+		String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
+		node.get(path).clear();
+		
+		//setup
+		DockerImageURI uri = new DockerImageURI("aproject/an_image_name");
+		IPort port = mock(IPort.class);
+		when(port.getProtocol()).thenReturn("TCP");
+		when(port.getContainerPort()).thenReturn(8080);
+		Set<IPort> ports = new HashSet<>();
+		ports.add(port);
+		
+		rc.addContainer(uri, ports, new HashMap<String, String>());
+		
+		List<ModelNode> containers = node.get(path).asList();
+		assertEquals(1, containers.size());
+		
+		//expectations
+		ModelNode portNode = new ModelNode();
+		portNode.get("protocol").set(port.getProtocol());
+		portNode.get("containerPort").set(port.getContainerPort());
+		
+		ModelNode exp = new ModelNode();
+		exp.get("name").set(uri.getName());
+		exp.get("image").set(uri.getUriWithoutHost());
+		exp.get("ports").add(portNode);
+		
+		assertEquals(exp.toJSONString(false), containers.get(0).toJSONString(false));
+	}
+	
 }

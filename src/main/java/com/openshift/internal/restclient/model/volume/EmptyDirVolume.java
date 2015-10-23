@@ -11,6 +11,8 @@
 
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.restclient.model.volume.IVolume;
+
 /**
  * 
  * @author jeff.cantrill
@@ -18,8 +20,17 @@ import org.jboss.dmr.ModelNode;
  */
 public class EmptyDirVolume extends AbstractVolume {
 
-	public EmptyDirVolume(ModelNode node) {
+	public EmptyDirVolume(ModelNode node, IVolume volume) {
 		super(node);
+		if(volume != null) {
+			setMountPath(volume.getMountPath());
+			setReadOnly(volume.isReadOnly());
+			setName(volume.getName());
+		}
+	}
+
+	public EmptyDirVolume(ModelNode node) {
+		this(node, null);
 	}
 
 }
