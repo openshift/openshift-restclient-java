@@ -54,6 +54,21 @@ public class TemplateTest {
 	}
 
 	@Test
+	public void updateParameter() {
+		template.updateParameter("foo", "newbar");
+		List<String> updatedParams = new ArrayList<String>();
+		for (IParameter param : template.getParameters().values()) {
+			updatedParams.add(String.format("%s:%s", param.getName(), param.getValue()));
+		}
+
+		String [] exp = new String [] {"foo:newbar","abc:xyz","123:456"};
+		String [] act = updatedParams.toArray(new String [] {});
+		Arrays.sort(exp);
+		Arrays.sort(act);
+		assertArrayEquals(exp, act);
+	}
+
+	@Test
 	public void updateParameters() {
 		Collection<IParameter> parameters = new ArrayList<IParameter>();
 		parameters.add(new Parameter(param("foo", "newbar")));

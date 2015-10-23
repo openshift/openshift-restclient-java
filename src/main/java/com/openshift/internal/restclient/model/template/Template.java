@@ -87,6 +87,14 @@ public class Template extends KubernetesResource implements ITemplate{
 			}
 		}
 	}
+	
+	@Override
+	public void updateParameter(String key, String value) {
+		Map<String, IParameter> params = getParameters();
+		if(params.containsKey(key)) {
+			params.get(key).setValue(value);
+		}
+	}
 
 	/**
 	 * Returns <code>true</code> if this template contains the given text
