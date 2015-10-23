@@ -10,6 +10,9 @@
  ******************************************************************************/
 package com.openshift.restclient.model.authorization;
 
+import java.util.Set;
+
+import com.openshift.restclient.model.IObjectReference;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -17,4 +20,17 @@ import com.openshift.restclient.model.IResource;
  */
 public interface IRoleBinding extends IResource {
 
+	void setUserNames(Set<String> names);
+	Set<String> getUserNames();
+	void addUserName(String name);
+
+	void setGroupNames(Set<String> names);
+	Set<String> getGroupNames();
+	void addGroupName(String name);
+	
+	void setSubjects(Set<IObjectReference> subjects);
+	Set<IObjectReference> getSubjects();
+	
+	IObjectReference getRoleRef();
+	void setRoleRef(IObjectReference roleRef);
 }

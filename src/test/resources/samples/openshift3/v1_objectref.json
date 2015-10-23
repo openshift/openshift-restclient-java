@@ -1,0 +1,8 @@
+{
+    "kind": "ServiceAccount",
+    "namespace": "test",
+    "name": "builder",
+    "uid": "ce20b132-7986-11e5-b1e5-080027bdffff",
+    "resourceVersion": "33366",
+    "apiVersion": "v1",
+}

@@ -264,6 +264,14 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		return JBossDmrExtentions.asBoolean(node, propertyKeys, property);
 	}
 
+	protected Set asSet(String property, ModelType type) {
+		return JBossDmrExtentions.asSet(node, propertyKeys, property, type);
+	}
+
+	protected void set(String property, Set<String> values) {
+		JBossDmrExtentions.set(node, propertyKeys, property, values);
+	}
+
 	@Override
 	public String toString() {
 		return node.toJSONString(true);

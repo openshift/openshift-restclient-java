@@ -1,0 +1,25 @@
+{
+  "name": "admins",
+  "roleBinding": {
+    "metadata": {
+      "name": "admins",
+      "namespace": "test",
+      "uid": "cdf1e94a-7986-11e5-b1e5-080027bdffff",
+      "resourceVersion": "33359",
+      "creationTimestamp": "2015-10-23T13:05:59Z"
+    },
+    "userNames": [
+      "ausername"
+    ],
+    "groupNames": [],
+    "subjects": [
+      {
+        "kind": "User",
+        "name": "ausername"
+      }
+    ],
+    "roleRef": {
+      "name": "admin"
+    }
+  }
+}
