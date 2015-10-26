@@ -28,6 +28,7 @@ public interface ResourcePropertyKeys {
 	static final String OBJECTS = "objects";
 	static final String PORTS = "ports";
 	static final String PROTOCOL = "protocol";
+	static final String RESOURCE_VERSION = "resourceVersion";
 	static final String VALUE = "value";
 	static final String TYPE = "type";
 }

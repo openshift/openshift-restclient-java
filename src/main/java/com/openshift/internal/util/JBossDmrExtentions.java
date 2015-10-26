@@ -10,10 +10,13 @@ package com.openshift.internal.util;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 
 /**
  * Helper extensions to those provided
@@ -79,6 +82,48 @@ public class JBossDmrExtentions {
 		}
 		return map;
 	}
+
+	/**
+	 * <T>  the type to return which are valid DMR types (e.g. asString()).
+	 * String is currently only supported.  Add more as needed
+	 * @param root
+	 * @param propertyKeys
+	 * @param key
+	 * @param type
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Set asSet(ModelNode root, Map<String, String []> propertyKeys, String key, ModelType type){
+		Set set = new HashSet();
+		String [] path = getPath(propertyKeys, key);
+		ModelNode node = root.get(path);
+		if( !node.isDefined())
+			return set;
+		for (ModelNode entry : node.asList()) {
+			Object instance = null;
+			switch(type) {
+			case STRING:
+				instance = entry.asString();
+				break;
+			case BOOLEAN:
+				instance = entry.asBoolean();
+				break;
+			case INT:
+				instance = entry.asInt();
+			default:
+			}
+			set.add(instance);
+		}
+		return set;
+	}
+	
+	 public static void set(ModelNode root, Map<String, String []> propertyKeys, String key, Set<String> values) {
+		String [] path = getPath(propertyKeys, key);
+		ModelNode node = root.get(path);
+		for (String entry : values) {
+			node.add(entry);
+		}
+	}
 	
 	/**
 	 * 
@@ -135,7 +180,7 @@ public class JBossDmrExtentions {
 	}
 	
 	public static String[] getPath(Map<String, String []> propertyKeys, String key) {
-		if(propertyKeys.containsKey(key)) {
+		if(propertyKeys != null && propertyKeys.containsKey(key)) {
 			return propertyKeys.get(key); //allow override
 		}
 		return key.split("\\.");
