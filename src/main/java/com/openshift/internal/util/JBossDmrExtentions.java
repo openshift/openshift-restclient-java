@@ -124,6 +124,14 @@ public class JBossDmrExtentions {
 			node.add(entry);
 		}
 	}
+
+	public static void set(ModelNode root, Map<String, String []> propertyKeys, String key, String... values) {
+		String [] path = getPath(propertyKeys, key);
+		ModelNode node = root.get(path);
+		for (String value : values) {
+			node.add(value);
+		}
+	}
 	
 	/**
 	 * 

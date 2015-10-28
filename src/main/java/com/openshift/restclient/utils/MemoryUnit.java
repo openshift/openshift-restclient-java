@@ -8,12 +8,10 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.restclient.model.volume;
+package com.openshift.restclient.utils;
 
-public interface PVCAccessModes {
+public enum MemoryUnit {
 
-	static final String READ_WRITE_ONCE = "ReadWriteOnce";
-	static final String READ_ONLY_MANY = "ReadOnlyMany";
-	static final String READ_WRITE_MANY = "ReadWriteMany";
+	Ki, Mi, Gi, Ti, Pi, Ei;
 
 }

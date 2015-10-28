@@ -8,8 +8,6 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +24,8 @@ import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
+
+import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
 
 /**
  * Resource is an abstract representation of a Kubernetes resource
@@ -265,6 +265,10 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		return JBossDmrExtentions.asString(node, propertyKeys, property);
 	}
 
+	protected boolean asBoolean(ModelNode node, String property) {
+		return JBossDmrExtentions.asBoolean(node, propertyKeys, property);
+	}
+
 	protected boolean asBoolean(String property) {
 		return JBossDmrExtentions.asBoolean(node, propertyKeys, property);
 	}
@@ -274,6 +278,10 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	}
 
 	protected void set(String property, Set<String> values) {
+		JBossDmrExtentions.set(node, propertyKeys, property, values);
+	}
+
+	protected  void set(String property, String... values) {
 		JBossDmrExtentions.set(node, propertyKeys, property, values);
 	}
 

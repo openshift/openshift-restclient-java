@@ -44,6 +44,7 @@ public final class ResourceKind {
 	public static final String LIMIT_RANGE = "LimitRange";
 	public static final String POD = "Pod";
 	public static final String PVC = "PersistentVolumeClaim";
+	public static final String PERSISTENT_VOLUME = "PersistentVolume";
 	public static final String REPLICATION_CONTROLLER = "ReplicationController";
 	public static final String RESOURCE_QUOTA = "ResourceQuota";
 	public static final String SERVICE = "Service";
@@ -99,6 +100,7 @@ public final class ResourceKind {
 		set.add(LIMIT_RANGE);
 		set.add(POD);
 		set.add(PVC);
+		set.add(PERSISTENT_VOLUME);
 		set.add(REPLICATION_CONTROLLER);
 		set.add(RESOURCE_QUOTA);
 		set.add(SERVICE);
