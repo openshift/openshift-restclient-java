@@ -59,4 +59,6 @@ public interface IParameter extends Cloneable {
 	 */
 	boolean isRequired();
 	
+	IParameter clone();
+	
 }
