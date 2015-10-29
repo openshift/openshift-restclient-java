@@ -13,7 +13,7 @@ package com.openshift.restclient.model.template;
  * 
  * @author Jeff Cantrill
  */
-public interface IParameter {
+public interface IParameter extends Cloneable {
 	
 	/**
 	 * Returns the name of the parameter that is substituted
@@ -58,4 +58,5 @@ public interface IParameter {
 	 * @return
 	 */
 	boolean isRequired();
+	
 }
