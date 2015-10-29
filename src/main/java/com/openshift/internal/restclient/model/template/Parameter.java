@@ -30,6 +30,12 @@ public class Parameter implements IParameter{
 		this.node = node;
 	}
 	
+	
+	@Override
+	public IParameter clone() {
+		return new Parameter(node.clone());
+	}
+
 	@Override
 	public String getName() {
 		return asString("name");
@@ -74,6 +80,8 @@ public class Parameter implements IParameter{
 			return value.asString();
 		return "";
 	}
+	
+	
 
 	@Override
 	public int hashCode() {
