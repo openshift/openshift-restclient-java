@@ -44,6 +44,17 @@ public class URLBuilderTest {
 	}
 	
 	@Test
+	public void testBuildingURLForAWatchService() throws Exception {
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3,"foo");
+		
+		String url = builder.
+				resource(resource)
+				.watch()
+				.build().toString();
+		assertEquals(String.format("%s/api/v1beta3/watch/namespaces/foo/services", BASE_URL),url.toString());
+	}
+	
+	@Test
 	public void testBuildingURLForAProjectUsingResource() throws Exception {
 		IResource resource = givenAResource(ResourceKind.PROJECT, KubernetesAPIVersion.v1beta3,"foo");
 		

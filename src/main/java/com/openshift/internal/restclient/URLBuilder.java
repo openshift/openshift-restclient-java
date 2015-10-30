@@ -80,6 +80,7 @@ public class URLBuilder {
 
 	private String namespace;
 	private String subResource;
+	private boolean watch;
 
 	URLBuilder(URL baseUrl, Map<String, String> typeMappings, IResource resource) {
 		this(baseUrl, typeMappings);
@@ -166,6 +167,9 @@ public class URLBuilder {
 	private void buildWithNamespaceInPath(StringBuilder url) {
 		url.append("/")
 			.append(typeMappings.get(kind));
+		if(watch) {
+			url.append("/watch");
+		}
 		if(namespace != null && !ResourceKind.PROJECT.equals(kind)) {
 			url.append("/namespaces/")
 				.append(namespace);
@@ -216,6 +220,11 @@ public class URLBuilder {
 			}
 		}
 		return url;
+	}
+
+	public URLBuilder watch() {
+		this.watch = true;
+		return this;
 	}
 
 }

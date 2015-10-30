@@ -30,6 +30,7 @@ import com.openshift.internal.restclient.http.UrlConnectionHttpClientBuilder;
 import com.openshift.internal.restclient.model.Status;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.IOpenShiftWatchListener;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.restclient.OpenShiftException;
@@ -87,7 +88,8 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		factory = new ResourceFactory(this);
 		openShiftVersion = System.getProperty(SYSTEM_PROP_OPENSHIFT_API_VERSION, null);
 		kubernetesVersion = System.getProperty(SYSTEM_PROP_K8E_API_VERSION, null);
-		authClient = new AuthorizationClientFactory().create(this);
+		authClient = new AuthorizationClientFactory().create(this);	
+		authClient.setSSLCertificateCallback(sslCertCallback);
 	}
 	
 	/*
@@ -105,7 +107,12 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		return factory;
 	};
 	
-	
+	@Override
+	public void watch(String kind, String namespace, IOpenShiftWatchListener listener) {
+		WatchClient watcher = new WatchClient(getBaseURL(), getTypeMappings(), getResourceFactory(), getAuthorizationStrategy(), authClient, client.getSSLCertificateCallback());
+		watcher.watch(kind, namespace, listener);
+	}
+
 	@Override
 	public String getResourceURI(IResource resource) {
 		return new URLBuilder(getBaseURL(), getTypeMappings(), resource).build().toString();
@@ -194,7 +201,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			LOGGER.debug(response);
 			return factory.create(response);
 		} catch (HttpClientException e){
-			throw createOpenShiftException(String.format("Could not create resource %s in namespace %s: %s", resource.getName(), namespace, e.getMessage()), e);
+			throw createOpenShiftException(String.format("Could not create resource %s in namespace '%s': %s", resource.getName(), namespace, e.getMessage()), e);
 		} catch (SocketTimeoutException e) {
 			throw new OpenShiftException(e, "Socket timeout creating resource %s", resource.getName());
 		}
@@ -470,6 +477,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	@Override
 	public void setSSLCertificateCallback(ISSLCertificateCallback callback) {
 		this.authClient.setSSLCertificateCallback(callback);
+		this.client.setSSLCertificateCallback(callback);
 	}
 
 	@Override

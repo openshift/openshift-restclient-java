@@ -53,6 +53,11 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		this.propertyKeys = overrideProperties;
 		initializeCapabilities(capabilities, this, client);
 	}
+	
+	@Override
+	public Map<String, String> getMetadata() {
+		return asMap(METADATA);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

@@ -22,7 +22,11 @@ import org.slf4j.LoggerFactory;
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.NoopSSLCertificateCallback;
+import com.openshift.restclient.authorization.AuthorizationClientFactory;
 import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
+import com.openshift.restclient.authorization.IAuthorizationClient;
+import com.openshift.restclient.authorization.IAuthorizationContext;
+import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -65,7 +69,10 @@ public class IntegrationTestHelper {
 		IClient client = createClient();
 		final String user = getDefaultClusterAdminUser();
 		final String password = getDefaultClusterAdminPassword();
-		client.setAuthorizationStrategy(new BasicAuthorizationStrategy(user, password,"abcdef"));
+		client.setAuthorizationStrategy(new BasicAuthorizationStrategy(user, password, ""));
+		IAuthorizationClient authClient = new AuthorizationClientFactory().create(client);
+		IAuthorizationContext context = authClient.getContext(client.getBaseURL().toString());
+		client.setAuthorizationStrategy(new TokenAuthorizationStrategy(context.getToken()));
 		return client;
 	}
 	

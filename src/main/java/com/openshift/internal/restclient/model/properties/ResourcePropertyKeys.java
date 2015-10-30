@@ -21,6 +21,7 @@ public interface ResourcePropertyKeys {
 	static final String ANNOTATIONS = "metadata.annotations";
 	static final String CREATION_TIMESTAMP = "metadata.creationTimestamp";
 	static final String LABELS = "metadata.labels";
+	static final String METADATA = "metadata";
 	static final String METADATA_NAME = "metadata.name";
 	static final String NAMESPACE = "metadata.namespace";
 
