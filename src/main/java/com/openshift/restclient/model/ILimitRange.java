@@ -10,11 +10,17 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
-import com.openshift.restclient.model.IResource;
+import java.util.List;
+
+import com.openshift.restclient.model.limit.ILimit;
 
 /**
- * @author jeff.cantrill
+ * @author HyunsooKim1112
  */
 public interface ILimitRange extends IResource {
+	
+	public List<ILimit> getLimits();
+	
+	public void setLimits(List<ILimit> iLimits);
 
 }

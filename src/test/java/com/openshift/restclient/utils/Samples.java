@@ -47,6 +47,7 @@ public enum Samples {
 	V1_BUILD("openshift3/v1_build.json"), 
 	V1_POD("openshift3/v1_pod.json"), 
 	V1_RESOURCE_QUOTA("openshift3/v1_resource_quota.json"),
+	V1_LIMIT_RANGE("openshift3/v1_limit_range.json"),
 	V1_PROJECT("openshift3/v1_project.json"), 
 	V1_PROJECT_REQUEST("openshift3/v1_project_request.json"), 
 	V1_PVC("openshift3/v1_pvc.json"), 
