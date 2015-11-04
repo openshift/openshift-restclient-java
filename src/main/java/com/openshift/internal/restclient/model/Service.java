@@ -43,13 +43,16 @@ public class Service extends KubernetesResource implements IService {
 	public void setPort(int port){
 		IServicePort lowestPort = getLowestPort();
 		if(lowestPort == null) {
-			lowestPort = addPort();
+			lowestPort = addPort(0,0);
 		}
 		lowestPort.setPort(port);
 	}
 	
-	private IServicePort addPort() {
-		return new ServicePort(get(SERVICE_PORT).add());
+	public IServicePort addPort(int port, int targetPort) {
+		ServicePort servicePort = new ServicePort(get(SERVICE_PORT).add());
+		if(port > 0) servicePort.setPort(port);
+		if(targetPort >0) servicePort.setTargetPort(targetPort);
+		return servicePort;
 	}
 	
 	@Override
@@ -116,7 +119,7 @@ public class Service extends KubernetesResource implements IService {
 	public void setTargetPort(int port) {
 		IServicePort portspec = getLowestPort();
 		if(portspec == null) {
-			portspec = addPort();
+			portspec = addPort(0,0);
 		}
 		portspec.setTargetPort(port);
 	}

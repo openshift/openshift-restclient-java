@@ -20,6 +20,8 @@ import com.openshift.restclient.capability.ICapable;
  * @author Jeff Cantrill
  */
 public interface IResource extends ICapable {
+	
+	Map<String, String> getMetadata();
 
 	/**
 	 * Retrieves the list of capabilities supported by this resource

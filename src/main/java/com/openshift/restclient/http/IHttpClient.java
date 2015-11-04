@@ -15,6 +15,7 @@ import java.net.URL;
 
 import com.openshift.internal.restclient.http.EncodingException;
 import com.openshift.internal.restclient.http.HttpClientException;
+import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
 import com.openshift.restclient.model.IResource;
 
@@ -81,5 +82,9 @@ public interface IHttpClient extends IHttpStatusCodes{
 	public void setAcceptedMediaType(String acceptedMediaType);
 	
 	public void setAuthorizationStrategy(IAuthorizationStrategy strategy);
+
+	public void setSSLCertificateCallback(ISSLCertificateCallback callback);
+	
+	public ISSLCertificateCallback getSSLCertificateCallback();
 	
 }

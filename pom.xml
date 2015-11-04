@@ -160,6 +160,11 @@
 			<version>1.2.16</version>
 		</dependency>
 		<dependency>
+		  <groupId>org.apache.httpcomponents</groupId>
+		  <artifactId>httpasyncclient</artifactId>
+		  <version>4.0.2</version>
+		</dependency>
+		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient</artifactId>
 		    <version>4.3.6</version>

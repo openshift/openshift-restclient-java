@@ -37,7 +37,9 @@ public interface IService extends IResource{
 	 * @return
 	 */
 	int getPort();
-
+	
+	IServicePort addPort(int port, int targetPort);
+	
 	/**
 	 * Sets the container name that the service
 	 * routes traffic to. 

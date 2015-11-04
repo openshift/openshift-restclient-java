@@ -83,6 +83,16 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 	
 	@Override
+	public void setSSLCertificateCallback(ISSLCertificateCallback callback) {
+		this.sslAuthorizationCallback = callback;
+	}
+	
+	@Override
+	public ISSLCertificateCallback getSSLCertificateCallback() {
+		return sslAuthorizationCallback;
+	}
+
+	@Override
 	public void setAuthorizationStrategy(IAuthorizationStrategy strategy) {
 		this.authStrategy = strategy;
 	}
@@ -162,9 +172,12 @@ public class UrlConnectionHttpClient implements IHttpClient {
 					url, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
 			// PATCH not yet supported by JVM
 			setRequestMethod(httpMethod, connection);
-			LOGGER.debug(String.format("Request Properties: %s", connection.getRequestProperties()));
-			LOGGER.debug(String.format("Request Method: %s", connection.getRequestMethod()));
+			if(LOGGER.isDebugEnabled()) {
+				LOGGER.debug(String.format("Request Properties: %s", connection.getRequestProperties()));
+				LOGGER.debug(String.format("Request Method: %s", connection.getRequestMethod()));
+			}
 			if(resource != null){
+				if(LOGGER.isDebugEnabled()) LOGGER.debug(resource.toJson(false));
 				connection.setDoOutput(true);
 				PrintWriter writer = new PrintWriter(connection.getOutputStream());
 				writer.write(resource.toString());

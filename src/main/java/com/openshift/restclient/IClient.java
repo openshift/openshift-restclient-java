@@ -29,6 +29,8 @@ import com.openshift.restclient.model.user.IUser;
  */
 public interface IClient extends ICapable, IAuthorizationClient{
 	
+	void watch(String kind, String namespace, IOpenShiftWatchListener listener);
+	
 	/**
 	 * Lists all possible resources of the given kind in the default namespace
 	 * @param kind
