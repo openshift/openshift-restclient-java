@@ -402,6 +402,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			final String k8eEndpoint = String.format("%s/%s", API_ENDPOINT, k8eApiVersion);
 			typeMappings.put(ResourceKind.EVENT, k8eEndpoint);
 			typeMappings.put(ResourceKind.POD, k8eEndpoint);
+			typeMappings.put(ResourceKind.NODE, k8eEndpoint);
 			typeMappings.put(ResourceKind.PVC, k8eEndpoint);
 			typeMappings.put(ResourceKind.LIMIT_RANGE, k8eEndpoint);
 			typeMappings.put(ResourceKind.REPLICATION_CONTROLLER, k8eEndpoint);

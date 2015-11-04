@@ -42,6 +42,7 @@ public final class ResourceKind {
 	//Kubernetes Kinds
 	public static final String EVENT = "Event";
 	public static final String LIMIT_RANGE = "LimitRange";
+	public static final String NODE = "Node";
 	public static final String POD = "Pod";
 	public static final String PVC = "PersistentVolumeClaim";
 	public static final String REPLICATION_CONTROLLER = "ReplicationController";
@@ -98,6 +99,7 @@ public final class ResourceKind {
 		set.add(EVENT);
 		set.add(LIMIT_RANGE);
 		set.add(POD);
+		set.add(NODE);
 		set.add(PVC);
 		set.add(REPLICATION_CONTROLLER);
 		set.add(RESOURCE_QUOTA);

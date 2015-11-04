@@ -51,6 +51,7 @@ public class URLBuilder {
 		kindMap.put(ResourceKind.POLICY_BINDING,"policybindings");
 		kindMap.put(ResourceKind.PVC,"persistentvolumeclaims");
 		kindMap.put(ResourceKind.PROJECT, "projects");
+		kindMap.put(ResourceKind.NODE, "nodes");
 		kindMap.put(ResourceKind.PROJECT_REQUEST, "projectrequests");
 		kindMap.put(ResourceKind.ROLE, "roles");
 		kindMap.put(ResourceKind.ROLE_BINDING, "rolebindings");
