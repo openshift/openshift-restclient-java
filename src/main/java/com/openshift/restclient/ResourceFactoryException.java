@@ -9,12 +9,12 @@
 package com.openshift.restclient;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public class ResourceFactoryException extends OpenShiftException {
 
 	private static final long serialVersionUID = 4215359575300693464L;
-	
+
 	public ResourceFactoryException(Throwable e, String message, Object... arguments) {
 		super(e, message, arguments);
 	}

@@ -1,9 +1,9 @@
 Design
 ======
 
-This document describes the high level design for the OpenShift Java 
+This document describes the high level design for the OpenShift Java
 Client (OSJC).  It is intended to cover aspects of this client
-in support of the v3 architectual release of OpenShift which is based on
+in support of the v3 architectural release of OpenShift which is based on
 Kubernetes and Docker.  Design considerations for previous releases of OpenShift
 are not discussed here.
 
@@ -12,7 +12,7 @@ Considerations & Motivations
 
 The primary consideration for the current design is to isolate, as much as possible,
 consumers of the library (e.g. JBoss Tools) from changes in the the API models.  Previous
-experience has shown it can be challanging to maintain a client(e.g. UI) that supports both 
+experience has shown it can be challenging to maintain a client(e.g. UI) that supports both
 bleeding edge versions as well as a more stable code base such as enterprise deployments.
 Possible scenarios that are specifically being addressed:
 
@@ -25,7 +25,7 @@ The result is a capabilities model where clients consume the capabilities offere
 by the various resources instead of depending upon specific versions of the API model.
 This should simply client code by:
 
-1. Removing if/then checkes based on model versions
+1. Removing if/then checks based on model versions
 1. Allowing consumption of back-ported functionality by enabling the appropriate
 capability in the library code.
 1. "Removing" deprecated functionality by removing the capability in the library code.
@@ -42,11 +42,11 @@ allows clients to interact with the server by:
 
 1. Providing interfaces that expose only properties that are fundamental to a given type
 (e.g. triggers for build) or to all types (e.g. name, labels)
-1. Providing features or functional aspects as separate capabilites (as helper classes)
+1. Providing features or functional aspects as separate capabilities (as helper classes)
 1. Limiting the possible types to those most likely to be of interest (i.e. Pod but not containers)
 
 ### Implementation
-The current implementation is based upon the JBoss DMR library.  This library consumes a 
+The current implementation is based upon the JBoss DMR library.  This library consumes a
 JSON string and can access specific parts of the content using a path syntax.  The default
 implementation of the client uses a resource factory to consume a versioned JSON string and return an
 instance of an API model that has the correct paths to the objects properties.  The paths are
