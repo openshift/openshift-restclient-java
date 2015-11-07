@@ -3,7 +3,7 @@
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
 package com.openshift.internal.restclient.model.v1beta3;
@@ -27,25 +27,31 @@ import com.openshift.restclient.utils.Samples;
  * @author Jeff Cantrill
  */
 public class ImageStreamTest {
-	private static IImageStream repo;
-	
+	private static final String VERSION = "v1beta3";
+	private static IClient client;
+
 	@BeforeClass
 	public static void setup(){
-		IClient client = mock(IClient.class);
-		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_IMAGE_STREAM.getContentAsString());
-		repo = new ImageStream(node, client, ResourcePropertiesRegistry.getInstance().get("v1beta3", ResourceKind.IMAGE_STREAM));
-	}
-	
-	@Test
-	public void getDockerImageRepository() {
-		assertEquals(new DockerImageURI("172.30.159.174:5000/test/origin-ruby-sample"), repo.getDockerImageRepository());
+		client = mock(IClient.class);
 	}
 
+	@Test
+	public void getDockerImageRepository() {
+		IImageStream repo = getImageStream();
+		assertEquals(new DockerImageURI("172.30.159.174:5000/test/origin-ruby-sample"), repo.getDockerImageRepository());
+	}
 
 	@Test
 	public void setDockerImageRepository() {
 		DockerImageURI newUri = new DockerImageURI("172.30.244.213:5000/tests/origin-ruby-sample");
+    IImageStream repo = getImageStream();
 		repo.setDockerImageRepository(newUri);
 		assertEquals(newUri, repo.getDockerImageRepository());
+	}
+
+	private IImageStream getImageStream() {
+		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_IMAGE_STREAM.getContentAsString());
+		IImageStream repo = new ImageStream(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM));
+		return repo;
 	}
 }
