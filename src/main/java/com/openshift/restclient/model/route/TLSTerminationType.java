@@ -12,7 +12,7 @@ package com.openshift.restclient.model.route;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface TLSTerminationType {

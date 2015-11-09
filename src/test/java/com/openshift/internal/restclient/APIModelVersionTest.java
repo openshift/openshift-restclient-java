@@ -19,7 +19,7 @@ import com.openshift.internal.restclient.APIModelVersion.VersionComparitor;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class APIModelVersionTest {

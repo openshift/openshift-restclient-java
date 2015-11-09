@@ -21,7 +21,7 @@ import org.apache.http.ParseException;
 import org.junit.Test;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public class AuthorizationDetailsTest {
 	/*
@@ -49,15 +49,15 @@ public class AuthorizationDetailsTest {
 		AuthorizationDetails details = whenCreatingAnAuthorizationScheme();
 		assertEquals("Basic", details.getScheme());
 	}
-	
+
 	private AuthorizationDetails whenCreatingAnAuthorizationScheme() {
 		return new AuthorizationDetails(headers.toArray(new Header[] {}));
 	}
-	
+
 	private void givenHeader(String name, String value) {
 		headers.add(new FakeHeader(name, value));
 	}
-	
+
 	private static class FakeHeader implements Header{
 		private String name;
 		private String value;
@@ -80,6 +80,6 @@ public class AuthorizationDetailsTest {
 		public HeaderElement[] getElements() throws ParseException {
 			throw new UnsupportedOperationException("Method not supported in test impl");
 		}
-		
+
 	}
 }

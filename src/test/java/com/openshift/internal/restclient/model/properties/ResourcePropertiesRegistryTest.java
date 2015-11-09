@@ -23,7 +23,7 @@ import com.openshift.internal.restclient.KubernetesAPIVersion;
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public class ResourcePropertiesRegistryTest {
 	

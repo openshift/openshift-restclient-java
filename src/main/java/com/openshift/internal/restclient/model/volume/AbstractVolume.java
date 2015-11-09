@@ -22,7 +22,7 @@ import com.openshift.restclient.model.volume.IVolume;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public abstract class AbstractVolume 

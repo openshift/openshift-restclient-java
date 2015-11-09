@@ -13,7 +13,7 @@ package com.openshift.restclient.model.project;
 import com.openshift.restclient.model.IResource;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public interface IProjectRequest extends IResource {
 	

@@ -15,7 +15,7 @@ import com.openshift.restclient.capability.ICapability;
 
 /**
  * The capability to retrieve the client from a resource
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IClientCapability extends ICapability {

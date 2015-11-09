@@ -20,7 +20,7 @@ import com.openshift.restclient.model.deploy.IDeploymentTrigger;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class DeploymentTrigger implements IDeploymentTrigger, ResourcePropertyKeys {

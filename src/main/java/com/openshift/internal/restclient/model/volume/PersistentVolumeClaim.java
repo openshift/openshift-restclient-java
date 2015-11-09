@@ -23,7 +23,7 @@ import com.openshift.restclient.model.volume.IPersistentVolumeClaim;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class PersistentVolumeClaim extends KubernetesResource implements IPersistentVolumeClaim {

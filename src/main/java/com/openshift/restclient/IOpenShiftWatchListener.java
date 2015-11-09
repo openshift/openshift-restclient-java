@@ -15,7 +15,7 @@ import com.openshift.restclient.model.IResource;
 /**
  * Handler to receive notification when a resource
  * changes
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IOpenShiftWatchListener {

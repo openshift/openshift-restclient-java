@@ -14,7 +14,7 @@ package com.openshift.restclient.authorization;
  * The details about how to manually obtain
  * a request token
  *  
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public interface IAuthorizationDetails {
 	

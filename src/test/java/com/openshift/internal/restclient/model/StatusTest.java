@@ -21,7 +21,7 @@ import com.openshift.restclient.ResourceKind;
 
 /**
  * Tests that have logic and not specific to a particular api version
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class StatusTest {

@@ -11,7 +11,7 @@ package com.openshift.restclient.authorization;
 import com.openshift.restclient.OpenShiftException;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public class ResourceForbiddenException extends OpenShiftException {
 

@@ -17,7 +17,7 @@ import com.openshift.restclient.model.build.ISourceBuildStrategy;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class SourceBuildStrategy extends STIBuildStrategy implements ISourceBuildStrategy{

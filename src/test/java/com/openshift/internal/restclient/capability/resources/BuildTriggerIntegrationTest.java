@@ -27,7 +27,7 @@ import com.openshift.restclient.model.IBuildConfig;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class BuildTriggerIntegrationTest {

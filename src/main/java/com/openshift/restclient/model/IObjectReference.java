@@ -12,8 +12,8 @@ package com.openshift.restclient.model;
 
 /**
  * An OpenShift object reference to an
- * Openshift object
- * @author jeff.cantrill
+ * OpenShift object
+ * @author Jeff Cantrill
  *
  */
 public interface IObjectReference {
@@ -23,7 +23,7 @@ public interface IObjectReference {
 	 * @return
 	 */
 	String getKind();
-	
+
 	/**
 	 * returns the api version of this resource
 	 * @return
@@ -35,22 +35,22 @@ public interface IObjectReference {
 	 * @return
 	 */
 	String getResourceVersion();
-	
+
 	/**
 	 * Returns the identifier for this resource
 	 * @return
 	 */
 	String getName();
-	
+
 	/**
 	 * Returns the scope of this resource
 	 * @return
 	 */
 	String getNamespace();
-	
+
 	String getFieldPath();
-	
+
 	String getUID();
-	
+
 	String toJson();
 }

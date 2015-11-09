@@ -14,7 +14,7 @@ import org.jboss.dmr.ModelNode;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class PortFactory {

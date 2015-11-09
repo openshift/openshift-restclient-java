@@ -13,7 +13,7 @@ package com.openshift.restclient.capability.resources;
 import com.openshift.restclient.OpenShiftException;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 @SuppressWarnings("serial")

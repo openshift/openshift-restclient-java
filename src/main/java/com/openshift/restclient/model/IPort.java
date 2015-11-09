@@ -12,7 +12,7 @@ package com.openshift.restclient.model;
 
 /**
  * Port details.
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IPort {

@@ -16,7 +16,7 @@ import com.openshift.restclient.capability.ICapability;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IPodLogRetrieval extends ICapability {

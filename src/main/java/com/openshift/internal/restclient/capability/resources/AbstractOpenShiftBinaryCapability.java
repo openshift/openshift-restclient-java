@@ -30,7 +30,7 @@ import com.openshift.restclient.capability.resources.LocationNotFoundException;
 /**
  * Capability that wraps the OpenShift binary
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public abstract class AbstractOpenShiftBinaryCapability implements ICapability {

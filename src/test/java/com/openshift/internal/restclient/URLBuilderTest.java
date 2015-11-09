@@ -26,7 +26,7 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IResource;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 @RunWith(MockitoJUnitRunner.class)
 public class URLBuilderTest {

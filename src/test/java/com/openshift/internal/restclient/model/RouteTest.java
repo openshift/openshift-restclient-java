@@ -25,7 +25,7 @@ import com.openshift.restclient.model.route.ITLSConfig;
  * Test for route functionality that should not depend on the
  * underlying api model
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class RouteTest {

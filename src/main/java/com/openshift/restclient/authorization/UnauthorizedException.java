@@ -13,7 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import com.openshift.restclient.OpenShiftException;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public class UnauthorizedException extends OpenShiftException {
 

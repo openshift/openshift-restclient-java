@@ -16,7 +16,7 @@ import com.openshift.restclient.model.IResource;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IPersistentVolumeClaim extends IResource {

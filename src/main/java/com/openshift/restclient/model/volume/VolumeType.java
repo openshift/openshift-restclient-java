@@ -12,7 +12,7 @@ package com.openshift.restclient.model.volume;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface VolumeType {
