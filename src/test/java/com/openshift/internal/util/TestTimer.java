@@ -3,7 +3,7 @@
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
 package com.openshift.internal.util;
@@ -17,7 +17,7 @@ import org.junit.rules.TestName;
 import java.io.IOException;
 
 /**
- * @author Corey Dailey
+ * @author Corey Daley
  */
 public class TestTimer {
 	protected long startTime;
