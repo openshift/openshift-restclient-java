@@ -13,7 +13,7 @@ package com.openshift.restclient.model;
 import com.openshift.restclient.model.IResource;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public interface IResourceQuota extends IResource {
 

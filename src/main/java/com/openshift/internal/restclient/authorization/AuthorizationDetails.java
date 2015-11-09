@@ -18,21 +18,21 @@ import org.apache.http.Header;
 import com.openshift.restclient.authorization.IAuthorizationDetails;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public class AuthorizationDetails implements IAuthorizationDetails {
-	
+
 	private static final String LINK = "Link";
 	private static final String WARNING = "Warning";
 	private static final String WWW_AUTHENTICATE = "WWW-Authenticate";
-	
+
 	private static final Pattern LINK_RE = Pattern.compile(".*?((?:http|https)(?::\\/{2}[\\w]+)(?:[\\/|\\.]?)(?:[^\\s\"<>]*))",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private static final Pattern WARNING_RE = Pattern.compile(".*?(\".*?\")",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	
+
 	private String message = "";
 	private String link = "";
 	private String scheme = "";
-	
+
 	public AuthorizationDetails(String link) {
 		this.link = link;
 	}
@@ -68,8 +68,8 @@ public class AuthorizationDetails implements IAuthorizationDetails {
 			}
 		}
 	}
-	
-	
+
+
 	@Override
 	public String getScheme() {
 		return scheme ;
@@ -92,6 +92,6 @@ public class AuthorizationDetails implements IAuthorizationDetails {
 	public String toString() {
 		return message;
 	}
-	
-	
+
+
 }

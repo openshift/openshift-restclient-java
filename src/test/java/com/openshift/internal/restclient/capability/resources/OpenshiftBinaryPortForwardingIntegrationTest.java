@@ -32,7 +32,7 @@ import com.openshift.restclient.model.IPort;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class OpenshiftBinaryPortForwardingIntegrationTest {

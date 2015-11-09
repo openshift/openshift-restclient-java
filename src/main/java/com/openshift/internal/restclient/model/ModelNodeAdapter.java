@@ -17,7 +17,7 @@ import org.jboss.dmr.ModelNode;
 /**
  * Adapter class between what we want 
  * and the backing DMR json store
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class ModelNodeAdapter {

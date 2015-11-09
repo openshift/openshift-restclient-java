@@ -10,7 +10,7 @@ package com.openshift.restclient.http;
 
 /**
  * HTTP Status codes
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IHttpStatusCodes {

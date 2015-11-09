@@ -19,7 +19,7 @@ import com.openshift.restclient.model.IPod;
 /**
  * Port forwarding implementation that wraps the OpenShift binary
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapability implements IPortForwardable {

@@ -20,7 +20,7 @@ import com.openshift.restclient.model.oauth.IOAuthAuthorizeToken;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class OAuthAuthorizeToken extends KubernetesResource implements IOAuthAuthorizeToken {

@@ -20,7 +20,7 @@ import com.openshift.restclient.model.build.IBuildRequest;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class BuildTrigger implements IBuildTriggerable {

@@ -57,7 +57,7 @@ import com.openshift.restclient.model.IResource;
 
 /**
   * Encapsulation of the logic to handle watching resources.
-  * @author jeff.cantrill
+  * @author Jeff Cantrill
   *
   */
 public class WatchClient implements IHttpStatusCodes{

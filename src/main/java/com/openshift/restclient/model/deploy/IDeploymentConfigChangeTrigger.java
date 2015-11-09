@@ -12,7 +12,7 @@ package com.openshift.restclient.model.deploy;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IDeploymentConfigChangeTrigger extends IDeploymentTrigger {

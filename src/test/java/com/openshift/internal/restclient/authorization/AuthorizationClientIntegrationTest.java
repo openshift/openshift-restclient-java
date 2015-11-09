@@ -26,13 +26,13 @@ import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.authorization.UnauthorizedException;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public class AuthorizationClientIntegrationTest {
 
 
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultClientIntegrationTest.class);
-	
+
 	private IntegrationTestHelper helper = new IntegrationTestHelper();
 	private IClient client;
 	private AuthorizationClient authClient;
@@ -44,7 +44,7 @@ public class AuthorizationClientIntegrationTest {
 	}
 
 	/*---------- These are tests that should pass when server is configured for oauth auth. No expectations regarding others */
-	
+
 	/*
 	 * Assume Basic Auth, invalid token
 	 */
@@ -67,13 +67,13 @@ public class AuthorizationClientIntegrationTest {
 	@Test
 	//@Environment(auth=oauth) //lets build this
 	public void getAuthorizationContextWhenOauthConfigurationAndValidToken() {
-		final String token = "Mzk2MDliYWYtOTA4OC00NzJlLTk2YmQtOGM3ZTAwYTM3ZDU4"; 
+		final String token = "Mzk2MDliYWYtOTA4OC00NzJlLTk2YmQtOGM3ZTAwYTM3ZDU4";
 		client = helper.createClient();
 		client.setAuthorizationStrategy(new BasicAuthorizationStrategy(helper.getDefaultClusterAdminUser(), helper.getDefaultClusterAdminPassword(), token));
 		IAuthorizationContext context = client.getContext(client.getBaseURL().toString());
 		assertEquals(token, context.getToken());
 	}
-	
+
 	/*---------- These are tests that should pass when server is configured for basic auth. No expectations regarding others */
 
 	/*
@@ -82,7 +82,7 @@ public class AuthorizationClientIntegrationTest {
 	@Test
 	//@Environment(auth=basic) //lets build this
 	public void getAuthorizationContextWhenBasicAuthConfiguredAndValidToken() {
-		final String token = "Mzk2MDliYWYtOTA4OC00NzJlLTk2YmQtOGM3ZTAwYTM3ZDU4"; 
+		final String token = "Mzk2MDliYWYtOTA4OC00NzJlLTk2YmQtOGM3ZTAwYTM3ZDU4";
 		client = helper.createClient();
 		client.setAuthorizationStrategy(new BasicAuthorizationStrategy(helper.getDefaultClusterAdminUser(), helper.getDefaultClusterAdminPassword(), token));
 		IAuthorizationContext context = client.getContext(client.getBaseURL().toString());
@@ -95,7 +95,7 @@ public class AuthorizationClientIntegrationTest {
 	@Test
 	//@Environment(auth=basic) //lets build this
 	public void getAuthorizationContextWhenBasicAuthConfiguredAndInValidToken() {
-		final String token = "asdfasd"; 
+		final String token = "asdfasd";
 		client = helper.createClient();
 		client.setAuthorizationStrategy(new BasicAuthorizationStrategy(helper.getDefaultClusterAdminUser(), helper.getDefaultClusterAdminPassword(), token));
 		IAuthorizationContext context = client.getContext(client.getBaseURL().toString());

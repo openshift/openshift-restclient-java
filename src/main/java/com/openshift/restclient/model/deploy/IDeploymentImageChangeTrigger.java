@@ -16,7 +16,7 @@ import com.openshift.restclient.images.DockerImageURI;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IDeploymentImageChangeTrigger extends IDeploymentTrigger {

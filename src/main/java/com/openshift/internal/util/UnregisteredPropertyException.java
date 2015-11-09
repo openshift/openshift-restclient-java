@@ -12,7 +12,7 @@ package com.openshift.internal.util;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 @SuppressWarnings("serial")

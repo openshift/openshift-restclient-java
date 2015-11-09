@@ -18,7 +18,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IEvent;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public class KubernetesEvent extends KubernetesResource implements IEvent {
 

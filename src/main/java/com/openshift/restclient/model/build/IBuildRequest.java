@@ -15,7 +15,7 @@ import com.openshift.restclient.model.IResource;
 
 /**
  * Resource payload for triggering a build
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IBuildRequest extends IResource {

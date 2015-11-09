@@ -12,7 +12,7 @@ package com.openshift.restclient.model.build;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface ISourceBuildStrategy extends ISTIBuildStrategy{

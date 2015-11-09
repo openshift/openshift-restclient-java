@@ -9,7 +9,7 @@
 package com.openshift.restclient.authorization;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public interface IAuthorizationStrategyVisitor {
 	

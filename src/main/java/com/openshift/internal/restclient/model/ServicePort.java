@@ -22,7 +22,7 @@ import org.jboss.dmr.ModelNode;
 import com.openshift.restclient.model.IServicePort;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public class ServicePort extends ModelNodeAdapter implements IServicePort {
 	private static final String PROPERTY_NAME = "name";

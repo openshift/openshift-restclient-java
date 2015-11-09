@@ -15,7 +15,7 @@ import com.openshift.restclient.model.IBuild;
 
 /**
  * Capability to trigger a build based on the build configuration
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IBuildTriggerable extends ICapability {

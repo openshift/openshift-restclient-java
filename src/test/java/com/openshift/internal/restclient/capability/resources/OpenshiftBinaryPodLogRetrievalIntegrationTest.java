@@ -31,7 +31,7 @@ import com.openshift.restclient.model.IPod;
 
 /**
  * 
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public class OpenshiftBinaryPodLogRetrievalIntegrationTest {

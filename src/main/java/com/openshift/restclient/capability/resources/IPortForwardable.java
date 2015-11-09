@@ -15,7 +15,7 @@ import com.openshift.restclient.model.IPort;
 
 /**
  * Defines if a pod can support port forwarding
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  *
  */
 public interface IPortForwardable extends ICapability {
@@ -47,7 +47,7 @@ public interface IPortForwardable extends ICapability {
 	/**
 	 * Pairing a local port to the remote port of a container.
 	 * 
-	 * @author jeff.cantrill
+	 * @author Jeff Cantrill
 	 */
 	static class PortPair {
 		private int localPort = -1;

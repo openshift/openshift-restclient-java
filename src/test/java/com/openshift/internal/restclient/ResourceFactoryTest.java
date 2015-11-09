@@ -21,7 +21,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 
 /**
- * @author jeff.cantrill
+ * @author Jeff Cantrill
  */
 public class ResourceFactoryTest {
 
