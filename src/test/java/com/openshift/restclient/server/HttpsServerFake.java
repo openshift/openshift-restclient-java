@@ -1,12 +1,12 @@
-/******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
- * Distributed under license by Red Hat, Inc. All rights reserved. 
- * This program is made available under the terms of the 
- * Eclipse Public License v1.0 which accompanies this distribution, 
- * and is available at http://www.eclipse.org/legal/epl-v10.html 
- * 
- * Contributors: 
- * Red Hat, Inc. - initial API and implementation 
+/*******************************************************************************
+ * Copyright (c) 2012 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 package com.openshift.restclient.server;
 
@@ -29,7 +29,7 @@ import javax.net.ssl.SSLServerSocket;
  * <pre><code>
  * keytool -genkey -keystore server-keystore.jks -alias localhost -dname "CN=localhost,OU=JBoss Tools" -keyalg "RSA" -sigalg "SHA1withRSA" -keysize 2048 -validity 3650
  * </code></pre>
- * 
+ *
  * @author André Dietisheim
  */
 public class HttpsServerFake extends HttpServerFake {
@@ -37,21 +37,21 @@ public class HttpsServerFake extends HttpServerFake {
 	private static final String KEYSTORE_PASSWORD = "123456";
 	private static final String KEYSTORE_TYPE = "JKS";
 	private static final String KEYSTORE_FILE = "/server-keystore.jks";
-	
+
 	public HttpsServerFake(int port) {
 		super(port);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param port
 	 *            the port to listen to (address is always localhost)
 	 * @param response
 	 *            the reponse to return to the requesting socket. If
 	 *            <code>null</code> the request string is returned.
 	 * @param statusLine
-	 *            the staus line that shall be returned
-	 * 
+	 *            the status line that shall be returned
+	 *
 	 * @see ServerFakeSocket#getResponse(Socket)
 	 */
 	public HttpsServerFake(int port, String response, String statusLine) {
@@ -62,7 +62,7 @@ public class HttpsServerFake extends HttpServerFake {
 	public URL getUrl() throws MalformedURLException {
 		return new URL(MessageFormat.format("https://localhost:{0}/", String.valueOf(getPort())));
 	}
-	
+
 	@Override
 	protected ServerFakeSocket createServerFakeSocket(String statusLine, String response, int port) throws Exception {
 		return new HttpsServerFakeSocket(statusLine, response, port);
@@ -80,11 +80,11 @@ public class HttpsServerFake extends HttpServerFake {
 			KeyStore keyStore = KeyStore.getInstance(KEYSTORE_TYPE);
 			keyStore.load(getClass().getResourceAsStream(KEYSTORE_FILE), KEYSTORE_PASSWORD.toCharArray());
 
-			KeyManagerFactory keyManagerFactory = 
+			KeyManagerFactory keyManagerFactory =
 					KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			keyManagerFactory.init(keyStore, KEYSTORE_PASSWORD.toCharArray());
 			KeyManager keyManagers[] = keyManagerFactory.getKeyManagers();
-			
+
 			SSLContext sslContext = SSLContext.getInstance("TLS");
 			sslContext.init(keyManagers, null, null);
 			SSLServerSocket sslServerSocket = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(port);

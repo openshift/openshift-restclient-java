@@ -1,20 +1,20 @@
 /*************************************************************************
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.  The
  * ASF licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
  * License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations
  * under the License.
- * 
+ *
  *************************************************************************/
 package com.openshift.restclient.server;
 
@@ -40,7 +40,7 @@ public class HttpServerFake {
 
 	public static final int DEFAULT_PORT = 1234;
 	private static final String DEFAULT_STATUSLINE = "HTTP/1.1 200 OK\n";
-	
+
 	private ExecutorService executor;
 	private int port;
 	private String response;
@@ -64,14 +64,14 @@ public class HttpServerFake {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param port
 	 *            the port to listen to (address is always localhost)
 	 * @param response
 	 *            the reponse to return to the requesting socket. If
 	 *            <code>null</code> the request string is returned.
-	 * @param statusLine the staus line that shall be returned
-	 * 	           
+	 * @param statusLine the status line that shall be returned
+	 *
 	 * @see ServerFakeSocket#getResponse(Socket)
 	 */
 	public HttpServerFake(int port, String response, String statusLine) {
@@ -101,7 +101,7 @@ public class HttpServerFake {
 	public URL getHttpsUrl() throws MalformedURLException {
 		return new URL(MessageFormat.format("https://localhost:{0}/", String.valueOf(port)));
 	}
-	
+
 	public void stop() {
 		serverFakeSocket.close();
 		executor.shutdownNow();
@@ -111,23 +111,23 @@ public class HttpServerFake {
 	protected void write(byte[] bytes, OutputStream outputStream) throws IOException{
         outputStream.write(bytes);
     }
-	
+
 	protected int getPort() {
 		return port;
 	}
-	
+
 	protected class ServerFakeSocket implements Runnable {
 
 		private String statusLine;
 		private String response;
 		private ServerSocket serverSocket;
-		
+
 		public ServerFakeSocket(String statusLine, String response, int port) throws Exception {
 			this.statusLine = statusLine;
 			this.response = response;
 			this.serverSocket = createServerSocket(port);
 		}
-		
+
 		protected ServerSocket createServerSocket(int port) throws Exception {
 			return new ServerSocket(port);
 		}
@@ -155,11 +155,11 @@ public class HttpServerFake {
 			outputStream.write(statusLine.getBytes());
 			outputStream.write("\n".getBytes());
 		}
-		
+
 		/**
 		 * Returns the response given to this server at creation time or the
 		 * content that may be read from the socket is returned.
-		 * 
+		 *
 		 * @param inputStream
 		 * @return
 		 * @throws IOException
@@ -189,7 +189,7 @@ public class HttpServerFake {
 		public void close() {
 			silentlyClose(serverSocket);
 		}
-		
+
 		private void silentlyClose(ServerSocket serverSocket) {
 			if (serverSocket != null) {
 				try {
@@ -199,6 +199,6 @@ public class HttpServerFake {
 				}
 			}
 		}
-		
+
 	}
 }
