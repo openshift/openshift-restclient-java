@@ -50,8 +50,9 @@ public class URLBuilderTest {
 		String url = builder.
 				resource(resource)
 				.watch()
+				.addParmeter("resourceVersion", "123")
 				.build().toString();
-		assertEquals(String.format("%s/api/v1beta3/watch/namespaces/foo/services", BASE_URL),url.toString());
+		assertEquals(String.format("%s/api/v1beta3/namespaces/foo/services?watch=true&resourceVersion=123", BASE_URL),url.toString());
 	}
 	
 	@Test

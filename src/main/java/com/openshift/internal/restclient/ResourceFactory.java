@@ -200,6 +200,9 @@ public class ResourceFactory implements IResourceFactory{
 				Constructor<? extends IResource> constructor =  IMPL_MAP.get(kind).getConstructor(ModelNode.class, IClient.class, Map.class);
 				return constructor.newInstance(node, client, properyKeyMap);
 			}
+			if(kind.endsWith("List")) {
+				return new com.openshift.internal.restclient.model.List(node, client, properyKeyMap);
+			}
 			return new KubernetesResource(node, client, properyKeyMap);
 		} catch (UnsupportedVersionException e) {
 			throw e;

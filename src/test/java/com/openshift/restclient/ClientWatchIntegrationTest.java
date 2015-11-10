@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.internal.util;
+package com.openshift.restclient;
 
 import static com.openshift.internal.restclient.IntegrationTestHelper.cleanUpResource;
 import static org.junit.Assert.*;
@@ -42,7 +42,8 @@ public class ClientWatchIntegrationTest {
 	private IResource project;
 
 	private ExecutorService service;
-	
+	private boolean isError;
+
 	@Before
 	public void setup() {
 		service = Executors.newSingleThreadScheduledExecutor();
@@ -63,6 +64,7 @@ public class ClientWatchIntegrationTest {
 		List results = new ArrayList();
 		CountDownLatch latch = new CountDownLatch(1);
 		IOpenShiftWatchListener listener = new IOpenShiftWatchListener() {
+
 			@SuppressWarnings("unchecked")
 			@Override
 			public void received(IResource resource, ChangeType change) {
@@ -70,35 +72,41 @@ public class ClientWatchIntegrationTest {
 			}
 
 			@Override
-			public void started() {
+			public void connected() {
 				latch.countDown();
 			}
 
 			@Override
-			public void stopped() {
+			public void disconnected() {
 				latch.countDown();
 			}
-			
-			
-		};
-		Runnable watch = new Runnable() {
-			
+
 			@Override
-			public void run() {
-				client.watch(ResourceKind.SERVICE, project.getName(), listener);
+			public void error(Throwable err) {
+				latch.countDown();
+				isError = true;
+				LOG.error("",err);
 			}
 		};
 		
-		service.submit(watch);
-		latch.await();
-		IService service = client.getResourceFactory().stub(ResourceKind.SERVICE,"hello-world", project.getName());
-		service.addPort(8080,8080);
-		service = client.create(service);
-		service.addLabel("foo", "bar");
-		service = client.update(service);
-		client.delete(service);
-		assertArrayEquals(new ChangeType[] {ChangeType.ADDED, ChangeType.MODIFIED, ChangeType.DELETED}, results.toArray());
-		assertEquals(0, latch.getCount());
+		IWatcher watcher = null;
+		try {
+			watcher = client.watch(ResourceKind.SERVICE, project.getName(), listener);
+			latch.await();
+			assertFalse("Expected connection without error",isError);
+			IService service = client.getResourceFactory().stub(ResourceKind.SERVICE,"hello-world", project.getName());
+			service.addPort(8080,8080);
+			service = client.create(service);
+			service.addLabel("foo", "bar");
+			service = client.update(service);
+			client.delete(service);
+			assertArrayEquals(new ChangeType[] {ChangeType.ADDED, ChangeType.MODIFIED, ChangeType.DELETED}, results.toArray());
+			assertEquals(0, latch.getCount());
+		}finally {
+			if(watcher != null) {
+				watcher.stop();
+			}
+		}
 	}
 
 }

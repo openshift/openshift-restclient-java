@@ -151,7 +151,9 @@ public class URLBuilder {
 		}
 
 		try {
-			LOG.debug(String.format("Built url: %s", url.toString()));
+			if(LOG.isDebugEnabled()) {
+				LOG.debug(String.format("Built url: %s", url.toString()));
+			}
 			return new URL(url.toString());
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
@@ -167,9 +169,6 @@ public class URLBuilder {
 	private void buildWithNamespaceInPath(StringBuilder url) {
 		url.append("/")
 			.append(typeMappings.get(kind));
-		if(watch) {
-			url.append("/watch");
-		}
 		if(namespace != null && !ResourceKind.PROJECT.equals(kind)) {
 			url.append("/namespaces/")
 				.append(namespace);
@@ -215,7 +214,7 @@ public class URLBuilder {
 					throw new RuntimeException(e);
 				}
 				if (iterator.hasNext()) {
-					url.append(url.append(IHttpClient.AMPERSAND));
+					url.append(IHttpClient.AMPERSAND);
 				}
 			}
 		}
@@ -223,8 +222,17 @@ public class URLBuilder {
 	}
 
 	public URLBuilder watch() {
-		this.watch = true;
+		addParmeter("watch", "true");
 		return this;
+	}
+
+	public String websocket() {
+		String url = build().toString();
+		url = "wss" + url.substring(url.indexOf(":"));
+		if(LOG.isDebugEnabled()) {
+			LOG.debug(String.format("Built url: %s", url));
+		}
+		return url;
 	}
 
 }

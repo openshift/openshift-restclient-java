@@ -29,7 +29,7 @@ import com.openshift.restclient.model.user.IUser;
  */
 public interface IClient extends ICapable, IAuthorizationClient{
 	
-	void watch(String kind, String namespace, IOpenShiftWatchListener listener);
+	IWatcher watch(String kind, String namespace, IOpenShiftWatchListener listener);
 	
 	/**
 	 * Lists all possible resources of the given kind in the default namespace
@@ -66,6 +66,12 @@ public interface IClient extends ICapable, IAuthorizationClient{
 	 * @throws OpenShiftException if operation not supported for resource type
 	 */
 	<T extends IResource> T get(String kind, String name, String namespace);
+	
+	/**
+	 * 
+	 * @return  A raw list of the kind in the given namespace (e.g. ServiceList)
+	 */
+	IList get(String kind, String namespace);
 	
 	/**
 	 * Creates the given resource in the namespace defined on the 
