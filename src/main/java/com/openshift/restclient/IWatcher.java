@@ -10,39 +10,7 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
-import com.openshift.restclient.model.IResource;
-
-/**
- * Handler to receive notification when a resource
- * changes
- * @author Jeff Cantrill
- *
- */
-public interface IOpenShiftWatchListener {
+public interface IWatcher {
 	
-	/**
-	 * Called after the watch is started
-	 */
-	void connected();
-	
-	/**
-	 * Called when the watch stops
-	 */
-	void disconnected();
-	
-	/**
-	 * 
-	 * @param resource   the resource that changed
-	 * @param change     the change type
-	 */
-	void received(IResource resource, ChangeType change);
-	
-	enum ChangeType{
-		
-		ADDED,
-		MODIFIED,
-		DELETED
-	}
-
-	void error(Throwable err);
+	void stop();
 }

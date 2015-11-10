@@ -33,6 +33,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ISSLCertificateCallback;
+import com.openshift.restclient.IWatcher;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedOperationException;
@@ -108,9 +109,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	};
 	
 	@Override
-	public void watch(String kind, String namespace, IOpenShiftWatchListener listener) {
-		WatchClient watcher = new WatchClient(getBaseURL(), getTypeMappings(), getResourceFactory(), getAuthorizationStrategy(), authClient, client.getSSLCertificateCallback());
-		watcher.watch(kind, namespace, listener);
+	public IWatcher watch(String kind, String namespace, IOpenShiftWatchListener listener) {
+		WatchClient watcher = new WatchClient(getBaseURL(), getTypeMappings(), this);
+		return watcher.watch(kind, namespace, listener);
 	}
 
 	@Override
@@ -264,6 +265,25 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		} catch (SocketTimeoutException e) {
 			throw new OpenShiftException(e, "SocketTimeout deleting resource %s", resource.getName());
 		} 
+	}
+	
+	
+	@Override
+	public IList get(String kind, String namespace) {
+		try {
+			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
+				.kind(kind)
+				.namespace(namespace)
+				.build();
+			String response = client.get(endpoint, IHttpClient.DEFAULT_READ_TIMEOUT);
+			LOGGER.debug(response);
+			return factory.create(response);
+		} catch (HttpClientException e){
+			throw createOpenShiftException(String.format("Could not list resource kind %s in namespace '%s': %s", kind, namespace, e.getMessage()), e);
+		} catch (SocketTimeoutException e) {
+			throw new OpenShiftException(e, "SocketTimeout getting listing resource kind '%s' in namespace '%s'", kind, namespace);
+		} 
+
 	}
 
 	@Override
