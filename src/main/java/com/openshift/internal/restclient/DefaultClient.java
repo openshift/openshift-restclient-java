@@ -430,6 +430,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			typeMappings.put(ResourceKind.EVENT, k8eEndpoint);
 			typeMappings.put(ResourceKind.POD, k8eEndpoint);
 			typeMappings.put(ResourceKind.PVC, k8eEndpoint);
+			typeMappings.put(ResourceKind.PERSISTENT_VOLUME, k8eEndpoint);
 			typeMappings.put(ResourceKind.LIMIT_RANGE, k8eEndpoint);
 			typeMappings.put(ResourceKind.REPLICATION_CONTROLLER, k8eEndpoint);
 			typeMappings.put(ResourceKind.RESOURCE_QUOTA, k8eEndpoint);

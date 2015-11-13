@@ -62,6 +62,7 @@ public class URLBuilder {
 		kindMap.put(ResourceKind.EVENT, "events");
 		kindMap.put(ResourceKind.LIMIT_RANGE,"limitranges");
 		kindMap.put(ResourceKind.POD, "pods");
+		kindMap.put(ResourceKind.PERSISTENT_VOLUME, "persistentvolumes");
 		kindMap.put(ResourceKind.REPLICATION_CONTROLLER, "replicationcontrollers");
 		kindMap.put(ResourceKind.RESOURCE_QUOTA, "resourcequotas"); 
 		kindMap.put(ResourceKind.SERVICE, "services"); 

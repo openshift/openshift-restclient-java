@@ -8,12 +8,9 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.restclient.model.volume;
+package com.openshift.restclient.model.volume.property;
 
-public interface PVCAccessModes {
 
-	static final String READ_WRITE_ONCE = "ReadWriteOnce";
-	static final String READ_ONLY_MANY = "ReadOnlyMany";
-	static final String READ_WRITE_MANY = "ReadWriteMany";
+public interface IPersistentVolumeProperties {
 
 }
