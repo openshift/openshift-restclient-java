@@ -29,8 +29,9 @@ public class List extends KubernetesResource implements IList{
 	}
 	
 	@Override
-	public Collection<IResource> getItems() {
-		Collection<ModelNode> nodes = get(OBJECTS).asList();
+	public Collection<IResource> getItems(){
+		String key = getNode().has(OBJECTS) ? OBJECTS : "items";
+		Collection<ModelNode> nodes = get(key).asList();
 		java.util.List<IResource> resources = new ArrayList<IResource>(nodes.size());
 		IResourceFactory factory = getClient().getResourceFactory();
 		if(factory != null){

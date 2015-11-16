@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,7 +63,7 @@ public class ClientWatchIntegrationTest {
 	@Test(timeout=30000)
 	public void test() throws Exception{
 		List results = new ArrayList();
-		CountDownLatch latch = new CountDownLatch(1);
+		CountDownLatch latch = new CountDownLatch(2);
 		IOpenShiftWatchListener listener = new IOpenShiftWatchListener() {
 
 			@SuppressWarnings("unchecked")
@@ -70,9 +71,9 @@ public class ClientWatchIntegrationTest {
 			public void received(IResource resource, ChangeType change) {
 				results.add(change);
 			}
-
+			
 			@Override
-			public void connected() {
+			public void connected(List<IResource> resources) {
 				latch.countDown();
 			}
 
@@ -91,7 +92,7 @@ public class ClientWatchIntegrationTest {
 		
 		IWatcher watcher = null;
 		try {
-			watcher = client.watch(ResourceKind.SERVICE, project.getName(), listener);
+			watcher = client.watch(Arrays.asList(ResourceKind.SERVICE, ResourceKind.POD), project.getName(), listener);
 			latch.await();
 			assertFalse("Expected connection without error",isError);
 			IService service = client.getResourceFactory().stub(ResourceKind.SERVICE,"hello-world", project.getName());

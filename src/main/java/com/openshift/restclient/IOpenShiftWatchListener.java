@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
+import java.util.List;
+
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -21,12 +23,15 @@ import com.openshift.restclient.model.IResource;
 public interface IOpenShiftWatchListener {
 	
 	/**
-	 * Called after the watch is started
+	 * Called when an endpoint connects
+	 * The initial set of resources returned when determining
+	 * the resourceVersion to watch
+	 * @param resources  an Unmodifiable List
 	 */
-	void connected();
+	void connected(List<IResource> resources);
 	
 	/**
-	 * Called when the watch stops
+	 * Called when and endpoint disconnects
 	 */
 	void disconnected();
 	
@@ -45,4 +50,29 @@ public interface IOpenShiftWatchListener {
 	}
 
 	void error(Throwable err);
+	
+	/**
+	 * Convenience class for implementing watch callbacks
+	 * @author jeff.cantrill
+	 *
+	 */
+	static class OpenShiftWatchListenerAdapter implements IOpenShiftWatchListener{
+
+		@Override
+		public void connected(List<IResource> resources) {
+		}
+
+		@Override
+		public void disconnected() {
+		}
+
+		@Override
+		public void received(IResource resource, ChangeType change) {
+		}
+
+		@Override
+		public void error(Throwable err) {
+		}
+		
+	}
 }
