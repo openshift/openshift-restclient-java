@@ -110,14 +110,9 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	};
 	
 	@Override
-	public IWatcher watch(String kind, String namespace, IOpenShiftWatchListener listener) {
-		return watch(Arrays.asList(kind), namespace, listener);
-	}
-	
-	@Override
-	public IWatcher watch(Collection<String> kinds, String namespace, IOpenShiftWatchListener listener) {
+	public IWatcher watch(String namespace, IOpenShiftWatchListener listener, String...kinds) {
 	WatchClient watcher = new WatchClient(getBaseURL(), getTypeMappings(), this);
-	return watcher.watch(kinds, namespace, listener);
+	return watcher.watch(Arrays.asList(kinds), namespace, listener);
 	}
 
 	@Override

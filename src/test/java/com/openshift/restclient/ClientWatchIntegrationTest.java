@@ -92,7 +92,7 @@ public class ClientWatchIntegrationTest {
 		
 		IWatcher watcher = null;
 		try {
-			watcher = client.watch(Arrays.asList(ResourceKind.SERVICE, ResourceKind.POD), project.getName(), listener);
+			watcher = client.watch(project.getName(), listener, ResourceKind.SERVICE, ResourceKind.POD);
 			latch.await();
 			assertFalse("Expected connection without error",isError);
 			IService service = client.getResourceFactory().stub(ResourceKind.SERVICE,"hello-world", project.getName());
