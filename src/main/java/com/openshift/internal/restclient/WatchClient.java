@@ -12,6 +12,9 @@ package com.openshift.internal.restclient;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -32,6 +35,7 @@ import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.authorization.ResourceForbiddenException;
 import com.openshift.restclient.http.IHttpStatusCodes;
 import com.openshift.restclient.model.IList;
+import com.openshift.restclient.model.IResource;
 
 /**
   * Encapsulation of the logic to handle watching resources.
@@ -56,11 +60,16 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 	
 	private class WatchEndpoint extends WebSocketAdapter{
 		private IOpenShiftWatchListener listener;
+		private List<IResource> resources;
 
 		public WatchEndpoint(IOpenShiftWatchListener listener) {
 			this.listener = listener;
 		}
-
+		
+		public void setResources(List<IResource> resources) {
+			this.resources = resources;
+		}
+		
 		@Override
 		public void onWebSocketClose(int statusCode, String reason) {
 			LOGGER.debug("WatchSocket closed");
@@ -72,39 +81,42 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 		public void onWebSocketConnect(Session session) {
 			LOGGER.debug("WatchSocket connected");
 			super.onWebSocketConnect(session);
-			listener.connected();
+			listener.connected(resources);
 		}
 
 		@Override
 		public void onWebSocketError(Throwable err) {
-			LOGGER.error("WatchSocket Error", err);
+			LOGGER.debug("WatchSocket Error", err);
 			listener.error(createOpenShiftException("WatchSocket Error", err));
 		}
 
 		@Override
 		public void onWebSocketText(String message) {
+			LOGGER.debug(message);
 			KubernetesResource payload = factory.create(message);
 			IOpenShiftWatchListener.ChangeType event = IOpenShiftWatchListener.ChangeType.valueOf(payload.getNode().get("type").asString());
 			listener.received(factory.create(payload.getNode().get("object").toJSONString(true)), event);
 		}
 	}
 	
-	public IWatcher watch(String kind, String namespace, IOpenShiftWatchListener listener) {
+	public IWatcher watch(Collection<String> kinds, String namespace, IOpenShiftWatchListener listener) {
 		try {
-			final String resourceVersion = getResourceVersion(kind, namespace);
 			wsClient.start();
 			ClientUpgradeRequest request = newRequest(this.client.getAuthorizationStrategy().getToken());	
-			
-			WatchEndpoint socket = new WatchEndpoint(listener);
-			final String endpoint = new URLBuilder(baseUrl, typeMappings)
-					.kind(kind)
-					.namespace(namespace)
-					.watch()
-					.addParmeter("resourceVersion", resourceVersion)
-					.websocket();
-			wsClient.connect(socket, new URI(endpoint), request).get();
+			for (String kind : kinds) {
+				WatchEndpoint socket = new WatchEndpoint(listener);
+				final String resourceVersion = getResourceVersion(kind, namespace, socket);
+				
+				final String endpoint = new URLBuilder(baseUrl, typeMappings)
+						.kind(kind)
+						.namespace(namespace)
+						.watch()
+						.addParmeter("resourceVersion", resourceVersion)
+						.websocket();
+				wsClient.connect(socket, new URI(endpoint), request).get();
+			}
 		} catch (Exception e) {
-			throw createOpenShiftException(String.format("Could not watch %s resource in namespace %s: %s", kind, namespace, e.getMessage()), e);
+			throw createOpenShiftException(String.format("Could not watch resources in namespace %s: %s", namespace, e.getMessage()), e);
 		}
 		return this;
 	}
@@ -114,7 +126,7 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 		try {
 			wsClient.stop();
 		} catch (Exception e) {
-			LOGGER.error("Unable to stop the watch client",e);
+			LOGGER.debug("Unable to stop the watch client",e);
 		}
 	}
 
@@ -135,8 +147,12 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 		return client;
 	}
 	
-	private String getResourceVersion(String kind, String namespace) throws Exception{
+	private String getResourceVersion(String kind, String namespace, WatchEndpoint endpoint) throws Exception{
 		IList list = client.get(kind, namespace);
+		Collection<IResource> items = list.getItems();
+		List<IResource> resources = new ArrayList<>(items.size());
+		resources.addAll(items);
+		endpoint.setResources(resources);
 		return list.getMetadata().get("resourceVersion");
 	}
 	

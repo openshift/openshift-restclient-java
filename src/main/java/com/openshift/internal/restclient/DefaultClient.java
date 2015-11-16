@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -110,8 +111,13 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 	
 	@Override
 	public IWatcher watch(String kind, String namespace, IOpenShiftWatchListener listener) {
-		WatchClient watcher = new WatchClient(getBaseURL(), getTypeMappings(), this);
-		return watcher.watch(kind, namespace, listener);
+		return watch(Arrays.asList(kind), namespace, listener);
+	}
+	
+	@Override
+	public IWatcher watch(Collection<String> kinds, String namespace, IOpenShiftWatchListener listener) {
+	WatchClient watcher = new WatchClient(getBaseURL(), getTypeMappings(), this);
+	return watcher.watch(kinds, namespace, listener);
 	}
 
 	@Override
