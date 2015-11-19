@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static com.openshift.internal.util.JBossDmrExtentions.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +30,9 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IPort;
+import com.openshift.restclient.model.deploy.IDeploymentConfigChangeTrigger;
+import com.openshift.restclient.model.deploy.IDeploymentImageChangeTrigger;
+import com.openshift.restclient.model.deploy.IDeploymentTrigger;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -53,6 +57,15 @@ public class DeploymentConfigTest {
 	@Test 
 	public void getLabels() {
 		assertArrayEquals(new String[] {"template"},config.getLabels().keySet().toArray(new String[] {}));
+	}
+	
+	@Test
+	public void getConfigChangeTrigger() {
+		List<IDeploymentTrigger> trigger = new ArrayList<>(config.getTriggers());
+		assertEquals("Exp. equal number of triggers",2,trigger.size());
+		assertTrue("Expected to find a config change trigger", IDeploymentConfigChangeTrigger.class.isAssignableFrom(trigger.get(0).getClass()));
+		assertTrue("Expected to find a config change trigger", IDeploymentImageChangeTrigger.class.isAssignableFrom(trigger.get(1).getClass()));
+		
 	}
 	
 	@Test
@@ -91,7 +104,7 @@ public class DeploymentConfigTest {
 	
 	@Test
 	public void getTriggerTypes() {
-		assertArrayEquals(new String[] {"ConfigChange"}, config.getTriggerTypes().toArray(new String[] {}));
+		assertArrayEquals(new String[] {"ConfigChange", "ImageChange"}, config.getTriggerTypes().toArray(new String[] {}));
 	}
 	
 	@Test

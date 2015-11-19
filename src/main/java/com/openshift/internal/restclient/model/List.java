@@ -10,8 +10,10 @@ package com.openshift.internal.restclient.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.IClient;
@@ -24,29 +26,46 @@ import com.openshift.restclient.model.IResource;
  */
 public class List extends KubernetesResource implements IList{
 
+	private String kind;
+	private Collection<IResource> items;
 	public List(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
+		String listKind = asString(KIND);
+		if(StringUtils.isNotBlank(listKind)) {
+			kind = listKind.substring(0, listKind.length() - "List".length());
+		}
+		
 	}
 	
 	@Override
 	public Collection<IResource> getItems(){
-		String key = getNode().has(OBJECTS) ? OBJECTS : "items";
-		Collection<ModelNode> nodes = get(key).asList();
-		java.util.List<IResource> resources = new ArrayList<IResource>(nodes.size());
-		IResourceFactory factory = getClient().getResourceFactory();
-		if(factory != null){
-			for (ModelNode node : nodes) {
-				resources.add(factory.create(node.toJSONString(true)));
+		if(items == null) {
+			String key = getNode().has(OBJECTS) ? OBJECTS : "items";
+			Collection<ModelNode> nodes = get(key).asList();
+			items = new ArrayList<>(nodes.size());
+			IResourceFactory factory = getClient().getResourceFactory();
+			if(factory != null){
+				for (ModelNode node : nodes) {
+					if(kind != null && !node.get(KIND).isDefined()) {
+						set(node, KIND, kind);
+					}
+					IResource resource = factory.create(node.toJSONString(true));
+					items.add(resource);
+				}
 			}
 		}
-		return resources;
+		return Collections.unmodifiableCollection(items);
 	}
 
 	@Override
 	public void addAll(Collection<IResource> items) {
+		if(this.items == null) {
+			this.items = new ArrayList<>();
+		}
 		ModelNode itemNode = get(OBJECTS);
 		for (IResource resource : items) {
 			itemNode.add(ModelNode.fromJSONString(resource.toString()));
+			this.items.add(resource);
 		}
 	}
 

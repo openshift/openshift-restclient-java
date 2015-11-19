@@ -8,6 +8,11 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
+import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.build.IBuildSource;
+import com.openshift.restclient.model.build.IBuildStatus;
+import com.openshift.restclient.model.build.IBuildStrategy;
+
 /**
  * @author Jeff Cantrill
  */
@@ -38,4 +43,16 @@ public interface IBuild extends IResource {
 	 * @return if the build state was in fact changed 
 	 */
 	boolean cancel();
+	
+	DockerImageURI getOutputTo();
+	
+	String getOutputKind();
+	
+	<T extends IBuildSource> T getBuildSource();
+	
+	<T extends IBuildStrategy> T getBuildStrategy();
+	
+	String getPushSecret();
+	
+	IBuildStatus getBuildStatus();
 }

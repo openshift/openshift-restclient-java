@@ -49,6 +49,7 @@
         "startTimestamp": "2015-06-10T20:00:51Z",
         "duration": 76895000000000,
         "message" : "Some status message",
+        "outputDockerImageReference": "172.30.224.48:5000/rails-demo/rails-demo:latest",
         "config": {
             "kind": "BuildConfig",
             "namespace": "test",

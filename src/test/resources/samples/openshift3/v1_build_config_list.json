@@ -1,0 +1,57 @@
+{
+    "kind" : "BuildConfigList",
+    "apiVersion" : "v1",
+    "metadata" : {
+        "selfLink" : "/oapi/v1/namespaces/demo/buildconfigs",
+        "resourceVersion" : "158666"
+    },
+    "items" : [{
+        "metadata" : {
+            "name" : "rails-postgresql-example",
+            "namespace" : "demo",
+            "selfLink" : "/oapi/v1/namespaces/demo/buildconfigs/rails-postgresql-example",
+            "uid" : "6b620b15-a423-11e5-b3c1-080027bdffff",
+            "resourceVersion" : "157167",
+            "creationTimestamp" : "2015-12-16T18:32:53Z",
+            "labels" : {
+                "app" : "rails-postgresql-example",
+                "template" : "rails-postgresql-example"
+            },
+            "annotations" : {
+                "description" : "Defines how to build the application",
+                "openshift.io/generated-by" : "OpenShiftNewApp"
+            }
+        },
+        "spec" : {
+            "triggers" : [
+                {
+                    "type" : "ImageChange",
+                    "imageChange" : {"lastTriggeredImageID" : "docker.io/centos/ruby-22-centos7@sha256:38e455de5b214e2f3b3ab80d7f88832aa4076dc14aea46c3b3af81cd39c74473"}
+                },
+                {"type" : "ConfigChange"},
+                {
+                    "type" : "GitHub",
+                    "github" : {"secret" : "X8dRtJFNytagxfPXuVXhbA1mW3tGGRQcdbHnBvgp"}
+                }
+            ],
+            "source" : {
+                "type" : "Git",
+                "git" : {"uri" : "https://github.com/openshift/rails-ex"}
+            },
+            "strategy" : {
+                "type" : "Source",
+                "sourceStrategy" : {"from" : {
+                    "kind" : "ImageStreamTag",
+                    "namespace" : "openshift",
+                    "name" : "ruby:2.2"
+                }}
+            },
+            "output" : {"to" : {
+                "kind" : "ImageStreamTag",
+                "name" : "rails-postgresql-example:latest"
+            }},
+            "resources" : {}
+        },
+        "status" : {"lastVersion" : 34}
+    }]
+}

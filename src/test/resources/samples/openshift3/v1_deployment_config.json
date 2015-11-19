@@ -52,7 +52,22 @@
         "triggers": [
             {
                 "type": "ConfigChange"
+            },
+            {
+                "type": "ImageChange",
+                "imageChangeParams": {
+                    "automatic": true,
+                    "containerNames": [
+                        "kibana-proxy"
+                    ],
+                    "from": {
+                        "kind": "ImageStreamTag",
+                        "name": "logging-auth-proxy:latest"
+                    },
+                    "lastTriggeredImage": "172.30.224.48:5000/logging/logging-auth-proxy@sha256:936876650f76e76da8205a25b558c7178e046c1451adb117b3ab0ffe9e3e20ce"
+                }
             }
+            
         ],
         "replicas": 1,
         "selector": {
