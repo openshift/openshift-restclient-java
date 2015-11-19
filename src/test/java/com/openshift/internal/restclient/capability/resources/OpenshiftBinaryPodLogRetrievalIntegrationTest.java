@@ -25,8 +25,8 @@ import com.openshift.restclient.authorization.IAuthorizationClient;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.capability.CapabilityVisitor;
+import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
-import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.model.IPod;
 
 /**
@@ -43,7 +43,7 @@ public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
 
 	@Test
 	public void testLogRetrieval() {
-		System.setProperty(IPortForwardable.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
+		System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
 		IClient client = helper.createClient();
 		client.setAuthorizationStrategy(new BasicAuthorizationStrategy("admin", "admin", ""));
 		IAuthorizationClient authClient = new AuthorizationClient(client);

@@ -9,22 +9,10 @@
 package com.openshift.restclient.capability;
 
 /**
- * @author Jeff Cantrill
+ * @author Andre Dietisheim
  */
-public interface ICapability {
+public interface IBinaryCapability extends ICapability {
 	
-	/**
-	 * Allow the implementation of the capability to determine
-	 * if it is supported on the OpenShift server.  Implementations
-	 * should return false if they can not
-	 * 
-	 * @return true if the capability exists
-	 */
-	boolean isSupported();
-	
-	/**
-	 * Well known name of the capability
-	 * @return
-	 */
-	String getName();
+	static final String OPENSHIFT_BINARY_LOCATION = "openshift.restclient.oc.location";
+
 }
