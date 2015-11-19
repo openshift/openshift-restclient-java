@@ -509,6 +509,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		result = prime * result + ((baseUrl == null) ? 0 : baseUrl.hashCode());
 		result = prime * result + ((kubernetesVersion == null) ? 0 : kubernetesVersion.hashCode());
 		result = prime * result + ((openShiftVersion == null) ? 0 : openShiftVersion.hashCode());
+		result = prime * result + ((strategy == null || strategy.getToken() == null) ? 0 : strategy.getToken().hashCode());
 		return result;
 	}
 
@@ -536,6 +537,19 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 				return false;
 		} else if (!openShiftVersion.equals(other.openShiftVersion))
 			return false;
+		//check user token to distinguish 2 clients from the same server
+		if (strategy == null) {
+			if (other.strategy != null)
+				return false;
+		} else {
+			String token = strategy.getToken();
+			String otherToken = other.strategy == null?null:other.strategy.getToken();
+			if (token == null) {
+				if (otherToken != null)
+					return false;
+			} else if (!token.equals(otherToken))
+				return false;
+		}
 		return true;
 	}
 	

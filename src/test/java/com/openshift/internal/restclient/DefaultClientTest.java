@@ -1,12 +1,12 @@
-/******************************************************************************* 
- * Copyright (c) 2014-2015 Red Hat, Inc. 
- * Distributed under license by Red Hat, Inc. All rights reserved. 
- * This program is made available under the terms of the 
- * Eclipse Public License v1.0 which accompanies this distribution, 
- * and is available at http://www.eclipse.org/legal/epl-v10.html 
- * 
- * Contributors: 
- * Red Hat, Inc. - initial API and implementation 
+/*******************************************************************************
+ * Copyright (c) 2014-2015 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
@@ -47,9 +47,9 @@ public class DefaultClientTest {
 	private Pod podFrontEnd;
 	private Pod podBackEnd;
 	private IResourceFactory factory;
-	private URL baseUrl; 
+	private URL baseUrl;
 	private static final String VERSION = "v1";
-	
+
 	@Before
 	public void setUp() throws Exception{
 		this.baseUrl = new URL("http://myopenshift");
@@ -80,18 +80,18 @@ public class DefaultClientTest {
 		podFrontEnd.setNamespace("aNamespace");
 		podFrontEnd.addLabel("name", "frontend");
 		podFrontEnd.addLabel("env", "production");
-		
+
 		podBackEnd = factory.create(VERSION, ResourceKind.POD);
 		podBackEnd.setName("backend");
 		podBackEnd.setNamespace("aNamespace");
 		podBackEnd.addLabel("name", "backend");
 		podBackEnd.addLabel("env", "production");
-		
+
 		Pod otherPod = factory.create(VERSION, ResourceKind.POD);
 		otherPod.setName("other");
 		otherPod.setNamespace("aNamespace");
 		otherPod.addLabel("env", "production");
-		
+
 		response = new ModelNode();
 		response.get("apiVersion").set(VERSION);
 		response.get("kind").set("PodList");
@@ -113,14 +113,14 @@ public class DefaultClientTest {
 		assertEquals("Expected the frontend pod", podBackEnd, pods.get(0));
 	}
 
-	@Test 
+	@Test
 	public void testSetAuthStrategySetsIHttpClientAuthStrategy(){
 		IAuthorizationStrategy strategy = mock(IAuthorizationStrategy.class);
 		client.setAuthorizationStrategy(strategy );
-		
+
 		verify(httpClient).setAuthorizationStrategy(eq(strategy));
 	}
-	
+
 	@Test
 	public void testListResourceFilteringNoMatch() throws Exception {
 		Map<String, String> labels = new HashMap<String, String>();
@@ -139,7 +139,7 @@ public class DefaultClientTest {
 		assertEquals("Expected 1 pod to be returned", 1, pods.size());
 		assertEquals("Expected the backend pod", podFrontEnd, pods.get(0));
 	}
-	
+
 	@SuppressWarnings("serial")
 	@Test
 	public void testListResourceFilteringSingleLabel() throws Exception {
@@ -157,5 +157,19 @@ public class DefaultClientTest {
 
 		DefaultClient differentUrlClient = new DefaultClient(new URL("http://localhost:8443"), null);
 		assertThat(client).isNotEqualTo(differentUrlClient);
+
+		IAuthorizationStrategy oneStrategy = mock(IAuthorizationStrategy.class);
+		client.setAuthorizationStrategy(oneStrategy);
+		when(oneStrategy.getToken()).thenReturn("token1");
+
+		IAuthorizationStrategy otherStrategy = mock(IAuthorizationStrategy.class);
+		sameUrlClient.setAuthorizationStrategy(otherStrategy);
+
+		when(otherStrategy.getToken()).thenReturn("token2");
+		assertThat(client).isNotEqualTo(sameUrlClient);
+
+		when(otherStrategy.getToken()).thenReturn("token1");
+		assertThat(client).isEqualTo(sameUrlClient);
 	}
+
 }
