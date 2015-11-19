@@ -48,14 +48,17 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 	private Map<String, String> typeMappings;
 	private IResourceFactory factory;
 	private IClient client;
-	private WebSocketClient wsClient;
+	private static WebSocketClient wsClient;
+	
+	static {
+		wsClient = newWebSocketClient();
+	}
 	
 	public WatchClient(URL baseUrl, Map<String, String> typeMappings, IClient client) {
 		this.baseUrl = baseUrl;
 		this.typeMappings = typeMappings;
 		this.factory = client.getResourceFactory();
 		this.client = client;
-		wsClient = newWebSocketClient();
 	}
 	
 	private class WatchEndpoint extends WebSocketAdapter{
@@ -82,6 +85,7 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 			LOGGER.debug("WatchSocket connected");
 			super.onWebSocketConnect(session);
 			listener.connected(resources);
+
 		}
 
 		@Override
@@ -101,7 +105,7 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 	
 	public IWatcher watch(Collection<String> kinds, String namespace, IOpenShiftWatchListener listener) {
 		try {
-			wsClient.start();
+			start();
 			ClientUpgradeRequest request = newRequest(this.client.getAuthorizationStrategy().getToken());	
 			for (String kind : kinds) {
 				WatchEndpoint socket = new WatchEndpoint(listener);
@@ -113,7 +117,7 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 						.watch()
 						.addParmeter("resourceVersion", resourceVersion)
 						.websocket();
-				wsClient.connect(socket, new URI(endpoint), request).get();
+				connect(socket, endpoint, request);
 			}
 		} catch (Exception e) {
 			throw createOpenShiftException(String.format("Could not watch resources in namespace %s: %s", namespace, e.getMessage()), e);
@@ -121,10 +125,30 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 		return this;
 	}
 	
+	private void connect(WatchEndpoint socket, String endpoint, ClientUpgradeRequest request) throws Exception {
+		synchronized (wsClient) {
+			wsClient.connect(socket, new URI(endpoint), request).get();
+		}
+	}
+	
+	public void start() {
+		if(wsClient.isStarted() || wsClient.isStarting()) return;
+		synchronized (wsClient) {
+			try {
+				wsClient.start();
+			} catch (Exception e) {
+				throw createOpenShiftException(String.format("Could not start watchClient"),e);
+			}
+		}
+	}
+	
 	@Override
 	public void stop(){
 		try {
-			wsClient.stop();
+			synchronized (wsClient) {
+				if(wsClient.isStopping() || wsClient.isStopped()) return;
+				wsClient.stop();
+			}
 		} catch (Exception e) {
 			LOGGER.debug("Unable to stop the watch client",e);
 		}
@@ -140,7 +164,7 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 		return request;
 	}
 	
-	private WebSocketClient newWebSocketClient() {
+	private static WebSocketClient newWebSocketClient() {
 		SslContextFactory factory = new SslContextFactory();
 		factory.setTrustAll(true);
 		WebSocketClient client = new WebSocketClient(factory);
