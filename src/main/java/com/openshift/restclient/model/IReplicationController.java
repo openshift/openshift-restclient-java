@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.volume.IVolumeSource;
 
 /**
  * @author Jeff Cantrill
@@ -70,7 +71,7 @@ public interface IReplicationController  extends IResource{
 	 * @param containerPorts  the container ports
 	 * @param volumes		 the set of emptyDir volumes to add to the config
 	 */
-	void addContainer(String name, DockerImageURI tag,  Set<IPort> containerPorts, Map<String, String> envVars, List<String> volumes);
+	IContainer addContainer(String name, DockerImageURI tag,  Set<IPort> containerPorts, Map<String, String> envVars, List<String> volumes);
 
 	/**
 	 * Add a container to the pod that will be spun up as 
@@ -79,7 +80,7 @@ public interface IReplicationController  extends IResource{
 	 * @param tag            the docker uri
 	 * @param containerPorts  the container ports
 	 */
-	void addContainer(DockerImageURI tag, Set<IPort> containerPorts, Map<String, String> envVars);
+	IContainer addContainer(DockerImageURI tag, Set<IPort> containerPorts, Map<String, String> envVars);
 
 	IContainer addContainer(String name);
 	
@@ -89,4 +90,10 @@ public interface IReplicationController  extends IResource{
 	 * @param value
 	 */
 	void addTemplateLabel(String key, String value);
+	
+	/**
+	 * The volumes associated with the pod spec
+	 * @return
+	 */
+	Set<IVolumeSource> getVolumes();
 }

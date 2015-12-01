@@ -19,13 +19,16 @@ import java.util.Set;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
-import com.openshift.internal.restclient.model.volume.EmptyDirVolume;
+import com.openshift.internal.restclient.model.volume.VolumeMount;
+import com.openshift.internal.restclient.model.volume.VolumeSource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.model.IReplicationController;
 import com.openshift.restclient.model.volume.IVolume;
+import com.openshift.restclient.model.volume.IVolumeMount;
+import com.openshift.restclient.model.volume.IVolumeSource;
 
 /**
  * @author Jeff Cantrill
@@ -107,24 +110,26 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	}
 	
 	@Override
-	public void addContainer(DockerImageURI tag,  Set<IPort> containerPorts, Map<String, String> envVars){
-		addContainer(tag.getName(), tag, containerPorts, envVars, new ArrayList<String>());
+	public IContainer addContainer(DockerImageURI tag,  Set<IPort> containerPorts, Map<String, String> envVars){
+		return addContainer(tag.getName(), tag, containerPorts, envVars, new ArrayList<String>());
 	}
 	
 	@Override
-	public void addContainer(String name, DockerImageURI tag, Set<IPort> containerPorts, Map<String, String> envVars, List<String> emptyDirVolumes) {
+	public IContainer addContainer(String name, DockerImageURI tag, Set<IPort> containerPorts, Map<String, String> envVars, List<String> emptyDirVolumes) {
 		
 		IContainer container = addContainer(name);
 		container.setImage(tag);
 		
 		if(!emptyDirVolumes.isEmpty()) {
-			Set<IVolume> volumes = new HashSet<>();
+			Set<IVolumeMount> volumes = new HashSet<>();
 			for (String path : emptyDirVolumes) {
-				EmptyDirVolume volume = new EmptyDirVolume(new ModelNode());
+				VolumeMount volume = new VolumeMount(new ModelNode());
+				volume.setMountPath(path);
 				volume.setName(String.format("%s-%s", name, emptyDirVolumes.indexOf(path) + 1));
 				volumes.add(volume);
+				addEmptyDirVolumeToPodSpec(volume);
 			}
-			container.setVolumes(volumes);
+			container.setVolumeMounts(volumes);
 		}
 		if(!containerPorts.isEmpty()) {
 			Set<IPort> ports = new HashSet<>();
@@ -134,6 +139,23 @@ public class ReplicationController extends KubernetesResource implements IReplic
 			container.setPorts(ports);
 		}
 		container.setEnvVars(envVars);
+		return container;
+	}
+	
+	private void addEmptyDirVolumeToPodSpec(VolumeMount volume) {
+		ModelNode volNode = get(VOLUMES);
+		if(volNode.isDefined()) {
+			List<ModelNode> podVolumes = volNode.asList();
+			for (ModelNode node : podVolumes) {
+				if(volume.getName().equals(asString(node,NAME))) {
+					//already exists
+					return;
+				}
+			}
+		}
+		ModelNode podVolume = volNode.add();
+		set(podVolume,NAME,volume.getName());
+		set(podVolume,"emptyDir.medium","");
 	}
 	
 	@Override
@@ -143,5 +165,18 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		container.setName(name);
 		return container;
 	}
+
+	@Override
+	public Set<IVolumeSource> getVolumes() {
+		ModelNode vol = get(VOLUMES);
+		Set<IVolumeSource> volumes = new HashSet<>();
+		if(vol.isDefined()) {
+			for (ModelNode node : vol.asList()) {
+				volumes.add(new VolumeSource(node));
+			}
+		}
+		return volumes;
+	}
+	
 	
 }

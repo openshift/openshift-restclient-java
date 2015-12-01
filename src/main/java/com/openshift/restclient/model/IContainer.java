@@ -15,6 +15,7 @@ import java.util.Set;
 
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.volume.IVolume;
+import com.openshift.restclient.model.volume.IVolumeMount;
 
 public interface IContainer {
 
@@ -55,6 +56,13 @@ public interface IContainer {
 	void setLifecycle(String lifecycle);
 	String getLifecycle();
 	
+	@Deprecated
 	void setVolumes(Set<IVolume> volumes);
+	@Deprecated
 	Set<IVolume>  getVolumes();
+
+	void setVolumeMounts(Set<IVolumeMount> volumes);
+	Set<IVolumeMount> getVolumeMounts();
+	
+	String toJSONString();
 }

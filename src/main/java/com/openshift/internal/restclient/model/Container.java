@@ -23,10 +23,12 @@ import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.internal.restclient.model.volume.EmptyDirVolume;
+import com.openshift.internal.restclient.model.volume.VolumeMount;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.model.volume.IVolume;
+import com.openshift.restclient.model.volume.IVolumeMount;
 
 public class Container extends ModelNodeAdapter implements IContainer, ResourcePropertyKeys {
 	
@@ -164,12 +166,35 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 		ModelNode mounts = get(node, propertyKeys, VOLUMEMOUNTS);
 		if(mounts.isDefined()) {
 			for (ModelNode node : mounts.asList()) {
-				//wrap into emptydir for now
-				volumes.add(new EmptyDirVolume(mounts));
+				volumes.add(new VolumeMount(node));
+			}
+		}
+		return volumes;
+	}
+	@Override
+	public void setVolumeMounts(Set<IVolumeMount> volumes) {
+		ModelNode mounts = get(node, propertyKeys, VOLUMEMOUNTS);
+		mounts.clear();
+		for (IVolumeMount volume : volumes) {
+			new VolumeMount(mounts.add(), volume);
+		}
+	}
+	
+	@Override
+	public Set<IVolumeMount> getVolumeMounts() {
+		Set<IVolumeMount> volumes = new HashSet<>();
+		ModelNode mounts = get(node, propertyKeys, VOLUMEMOUNTS);
+		if(mounts.isDefined()) {
+			for (ModelNode node : mounts.asList()) {
+				volumes.add(new VolumeMount(node));
 			}
 		}
 		return volumes;
 	}
 	
+	@Override
+	public String toJSONString() {
+		return super.toJson(false);
+	}
 	
 }

@@ -11,13 +11,12 @@
 package com.openshift.restclient.model.volume;
 
 /**
- * 
- * @author Jeff Cantrill
- * @deprecated see {@link IVolumeMount}
+ * The volumes that are mounted 
+ * in a container
+ * @author jeff.cantrill
  *
  */
-@Deprecated
-public interface IVolume {
+public interface IVolumeMount {
 
 	String getName();
 	void setName(String name);

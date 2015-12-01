@@ -11,20 +11,11 @@
 package com.openshift.restclient.model.volume;
 
 /**
- * 
- * @author Jeff Cantrill
- * @deprecated see {@link IVolumeMount}
+ * Persisent storage found on a pod
+ * @author jeff.cantrill
  *
  */
-@Deprecated
-public interface IVolume {
+public interface IVolumeSource {
 
 	String getName();
-	void setName(String name);
-	
-	void setMountPath(String path);
-	String getMountPath();
-	
-	void setReadOnly(boolean readonly);
-	boolean isReadOnly();
 }
