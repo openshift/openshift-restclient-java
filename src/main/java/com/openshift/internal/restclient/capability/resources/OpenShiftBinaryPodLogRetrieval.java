@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.io.SequenceInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
@@ -64,18 +63,18 @@ public class OpenShiftBinaryPodLogRetrieval extends AbstractOpenShiftBinaryCapab
 	}
 
 	@Override
-	protected String[] buildArgs(String location) {
-		StringBuilder args = new StringBuilder(location);
-		args.append(" logs ")
-			.append("--insecure-skip-tls-verify=true ")
-			.append("--server=").append(getClient().getBaseURL()).append(" ")
-			.append(" ").append(pod.getName()).append(" ")
+	protected String buildArgs() {
+		StringBuilder args = new StringBuilder();
+		args.append("logs ");
+		addSkipTlsVerify(args);
+		addServer(args)
+		.append(" ").append(pod.getName()).append(" ")
 			.append("-n ").append(pod.getNamespace()).append(" ");
 		addToken(args);
 		if(follow) {
 			args.append(" -f ");
 		}
-		return StringUtils.split(args.toString(), " ");
+		return args.toString();
 	}
 	
 }

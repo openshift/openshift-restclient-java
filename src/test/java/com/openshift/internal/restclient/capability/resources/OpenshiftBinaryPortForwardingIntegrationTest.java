@@ -26,9 +26,9 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
+import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.capability.resources.IPortForwardable.PortPair;
-import com.openshift.restclient.model.IPort;
 
 /**
  * 
@@ -44,10 +44,10 @@ public class OpenshiftBinaryPortForwardingIntegrationTest {
 
 	@Test
 	public void testPortForwarding() {
-		System.setProperty(IPortForwardable.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
+		System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
 		IClient client = helper.createClient();
 		IResourceFactory resourceFactory = client.getResourceFactory();
-		Pod pod = (Pod) resourceFactory.create("v1", ResourceKind.POD);
+		Pod pod = resourceFactory.create("v1", ResourceKind.POD);
 		final Port port = new Port(new ModelNode());
 		port.setProtocol("tcp");
 		port.setContainerPort(8080);

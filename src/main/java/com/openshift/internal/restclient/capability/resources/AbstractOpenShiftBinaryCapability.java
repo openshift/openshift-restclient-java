@@ -24,7 +24,7 @@ import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.authorization.IAuthorizationStrategyVisitor;
 import com.openshift.restclient.authorization.KerbrosBrokerAuthorizationStrategy;
 import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
-import com.openshift.restclient.capability.ICapability;
+import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.resources.LocationNotFoundException;
 
 /**
@@ -33,10 +33,10 @@ import com.openshift.restclient.capability.resources.LocationNotFoundException;
  * @author Jeff Cantrill
  *
  */
-public abstract class AbstractOpenShiftBinaryCapability implements ICapability {
+public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapability {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractOpenShiftBinaryCapability.class);
-	
+
 	private Process process;
 
 	private IClient client;
@@ -58,11 +58,10 @@ public abstract class AbstractOpenShiftBinaryCapability implements ICapability {
 	
 	/**
 	 * Callback for building args to be sent to the oc command
-	 * @param location
 	 * @return
 	 */
-	protected abstract String [] buildArgs(String location);
-	
+	protected abstract String buildArgs();
+
 	protected IClient getClient() {
 		return client;
 	}
@@ -85,6 +84,20 @@ public abstract class AbstractOpenShiftBinaryCapability implements ICapability {
 		Runtime.getRuntime().addShutdownHook(new Thread(runnable));
 	}
 	
+	protected StringBuilder addUser(final StringBuilder builder) {
+		builder.append("--user=")
+				.append(client.getCurrentUser().getName())
+				.append(" ");
+		return builder;
+	}
+
+	protected StringBuilder addServer(final StringBuilder builder) {
+		builder.append("--server=")
+				.append(client.getBaseURL())
+				.append(" ");
+		return builder;
+	}
+
 	protected StringBuilder addToken(final StringBuilder builder) {
 		builder.append("--token=");
 		client.getAuthorizationStrategy().accept(new IAuthorizationStrategyVisitor() {
@@ -107,40 +120,49 @@ public abstract class AbstractOpenShiftBinaryCapability implements ICapability {
 		return builder;
 	}
 	
+	protected StringBuilder addSkipTlsVerify(StringBuilder args) {
+		return args.append("--insecure-skip-tls-verify=true ");
+	}
+
 	public final void start() {
 		String location = getOpenShiftBinaryLocation();
 		if(!validate()) {
 			return;
 		}
 		startProcess(location);
-		
 	}
-
+	
 	private void startProcess(String location) {
-		ProcessBuilder builder = new ProcessBuilder(buildArgs(location));
+		String cmdLine = new StringBuilder(location).append(' ').append(buildArgs()).toString();
+		String[] args = StringUtils.split(cmdLine, " ");
+		ProcessBuilder builder = new ProcessBuilder(args);
 		LOG.debug("OpenShift binary args: {}", builder.command());
 		try {
 			process = builder.start();
 			checkProcessIsAlive();
 		} catch (IOException e) {
-			LOG.error("Exception starting process", e);
-			throw new OpenShiftException(e, "Does your OpenShift binary location exist? Error starting process: %s", e.getMessage());
+			LOG.error("Could not start process for {}.", new Object[]{ getName(), e });
+			throw new OpenShiftException(e, "Does your OpenShift binary location exist? Error starting process: %s", 
+					e.getMessage());
 		}
 	}
 	
 	private void checkProcessIsAlive() throws IOException {
 		try {
+			// TODO: replace fixed wait with wait for process to be running
 			Thread.sleep(1000);
 			if(!process.isAlive() && process.exitValue() != 0) {
-				throw new OpenShiftException("OpenShiftBinaryCapability process exited: %s", IOUtils.toString(process.getErrorStream()));
+				throw new OpenShiftException("OpenShiftBinaryCapability process exited: %s", 
+						IOUtils.toString(process.getErrorStream()));
 			}
 		} catch (InterruptedException e) {
 			if(!process.isAlive() && process.exitValue() != 0) {
-				throw new OpenShiftException("OpenShiftBinaryCapability process exited: %s", IOUtils.toString(process.getErrorStream()));
+				throw new OpenShiftException("OpenShiftBinaryCapability process exited: %s", 
+						IOUtils.toString(process.getErrorStream()));
 			}
 		}
 	}
-	
+
 	public final synchronized void stop() {
 		if(process == null) return;
 		cleanup();
@@ -159,13 +181,15 @@ public abstract class AbstractOpenShiftBinaryCapability implements ICapability {
 
 	protected String getOpenShiftBinaryLocation() {
 		//Check the ThreadLocal for oc binary
-		String location = OpenShiftContext.get().get(ICapability.OPENSHIFT_BINARY_LOCATION);
+		String location = OpenShiftContext.get().get(OPENSHIFT_BINARY_LOCATION);
 		if (StringUtils.isBlank(location)) {
 			//Fall back to System property
 			location = System.getProperty(OPENSHIFT_BINARY_LOCATION);
 		}
 		if(StringUtils.isBlank(location)) {
-			throw new LocationNotFoundException(String.format("The OpenShift 'oc' binary location was not specified. Set the property %s", OPENSHIFT_BINARY_LOCATION));
+			throw new LocationNotFoundException(
+					String.format("The OpenShift 'oc' binary location was not specified. Set the property %s", 
+							OPENSHIFT_BINARY_LOCATION));
 		}
 		return location;
 	}

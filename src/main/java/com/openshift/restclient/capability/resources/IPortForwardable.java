@@ -10,7 +10,8 @@
  ******************************************************************************/
 package com.openshift.restclient.capability.resources;
 
-import com.openshift.restclient.capability.ICapability;
+import com.openshift.restclient.OpenShiftException;
+import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.model.IPort;
 
 /**
@@ -18,7 +19,7 @@ import com.openshift.restclient.model.IPort;
  * @author Jeff Cantrill
  *
  */
-public interface IPortForwardable extends ICapability {
+public interface IPortForwardable extends IBinaryCapability {
 
 	/**
 	 * Forward the ports to a pod.  This is a non-blocking call

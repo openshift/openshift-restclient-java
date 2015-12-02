@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.model.IPod;
@@ -24,7 +22,6 @@ import com.openshift.restclient.model.IPod;
  */
 public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapability implements IPortForwardable {
 	
-	
 	private IPod pod;
 	private PortPair[] pairs = new PortPair[] {};
 
@@ -32,8 +29,7 @@ public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapabi
 		super(client);
 		this.pod = pod;
 	}
-	
-	
+
 	@Override
 	protected void cleanup() {
 		this.pairs = new PortPair[] {};
@@ -43,7 +39,6 @@ public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapabi
 	protected boolean validate() {
 		return pairs.length != 0;
 	}
-
 
 	@Override
 	public boolean isForwarding() {
@@ -70,20 +65,20 @@ public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapabi
 		this.pairs = ports;
 		start();
 	}
-	
+
 	@Override
-	protected String[] buildArgs(String location) {
-		StringBuilder args = new StringBuilder(location);
-		args.append(" port-forward ")
-			.append("--insecure-skip-tls-verify=true ")
-			.append("--server=").append(getClient().getBaseURL()).append(" ");
-			addToken(args)
+	protected String buildArgs() {
+		StringBuilder args = new StringBuilder();
+		args.append("port-forward ");
+		addSkipTlsVerify(args);
+		addServer(args);
+		addToken(args)
 			.append("-n ").append(pod.getNamespace()).append(" ")
 			.append("-p ").append(pod.getName()).append(" ");
 		for (PortPair pair : pairs) {
 			args.append(pair.getLocalPort()).append(":").append(pair.getRemotePort()).append(" ");
 		}
-		return StringUtils.split(args.toString(), " ");
+		return args.toString();
 	}
 	
 }

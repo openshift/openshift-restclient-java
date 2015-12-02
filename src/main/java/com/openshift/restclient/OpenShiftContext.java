@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
