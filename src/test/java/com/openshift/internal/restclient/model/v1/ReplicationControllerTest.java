@@ -13,23 +13,32 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.jboss.dmr.ModelNode;
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
+import com.openshift.internal.restclient.model.ModelNodeBuilder;
 import com.openshift.internal.restclient.model.ReplicationController;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.model.IReplicationController;
+import com.openshift.restclient.model.volume.IVolume;
+import com.openshift.restclient.model.volume.IVolumeSource;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -104,7 +113,7 @@ public class ReplicationControllerTest {
 	}
 	
 	@Test
-	public void testAddContainer() {
+	public void testAddContainer() throws JSONException {
 		//remove containers hack
 		String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
 		node.get(path).clear();
@@ -117,22 +126,32 @@ public class ReplicationControllerTest {
 		Set<IPort> ports = new HashSet<>();
 		ports.add(port);
 		
-		rc.addContainer(uri, ports, new HashMap<String, String>());
+		IContainer container = rc.addContainer(uri.getName(), uri, ports, new HashMap<String, String>(), Arrays.asList("/tmp"));
 		
 		List<ModelNode> containers = node.get(path).asList();
 		assertEquals(1, containers.size());
 		
-		//expectations
-		ModelNode portNode = new ModelNode();
-		portNode.get("protocol").set(port.getProtocol());
-		portNode.get("containerPort").set(port.getContainerPort());
+		ModelNode exp = new ModelNodeBuilder()
+			.set("name", uri.getName())
+			.set("image",uri.toString())
+			.add("ports", new ModelNodeBuilder()
+				.set("containerPort", port.getContainerPort())
+				.set("protocol", port.getProtocol())
+			)
+			.add("volumeMounts", new ModelNodeBuilder()
+				.set("name", uri.getName() +"-"+1)
+				.set("mountPath", "/tmp")
+				.set("readOnly", false)
+			)
+			.build();
 		
-		ModelNode exp = new ModelNode();
-		exp.get("name").set(uri.getName());
-		exp.get("image").set(uri.getUriWithoutHost());
-		exp.get("ports").add(portNode);
+		JSONAssert.assertEquals(exp.toJSONString(false), container.toJSONString(), true);
 		
-		assertEquals(exp.toJSONString(false), containers.get(0).toJSONString(false));
+		Object [] sourceNames = rc.getVolumes().stream().map(IVolumeSource::getName).toArray();
+
+		Object [] contVolNames = container.getVolumes().stream().map(IVolume::getName).toArray();
+		assertArrayEquals(sourceNames,contVolNames);
 	}
+	
 	
 }
