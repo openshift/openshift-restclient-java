@@ -14,6 +14,8 @@ import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.util.JBossDmrExtentions;
+
 /**
  * Adapter class between what we want 
  * and the backing DMR json store
@@ -40,7 +42,7 @@ public class ModelNodeAdapter {
 	}
 
 	public String toJson(boolean compact) {
-		return node.toJSONString(compact);
+		return JBossDmrExtentions.toJsonString(node, compact);
 	}
 
 	protected Map<String, String []> getPropertyKeys() {

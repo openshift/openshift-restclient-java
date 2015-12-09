@@ -8,9 +8,14 @@
  ******************************************************************************/
 package com.openshift.internal.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -29,6 +34,59 @@ public class JBossDmrExtentions {
 	private JBossDmrExtentions (){
 	}
 	
+	/**
+	 * Serialize a node and sanitize the output 
+	 * by removing nulls
+	 * @param node
+	 * @param compact
+	 * @return
+	 */
+	public static String toJsonString(ModelNode node, boolean compact) {
+		sanitize(node);
+		StringWriter writer = new StringWriter();
+		node.writeJSONString(new PrintWriter(writer,true), compact);
+		return writer.toString();
+	}
+	
+	private static void sanitize(ModelNode node) {
+		if(node.getType() == ModelType.OBJECT) {
+			Collection<String> emptyKeys = new ArrayList<>(node.keys().size());
+			for (String key : node.keys()) {
+				ModelNode child = node.get(key);
+				if(child.getType() == ModelType.UNDEFINED) {
+					emptyKeys.add(key);
+				}else {
+					sanitize(child);
+				}
+				if(child.getType() == ModelType.OBJECT && child.keys().size() == 0) {
+					emptyKeys.add(key);
+				}else if(child.getType() == ModelType.LIST) {
+					List<ModelNode> entries = child.asList();
+					if(entries.isEmpty()) {
+						emptyKeys.add(key);
+					} else {
+						final int listSize = entries.size();
+						List<Integer> nulls = new ArrayList<>(listSize);
+						for (int i=0; i < listSize; ++i) {
+							ModelNode e = entries.get(i);
+							if(!e.isDefined()) {
+								nulls.add(i);
+							}else {
+								sanitize(e);
+							}
+						}
+						Collections.reverse(nulls);
+						nulls.stream().forEach((i)->child.remove(i));
+						if(child.asList().size() == 0) {
+							emptyKeys.add(key);
+						}
+					}
+					
+				}
+			}
+			emptyKeys.stream().forEach((key)->node.remove(key));
+		}
+	}
 	
 	public static void set(ModelNode node, Map<String, String []> propertyKeys, String key, boolean value){
 		if(propertyKeys == null) return;

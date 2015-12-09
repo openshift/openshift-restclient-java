@@ -18,7 +18,6 @@ import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
-
 /**
  * @author Jeff Cantrill
  */
@@ -39,6 +38,22 @@ public class JBossDmrExtentionsTest {
 		paths.put(KEY_INT, new String[] {"int"});
 	}
 
+	@Test
+	public void testToJson() {
+		ModelNode complex = new ModelNode();
+		complex.get("sub1", "sub2");
+		complex.get("sub1a").set("avalue");
+		
+		ModelNode node = new ModelNode();
+		node.get("foo","bar");
+		node.get("xyz").add(1).add(2).add(3);
+		node.get("xyz").get(1).clear();
+		node.get("xyz").add(complex);
+		node.get("def").add(new ModelNode());
+		node.get("abc").set("xyx");
+		assertEquals("{\"xyz\" : [1,3,{\"sub1a\" : \"avalue\"}], \"abc\" : \"xyx\"}", toJsonString(node, true));
+	}
+	
 	@Test
 	public void testAsMapWhenPropertyKeysAreNull() {
 		assertNotNull(asMap(new ModelNode(), null, null));
