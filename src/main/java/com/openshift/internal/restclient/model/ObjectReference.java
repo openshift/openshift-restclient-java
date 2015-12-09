@@ -15,6 +15,7 @@ import static com.openshift.internal.util.JBossDmrExtentions.*;
 
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.model.IObjectReference;
 
 public class ObjectReference implements IObjectReference {
@@ -62,7 +63,7 @@ public class ObjectReference implements IObjectReference {
 
 	@Override
 	public String toJson() {
-		return node.toJSONString(false);
+		return JBossDmrExtentions.toJsonString(node, false);
 	}
 
 	@Override

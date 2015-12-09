@@ -287,11 +287,11 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 
 	@Override
 	public String toString() {
-		return node.toJSONString(true);
+		return toJson(true);
 	}
 	
 	public String toPrettyString(){
-		return node.toJSONString(false);
+		return toJson(false);
 	}
 	
 	@Override
@@ -352,7 +352,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 
 	@Override
 	public String toJson(boolean compact) {
-		return node.toJSONString(compact);
+		return JBossDmrExtentions.toJsonString(node, compact);
 	}
 
 	
