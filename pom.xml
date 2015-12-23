@@ -104,6 +104,21 @@
 					  <outputDirectory>${jar.outputDir}</outputDirectory>
 					</configuration>
 				</plugin>
+				<plugin>
+					<artifactId>maven-source-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>package-sources</id>
+							<phase>package</phase>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<outputDirectory>${jar.outputDir}</outputDirectory>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
