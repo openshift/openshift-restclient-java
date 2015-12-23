@@ -55,6 +55,11 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	}
 	
 	@Override
+	public String getResourceVersion() {
+		return asString(METADATA_RESOURCE_VERSION);
+	}
+
+	@Override
 	public Map<String, String> getMetadata() {
 		return asMap(METADATA);
 	}
@@ -124,6 +129,9 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		return client;
 	}
 	
+	public void setNode(ModelNode node) {
+		this.node = node.clone();
+	}
 	public ModelNode getNode(){
 		return node;
 	}
@@ -135,11 +143,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	
 	@Override
 	public String getKind(){
-		ModelNode kindNode = get(ResourcePropertyKeys.KIND);
-		if(kindNode.isDefined()){
-			return kindNode.asString();
-		}
-		return null;
+		return asString(KIND);
 	}
 	
 	@Override
@@ -162,11 +166,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	
 	@Override
 	public String getNamespace(){
-		ModelNode node = get(NAMESPACE);
-		if(node.getType() == ModelType.UNDEFINED){
-			return "";
-		}
-		return node.asString();
+		return asString(NAMESPACE);
 	}
 	
 	public void setNamespace(String namespace){

@@ -23,6 +23,7 @@ public interface ResourcePropertyKeys {
 	static final String LABELS = "metadata.labels";
 	static final String METADATA = "metadata";
 	static final String METADATA_NAME = "metadata.name";
+	static final String METADATA_RESOURCE_VERSION = "metadata.resourceVersion";
 	static final String NAMESPACE = "metadata.namespace";
 
 	static final String NAME = "name";

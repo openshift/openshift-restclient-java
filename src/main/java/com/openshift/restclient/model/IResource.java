@@ -108,6 +108,8 @@ public interface IResource extends ICapable {
 	 */
 	Map<String, String> getAnnotations();
 
+	String getResourceVersion();
+	
 	/**
 	 * 
 	 * @return the json string representing the resource

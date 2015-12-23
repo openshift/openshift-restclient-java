@@ -22,6 +22,7 @@ import com.openshift.internal.restclient.capability.resources.ProjectTemplateLis
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateProcessing;
 import com.openshift.internal.restclient.capability.resources.TagCapability;
 import com.openshift.internal.restclient.capability.resources.TemplateTraceability;
+import com.openshift.internal.restclient.capability.resources.UpdateableCapability;
 import com.openshift.internal.restclient.capability.server.ServerTemplateProcessing;
 import com.openshift.internal.restclient.model.Service;
 import com.openshift.restclient.IClient;
@@ -38,6 +39,7 @@ import com.openshift.restclient.capability.resources.IProjectTemplateProcessing;
 import com.openshift.restclient.capability.resources.IRSyncable;
 import com.openshift.restclient.capability.resources.ITags;
 import com.openshift.restclient.capability.resources.ITemplateTraceability;
+import com.openshift.restclient.capability.resources.IUpdatable;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IBuild;
 import com.openshift.restclient.model.IBuildConfig;
@@ -114,6 +116,7 @@ public class CapabilityInitializer {
 		initializeCapability(capabilities, IDeploymentTraceability.class, new DeploymentTraceability(resource, client));
 		initializeCapability(capabilities, ITags.class, new TagCapability(resource));
 		initializeCapability(capabilities, IClientCapability.class, new ClientCapability(client));
+		initializeCapability(capabilities, IUpdatable.class, new UpdateableCapability(resource));
 	}
 	
 	public static void initializeClientCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IClient client){

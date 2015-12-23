@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.UpgradeException;
@@ -99,7 +100,11 @@ public class WatchClient implements IHttpStatusCodes, IWatcher{
 			LOGGER.debug(message);
 			KubernetesResource payload = factory.create(message);
 			IOpenShiftWatchListener.ChangeType event = IOpenShiftWatchListener.ChangeType.valueOf(payload.getNode().get("type").asString());
-			listener.received(factory.create(payload.getNode().get("object").toJSONString(true)), event);
+			IResource resource = factory.create(payload.getNode().get("object").toJSONString(true));
+			if(StringUtils.isEmpty(resource.getKind())) {
+				LOGGER.error("Unable to determine resource kind from: " + payload.getNode().get("object").toJSONString(false));
+			}
+			listener.received(resource, event);
 		}
 	}
 	

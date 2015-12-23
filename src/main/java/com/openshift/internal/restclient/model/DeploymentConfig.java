@@ -11,12 +11,14 @@
 package com.openshift.internal.restclient.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
+import com.openshift.internal.restclient.model.deploy.ConfigChangeTrigger;
 import com.openshift.internal.restclient.model.deploy.DeploymentTrigger;
 import com.openshift.internal.restclient.model.deploy.ImageChangeTrigger;
 import com.openshift.restclient.IClient;
@@ -55,15 +57,33 @@ public class DeploymentConfig extends ReplicationController implements IDeployme
 	}
 
 	@Override
-	public List<String> getTriggerTypes(){
+	public Collection<String> getTriggerTypes(){
 		List<String> types = new ArrayList<String>();
 		ModelNode triggers = get(DEPLOYMENTCONFIG_TRIGGERS);
 		for (ModelNode node : triggers.asList()) {
-			types.add(node.get(TYPE).asString());
+			types.add(asString(node,TYPE));
 		}
 		return types;
 	}
 	
+	@Override
+	public Collection<IDeploymentTrigger> getTriggers() {
+		List<IDeploymentTrigger> triggers = new ArrayList<>();
+		ModelNode list = get(DEPLOYMENTCONFIG_TRIGGERS);
+		for (ModelNode node : list.asList()) {
+			String type = asString(node,TYPE);
+			switch(type) {
+			case(DeploymentTriggerType.CONFIG_CHANGE):
+				triggers.add(new ConfigChangeTrigger(node, propertyKeys));
+				break;
+			case(DeploymentTriggerType.IMAGE_CHANGE):
+				triggers.add(new ImageChangeTrigger(node, propertyKeys));
+			break;
+			}
+		}
+		return triggers;
+	}
+
 	//FIXME
 	public List<String> getImageNames(){
 		List<String> names = new ArrayList<String>();

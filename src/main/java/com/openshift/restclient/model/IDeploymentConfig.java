@@ -8,7 +8,6 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
-import java.io.PrintStream;
 import java.util.Collection;
 
 import com.openshift.restclient.model.deploy.IDeploymentTrigger;
@@ -25,6 +24,14 @@ public interface IDeploymentConfig extends IReplicationController {
 	 */
 	Collection<String> getTriggerTypes();
 
+	/**
+	 * Returns the trigger of the given type
+	 * or null if it doesn not exist
+	 * @param type
+	 * @return
+	 */
+	Collection<IDeploymentTrigger> getTriggers();
+	
 	/**
 	 * Convenience method to get the deployment
 	 * strategy type

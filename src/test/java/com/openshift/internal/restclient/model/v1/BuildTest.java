@@ -20,6 +20,7 @@ import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegi
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IBuild;
+import com.openshift.restclient.model.build.IBuildStatus;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -45,6 +46,26 @@ public class BuildTest {
 	@Test
 	public void getMessage(){
 		assertEquals("Some status message", build.getMessage());
+	}
+
+	@Test
+	public void getOutputTo(){
+		assertEquals("origin-ruby-sample:latest", build.getOutputTo().toString());
+	}
+
+	@Test
+	public void getOutputKind(){
+		assertEquals("ImageStreamTag", build.getOutputKind());
+	}
+	
+	@Test
+	public void getBuildStatus() {
+		IBuildStatus status = build.getBuildStatus();
+		assertNotNull(status);
+		assertEquals("Running", status.getPhase());
+		assertEquals("172.30.224.48:5000/rails-demo/rails-demo:latest", status.getOutputDockerImage().toString());
+		assertEquals("2015-06-10T20:00:51Z", status.getStartTime());
+		assertEquals(76895000000000L, status.getDuration());
 	}
 	
 }

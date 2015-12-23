@@ -26,8 +26,16 @@ public interface IDeploymentImageChangeTrigger extends IDeploymentTrigger {
 	 * @return
 	 */
 	DockerImageURI getFrom();
-	
+
+	/**
+	 * Automatically sets kind to "ImageStreamTag" if kind is empty
+	 * @param fromImage
+	 */
 	void setFrom(DockerImageURI fromImage);
+	
+	void setKind(String kind);
+	
+	String getKind();
 	
 	boolean isAutomatic();
 	
