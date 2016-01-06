@@ -8,27 +8,33 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
+import com.openshift.internal.restclient.model.image.TagReference;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IImageStream;
+import com.openshift.restclient.model.image.ITagReference;
 
 /**
  * @author Jeff Cantrill
  */
 public class ImageStream extends KubernetesResource implements IImageStream {
 
-	private static final String IMAGESTREAM_DOCKER_IMAGE_REPO = "spec.dockerImageRepository";
-	private static final String IMAGESTREAM_SPEC_TAGS = "spec.tags";
-	private static final String IMAGESTREAM_STATUS_TAGS = "status.tags";
+	private static final String DOCKER_IMAGE_REPO = "status.dockerImageRepository";
+	private static final String SPEC_TAGS = "spec.tags";
+	private static final String STATUS_TAGS = "status.tags";
 	private static final String TAG = "tag";
 	private static final String ITEMS = "items";
 	private static final String IMAGE = "image";
+	private Map<String, String[]> propertyKeys;
 
 	public ImageStream(){
 		this(new ModelNode(), null, null);
@@ -36,21 +42,37 @@ public class ImageStream extends KubernetesResource implements IImageStream {
 	
 	public ImageStream(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
+		this.propertyKeys = propertyKeys;
 	}
 
 	@Override
 	public void setDockerImageRepository(DockerImageURI uri) {
-		set(IMAGESTREAM_DOCKER_IMAGE_REPO, uri.getAbsoluteUri());		
+		set(DOCKER_IMAGE_REPO, uri.getAbsoluteUri());		
 	}
 
 	@Override
 	public DockerImageURI getDockerImageRepository() {
-		return new DockerImageURI(asString(IMAGESTREAM_DOCKER_IMAGE_REPO));
+		return new DockerImageURI(asString(DOCKER_IMAGE_REPO));
+	}
+
+	
+	@Override
+	public Collection<String> getTagNames() {
+		ModelNode node = get(STATUS_TAGS);
+		if(!node.isDefined()) return new ArrayList<>();
+		return node.asList().stream().map(n->asString(n,TAG)).collect(Collectors.toList());
+	}
+
+	@Override
+	public Collection<ITagReference> getTags() {
+		ModelNode node = get(SPEC_TAGS);
+		if(!node.isDefined()) return new ArrayList<>();
+		return node.asList().stream().map(n->new TagReference(n, propertyKeys)).collect(Collectors.toList());
 	}
 
 	@Override
 	public void setTag(String newTag, String fromTag) {
-		ModelNode tags = get(IMAGESTREAM_SPEC_TAGS);
+		ModelNode tags = get(SPEC_TAGS);
 		ModelNode tag = new ModelNode();
 		tag.get("name").set(newTag);
 		ModelNode from = new ModelNode();
@@ -73,7 +95,7 @@ public class ImageStream extends KubernetesResource implements IImageStream {
 	@Override
 	public String getImageId(String tagName) {
 		String imageId = null;
-		ModelNode tags = get(IMAGESTREAM_STATUS_TAGS);
+		ModelNode tags = get(STATUS_TAGS);
 		if (tags.getType() != ModelType.LIST || tagName == null)
 			return null;
 		
