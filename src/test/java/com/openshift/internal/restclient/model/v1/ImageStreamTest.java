@@ -11,6 +11,9 @@ package com.openshift.internal.restclient.model.v1;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,11 +37,18 @@ public class ImageStreamTest {
 	public static void setup(){
 		client = mock(IClient.class);
 	}
-
+	
+	@Test
+	public void testGetTags() {
+		IImageStream stream = getImageStream();
+		Collection<String> tags = stream.getTags().stream().map(tr->tr.getName()).collect(Collectors.toList());
+		assertArrayEquals(new Object [] {"8.1", "latest"}, tags.toArray());
+	}
+	
 	@Test
 	public void getDockerImageRepository() {
 		IImageStream repo = getImageStream();
-		assertEquals(new DockerImageURI("172.30.244.213:5000/test/origin-ruby-sample"), repo.getDockerImageRepository());
+		assertEquals(new DockerImageURI("172.30.224.48:5000/openshift/wildfly:latest"), repo.getDockerImageRepository());
 	}
 
 	@Test

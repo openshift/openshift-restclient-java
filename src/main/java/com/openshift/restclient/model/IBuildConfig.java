@@ -18,7 +18,14 @@ import com.openshift.restclient.model.build.IBuildTrigger;
  * @author Jeff Cantrill
  */
 public interface IBuildConfig extends IResource {
-
+	
+	/**
+	 * To defines an optional location to push the output of this build to.
+	 * Kind must be one of 'ImageStreamTag' or 'DockerImage'.
+	 * @return
+	 */
+	IObjectReference getBuildOutputReference();
+	
 	/**
 	 * Returns the source URL for a build
 	 * @return

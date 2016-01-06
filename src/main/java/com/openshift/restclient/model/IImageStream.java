@@ -8,7 +8,10 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
+import java.util.Collection;
+
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.image.ITagReference;
 
 /**
  * @author Jeff Cantrill
@@ -38,4 +41,17 @@ public interface IImageStream extends IResource{
 	 * @return
 	 */
 	String getImageId(String tagName);
+
+	/**
+	 * The collection of tag references for this imagestream
+	 * @return
+	 */
+	Collection<ITagReference> getTags();
+	
+	/**
+	 * The collection of tag names as listed
+	 * in status.tags
+	 * @return
+	 */
+	Collection<String> getTagNames();
 }

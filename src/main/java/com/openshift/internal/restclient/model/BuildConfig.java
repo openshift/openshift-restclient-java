@@ -26,6 +26,7 @@ import com.openshift.internal.restclient.model.build.WebhookTrigger;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
+import com.openshift.restclient.model.IObjectReference;
 import com.openshift.restclient.model.build.BuildSourceType;
 import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.BuildTriggerType;
@@ -73,6 +74,15 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		CapabilityInitializer.initializeCapabilities(getModifiableCapabilities(), this, client);
 	}
 	
+	
+	@Override
+	public IObjectReference getBuildOutputReference() {
+		ModelNode node = get("spec.output.to");
+		if(!node.isDefined()) return null;
+		return new ObjectReference(node);
+	}
+
+
 	@Override
 	public List<IBuildTrigger> getBuildTriggers() {
 		List<IBuildTrigger> triggers = new ArrayList<IBuildTrigger>();

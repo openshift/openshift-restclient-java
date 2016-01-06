@@ -2,21 +2,66 @@
     "kind": "ImageStream",
     "apiVersion": "v1",
     "metadata": {
-        "name": "origin-ruby-sample",
-        "namespace": "test",
-        "selfLink": "/osapi/v1beta3/namespaces/test/imagestreams/origin-ruby-sample",
-        "uid": "5dfef721-0fab-11e5-9467-080027893417",
-        "resourceVersion": "384",
-        "creationTimestamp": "2015-06-10T20:00:39Z",
-        "labels": {
-            "foo": "bar",
-            "template": "application-template-stibuild"
+        "name": "wildfly",
+        "namespace": "openshift",
+        "selfLink": "/oapi/v1/namespaces/openshift/imagestreams/wildfly",
+        "uid": "c92f9f1b-83fb-11e5-9995-fa163e0f2c20",
+        "resourceVersion": "2072",
+        "creationTimestamp": "2015-11-05T20:28:34Z",
+        "annotations": {
+            "openshift.io/image.dockerRepositoryCheck": "2015-11-05T20:28:54Z"
         }
     },
     "spec": {
-    	"dockerImageRepository": "172.30.244.213:5000/test/origin-ruby-sample"
+        "tags": [
+            {
+                "name": "8.1",
+                "annotations": {
+                    "description": "Build and run Java applications on Wildfly 8.1",
+                    "iconClass": "icon-wildfly",
+                    "sampleRepo": "https://github.com/bparees/openshift-jee-sample.git",
+                    "supports": "wildfly:8.1,jee,java",
+                    "tags": "builder,wildfly,java",
+                    "version": "8.1"
+                },
+                "from": {
+                    "kind": "DockerImage",
+                    "name": "openshift/wildfly-81-centos7:latest"
+                }
+            },
+            {
+                "name": "latest",
+                "from": {
+                    "kind": "ImageStreamTag",
+                    "name": "8.1"
+                }
+            }
+        ]
     },
     "status": {
-        "dockerImageRepository": "172.30.244.213:5000/test/origin-ruby-sample"
+        "dockerImageRepository": "172.30.224.48:5000/openshift/wildfly",
+        "tags": [
+            {
+                "tag": "8.1",
+                "items": [
+                    {
+                        "created": "2015-11-05T20:28:54Z",
+                        "dockerImageReference": "docker.io/openshift/wildfly-81-centos7@sha256:7e4c604e6ffad326607461165ef2f23dff5158e0249a3d4f7c0ef3eea58b1d2f",
+                        "image": "sha256:7e4c604e6ffad326607461165ef2f23dff5158e0249a3d4f7c0ef3eea58b1d2f"
+                    }
+                ]
+            },
+            {
+                "tag": "latest",
+                "items": [
+                    {
+                        "created": "2015-11-05T20:28:54Z",
+                        "dockerImageReference": "docker.io/openshift/wildfly-81-centos7@sha256:7e4c604e6ffad326607461165ef2f23dff5158e0249a3d4f7c0ef3eea58b1d2f",
+                        "image": "sha256:7e4c604e6ffad326607461165ef2f23dff5158e0249a3d4f7c0ef3eea58b1d2f"
+                    }
+                ]
+            }
+        ]
     }
 }
+
