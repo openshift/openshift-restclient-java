@@ -72,7 +72,7 @@ public class Service extends KubernetesResource implements IService {
 	
 	private List<IServicePort> getPorts(boolean modifiable) {
 		List<IServicePort> ports = new ArrayList<>();
-		if(get(SERVICE_PORT).getType() == ModelType.UNDEFINED) return ports;
+		if(!get(SERVICE_PORT).isDefined()) return ports;
 		for (ModelNode node : get(SERVICE_PORT).asList()) {
 			ports.add(new ServicePort(node));
 		}
@@ -125,9 +125,9 @@ public class Service extends KubernetesResource implements IService {
 	}
 	
 	@Override
-	public int getTargetPort() {
+	public String getTargetPort() {
 		IServicePort port = getLowestPort();
-		return port != null ? port.getTargetPort() : 0;
+		return port != null ? port.getTargetPort() : "0";
 	}
 
 	@Override

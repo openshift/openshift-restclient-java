@@ -51,13 +51,13 @@ public class ServiceTest{
 
 	@Test
 	public void testGetTargetPort() {
-		assertEquals(3306, service.getTargetPort());
+		assertEquals("3306", service.getTargetPort());
 	}
 
 	@Test
 	public void testSetTargetPort() {
 		service.setTargetPort(5030);
-		assertEquals(5030, service.getTargetPort());
+		assertEquals("5030", service.getTargetPort());
 	}
 
 	@Test

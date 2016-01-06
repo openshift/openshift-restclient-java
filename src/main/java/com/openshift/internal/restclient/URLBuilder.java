@@ -69,7 +69,6 @@ public class URLBuilder {
 		kindMap.put(ResourceKind.SECRET, "secrets");
 		kindMap.put(ResourceKind.SERVICE_ACCOUNT, "serviceaccounts");
 
-		kindMap.put(ResourceKind.TEMPLATE_CONFIG, "templateconfig");//mechanism for processing templates pre v1beta3
 		kindMap.put(ResourceKind.PROCESSED_TEMPLATES, "processedtemplates");//mechanism for processing templates
 	}
 	
@@ -81,7 +80,6 @@ public class URLBuilder {
 
 	private String namespace;
 	private String subResource;
-	private boolean watch;
 
 	URLBuilder(URL baseUrl, Map<String, String> typeMappings, IResource resource) {
 		this(baseUrl, typeMappings);
@@ -95,11 +93,7 @@ public class URLBuilder {
 	
 	URLBuilder namespace(String namespace){
 		if(StringUtils.isBlank(namespace)) return this;
-		if(typeMappingIsForV1Beta1()) {
-			addParmeter("namespace", namespace);
-		}else {
-			this.namespace = namespace;
-		}
+		this.namespace = namespace;
 		return this;
 	}
 	
@@ -145,11 +139,7 @@ public class URLBuilder {
 		if (kind == null)
 			throw new RuntimeException(
 					"Unable to build a URL because the ResourceKind is unknown");
-		if(typeMappingIsForV1Beta1()) {
-			buildWithNamespaceAsQueryParam(url);
-		}else {
-			buildWithNamespaceInPath(url);
-		}
+		buildWithNamespaceInPath(url);
 
 		try {
 			if(LOG.isDebugEnabled()) {
@@ -161,12 +151,6 @@ public class URLBuilder {
 		}
 	}
 	
-
-	private boolean typeMappingIsForV1Beta1() {
-		String mapping = typeMappings.get(kind);
-		return mapping.contains("v1beta1");
-	}
-
 	private void buildWithNamespaceInPath(StringBuilder url) {
 		url.append("/")
 			.append(typeMappings.get(kind));
@@ -182,22 +166,6 @@ public class URLBuilder {
 			url.append("/").append(subResource);
 		}
 		url = appendParameters(url);
-	}
-
-	private URL buildWithNamespaceAsQueryParam(StringBuilder url) {
-		url.append("/")
-			.append(typeMappings.get(kind)).append("/")
-			.append(kindMap.get(kind));
-		if (name != null) {
-			url.append("/").append(name);
-		}
-		url = appendParameters(url);
-		try {
-			LOG.debug(String.format("Built url: %s", url.toString()));
-			return new URL(url.toString());
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	private StringBuilder appendParameters(StringBuilder url) {

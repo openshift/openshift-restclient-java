@@ -20,27 +20,6 @@ import org.apache.commons.io.IOUtils;
  */
 public enum Samples {
 
-	//v1beta3
-	V1BETA3_BUILD_CONFIG("openshift3/v1beta3_build_config.json"),
-	V1BETA3_DEPLOYMENT_CONIFIG("openshift3/v1beta3_deployment_config.json"), 
-	V1BETA3_IMAGE_STREAM("openshift3/v1beta3_image_stream.json"), 
-	V1BETA3_BUILD("openshift3/v1beta3_build.json"), 
-	V1BETA3_POD("openshift3/v1beta3_pod.json"), 
-	V1BETA3_PROJECT("openshift3/v1beta3_project.json"), 
-	V1BETA3_PROJECT_REQUEST("openshift3/v1beta3_project_request.json"), 
-	V1BETA3_PVC("openshift3/v1beta3_pvc.json"),
-	V1BETA3_PERSISTENT_VOLUME("openshift3/v1beta3_persistent_volume.json"),
-	V1BETA3_REPLICATION_CONTROLLER("openshift3/v1beta3_replication_controller.json"), 
-	V1BETA3_ROUTE("openshift3/v1beta3_route.json"), 
-	V1BETA3_ROUTE_WO_TLS("openshift3/v1beta3_route_wo_tls.json"), 
-	V1BETA3_SERVICE("openshift3/v1beta3_service.json"),
-	V1BETA3_SERVICE_ACCOUNT("openshift3/v1beta3_service_account.json"),
-	V1BETA3_TEMPLATE("openshift3/v1beta3_template.json"),
-	V1BETA3_Status("openshift3/v1beta3_status.json"),
-	V1BETA3_USER("openshift3/v1beta3_user.json"),
-	V1BETA3_SECRET("openshift3/v1beta3_secret.json"),
-	V1BETA3_UNRECOGNIZED("openshift3/v1_unrecognized.json"),
-
 	//v1
 	V1_BUILD_CONFIG("openshift3/v1_build_config.json"),
 	V1_BUILD_CONFIG_LIST("openshift3/v1_build_config_list.json"),

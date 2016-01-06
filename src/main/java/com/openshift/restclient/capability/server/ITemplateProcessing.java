@@ -25,7 +25,7 @@ public interface ITemplateProcessing extends ICapability {
 	 * 
 	 * @param template        The template to process
 	 * @param namespace     The namespace to use when processing the template
-	 * @return IConfig pre v1beta3; ITemplate otherwise
+	 * @return ITemplate 
 	 */
 	<T extends IResource> T process(ITemplate template, String namespace);
 }

@@ -59,8 +59,6 @@ public final class ResourceKind {
 	public static final String CONFIG = "Config";//not rest resource;
 	public static final String LIST = "List";
 	public static final String STATUS = "Status";//not rest resource
-	@Deprecated
-	public static final String TEMPLATE_CONFIG = "TemplateConfig";//mechanism for processing templates pre v1beta3
 	public static final String PROCESSED_TEMPLATES = "ProcessedTemplates";//mechanism for processing templates
 
 	/**
@@ -114,7 +112,6 @@ public final class ResourceKind {
 		set.add(CONFIG);
 		set.add(LIST);
 		set.add(STATUS);
-		set.add(TEMPLATE_CONFIG );
 		set.add("ProcessedTemplates");
 		values = Collections.unmodifiableCollection(set);
 	}

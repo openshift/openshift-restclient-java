@@ -19,10 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
-import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IResource;
@@ -33,7 +31,7 @@ import com.openshift.restclient.utils.Samples;
  * @author Jeff Cantrill
  */
 public class ServerTemplateProcessingIntegrationTest {
-	private static final String VERSION = "v1beta3";
+	private static final String VERSION = "v1";
 
 	private static final String COMMON = "openshift";
 
@@ -50,7 +48,7 @@ public class ServerTemplateProcessingIntegrationTest {
 	@Test
 	public void testProcessAndApplyTemplate() throws Exception{
 		final Collection<IResource> results = new ArrayList<IResource>();
-		ModelNode node = ModelNode.fromJSONString(Samples.V1BETA3_TEMPLATE.getContentAsString());
+		ModelNode node = ModelNode.fromJSONString(Samples.V1_TEMPLATE.getContentAsString());
 		final Template template = new Template(node, client, null);
 		template.setNamespace(COMMON);
 		try {

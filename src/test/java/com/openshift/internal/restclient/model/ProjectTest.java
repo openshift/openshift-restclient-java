@@ -38,7 +38,7 @@ public class ProjectTest {
 	
 	@Before
 	public void setup(){
-		project = new ResourceFactory(client){}.create(OpenShiftAPIVersion.v1beta3.toString(), ResourceKind.PROJECT);
+		project = new ResourceFactory(client){}.create(OpenShiftAPIVersion.v1.toString(), ResourceKind.PROJECT);
 		project.setName("aprojectname");
 	}
 	
