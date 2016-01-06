@@ -37,68 +37,53 @@ public class URLBuilderTest {
 	
 	@Before
 	public void setup() throws MalformedURLException {
-		mappings.put(ResourceKind.SERVICE, "api/v1beta3");
-		mappings.put(ResourceKind.PROJECT, "osapi/v1beta3");
+		mappings.put(ResourceKind.SERVICE, "api/v1");
+		mappings.put(ResourceKind.PROJECT, "oapi/v1");
 		builder = new URLBuilder(new URL(BASE_URL), mappings);
 		
 	}
 	
 	@Test
 	public void testBuildingURLForAWatchService() throws Exception {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3,"foo");
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1,"foo");
 		
 		String url = builder.
 				resource(resource)
 				.watch()
 				.addParmeter("resourceVersion", "123")
 				.build().toString();
-		assertEquals(String.format("%s/api/v1beta3/namespaces/foo/services?watch=true&resourceVersion=123", BASE_URL),url.toString());
+		assertEquals(String.format("%s/api/v1/namespaces/foo/services?watch=true&resourceVersion=123", BASE_URL),url.toString());
 	}
 	
 	@Test
 	public void testBuildingURLForAProjectUsingResource() throws Exception {
-		IResource resource = givenAResource(ResourceKind.PROJECT, KubernetesAPIVersion.v1beta3,"foo");
+		IResource resource = givenAResource(ResourceKind.PROJECT, KubernetesAPIVersion.v1,"foo");
 		
 		String url = builder.
 				resource(resource)
 				.name("foo")
 				.build().toString();
-		assertEquals(String.format("%s/osapi/v1beta3/projects/foo", BASE_URL),url.toString());
+		assertEquals(String.format("%s/oapi/v1/projects/foo", BASE_URL),url.toString());
 	}
 
 	@Test
 	public void testBaseURLWithTrailingSlash() throws Exception {
 		builder = new URLBuilder(new URL(BASE_URL + "///"), mappings);
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3,"foo");
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1,"foo");
 		
 		String url = whenBuildingTheURLFor(resource, "foo");
-		assertEquals(String.format("%s/api/v1beta3/namespaces/foo/services/bar", BASE_URL),url.toString());
+		assertEquals(String.format("%s/api/v1/namespaces/foo/services/bar", BASE_URL),url.toString());
 	}
 
-	@Test
-	public void testV1Beta3() {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3,"foo");
-		String url = whenBuildingTheURLFor(resource, "foo");
-		
-		assertEquals(String.format("%s/api/v1beta3/namespaces/foo/services/bar", BASE_URL),url.toString());
-	}
-
-	@Test
-	public void testV1Beta3WithoutANamespace() {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3,null);
-		String url = whenBuildingTheURLFor(resource, "");
-		
-		assertEquals(String.format("%s/api/v1beta3/services/bar", BASE_URL),url.toString());
-	}
 	@Test
 	public void testAddingASubResource() {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1beta3, "foo");
+		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1, "foo");
 		String url = builder.
 			resource(resource)
 			.name("bar")
 			.subresource("aSubResource")
 			.build().toString();
-		assertEquals(String.format("%s/api/v1beta3/namespaces/foo/services/bar/aSubResource", BASE_URL),url.toString());
+		assertEquals(String.format("%s/api/v1/namespaces/foo/services/bar/aSubResource", BASE_URL),url.toString());
 	}
 	
 	private String whenBuildingTheURLFor(IResource resource, String namespace) {

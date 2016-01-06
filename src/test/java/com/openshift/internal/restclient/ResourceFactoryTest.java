@@ -33,8 +33,7 @@ public class ResourceFactoryTest {
 	public void testV1Beta3Implementations() {
 		List<String> v1beta3Exlusions = Arrays.asList(new String [] {
 				ResourceKind.CONFIG, 
-				ResourceKind.PROCESSED_TEMPLATES, 
-				ResourceKind.TEMPLATE_CONFIG
+				ResourceKind.PROCESSED_TEMPLATES
 		});
 		ResourceFactory factory = new ResourceFactory(mock(IClient.class));
 		final String version = OpenShiftAPIVersion.v1beta3.toString();

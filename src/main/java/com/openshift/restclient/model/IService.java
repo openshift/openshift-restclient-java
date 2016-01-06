@@ -62,7 +62,12 @@ public interface IService extends IResource{
 	 */
 	Map<String, String> getSelector();
 
-	int getTargetPort();
+	/**
+	 * The port this service targets on the
+	 * pod
+	 * @return
+	 */
+	String getTargetPort();
 	
 	/**
 	 * Returns the IP of the service.

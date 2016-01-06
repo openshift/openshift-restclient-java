@@ -56,11 +56,11 @@ public class ResourcePropertiesRegistry implements ResourcePropertyKeys {
 	}
 	
 	public KubernetesAPIVersion [] getSupportedKubernetesVersions(){
-		return KubernetesAPIVersion.values();
+		return new KubernetesAPIVersion[] {KubernetesAPIVersion.v1};
 	}
 
 	public OpenShiftAPIVersion[] getSupportedOpenShiftVersions(){
-		return OpenShiftAPIVersion.values();
+		return new OpenShiftAPIVersion[] {OpenShiftAPIVersion.v1};
 	}
 	
 	/**

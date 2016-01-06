@@ -17,6 +17,7 @@ import static com.openshift.internal.util.JBossDmrExtentions.set;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.model.IServicePort;
@@ -66,8 +67,8 @@ public class ServicePort extends ModelNodeAdapter implements IServicePort {
 	}
 
 	@Override
-	public int getTargetPort() {
-		return asInt(getNode(), KEY_MAP, PROPERTY_TARGET_PORT);
+	public String getTargetPort() {
+		return asString(getNode(), KEY_MAP, PROPERTY_TARGET_PORT);
 	}
 	
 	@Override
@@ -75,6 +76,14 @@ public class ServicePort extends ModelNodeAdapter implements IServicePort {
 		set(getNode(), KEY_MAP, PROPERTY_TARGET_PORT, port);
 	}
 
+	@Override
+	public void setTargetPort(String name) {
+		if(StringUtils.isNumeric(name)) {
+			setTargetPort((Integer.parseInt(name)));
+			return;
+		}
+		set(getNode(), KEY_MAP, PROPERTY_TARGET_PORT, name);
+	}
 
 	@Override
 	public void setPort(int port) {
@@ -101,7 +110,7 @@ public class ServicePort extends ModelNodeAdapter implements IServicePort {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + getPort();
-		result = prime * result + getTargetPort();
+		result = prime * result + getTargetPort().hashCode();
 		result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
 		result = prime * result + ((getProtocol() == null) ? 0 : getProtocol().hashCode());
 		return result;
@@ -118,7 +127,10 @@ public class ServicePort extends ModelNodeAdapter implements IServicePort {
 		ServicePort other = (ServicePort) obj;
 		if (getPort() != other.getPort())
 			return false;
-		if (getTargetPort() != other.getTargetPort())
+		if (getTargetPort() == null) {
+			if (other.getTargetPort() != null)
+				return false;
+		} else if (!getTargetPort().equals(other.getTargetPort()))
 			return false;
 		if (getName() == null) {
 			if (other.getName() != null)

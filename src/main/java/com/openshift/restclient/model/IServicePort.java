@@ -28,11 +28,13 @@ public interface IServicePort {
 	void setPort(int port);
 	
 	/**
-	 * The target port on the pod it services
+	 * The target port on the pod it services.  An integer
+	 * or named port on the pod spec
 	 * @return
 	 */
-	int getTargetPort();
+	String getTargetPort();
 	void setTargetPort(int port);
+	void setTargetPort(String name);
 	
 	/**
 	 * IP protocol (TCP, UDP)

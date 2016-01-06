@@ -403,7 +403,7 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		if(typeMappings.isEmpty()){
 			//OpenShift endpoints
 			final String version = StringUtils.defaultIfEmpty(apiVersion, getOpenShiftAPIVersion());
-			final String osEndpoint = String.format("%s/%s", OpenShiftAPIVersion.v1beta3.toString().equals(version) ? OS_API_LEGACY_ENDPOINT : OS_API_ENDPOINT, version);
+			final String osEndpoint = String.format("%s/%s", OS_API_ENDPOINT, version);
 			typeMappings.put(ResourceKind.BUILD, osEndpoint);
 			typeMappings.put(ResourceKind.BUILD_CONFIG, osEndpoint);
 			typeMappings.put(ResourceKind.DEPLOYMENT_CONFIG, osEndpoint);
@@ -422,7 +422,6 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 			typeMappings.put(ResourceKind.TEMPLATE, osEndpoint);
 			typeMappings.put(ResourceKind.USER, osEndpoint);
 			//not real kinds
-			typeMappings.put(ResourceKind.TEMPLATE_CONFIG, osEndpoint);
 			typeMappings.put(ResourceKind.PROCESSED_TEMPLATES, osEndpoint);
 			
 			//Kubernetes endpoints

@@ -57,7 +57,7 @@ public class DefaultClientIntegrationTest {
 		try {
 			project = factory.create(VERSION, ResourceKind.PROJECT);
 			project.setName(helper.generateNamespace());
-			template = factory.create(Samples.V1BETA3_TEMPLATE.getContentAsString());
+			template = factory.create(Samples.V1_TEMPLATE.getContentAsString());
 			template.setNamespace(project.getName());
 			
 			project = client.create(project);
