@@ -17,7 +17,7 @@ import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.restclient.http.IHttpClient;
+import com.openshift.restclient.http.IHttpConstants;
 
 /**
  * A class that encodes request parameters to json so that they may get sent to
@@ -42,7 +42,7 @@ public class JsonMediaType implements IMediaType {
 
 	@Override
 	public String getType() {
-		return IHttpClient.MEDIATYPE_APPLICATION_JSON;
+		return IHttpConstants.MEDIATYPE_APPLICATION_JSON;
 	}
 
 	public void writeTo(ParameterValueMap parameterMap, OutputStream out) throws EncodingException {

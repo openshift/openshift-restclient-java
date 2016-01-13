@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ import com.openshift.restclient.authorization.ResourceForbiddenException;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.http.IHttpClient;
-import com.openshift.restclient.http.IHttpStatusCodes;
+import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.user.IUser;
@@ -55,7 +56,7 @@ import com.openshift.restclient.model.user.IUser;
 /**
  * @author Jeff Cantrill
  */
-public class DefaultClient implements IClient, IHttpStatusCodes{
+public class DefaultClient implements IClient, IHttpConstants{
 	
 	public static final String SYSTEM_PROP_K8E_API_VERSION = "osjc.k8e.apiversion"; 
 	public static final String SYSTEM_PROP_OPENSHIFT_API_VERSION = "osjc.openshift.apiversion"; 
@@ -534,22 +535,17 @@ public class DefaultClient implements IClient, IHttpStatusCodes{
 		if (openShiftVersion == null) {
 			if (other.openShiftVersion != null)
 				return false;
-		} else if (!openShiftVersion.equals(other.openShiftVersion))
+		} else if (!openShiftVersion.equals(other.openShiftVersion)) {
 			return false;
-		//check user token to distinguish 2 clients from the same server
-		if (strategy == null) {
-			if (other.strategy != null)
-				return false;
-		} else {
-			String token = strategy.getToken();
-			String otherToken = other.strategy == null?null:other.strategy.getToken();
-			if (token == null) {
-				if (otherToken != null)
-					return false;
-			} else if (!token.equals(otherToken))
-				return false;
 		}
-		return true;
+		if (strategy == null) {
+			return other.strategy == null;
+		} else {
+			if (other.strategy == null) {
+				return false;
+			}
+			return ObjectUtils.equals(strategy, other.strategy);
+		}
 	}
 	
 	

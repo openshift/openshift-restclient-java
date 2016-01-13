@@ -34,7 +34,7 @@ import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.IWatcher;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.authorization.ResourceForbiddenException;
-import com.openshift.restclient.http.IHttpStatusCodes;
+import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
 
@@ -43,7 +43,7 @@ import com.openshift.restclient.model.IResource;
   * @author Jeff Cantrill
   *
   */
-public class WatchClient implements IHttpStatusCodes, IWatcher{
+public class WatchClient implements IHttpConstants, IWatcher{
 	private static final Logger LOGGER = LoggerFactory.getLogger(WatchClient.class);
 	private URL baseUrl;
 	private Map<String, String> typeMappings;

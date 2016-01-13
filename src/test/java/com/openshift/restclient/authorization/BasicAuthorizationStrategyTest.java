@@ -8,16 +8,16 @@
  ******************************************************************************/
 package com.openshift.restclient.authorization;
 
-import static org.mockito.Mockito.*;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 
-import org.mockito.Mock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
-import com.openshift.restclient.authorization.IRequest;
 import com.openshift.restclient.utils.Base64Coder;
 
 /**
@@ -41,5 +41,48 @@ public class BasicAuthorizationStrategyTest {
 		strategy.authorize(request);
 		verify(request).setProperty(eq("Authorization"), eq(usernamePassword));
 	}
+	
+	@Test
+	public void BasicStrategyShouldEqualBasicStrategyWithDifferentUsername() {
+		assertThat(new BasicAuthorizationStrategy("aUsername", "aPassword", null))
+				.isNotEqualTo(new BasicAuthorizationStrategy("differentUsername", "aPassword", null));
+	}
 
+	@Test
+	public void BasicStrategyShouldEqualBasicStrategyWithDifferentToken() {
+		assertThat(new BasicAuthorizationStrategy("aUsername", "aPassword", "123"))
+				.isEqualTo(new BasicAuthorizationStrategy("aUsername", "aPassword", "234"));
+	}
+
+	@Test
+	public void BasicStrategyShouldEqualBasicStrategyWithDifferentPassword() {
+		assertThat(new BasicAuthorizationStrategy("aUsername", "aPassword", null))
+			.isEqualTo(new BasicAuthorizationStrategy("aUsername", "differentPassword", null));
+	}
+
+	@Test
+	public void BasicStrategyShouldNotEqualNonBasicStrategy() {
+		assertThat(new BasicAuthorizationStrategy("aUsername", "aPassword", null))
+				.isNotEqualTo(new IAuthorizationStrategy() {
+
+
+					@Override
+					public String getUsername() {
+						return null;
+					}
+
+					@Override
+					public String getToken() {
+						return null;
+					}
+
+					@Override
+					public void authorize(IRequest request) {
+					}
+
+					@Override
+					public void accept(IAuthorizationStrategyVisitor visitor) {
+					}
+				});
+	}
 }

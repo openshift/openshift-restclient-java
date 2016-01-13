@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.util.URLUtils;
-import com.openshift.restclient.http.IHttpClient;
+import com.openshift.restclient.http.IHttpConstants;
 
 /**
  * A class that encodes request parameters to formurl-encoded format so that they may get sent to
@@ -51,7 +51,7 @@ public class FormUrlEncodedMediaType implements IMediaType {
 
 	@Override
 	public String getType() {
-		return IHttpClient.MEDIATYPE_APPLICATION_FORMURLENCODED;
+		return IHttpConstants.MEDIATYPE_APPLICATION_FORMURLENCODED;
 	}
 
 	public void writeTo(ParameterValueMap parameterMap, OutputStream out) throws EncodingException {
@@ -97,14 +97,14 @@ public class FormUrlEncodedMediaType implements IMediaType {
 	private void writeTo(String name, StringValue stringValue, OutputStream out) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		if (!firstParameter) {
-			builder.append(IHttpClient.AMPERSAND);
+			builder.append(IHttpConstants.AMPERSAND);
 		} else {
 			firstParameter = false;
 		}
 		String value = encode(stringValue.getValue());
 		String parameterString = builder
 				.append(name)
-				.append(IHttpClient.EQUALS).append(value)
+				.append(IHttpConstants.EQUALS).append(value)
 				.toString();
 		out.write(parameterString.getBytes());
 		LOGGER.trace(out.toString());

@@ -32,7 +32,9 @@ import org.junit.Test;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
+import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.model.IPod;
 
@@ -151,25 +153,58 @@ public class DefaultClientTest {
 	}
 
 	@Test
-	public void testDefaultClientEquals() throws Exception {
-		DefaultClient sameUrlClient = new DefaultClient(baseUrl, null);
-		assertThat(client).isEqualTo(sameUrlClient);
-
-		DefaultClient differentUrlClient = new DefaultClient(new URL("http://localhost:8443"), null);
-		assertThat(client).isNotEqualTo(differentUrlClient);
-
-		IAuthorizationStrategy oneStrategy = mock(IAuthorizationStrategy.class);
-		client.setAuthorizationStrategy(oneStrategy);
-		when(oneStrategy.getToken()).thenReturn("token1");
-
-		IAuthorizationStrategy otherStrategy = mock(IAuthorizationStrategy.class);
-		sameUrlClient.setAuthorizationStrategy(otherStrategy);
-
-		when(otherStrategy.getToken()).thenReturn("token2");
-		assertThat(client).isNotEqualTo(sameUrlClient);
-
-		when(otherStrategy.getToken()).thenReturn("token1");
-		assertThat(client).isEqualTo(sameUrlClient);
+	public void clientShouldEqualClientWithSameUrl() throws Exception {
+		assertThat(new DefaultClient(baseUrl, null))
+			.isEqualTo(new DefaultClient(baseUrl, null));
 	}
+		
+	@Test
+	public void clientShouldNotEqualClientWithDifferentUrl() throws Exception {
+		assertThat(new DefaultClient(baseUrl, null))
+				.isNotEqualTo(new DefaultClient(new URL("http://localhost:8443"), null));
+	}
+	
+	@Test
+	public void clientShouldNotEqualClientWithDifferentStrategy() throws Exception {
+		DefaultClient tokenClient = new DefaultClient(baseUrl, null);
+		tokenClient.setAuthorizationStrategy(mock(TokenAuthorizationStrategy.class));
+
+		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null);
+		basicAuthClient.setAuthorizationStrategy(mock(BasicAuthorizationStrategy.class));
+
+		assertThat(tokenClient).isNotEqualTo(basicAuthClient);
+	}
+
+	@Test
+	public void clientShouldEqualClientWithSameStrategyAndDifferentToken() throws Exception {
+		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
+		IAuthorizationStrategy tokenStrategyOne = mock(TokenAuthorizationStrategy.class);
+		when(tokenStrategyOne.getToken()).thenReturn("tokenOne");
+		tokenClientOne.setAuthorizationStrategy(tokenStrategyOne);
+
+		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
+		IAuthorizationStrategy tokenStrategyTwo = mock(TokenAuthorizationStrategy.class);
+		when(tokenStrategyTwo.getToken()).thenReturn("tokenTwo");
+		tokenClientTwo.setAuthorizationStrategy(tokenStrategyTwo);
+
+		assertThat(tokenClientTwo).isEqualTo(tokenClientTwo);
+	}
+
+	@Test
+	public void clientShouldEqualClientWithSameStrategyAndDifferentUsername() throws Exception {
+		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
+		IAuthorizationStrategy tokenStrategyOne = mock(TokenAuthorizationStrategy.class);
+		when(tokenStrategyOne.getUsername()).thenReturn("aUser");
+		tokenClientOne.setAuthorizationStrategy(tokenStrategyOne);
+
+		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
+		IAuthorizationStrategy tokenStrategyTwo = mock(TokenAuthorizationStrategy.class);
+		when(tokenStrategyOne.getUsername()).thenReturn("differentuser");
+		tokenClientTwo.setAuthorizationStrategy(tokenStrategyTwo);
+
+		assertThat(tokenClientTwo).isEqualTo(tokenClientTwo);
+	}
+
+
 
 }

@@ -31,4 +31,10 @@ public interface IAuthorizationStrategy{
 	 * @return
 	 */
 	String getToken();
+
+	/**
+	 * Returns the username for this strategy.
+	 * @return
+	 */
+	String getUsername();
 }

@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.openshift.restclient.authorization;
 
-import com.openshift.restclient.http.IHttpClient;
+import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.utils.Base64Coder;
 
 /**
@@ -16,10 +16,9 @@ import com.openshift.restclient.utils.Base64Coder;
  * 
  * @author Jeff Cantrill
  */
-public class BasicAuthorizationStrategy implements IAuthorizationStrategy{
+public class BasicAuthorizationStrategy extends AbstractAuthorizationStrategy {
 
 	private final String password;
-	private final String username;
 	private final String token;
 	
 	/**
@@ -29,7 +28,7 @@ public class BasicAuthorizationStrategy implements IAuthorizationStrategy{
 	 * @param token     optionally a token to use before trying to auth with username/password
 	 */
 	public BasicAuthorizationStrategy(String username, String password, String token) {
-		this.username = username;
+		super(username);
 		this.password = password;
 		this.token = token;
 	}
@@ -38,10 +37,6 @@ public class BasicAuthorizationStrategy implements IAuthorizationStrategy{
 		return password;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-	
 	@Override
 	public String getToken() {
 		return token;
@@ -49,13 +44,12 @@ public class BasicAuthorizationStrategy implements IAuthorizationStrategy{
 
 	@Override
 	public void authorize(IRequest request) {
-		String value = IHttpClient.AUTHORIZATION_BASIC + " " + Base64Coder.encode(String.format("%s:%s", username, password));
-		request.setProperty(IHttpClient.PROPERTY_AUTHORIZATION, value);
+		String value = IHttpConstants.AUTHORIZATION_BASIC + " " + Base64Coder.encode(String.format("%s:%s", getUsername(), password));
+		request.setProperty(IHttpConstants.PROPERTY_AUTHORIZATION, value);
 	}
 
 	@Override
 	public void accept(IAuthorizationStrategyVisitor visitor) {
 		visitor.visit(this);
 	}
-
 }

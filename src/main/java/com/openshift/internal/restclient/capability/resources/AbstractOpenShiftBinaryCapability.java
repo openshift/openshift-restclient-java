@@ -22,7 +22,6 @@ import com.openshift.restclient.OpenShiftContext;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.authorization.IAuthorizationStrategyVisitor;
-import com.openshift.restclient.authorization.KerbrosBrokerAuthorizationStrategy;
 import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.resources.LocationNotFoundException;
@@ -105,10 +104,6 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 			@Override
 			public void visit(TokenAuthorizationStrategy strategy) {
 				builder.append(strategy.getToken());
-			}
-			
-			@Override
-			public void visit(KerbrosBrokerAuthorizationStrategy strategy) {
 			}
 			
 			@Override

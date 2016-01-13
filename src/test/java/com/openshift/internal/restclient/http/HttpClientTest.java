@@ -42,6 +42,7 @@ import com.openshift.internal.restclient.http.UrlConnectionHttpClientBuilder;
 import com.openshift.internal.util.TestTimer;
 import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.restclient.http.IHttpClient;
+import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.server.HttpServerFake;
 import com.openshift.restclient.server.HttpsServerFake;
 import com.openshift.restclient.server.WaitingHttpServerFake;
@@ -287,7 +288,7 @@ public class HttpClientTest extends TestTimer {
 //		// pre-conditions
 //		final int timeout = 1000;
 //		final int serverDelay = timeout * 4;
-//		assertThat(timeout).isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+//		assertThat(timeout).isLessThan(IHttpConstants.DEFAULT_READ_TIMEOUT);
 //		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
 //		long startTime = System.currentTimeMillis();
 //		// operations
@@ -298,7 +299,7 @@ public class HttpClientTest extends TestTimer {
 //			// assert
 //			assertThat(System.currentTimeMillis() - startTime).isGreaterThan(timeout)
 //					.isLessThan(serverDelay)
-//					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+//					.isLessThan(IHttpConstants.DEFAULT_READ_TIMEOUT);
 //		} finally {
 //			serverFake.stop();
 //		}
@@ -331,7 +332,7 @@ public class HttpClientTest extends TestTimer {
 //		// pre-conditions
 //		final int timeout = 1000;
 //		final int serverDelay = timeout * 4;
-//		assertThat(timeout).isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+//		assertThat(timeout).isLessThan(IHttpConstants.DEFAULT_READ_TIMEOUT);
 //		WaitingHttpServerFake serverFake = startWaitingHttpServerFake(serverDelay);
 //		long startTime = System.currentTimeMillis();
 //		// operations
@@ -342,7 +343,7 @@ public class HttpClientTest extends TestTimer {
 //			// assert
 //			assertThat(System.currentTimeMillis() - startTime).isGreaterThan(timeout)
 //					.isLessThan(serverDelay)
-//					.isLessThan(IHttpClient.DEFAULT_READ_TIMEOUT);
+//					.isLessThan(IHttpConstants.DEFAULT_READ_TIMEOUT);
 //		} finally {
 //			serverFake.stop();
 //		}
@@ -410,7 +411,7 @@ public class HttpClientTest extends TestTimer {
 //		long startTime = System.currentTimeMillis();
 //		// operations
 //		try {
-//			httpClient.get(serverFake.getUrl(), IHttpClient.NO_TIMEOUT);
+//			httpClient.get(serverFake.getUrl(), IHttpConstants.NO_TIMEOUT);
 //			fail("Timeout expected.");
 //		} catch (SocketTimeoutException e) {
 //			// assert
@@ -460,18 +461,18 @@ public class HttpClientTest extends TestTimer {
 		}
 
 		public String getAcceptHeader(HttpURLConnection connection) {
-			return connection.getRequestProperty(PROPERTY_ACCEPT);
+			return connection.getRequestProperty(IHttpConstants.PROPERTY_ACCEPT);
 		}
 	}
 
 	private abstract class UrlConnectionHttpClientFake extends UrlConnectionHttpClient {
 		private UrlConnectionHttpClientFake(String userAgent, String acceptVersion) {
-			super(userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
+			super(userAgent, IHttpConstants.MEDIATYPE_APPLICATION_JSON, acceptVersion,
 					null, IHttpClient.NO_TIMEOUT, null);
 		}
 
 		private UrlConnectionHttpClientFake(String userAgent, String acceptVersion, ISSLCertificateCallback callback) {
-			super(userAgent, IHttpClient.MEDIATYPE_APPLICATION_JSON, acceptVersion,
+			super(userAgent, IHttpConstants.MEDIATYPE_APPLICATION_JSON, acceptVersion,
 					callback,IHttpClient.NO_TIMEOUT, null);
 		}
 		

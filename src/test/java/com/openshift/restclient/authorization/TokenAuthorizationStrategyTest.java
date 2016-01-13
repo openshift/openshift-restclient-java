@@ -8,16 +8,15 @@
  ******************************************************************************/
 package com.openshift.restclient.authorization;
 
-import static org.mockito.Mockito.*;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
-import com.openshift.restclient.authorization.IRequest;
 
 /**
  * @author Jeff Cantrill
@@ -39,6 +38,56 @@ public class TokenAuthorizationStrategyTest {
 		strategy.authorize(request);
 		
 		verify(request).setProperty(eq("Authorization"), eq("Bearer 123"));
+	}
+
+	@Test
+	public void TokenStrategiesShoulEqualTokenStrategyWithDifferentToken() {
+		assertThat(new TokenAuthorizationStrategy("123")).isEqualTo(new TokenAuthorizationStrategy("42"));
+	}
+	
+	@Test
+	public void TokenStrategiesWithSameTokensShouldEqual() {
+		assertThat(new TokenAuthorizationStrategy("123")).isEqualTo(new TokenAuthorizationStrategy("123"));
+	}
+
+	@Test
+	public void TokenStrategiesShoulNotEqualTokenStrategyWithDifferentUsername() {
+		TokenAuthorizationStrategy tokenStrategy1 = new TokenAuthorizationStrategy("123", "aUsername");
+		TokenAuthorizationStrategy tokenStrategy2 = new TokenAuthorizationStrategy("123", "differentUser");
+		assertThat(tokenStrategy1).isNotEqualTo(tokenStrategy2);
+	}
+
+	@Test
+	public void TokenStrategiesShoulEqualTokenStrategyWithSameUsername() {
+		TokenAuthorizationStrategy tokenStrategy1 = new TokenAuthorizationStrategy("123", "aUser");
+		TokenAuthorizationStrategy tokenStrategy2 = new TokenAuthorizationStrategy("123", "aUser");
+		assertThat(tokenStrategy1).isEqualTo(tokenStrategy2);
+	}
+
+	@Test
+	public void TokenStrategyShouldNotEqualNonTokenStrategy() {
+		assertThat(new TokenAuthorizationStrategy("123"))
+				.isNotEqualTo(new IAuthorizationStrategy() {
+
+					@Override
+					public String getToken() {
+						return null;
+					}
+
+
+					@Override
+					public String getUsername() {
+						return null;
+					}
+
+					@Override
+					public void authorize(IRequest request) {
+					}
+
+					@Override
+					public void accept(IAuthorizationStrategyVisitor visitor) {
+					}
+				});
 	}
 
 }

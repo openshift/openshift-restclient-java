@@ -15,7 +15,5 @@ public interface IAuthorizationStrategyVisitor {
 	
 	void visit(BasicAuthorizationStrategy strategy);
 
-	void visit(KerbrosBrokerAuthorizationStrategy kerbrosBrokerAuthorizationStrategy);
-
 	void visit(TokenAuthorizationStrategy tokenAuthorizationStrategy);
 }
