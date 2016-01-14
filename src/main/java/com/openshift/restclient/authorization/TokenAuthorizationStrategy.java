@@ -8,24 +8,30 @@
  ******************************************************************************/
 package com.openshift.restclient.authorization;
 
-import com.openshift.restclient.http.IHttpClient;
+import com.openshift.restclient.http.IHttpConstants;
 
 /**
  * Authorization stategy to add a Bearer Token to a request
  * 
  * @author Jeff Cantrill
+ * @author Andre Dietisheim
  */
-public class TokenAuthorizationStrategy implements IAuthorizationStrategy {
+public class TokenAuthorizationStrategy extends AbstractAuthorizationStrategy {
 
 	private final String token;
 	
 	public TokenAuthorizationStrategy(String token) {
+		this(token, null);
+	}
+
+	public TokenAuthorizationStrategy(String token, String username) {
+		super(username);
 		this.token = token;
 	}
 
 	@Override
 	public void authorize(IRequest request) {
-		request.setProperty(IHttpClient.PROPERTY_AUTHORIZATION, String.format("%s %s", IHttpClient.AUTHORIZATION_BEARER, token));
+		request.setProperty(IHttpConstants.PROPERTY_AUTHORIZATION, String.format("%s %s", IHttpConstants.AUTHORIZATION_BEARER, token));
 	}
 	
 	@Override
@@ -37,6 +43,4 @@ public class TokenAuthorizationStrategy implements IAuthorizationStrategy {
 	public void accept(IAuthorizationStrategyVisitor visitor) {
 		visitor.visit(this);
 	}
-
-
 }

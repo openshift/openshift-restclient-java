@@ -15,13 +15,11 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
 
 import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.authorization.IAuthorizationStrategyVisitor;
-import com.openshift.restclient.authorization.KerbrosBrokerAuthorizationStrategy;
 import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 
 public class OpenShiftCredentialsProvider implements CredentialsProvider, IAuthorizationStrategyVisitor{
@@ -55,10 +53,6 @@ public class OpenShiftCredentialsProvider implements CredentialsProvider, IAutho
 	public void visit(TokenAuthorizationStrategy strategy) {
 		this.scheme = IAuthorizationContext.AUTHSCHEME_OAUTH;
 		this.token = strategy.getToken();
-	}
-
-	@Override
-	public void visit(KerbrosBrokerAuthorizationStrategy strategy) {
 	}
 
 	@Override

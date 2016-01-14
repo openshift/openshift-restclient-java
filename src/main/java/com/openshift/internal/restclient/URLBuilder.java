@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.http.IHttpClient;
+import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -170,20 +170,20 @@ public class URLBuilder {
 
 	private StringBuilder appendParameters(StringBuilder url) {
 		if (!params.isEmpty()) {
-			url.append(IHttpClient.QUESTION_MARK);
+			url.append(IHttpConstants.QUESTION_MARK);
 			for (Iterator<Entry<String, String>> iterator = params.entrySet()
 					.iterator(); iterator.hasNext();) {
 				Entry<String, String> entry = (Entry<String, String>) iterator
 						.next();
 				try {
 					url.append(entry.getKey())
-							.append(IHttpClient.EQUALS)
+							.append(IHttpConstants.EQUALS)
 							.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					throw new RuntimeException(e);
 				}
 				if (iterator.hasNext()) {
-					url.append(IHttpClient.AMPERSAND);
+					url.append(IHttpConstants.AMPERSAND);
 				}
 			}
 		}

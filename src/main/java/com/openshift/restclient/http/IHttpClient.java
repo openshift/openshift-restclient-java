@@ -27,36 +27,8 @@ import com.openshift.restclient.model.IResource;
  * @deprecated This interface and its supporting classes to be deprecated in the near future.
  */
 @Deprecated
-public interface IHttpClient extends IHttpStatusCodes{
+public interface IHttpClient {
 	
-	public static final String HTTP = "http";
-
-	public static final String PROPERTY_CONTENT_TYPE = "Content-Type";
-	public static final String PROPERTY_AUTHORIZATION = "Authorization";
-	public static final String PROPERTY_ACCEPT = "Accept";
-	public static final String PROPERTY_USER_AGENT = "User-Agent";
-	
-	public static final String PROPERTY_AUTHKEY = "broker_auth_key";
-	public static final String PROPERTY_AUTHIV = "broker_auth_iv";
-
-	public static final String MEDIATYPE_APPLICATION_JSON = "application/json";
-	public static final String MEDIATYPE_APPLICATION_XML = "application/xml";
-	public static final String MEDIATYPE_APPLICATION_FORMURLENCODED = "application/x-www-form-urlencoded";
-
-	public static final String AUTHORIZATION_BASIC = "Basic";
-	public static final String AUTHORIZATION_BEARER = "Bearer";
-
-	public static final char SPACE = ' ';
-	public static final char COLON = ':';
-	public static final char COMMA = ',';
-	public static final char SEMICOLON = ';';
-	public static final char AMPERSAND = '&';
-	public static final char EQUALS = '=';
-	public static final char SLASH = '/';
-	public static final char QUESTION_MARK = '?';
-	
-	public static final String VERSION = "version";
-
 	public static final String SYSPROP_OPENSHIFT_CONNECT_TIMEOUT = "com.openshift.httpclient.connect.timeout";
 	public static final String SYSPROP_OPENSHIFT_READ_TIMEOUT = "com.openshift.httpclient.read.timeout";
 	public static final String SYSPROP_DEFAULT_CONNECT_TIMEOUT = "sun.net.client.defaultConnectTimeout";

@@ -47,6 +47,7 @@ import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
 import com.openshift.restclient.authorization.URLConnectionRequest;
 import com.openshift.restclient.http.IHttpClient;
+import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.utils.SSLUtils;
 
@@ -213,13 +214,13 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			int responseCode = connection.getResponseCode();
 			String errorMessage = createErrorMessage(ioe, connection);
 			switch (responseCode) {
-			case STATUS_INTERNAL_SERVER_ERROR:
+			case IHttpConstants.STATUS_INTERNAL_SERVER_ERROR:
 				return new InternalServerErrorException(errorMessage, ioe);
-			case STATUS_BAD_REQUEST:
+			case IHttpConstants.STATUS_BAD_REQUEST:
 				return new BadRequestException(errorMessage, ioe);
-			case STATUS_UNAUTHORIZED:
+			case IHttpConstants.STATUS_UNAUTHORIZED:
 				return new UnauthorizedException(errorMessage, ioe);
-			case STATUS_NOT_FOUND:
+			case IHttpConstants.STATUS_NOT_FOUND:
 				return new NotFoundException(errorMessage, ioe);
 			default:
 				return new HttpClientException(errorMessage, ioe, responseCode);
@@ -275,23 +276,23 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	private void setUserAgent(String userAgent, HttpURLConnection connection) {
 		if (!StringUtils.isEmpty(userAgent)) {
-			connection.setRequestProperty(PROPERTY_USER_AGENT, userAgent);
+			connection.setRequestProperty(IHttpConstants.PROPERTY_USER_AGENT, userAgent);
 		}
 	}
 
 	private void setAcceptHeader(String acceptedVersion, String acceptedMediaType, HttpURLConnection connection) {
 		if (StringUtils.isEmpty(acceptedMediaType)) {
 			throw new HttpClientException(MessageFormat.format(
-					"Accepted media type (ex. {0}) is not defined", MEDIATYPE_APPLICATION_JSON));
+					"Accepted media type (ex. {0}) is not defined", IHttpConstants.MEDIATYPE_APPLICATION_JSON));
 		}
 
 		StringBuilder builder = new StringBuilder(acceptedMediaType);
 		if (acceptedVersion != null) {
-			builder.append(SEMICOLON).append(SPACE)
-					.append(VERSION).append(EQUALS).append(acceptedVersion);
+			builder.append(IHttpConstants.SEMICOLON).append(IHttpConstants.SPACE)
+					.append(IHttpConstants.VERSION).append(IHttpConstants.EQUALS).append(acceptedVersion);
 		}
 
-		connection.setRequestProperty(PROPERTY_ACCEPT, builder.toString());
+		connection.setRequestProperty(IHttpConstants.PROPERTY_ACCEPT, builder.toString());
 	}
 
 	protected final void setAuthorization(HttpURLConnection connection) {
@@ -392,9 +393,9 @@ public class UrlConnectionHttpClient implements IHttpClient {
 				|| StringUtils.isEmpty(mediaType.getType())) {
 			throw new HttpClientException(
 					MessageFormat.format("Request media type (ex. {0}) is not defined",
-							MEDIATYPE_APPLICATION_FORMURLENCODED));
+							IHttpConstants.MEDIATYPE_APPLICATION_FORMURLENCODED));
 		}
-		connection.setRequestProperty(PROPERTY_CONTENT_TYPE, mediaType.getType());	
+		connection.setRequestProperty(IHttpConstants.PROPERTY_CONTENT_TYPE, mediaType.getType());	
 	}
 	
 	private X509TrustManager getCurrentTrustManager() throws NoSuchAlgorithmException, KeyStoreException {

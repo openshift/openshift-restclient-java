@@ -12,8 +12,6 @@ package com.openshift.internal.restclient.http;
 
 import java.io.OutputStream;
 
-import com.openshift.restclient.http.IHttpClient;
-
 /**
  * 
  * A media type that encodes and writes request parameters before they get sent by the client.
