@@ -78,6 +78,16 @@ public class Route extends KubernetesResource implements IRoute {
 	}
 	
 	@Override
+	public ITLSConfig createTLSConfig() {
+		ITLSConfig config = getTLSConfig();
+		if(config == null) {
+			get(ROUTE_TLS).set(new ModelNode());
+			config = new TLSConfig();
+		}
+		return config;
+	}
+
+	@Override
 	public String getURL() {
 		String scheme = getTLSConfig() == null ? "http" : "https";
 		String path = getPath();
