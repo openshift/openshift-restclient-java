@@ -69,12 +69,21 @@ public interface IRoute extends IResource {
 	/**
 	 * Retrieves the TLS configuration of this route.
 	 * 
-	 * @return TLS configuration.
+	 * @return TLS configuration or null if there is not one
 	 */
 	ITLSConfig getTLSConfig();
 	
 	/**
-	 * Return a URL representation of this route
+	 * Create a tls config if one is not defined or return
+	 * the existing one
+	 * @return
+	 */
+	ITLSConfig createTLSConfig();
+	
+	
+	/**
+	 * Return a URL representation of this route.  Assumes
+	 * the protocol is https if the route includes TLS Config
 	 * @return java.lang.String   The route url
 	 */
 	String getURL();

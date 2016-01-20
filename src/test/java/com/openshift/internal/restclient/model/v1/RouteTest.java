@@ -47,7 +47,20 @@ public class RouteTest{
 	public void getTLSConfigWhenUndefined() {
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_ROUTE_WO_TLS.getContentAsString());
 		route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
-		assertNull(route.getTLSConfig());
+		ITLSConfig tlsConfig = route.getTLSConfig();
+		assertNull(tlsConfig);
+	}
+
+	@Test
+	public void createTLSConfigWhenUndefined() {
+		ModelNode node = ModelNode.fromJSONString(Samples.V1_ROUTE_WO_TLS.getContentAsString());
+		route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
+		ITLSConfig tls = route.createTLSConfig();
+		assertNotNull(tls);
+		assertEquals("", tls.getTerminationType());
+		assertEquals("", tls.getCertificate());
+		assertEquals("", tls.getCACertificate());
+		assertEquals("", tls.getKey());
 	}
 	
 	@Test
@@ -80,6 +93,15 @@ public class RouteTest{
 	@Test
 	public void getTLSConfig() throws Exception {
 		ITLSConfig tls = route.getTLSConfig();
+		assertEquals(TLSTerminationType.EDGE, tls.getTerminationType());
+		assertEquals("theCert", tls.getCertificate());
+		assertEquals("theCACert", tls.getCACertificate());
+		assertEquals("theKey", tls.getKey());
+	}
+
+	@Test
+	public void createTLSConfigWhenAlreadyDefined() throws Exception {
+		ITLSConfig tls = route.createTLSConfig();
 		assertEquals(TLSTerminationType.EDGE, tls.getTerminationType());
 		assertEquals("theCert", tls.getCertificate());
 		assertEquals("theCACert", tls.getCACertificate());
