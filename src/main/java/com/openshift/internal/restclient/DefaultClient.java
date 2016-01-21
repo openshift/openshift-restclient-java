@@ -409,6 +409,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 			typeMappings.put(ResourceKind.BUILD_CONFIG, osEndpoint);
 			typeMappings.put(ResourceKind.DEPLOYMENT_CONFIG, osEndpoint);
 			typeMappings.put(ResourceKind.IMAGE_STREAM, osEndpoint);
+			typeMappings.put(ResourceKind.IMAGE_STREAM_TAG, osEndpoint);
 			typeMappings.put(ResourceKind.OAUTH_ACCESS_TOKEN, osEndpoint);
 			typeMappings.put(ResourceKind.OAUTH_AUTHORIZE_TOKEN, osEndpoint);
 			typeMappings.put(ResourceKind.OAUTH_CLIENT, osEndpoint);

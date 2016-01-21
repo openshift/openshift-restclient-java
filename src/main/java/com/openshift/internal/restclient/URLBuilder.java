@@ -43,6 +43,7 @@ public class URLBuilder {
 		kindMap.put(ResourceKind.BUILD_CONFIG, "buildconfigs");
 		kindMap.put(ResourceKind.DEPLOYMENT_CONFIG,"deploymentconfigs");
 		kindMap.put(ResourceKind.IMAGE_STREAM, "imagestreams");
+		kindMap.put(ResourceKind.IMAGE_STREAM_TAG, "imagestreamtags");
 		kindMap.put(ResourceKind.OAUTH_ACCESS_TOKEN,"oauthaccesstokens");
 		kindMap.put(ResourceKind.OAUTH_AUTHORIZE_TOKEN,"oauthauthorizetokens");
 		kindMap.put(ResourceKind.OAUTH_CLIENT, "oauthclients");
