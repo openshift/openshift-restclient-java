@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IResource;
@@ -34,44 +35,6 @@ import com.openshift.restclient.model.IResource;
 public class URLBuilder {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(URLBuilder.class);
-	private static final Map<String, String> kindMap = new HashMap<String, String>();
-	
-	static {
-		//TODO https://issues.jboss.org/browse/OSJC-218
-		//OpenShift Kinds
-		kindMap.put(ResourceKind.BUILD, "builds");
-		kindMap.put(ResourceKind.BUILD_CONFIG, "buildconfigs");
-		kindMap.put(ResourceKind.DEPLOYMENT_CONFIG,"deploymentconfigs");
-		kindMap.put(ResourceKind.IMAGE_STREAM, "imagestreams");
-		kindMap.put(ResourceKind.IMAGE_STREAM_TAG, "imagestreamtags");
-		kindMap.put(ResourceKind.OAUTH_ACCESS_TOKEN,"oauthaccesstokens");
-		kindMap.put(ResourceKind.OAUTH_AUTHORIZE_TOKEN,"oauthauthorizetokens");
-		kindMap.put(ResourceKind.OAUTH_CLIENT, "oauthclients");
-		kindMap.put(ResourceKind.OAUTH_CLIENT_AUTHORIZATION, "oauthclientauthorizations");
-		kindMap.put(ResourceKind.POLICY,"policies");
-		kindMap.put(ResourceKind.POLICY_BINDING,"policybindings");
-		kindMap.put(ResourceKind.PVC,"persistentvolumeclaims");
-		kindMap.put(ResourceKind.PROJECT, "projects");
-		kindMap.put(ResourceKind.PROJECT_REQUEST, "projectrequests");
-		kindMap.put(ResourceKind.ROLE, "roles");
-		kindMap.put(ResourceKind.ROLE_BINDING, "rolebindings");
-		kindMap.put(ResourceKind.ROUTE,"routes");
-		kindMap.put(ResourceKind.TEMPLATE, "templates");
-		kindMap.put(ResourceKind.USER, "users");
-		
-		//Kubernetes Kinds
-		kindMap.put(ResourceKind.EVENT, "events");
-		kindMap.put(ResourceKind.LIMIT_RANGE,"limitranges");
-		kindMap.put(ResourceKind.POD, "pods");
-		kindMap.put(ResourceKind.PERSISTENT_VOLUME, "persistentvolumes");
-		kindMap.put(ResourceKind.REPLICATION_CONTROLLER, "replicationcontrollers");
-		kindMap.put(ResourceKind.RESOURCE_QUOTA, "resourcequotas"); 
-		kindMap.put(ResourceKind.SERVICE, "services"); 
-		kindMap.put(ResourceKind.SECRET, "secrets");
-		kindMap.put(ResourceKind.SERVICE_ACCOUNT, "serviceaccounts");
-
-		kindMap.put(ResourceKind.PROCESSED_TEMPLATES, "processedtemplates");//mechanism for processing templates
-	}
 	
 	private String baseUrl;
 	private String kind;
@@ -82,11 +45,22 @@ public class URLBuilder {
 	private String namespace;
 	private String subResource;
 
+	/**
+	 * 
+	 * @param baseUrl
+	 * @param typeMappings the map of kinds to endpoint
+	 * @param resource
+	 */
 	URLBuilder(URL baseUrl, Map<String, String> typeMappings, IResource resource) {
 		this(baseUrl, typeMappings);
 		resource(resource);
 	}
 	
+	/**
+	 * 
+	 * @param baseUrl
+	 * @param typeMappings the map of kinds to endpoint
+	 */
 	URLBuilder(URL baseUrl, Map<String, String> typeMappings) {
 		this.baseUrl = baseUrl.toString().replaceAll("/*$", "");
 		this.typeMappings = typeMappings;
@@ -104,8 +78,8 @@ public class URLBuilder {
 	}
 
 	URLBuilder kind(String kind) {
-		if(!kindMap.containsKey(kind)) {
-			throw new IllegalArgumentException(String.format("There is no registered endpoint for kind %s", kind));
+		if(!ResourceKind.values().contains(kind)) {
+			LOG.warn(String.format("There kind '%s' is not recognized by this client; this operation may fail.", kind));
 		}
 		this.kind = kind;
 		return this;
@@ -153,13 +127,17 @@ public class URLBuilder {
 	}
 	
 	private void buildWithNamespaceInPath(StringBuilder url) {
-		url.append("/")
-			.append(typeMappings.get(kind));
+		url.append("/");
+		if(typeMappings.containsKey(kind))
+			url.append(typeMappings.get(kind));
+		else {
+			throw new OpenShiftException("Unable to determine the api endpoint for kind '%s'", kind);
+		}
 		if(namespace != null && !ResourceKind.PROJECT.equals(kind)) {
 			url.append("/namespaces/")
 				.append(namespace);
 		}
-		url.append("/").append(kindMap.get(kind));
+		url.append("/").append(ResourceKind.pluralize(kind));
 		if (name != null) {
 			url.append("/").append(name);
 		}
