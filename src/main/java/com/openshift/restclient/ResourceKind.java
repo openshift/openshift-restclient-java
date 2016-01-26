@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * ResourceKind are the various types of Kubernetes
  * resources that are of interest
@@ -71,6 +73,13 @@ public final class ResourceKind {
 	
 	public static Collection<String> values() {
 		return values;
+	}
+	
+	public static String pluralize(String kind) {
+		if(StringUtils.isBlank(kind)) return "";
+		if(kind.endsWith("s")) return kind.toLowerCase();
+		if(kind.endsWith("y")) return kind.toLowerCase().substring(0, kind.length()-1).concat("ies");
+		return kind.toLowerCase().concat("s");
 	}
 	
 	static {
