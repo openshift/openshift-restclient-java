@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.http.HttpClientException;
+import com.openshift.internal.restclient.http.NotFoundException;
 import com.openshift.internal.restclient.http.UnauthorizedException;
 import com.openshift.internal.restclient.http.UrlConnectionHttpClientBuilder;
 import com.openshift.internal.restclient.model.Status;
@@ -390,6 +391,9 @@ public class DefaultClient implements IClient, IHttpConstants{
 			throw new OpenShiftException(e,"");
 		//HACK - This gets us around a server issue
 		} catch (HttpClientException e) {
+			if(e instanceof NotFoundException) {
+				throw new com.openshift.restclient.NotFoundException(e);
+			}
 			if(e.getResponseCode() != 403) {
 				throw e;
 			}
