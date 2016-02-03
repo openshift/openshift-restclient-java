@@ -21,6 +21,8 @@ import com.openshift.restclient.model.volume.IVolumeSource;
  */
 public interface IReplicationController  extends IResource{
 	
+	static final String DEPLOYMENT_PHASE = "openshift.io/deployment.phase";
+	
 	/**
 	 * Returns the desired number of replicas
 	 * @return
