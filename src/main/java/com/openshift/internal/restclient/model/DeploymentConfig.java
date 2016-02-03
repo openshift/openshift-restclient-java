@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
+import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -54,6 +56,7 @@ public class DeploymentConfig extends ReplicationController implements IDeployme
 	public DeploymentConfig(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
 		this.propertyKeys = propertyKeys;
+		initializeCapabilities(getModifiableCapabilities(), this, getClient());
 	}
 
 	@Override

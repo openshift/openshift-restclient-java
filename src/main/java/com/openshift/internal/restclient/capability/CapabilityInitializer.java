@@ -13,6 +13,7 @@ import java.util.Map;
 import com.openshift.internal.restclient.capability.resources.BuildCanceller;
 import com.openshift.internal.restclient.capability.resources.BuildTrigger;
 import com.openshift.internal.restclient.capability.resources.ClientCapability;
+import com.openshift.internal.restclient.capability.resources.DeployCapability;
 import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
 import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPodLogRetrieval;
@@ -30,6 +31,7 @@ import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.resources.IBuildCancelable;
 import com.openshift.restclient.capability.resources.IBuildTriggerable;
 import com.openshift.restclient.capability.resources.IClientCapability;
+import com.openshift.restclient.capability.resources.IDeployCapability;
 import com.openshift.restclient.capability.resources.IDeploymentConfigTraceability;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
@@ -43,6 +45,7 @@ import com.openshift.restclient.capability.resources.IUpdatable;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IBuild;
 import com.openshift.restclient.model.IBuildConfig;
+import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
@@ -110,6 +113,10 @@ public class CapabilityInitializer {
 	public static  void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, Service service, IClient client){
 	}
 	
+	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IDeploymentConfig config, IClient client){
+		initializeCapability(capabilities, IDeployCapability.class, new DeployCapability(config, client));
+	}
+
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IResource resource, IClient client){
 		initializeCapability(capabilities, ITemplateTraceability.class, new TemplateTraceability(resource));
 		initializeCapability(capabilities, IDeploymentConfigTraceability.class, new DeploymentConfigTraceability(resource, client));
