@@ -231,6 +231,11 @@ public class ResourceFactory implements IResourceFactory{
 		return stub(kind, name, null);
 	}
 
+	@Override
+	public void setClient(IClient client) {
+		this.client = client;
+	}
+
 	
 	
 }

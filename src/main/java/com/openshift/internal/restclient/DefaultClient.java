@@ -79,17 +79,18 @@ public class DefaultClient implements IClient, IHttpConstants{
 	private IAuthorizationStrategy strategy;
 	private IAuthorizationClient authClient;
 	
+	@Deprecated
 	public DefaultClient(URL baseUrl, ISSLCertificateCallback sslCertCallback){
-		this(baseUrl, null, sslCertCallback);
+		this(baseUrl, null, sslCertCallback, null);
 	}
 	
-	/*
-	 * Testing constructor
-	 */
-	DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback){
+	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory){
 		this.baseUrl = baseUrl;
 		client = httpClient != null ? httpClient : newIHttpClient(sslCertCallback);
-		factory = new ResourceFactory(this);
+		this.factory = factory;
+		if(this.factory != null) {
+			this.factory.setClient(this);
+		}
 		openShiftVersion = System.getProperty(SYSTEM_PROP_OPENSHIFT_API_VERSION, null);
 		kubernetesVersion = System.getProperty(SYSTEM_PROP_K8E_API_VERSION, null);
 		authClient = new AuthorizationClientFactory().create(this);	

@@ -39,6 +39,7 @@ public interface IResourceFactory {
 	 */
 	<T extends IResource> T create(String response) ;
 
+	@Deprecated
 	IResource create(String response, boolean strict) ;
 
 	/**
@@ -50,6 +51,7 @@ public interface IResourceFactory {
 	 */
 	<T extends IResource> T create(InputStream input) ;
 
+	@Deprecated
 	IResource create(InputStream input, boolean strict) ;
 
 	/**
@@ -60,6 +62,7 @@ public interface IResourceFactory {
 	 */
 	<T extends IResource> T create(String version, String kind);
 
+	@Deprecated
 	IResource create(String version, String kind, boolean strict);
 
 	/**
@@ -70,6 +73,19 @@ public interface IResourceFactory {
 	 */
 	<T extends IResource> T stub(String kind, String name);
 
+	/**
+	 * Stub out the given resource kind using a version determined by the factory
+	 * @param kind
+	 * @param name
+	 * @param namespace
+	 * @return
+	 */
 	<T extends IResource> T stub(String kind, String name, String namespace);
+	
+	/**
+	 * The client given to resources when they are created 
+	 * @param client
+	 */
+	void setClient(IClient client);
 	
 }
