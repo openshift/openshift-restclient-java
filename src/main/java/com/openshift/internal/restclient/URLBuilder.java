@@ -155,9 +155,13 @@ public class URLBuilder {
 				Entry<String, String> entry = (Entry<String, String>) iterator
 						.next();
 				try {
-					url.append(entry.getKey())
-							.append(IHttpConstants.EQUALS)
-							.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+					if(StringUtils.isNotBlank(entry.getValue())) {
+						url.append(entry.getKey())
+						.append(IHttpConstants.EQUALS)
+						.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+					}else {
+						LOG.error("Unable to append parameter: {} since it is blank", entry.getKey());
+					}
 				} catch (UnsupportedEncodingException e) {
 					throw new RuntimeException(e);
 				}
