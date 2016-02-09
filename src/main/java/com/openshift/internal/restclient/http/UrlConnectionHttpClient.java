@@ -148,6 +148,9 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		try {
 			connection = createConnection(
 					url, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
+			if (httpMethod == HttpMethod.POST || httpMethod == HttpMethod.PUT) {
+				setContentTypeHeader(acceptedVersion, acceptedMediaType, connection);
+			}
 			// PATCH not yet supported by JVM
 			setRequestMethod(httpMethod, connection);
 			if (!parameters.isEmpty()) {
@@ -171,6 +174,9 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		try {
 			connection = createConnection(
 					url, userAgent, acceptedVersion, acceptedMediaType, sslAuthorizationCallback, timeout);
+			if (httpMethod == HttpMethod.POST || httpMethod == HttpMethod.PUT) {
+				setContentTypeHeader(acceptedVersion, acceptedMediaType, connection);
+			}
 			// PATCH not yet supported by JVM
 			setRequestMethod(httpMethod, connection);
 			if(LOGGER.isDebugEnabled()) {
@@ -293,6 +299,21 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		}
 
 		connection.setRequestProperty(IHttpConstants.PROPERTY_ACCEPT, builder.toString());
+	}
+
+	private void setContentTypeHeader(String version, String mediaType, HttpURLConnection connection) {
+		if (StringUtils.isEmpty(mediaType)) {
+			throw new HttpClientException(MessageFormat.format(
+					"Accepted media type (ex. {0}) is not defined", IHttpConstants.MEDIATYPE_APPLICATION_JSON));
+		}
+
+		StringBuilder builder = new StringBuilder(mediaType);
+		if (acceptedVersion != null) {
+			builder.append(IHttpConstants.SEMICOLON).append(IHttpConstants.SPACE)
+					.append(IHttpConstants.VERSION).append(IHttpConstants.EQUALS).append(version);
+		}
+
+		connection.setRequestProperty(IHttpConstants.PROPERTY_CONTENT_TYPE, builder.toString());
 	}
 
 	protected final void setAuthorization(HttpURLConnection connection) {
