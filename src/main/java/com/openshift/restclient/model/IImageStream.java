@@ -36,6 +36,16 @@ public interface IImageStream extends IResource{
 	void setTag(String newTag, String fromTag);
 	
 	/**
+	 * Add a tag to the list with the given name, and reference
+	 * to the given kind and name.
+	 * @param name
+	 * @param fromKind
+	 * @param fromName
+	 * @return
+	 */
+	ITagReference addTag(String name, String fromKind, String fromName);
+	
+	/**
 	 * Gets the long imagae id for the provided tag
 	 * @param tagName   name of the image stream tag to interrogate
 	 * @return

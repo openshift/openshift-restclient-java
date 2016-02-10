@@ -69,6 +69,17 @@ public class ImageStream extends KubernetesResource implements IImageStream {
 		if(!node.isDefined()) return new ArrayList<>();
 		return node.asList().stream().map(n->new TagReference(n, propertyKeys)).collect(Collectors.toList());
 	}
+	
+	
+
+	@Override
+	public ITagReference addTag(String name, String fromKind, String fromName) {
+		TagReference reference = new TagReference(name, fromKind, fromName);
+		//add last since its copy of node.  future sets will do nothing
+		ModelNode tags = get(SPEC_TAGS);
+		tags.add(reference.getNode());
+		return reference;
+	}
 
 	@Override
 	public void setTag(String newTag, String fromTag) {
