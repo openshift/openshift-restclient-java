@@ -82,6 +82,18 @@ public class ImageStream extends KubernetesResource implements IImageStream {
 		tags.add(tag);
 	}
 	
+	@Override
+	public void setTagWithImageId(String newTag, String fromImageId) {
+		ModelNode tags = get(SPEC_TAGS);
+		ModelNode tag = new ModelNode();
+		tag.get("name").set(newTag);
+		ModelNode from = new ModelNode();
+		from.get("kind").set("ImageStreamImage");
+		from.get("name").set(fromImageId);
+		tag.get("from").set(from);
+		tags.add(tag);
+	}
+	
 	protected String getImageId(List<ModelNode> itemWrappers) {
 		for (ModelNode itemWrapper : itemWrappers) {
 			ModelNode image = itemWrapper.get(IMAGE);
