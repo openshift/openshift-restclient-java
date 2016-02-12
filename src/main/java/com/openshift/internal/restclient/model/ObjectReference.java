@@ -13,6 +13,9 @@ package com.openshift.internal.restclient.model;
 import static com.openshift.internal.restclient.model.properties.ResourcePropertyKeys.*;
 import static com.openshift.internal.util.JBossDmrExtentions.*;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.util.JBossDmrExtentions;
@@ -20,6 +23,7 @@ import com.openshift.restclient.model.IObjectReference;
 
 public class ObjectReference implements IObjectReference {
 	
+	private static final Map<String, String[]> KEYS = Collections.emptyMap();
 	private ModelNode node;
 
 	public ObjectReference(ModelNode node) {
@@ -29,6 +33,14 @@ public class ObjectReference implements IObjectReference {
 	@Override
 	public String getKind() {
 		return asString(node, null, KIND);
+	}
+	
+	public void setKind(String kind) {
+		set(node, KEYS, KIND, kind);
+	}
+
+	public void setName(String name) {
+		set(node, KEYS, NAME, name);
 	}
 
 	@Override
@@ -90,6 +102,10 @@ public class ObjectReference implements IObjectReference {
 			return false;
 		return true;
 	}
-	
+
+	@Override
+	public String toString() {
+		return toJson();
+	}
 
 }

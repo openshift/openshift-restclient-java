@@ -11,6 +11,8 @@
 package com.openshift.internal.restclient.model.image;
 
 import static com.openshift.internal.util.JBossDmrExtentions.*;
+
+import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
@@ -25,6 +27,14 @@ public class TagReference extends ModelNodeAdapter implements ITagReference, Res
 
 	private static final String TAG_ANNOTATIONS = "annotations";
 
+	public TagReference(String name, String fromKind, String fromName) {
+		super(new ModelNode(), new HashMap<>());
+		setName(name);
+		ObjectReference from = (ObjectReference) getFrom();
+		from.setKind(fromKind);
+		from.setName(fromName);
+	}
+	
 	public TagReference(ModelNode node, Map<String, String[]> propertyKeys) {
 		super(node, propertyKeys);
 	}
@@ -56,9 +66,14 @@ public class TagReference extends ModelNodeAdapter implements ITagReference, Res
 		return asString(getNode(),getPropertyKeys(), NAME);
 	}
 
-	@Override
-	public IObjectReference getFrom() {
-		return new ObjectReference(get(getNode(), getPropertyKeys(), "from"));
+	public void setName(String  name) {
+		set(getNode(),getPropertyKeys(), NAME, name);
 	}
 
+	@Override
+	public IObjectReference getFrom() {
+		ModelNode from = get(getNode(), getPropertyKeys(), FROM);
+		return new ObjectReference(from);
+	}
+	
 }
