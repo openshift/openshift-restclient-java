@@ -72,8 +72,8 @@ public class DefaultClientTest {
 
 	private void givenAClient() throws MalformedURLException{
 		httpClient = mock(IHttpClient.class);
-		client = new DefaultClient(baseUrl, httpClient, null);
-		factory = new ResourceFactory(client);
+		factory = new ResourceFactory(null);
+		client = new DefaultClient(baseUrl, httpClient, null, factory);
 	}
 
 	private void givenAPodList(){

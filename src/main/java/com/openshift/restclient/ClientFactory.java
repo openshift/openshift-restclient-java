@@ -8,16 +8,13 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import com.openshift.internal.restclient.DefaultClient;
 
 /**
  * Factory class for creating clients to an OpenShift server
  * 
  * @author Jeff Cantrill
  */
+@Deprecated
 public final class ClientFactory {
 	
 	/**
@@ -32,10 +29,8 @@ public final class ClientFactory {
 	 *             if the baseURL is malformed
 	 */
 	public final IClient create(String baseUrl, ISSLCertificateCallback sslCertCallback){
-		try {
-			return new DefaultClient(new URL(baseUrl), sslCertCallback);
-		} catch (MalformedURLException e) {
-			throw new OpenShiftException(e, "Malformed URL '%s'", baseUrl);
-		}
+		return new ClientBuilder(baseUrl)
+				.sslCertificateCallback(sslCertCallback)
+				.build();
 	}
 }
