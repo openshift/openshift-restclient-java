@@ -14,10 +14,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.jboss.dmr.ModelNode;
@@ -32,9 +34,14 @@ import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegi
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.IConfigMapKeySelector;
 import com.openshift.restclient.model.IContainer;
+import com.openshift.restclient.model.IEnvironmentVariable;
+import com.openshift.restclient.model.IEnvironmentVariable.IEnvVarSource;
+import com.openshift.restclient.model.IObjectFieldSelector;
 import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.model.IReplicationController;
+import com.openshift.restclient.model.ISecretKeySelector;
 import com.openshift.restclient.model.volume.IVolume;
 import com.openshift.restclient.model.volume.IVolumeSource;
 import com.openshift.restclient.utils.Samples;
@@ -54,6 +61,56 @@ public class ReplicationControllerTest {
 		client = mock(IClient.class);
 		node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
 		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
+	}
+	
+	public void testGetEnvironmentVariablesWithValueFrom() {
+
+		Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables();
+		
+		//fieldref
+		Optional<IEnvironmentVariable> envVar = envVars.stream().filter(e->"OPENSHIFT_KUBE_PING_NAMESPACE".equals(e.getName())).findFirst();
+		assertTrue("Exp. to find env var", envVar.isPresent());
+		IEnvVarSource from = envVar.get().getValueFrom();
+		assertTrue(from instanceof IObjectFieldSelector);
+		IObjectFieldSelector selector = (IObjectFieldSelector)from;
+		assertEquals("v1",selector.getApiVersion());
+		assertEquals("metadata.namespace",selector.getFieldPath());
+
+		//configmapkeyref
+		envVar = envVars.stream().filter(e->"OPENSHIFT_CONFIGMAP_KEY_REF".equals(e.getName())).findFirst();
+		assertTrue("Exp. to find env var", envVar.isPresent());
+		from = envVar.get().getValueFrom();
+		assertTrue(from instanceof IConfigMapKeySelector);
+		IConfigMapKeySelector configSelector = (IConfigMapKeySelector) from;
+		assertEquals("xyz",configSelector.getName());
+		assertEquals("abc123",configSelector.getKey());
+
+		//secretkeyref
+		envVar = envVars.stream().filter(e->"OPENSHIFT_SECRET_KEY_REF".equals(e.getName())).findFirst();
+		assertTrue("Exp. to find env var", envVar.isPresent());
+		from = envVar.get().getValueFrom();
+		assertTrue(from instanceof ISecretKeySelector);
+		ISecretKeySelector secretKeySelector = (ISecretKeySelector) from;
+		assertEquals("bar",secretKeySelector.getName());
+		assertEquals("foo",secretKeySelector.getKey());
+	}
+	
+	@Test
+	public void testEnvironmentVariable() {
+		rc.setEnvironmentVariable("foo", "bar");
+		Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables();
+		Optional<IEnvironmentVariable> envVar = envVars.stream().filter(e->"foo".equals(e.getName())).findFirst();
+		assertTrue("Exp. to find env var", envVar.isPresent());
+		assertEquals("bar", envVar.get().getValue());
+	}
+
+	@Test
+	public void testEnvironmentVariableForANamedContainer() {
+		rc.setEnvironmentVariable("ruby-helloworld-database", "fooz", "balls");
+		Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables("ruby-helloworld-database");
+		Optional<IEnvironmentVariable> envVar = envVars.stream().filter(e->"fooz".equals(e.getName())).findFirst();
+		assertTrue("Exp. to find env var", envVar.isPresent());
+		assertEquals("balls", envVar.get().getValue());
 	}
 	
 	@Test

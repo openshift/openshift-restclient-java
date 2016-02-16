@@ -24,6 +24,40 @@ public interface IReplicationController  extends IResource{
 	static final String DEPLOYMENT_PHASE = "openshift.io/deployment.phase";
 	
 	/**
+	 * Set an environment variable to the given name and
+	 * value on the first container in the list of containers
+	 * 
+	 * @param name
+	 * @param value
+	 */
+	void setEnvironmentVariable(String name, String value);
+
+	/**
+	 * Set an environment variable to the given name and
+	 * value on the given container.  Returns silently
+	 * if the containerName is not found
+	 * 
+	 * @param containerName
+	 * @param name
+	 * @param value
+	 */
+	void setEnvironmentVariable(String containerName, String name, String value);
+	
+	/**
+	 * Return the list of env vars of the first container
+	 * @return
+	 */
+	Collection<IEnvironmentVariable> getEnvironmentVariables();
+
+	/**
+	 * Return the list of env vars for the given container or an empty list
+	 * if the container is not found
+	 * @param containerName
+	 * @return
+	 */
+	Collection<IEnvironmentVariable> getEnvironmentVariables(String containerName);
+	
+	/**
 	 * Returns the desired number of replicas
 	 * @return
 	 */

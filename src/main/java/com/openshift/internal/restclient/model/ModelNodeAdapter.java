@@ -49,4 +49,9 @@ public class ModelNodeAdapter {
 		return propertyKeys;
 	}
 
+	@Override
+	public String toString() {
+		return toJson(false);
+	}
+
 }
