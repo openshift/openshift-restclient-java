@@ -23,8 +23,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.capability.resources.IDeployCapability;
+import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IReplicationController;
+import com.openshift.restclient.model.IStatus;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeployCapabilityTest {
@@ -57,6 +59,14 @@ public class DeployCapabilityTest {
 	public void testThrowsErrorWhenUnableToFindLatestDeployment() {
 		when(client.get(anyString(), anyString(), anyString())).thenThrow(OpenShiftException.class);
 		whenDeploying();
+	}
+	
+	@Test
+	public void testWhenLatestDeploymentNotFound() {
+		givenTheLatestDeploymentIsNotFound();
+		whenDeploying();
+		thenVersionShouldIncrease(config);
+		thenResourceShouldBeUpdated(client, config);
 	}
 
 	@Test
@@ -106,5 +116,12 @@ public class DeployCapabilityTest {
 	
 	private void givenTheDeploymentIsRetrieved() {
 		when(client.get(anyString(),anyString(),anyString())).thenReturn(deployment);
+	}
+	
+	private void givenTheLatestDeploymentIsNotFound() {
+		IStatus status = mock(IStatus.class);
+		when(status.getCode()).thenReturn(IHttpConstants.STATUS_NOT_FOUND);
+		OpenShiftException e = new OpenShiftException(new RuntimeException(), status, "");
+		when(client.get(anyString(),anyString(),anyString())).thenThrow(e);
 	}
 }

@@ -18,8 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.NotFoundException;
+import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.resources.IDeployCapability;
+import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IReplicationController;
 
@@ -50,17 +53,26 @@ public class DeployCapability implements IDeployCapability{
 
 	@Override
 	public void deploy() {
-		final String deploymentName = getLatestDeploymentName();
-		LOG.debug("Attempting to deploy latest deployment for config '%s'.  Loading deployment: '%s'", config.getName(), deploymentName);
-		IReplicationController deployment = client.get(ResourceKind.REPLICATION_CONTROLLER, deploymentName, config.getNamespace());
-		final String status = getStatusFor(deployment);
-		if(COMPLETED_STATES.contains(status)) {
-			int version = config.getLatestVersionNumber();
-			config.setLatestVersionNumber(++version);
-			client.update(config);
-		}else {
-			LOG.debug("Skipping deployment because deployment status '%s' for '%s' is not in %s", new Object [] {status, deploymentName, COMPLETED_STATES});
+		try {
+			final String deploymentName = getLatestDeploymentName();
+			LOG.debug("Attempting to deploy latest deployment for config '%s'.  Loading deployment: '%s'", config.getName(), deploymentName);
+			IReplicationController deployment = client.get(ResourceKind.REPLICATION_CONTROLLER, deploymentName, config.getNamespace());
+			final String status = getStatusFor(deployment);
+			if(!COMPLETED_STATES.contains(status)) {
+				LOG.debug("Skipping deployment because deployment status '%s' for '%s' is not in %s", new Object [] {status, deploymentName, COMPLETED_STATES});
+				return;
+			}
+		}catch(OpenShiftException e) {
+			if(e.getStatus() == null || e.getStatus().getCode() != IHttpConstants.STATUS_NOT_FOUND) {
+			//swallow exception like cli
+				throw e;
+			}
 		}
+		
+		//bumping as currently not supporting 'retry'
+		int version = config.getLatestVersionNumber();
+		config.setLatestVersionNumber(++version);
+		client.update(config);
 		
 	}
 	
