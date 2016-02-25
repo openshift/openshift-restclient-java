@@ -28,6 +28,7 @@ public final class ResourceKind {
 	public static final String DEPLOYMENT_CONFIG = "DeploymentConfig";
 	public static final String IMAGE_STREAM = "ImageStream";
 	public static final String IMAGE_STREAM_TAG = "ImageStreamTag";
+	public static final String IMAGE_STREAM_IMPORT = "ImageStreamImport";
 	public static final String OAUTH_ACCESS_TOKEN = "OAuthAccessToken";
 	public static final String OAUTH_AUTHORIZE_TOKEN = "OAuthAuthorizeToken";
 	public static final String OAUTH_CLIENT = "OAuthClient";
@@ -89,6 +90,8 @@ public final class ResourceKind {
 		set.add(BUILD_CONFIG);
 		set.add(DEPLOYMENT_CONFIG);
 		set.add(IMAGE_STREAM );
+		set.add(IMAGE_STREAM_TAG);
+		set.add(IMAGE_STREAM_IMPORT);
 		set.add(OAUTH_ACCESS_TOKEN);
 		set.add(OAUTH_AUTHORIZE_TOKEN);
 		set.add(OAUTH_CLIENT);

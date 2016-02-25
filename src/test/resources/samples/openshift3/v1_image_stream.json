@@ -13,6 +13,7 @@
         }
     },
     "spec": {
+        "dockerImageRepository": "172.30.224.48:5000/openshift/wildfly",
         "tags": [
             {
                 "name": "8.1",

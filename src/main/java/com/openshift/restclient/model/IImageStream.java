@@ -19,14 +19,26 @@ import com.openshift.restclient.model.image.ITagReference;
 public interface IImageStream extends IResource{
 
 	/**
-	 * Retrieve the docker image URI for which this image repository
-	 * is responsible
+	 * Get the image repository uri abstracted by this
+	 * image stream
 	 * @return
 	 */
 	DockerImageURI getDockerImageRepository();
 	
+	/**
+	 * Set the image repository uri abstracted by this
+	 * image stream
+	 * @return
+	 */
 	void setDockerImageRepository(DockerImageURI imageUri);
 	
+	/**
+	 * Set the image repository uri abstracted by this
+	 * image stream
+	 * @return
+	 */
+	void setDockerImageRepository(String imageUri);
+
 	/**
 	 * Sets a new tag in an image stream
 	 * 
