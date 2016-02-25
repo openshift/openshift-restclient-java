@@ -24,12 +24,14 @@ import org.eclipse.jetty.websocket.api.UpgradeException;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
+import com.openshift.restclient.IOpenShiftWatchListener.ChangeType;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.IWatcher;
 import com.openshift.restclient.OpenShiftException;
@@ -99,10 +101,11 @@ public class WatchClient implements IHttpConstants, IWatcher{
 		public void onWebSocketText(String message) {
 			LOGGER.debug(message);
 			KubernetesResource payload = factory.create(message);
-			IOpenShiftWatchListener.ChangeType event = IOpenShiftWatchListener.ChangeType.valueOf(payload.getNode().get("type").asString());
-			IResource resource = factory.create(payload.getNode().get("object").toJSONString(true));
+			ModelNode node = payload.getNode();
+			IOpenShiftWatchListener.ChangeType event = new ChangeType(node.get("type").asString());
+			IResource resource = factory.create(node.get("object").toJSONString(true));
 			if(StringUtils.isEmpty(resource.getKind())) {
-				LOGGER.error("Unable to determine resource kind from: " + payload.getNode().get("object").toJSONString(false));
+				LOGGER.error("Unable to determine resource kind from: " + node.get("object").toJSONString(false));
 			}
 			listener.received(resource, event);
 		}

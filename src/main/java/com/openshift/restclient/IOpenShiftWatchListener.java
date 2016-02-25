@@ -42,11 +42,49 @@ public interface IOpenShiftWatchListener {
 	 */
 	void received(IResource resource, ChangeType change);
 	
-	enum ChangeType{
+	public class ChangeType {
 		
-		ADDED,
-		MODIFIED,
-		DELETED
+		public static final ChangeType ADDED = new ChangeType("ADDED");
+		public static final ChangeType MODIFIED = new ChangeType("MODIFIED");
+		public static final ChangeType DELETED = new ChangeType("DELETED");
+
+		private String value;
+		
+		public ChangeType(String value) {
+			if (value != null) {
+				value = value.toUpperCase();
+			}
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((getValue() == null) ? 0 : getValue().hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ChangeType other = (ChangeType) obj;
+			if (value == null) {
+				if (other.value != null)
+					return false;
+			} else if (!getValue().equals(other.getValue()))
+				return false;
+			return true;
+		}
 	}
 
 	void error(Throwable err);

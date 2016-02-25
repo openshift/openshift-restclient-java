@@ -11,32 +11,30 @@
 package com.openshift.restclient;
 
 import static com.openshift.internal.restclient.IntegrationTestHelper.cleanUpResource;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
-import com.openshift.restclient.IClient;
-import com.openshift.restclient.IOpenShiftWatchListener;
 import com.openshift.restclient.IOpenShiftWatchListener.ChangeType;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.IService;
 
-public class ClientWatchIntegrationTest {
+public class WatchClientIntegrationTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ClientWatchIntegrationTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WatchClientIntegrationTest.class);
 
 	private IntegrationTestHelper helper = new IntegrationTestHelper();
 	private IClient client;
