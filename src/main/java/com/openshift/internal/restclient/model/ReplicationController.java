@@ -10,12 +10,16 @@ package com.openshift.internal.restclient.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -24,9 +28,9 @@ import com.openshift.internal.restclient.model.volume.VolumeSource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IContainer;
+import com.openshift.restclient.model.IEnvironmentVariable;
 import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.model.IReplicationController;
-import com.openshift.restclient.model.volume.IVolume;
 import com.openshift.restclient.model.volume.IVolumeMount;
 import com.openshift.restclient.model.volume.IVolumeSource;
 
@@ -44,10 +48,72 @@ public class ReplicationController extends KubernetesResource implements IReplic
 
 	protected static final String IMAGE = "image";
 	protected static final String ENV = "env";
+	private Map<String, String[]> propertyKeys;
 
 	public ReplicationController(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
+		this.propertyKeys = propertyKeys;
 	}
+	
+	@Override
+	public void setEnvironmentVariable(String name, String value) {
+		setEnvironmentVariable(null, name, value);
+	}
+
+
+
+	@Override
+	public void setEnvironmentVariable(String containerName, String name, String value) {
+		String defaultedContainerName = StringUtils.defaultIfBlank(containerName, "");
+		ModelNode specContainers = get(SPEC_TEMPLATE_CONTAINERS);
+		if(specContainers.isDefined()) { //should ALWAYS exist
+			List<ModelNode> containers = specContainers.asList();
+			if(!containers.isEmpty()) {
+				ModelNode var = new ModelNode();
+				set(var, NAME, name);
+				set(var, VALUE, value);
+				
+				Optional<ModelNode> opt = containers.stream().filter(n->defaultedContainerName.equals(asString(n, NAME))).findFirst();
+				ModelNode node =  opt.isPresent() ? opt.get() : containers.get(0);
+				ModelNode envNode = get(node, ENV);
+				
+				envNode.add(var);
+				
+			}
+		}
+	}
+
+
+
+	@Override
+	public Collection<IEnvironmentVariable> getEnvironmentVariables() {
+		return getEnvironmentVariables(null);
+	}
+
+
+
+	@Override
+	public Collection<IEnvironmentVariable> getEnvironmentVariables(String containerName) {
+		String name = StringUtils.defaultIfBlank(containerName, "");
+		ModelNode specContainers = get(SPEC_TEMPLATE_CONTAINERS);
+		if(specContainers.isDefined()) {
+			List<ModelNode> containers = specContainers.asList();
+			if(!containers.isEmpty()) {
+				Optional<ModelNode> opt = containers.stream().filter(n->name.equals(asString(n, NAME))).findFirst();
+				ModelNode node =  opt.isPresent() ? opt.get() : containers.get(0);
+				ModelNode envNode = get(node, ENV);
+				if(envNode.isDefined()) {
+					return envNode.asList()
+							.stream()
+							.map(n-> new EnvironmentVariable(n, propertyKeys))
+							.collect(Collectors.toList());
+				}
+			}
+		}
+		return Collections.emptyList();
+	}
+
+
 
 	@Override
 	public int getDesiredReplicaCount() {
