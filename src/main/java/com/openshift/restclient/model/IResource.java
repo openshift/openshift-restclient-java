@@ -103,6 +103,12 @@ public interface IResource extends ICapable {
 	void setAnnotation(String key, String value);
 	
 	/**
+	 * Removes the resource annotation
+	 * @param key
+	 */
+	void removeAnnotation(String key);
+	
+	/**
 	 * Retrieves the annotations associated with the resource
 	 * @return
 	 */

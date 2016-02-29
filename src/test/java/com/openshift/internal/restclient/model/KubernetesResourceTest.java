@@ -12,6 +12,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static com.openshift.internal.util.JBossDmrExtentions.*;
 
@@ -77,6 +78,12 @@ public class KubernetesResourceTest {
 	@Test
 	public void testGetAnnotation() {
 		assertEquals("bar", resource.getAnnotation("foo"));
+	}
+	
+	@Test
+	public void removeAnnotation() {
+		resource.removeAnnotation("foo");
+		assertNull(resource.getAnnotation("foo"));
 	}
 
 	@Test
