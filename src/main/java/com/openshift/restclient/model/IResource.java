@@ -80,6 +80,40 @@ public interface IResource extends ICapable, Annotatable {
 	 */
 	void addLabel(String key, String value);
 	
+	/**
+	 * Returns <code>true</code> if the resource is annotated with
+	 * the given key
+	 * @param key
+	 * @return true if the annotation key exists
+	 */
+	boolean isAnnotatedWith(String key);
+	
+	/**
+	 * Retrieves the annotated value for the given key
+	 * @param key
+	 * @return
+	 */
+	String getAnnotation(String key);
+	
+	/**
+	 * Set the resource annotation
+	 * @param key
+	 * @param value
+	 */
+	void setAnnotation(String key, String value);
+	
+	/**
+	 * Removes the resource annotation
+	 * @param key
+	 */
+	void removeAnnotation(String key);
+	
+	/**
+	 * Retrieves the annotations associated with the resource
+	 * @return
+	 */
+	Map<String, String> getAnnotations();
+
 	String getResourceVersion();
 	
 	/**
