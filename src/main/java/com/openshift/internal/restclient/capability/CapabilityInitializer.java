@@ -16,6 +16,7 @@ import com.openshift.internal.restclient.capability.resources.ClientCapability;
 import com.openshift.internal.restclient.capability.resources.DeployCapability;
 import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
 import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
+import com.openshift.internal.restclient.capability.resources.ImageStreamImportCapability;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPodLogRetrieval;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPortForwarding;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryRSync;
@@ -34,6 +35,7 @@ import com.openshift.restclient.capability.resources.IClientCapability;
 import com.openshift.restclient.capability.resources.IDeployCapability;
 import com.openshift.restclient.capability.resources.IDeploymentConfigTraceability;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
+import com.openshift.restclient.capability.resources.IImageStreamImportCapability;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.capability.resources.IProjectTemplateList;
@@ -108,6 +110,7 @@ public class CapabilityInitializer {
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IProject project, IClient client){
 		initializeCapability(capabilities, IProjectTemplateProcessing.class, new ProjectTemplateProcessing(project, client));
 		initializeCapability(capabilities, IProjectTemplateList.class, new ProjectTemplateListCapability(project, client));
+		initializeCapability(capabilities, IImageStreamImportCapability.class, new ImageStreamImportCapability(project, client));
 	}
 	
 	public static  void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, Service service, IClient client){

@@ -131,6 +131,10 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		return annotations.containsKey(key);
 	}
 	
+	protected Map<String, String []> getPropertyKeys(){
+		return this.propertyKeys;
+	}
+	
 	public IClient getClient(){
 		return client;
 	}

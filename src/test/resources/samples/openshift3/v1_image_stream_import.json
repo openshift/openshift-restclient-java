@@ -1,0 +1,134 @@
+{
+  "kind": "ImageStreamImport",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "newapp",
+    "namespace": "hello-world",
+    "selfLink": "/oapi/v1/namespaces/hello-world/imagestreamimports/newapp",
+    "uid": "a7fe02b3-db38-11e5-b74a-080027c5bfa9",
+    "creationTimestamp": "2016-02-24T20:53:28Z"
+  },
+  "spec": {
+    "import": false,
+    "images": [
+      {
+        "from": {
+          "kind": "DockerImage",
+          "name": "jcantrill/swarm-helloworld"
+        },
+        "importPolicy": {}
+      }
+    ]
+  },
+  "status": {
+    "images": [
+      {
+        "status": {
+          "metadata": {},
+          "status": "Success"
+        },
+        "image": {
+          "metadata": {
+            "name": "sha256:445d9593cf8e7ac591ced715b38626751962beb3d164c28b99c69564aeeb6fd3",
+            "creationTimestamp": null
+          },
+          "dockerImageReference": "jcantrill/swarm-helloworld@sha256:445d9593cf8e7ac591ced715b38626751962beb3d164c28b99c69564aeeb6fd3",
+          "dockerImageMetadata": {
+            "kind": "DockerImage",
+            "apiVersion": "1.0",
+            "Id": "711e5ec1e370b6e7ab7d59bd3e7dd28b43d4f06c64ae50051622a2d59e82ecab",
+            "Parent": "dfe03d2d4a3eb77e50a3b8f7604b05f974b3a89e673af19efc6d5ac2d2c5c626",
+            "Created": "2016-02-23T14:52:02Z",
+            "Container": "26817295d7d6193ca4fafec76ac02367dd1cd85049f285741ddb8a1b7c8b443b",
+            "ContainerConfig": {
+              "Hostname": "82f7a8302f48",
+              "ExposedPorts": {
+                "8080/tcp": {}
+              },
+              "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+              ],
+              "Cmd": [
+                "/bin/sh",
+                "-c",
+                "#(nop) CMD [\"/bin/sh\" \"-c\" \"java -jar swarm-helloworld-1.0-SNAPSHOT-swarm.jar\"]"
+              ],
+              "Image": "dfe03d2d4a3eb77e50a3b8f7604b05f974b3a89e673af19efc6d5ac2d2c5c626",
+              "Labels": {
+                "build-date": "2016-02-17",
+                "license": "GPLv2",
+                "name": "CentOS Base Image",
+                "vendor": "CentOS"
+              }
+            },
+            "DockerVersion": "1.8.2-fc22",
+            "Author": "burrsutter@gmail.com",
+            "Config": {
+              "Hostname": "82f7a8302f48",
+              "ExposedPorts": {
+                "8080/tcp": {}
+              },
+              "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+              ],
+              "Cmd": [
+                "/bin/sh",
+                "-c",
+                "java -jar swarm-helloworld-1.0-SNAPSHOT-swarm.jar"
+              ],
+              "Image": "dfe03d2d4a3eb77e50a3b8f7604b05f974b3a89e673af19efc6d5ac2d2c5c626",
+              "Labels": {
+                "build-date": "2016-02-17",
+                "license": "GPLv2",
+                "name": "CentOS Base Image",
+                "vendor": "CentOS"
+              }
+            },
+            "Architecture": "amd64",
+            "Size": 448325253
+          },
+          "dockerImageMetadataVersion": "1.0",
+          "dockerImageLayers": [
+            {
+              "name": "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+              "size": 0
+            },
+            {
+              "name": "sha256:ed99f9270efc5694a6f5a6fd276421a8b01ca1cd5c00c2d3e50a8068a8e16a1c",
+              "size": 196610919
+            },
+            {
+              "name": "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+              "size": 0
+            },
+            {
+              "name": "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+              "size": 0
+            },
+            {
+              "name": "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+              "size": 0
+            },
+            {
+              "name": "sha256:85ff019b9a7c01d9d8b1b6f919cf2283e64b954d39acd91e1eb9acb92fa4edf7",
+              "size": 211205967
+            },
+            {
+              "name": "sha256:b4945d6bae1f222bd11097986dd111f2d48a964d5eb3423d4482d21cab838f21",
+              "size": 40508367
+            },
+            {
+              "name": "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+              "size": 0
+            },
+            {
+              "name": "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+              "size": 0
+            }
+          ]
+        },
+        "tag": "latest"
+      }
+    ]
+  }
+}

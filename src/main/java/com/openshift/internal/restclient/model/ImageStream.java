@@ -28,7 +28,7 @@ import com.openshift.restclient.model.image.ITagReference;
  */
 public class ImageStream extends KubernetesResource implements IImageStream {
 
-	private static final String DOCKER_IMAGE_REPO = "status.dockerImageRepository";
+	private static final String DOCKER_IMAGE_REPO = "spec.dockerImageRepository";
 	private static final String SPEC_TAGS = "spec.tags";
 	private static final String STATUS_TAGS = "status.tags";
 	private static final String TAG = "tag";
@@ -44,17 +44,21 @@ public class ImageStream extends KubernetesResource implements IImageStream {
 		super(node, client, propertyKeys);
 		this.propertyKeys = propertyKeys;
 	}
-
+	
 	@Override
 	public void setDockerImageRepository(DockerImageURI uri) {
-		set(DOCKER_IMAGE_REPO, uri.getAbsoluteUri());		
+		setDockerImageRepository(uri.getAbsoluteUri());		
+	}
+
+	@Override
+	public void setDockerImageRepository(String uri) {
+		set(DOCKER_IMAGE_REPO, uri);		
 	}
 
 	@Override
 	public DockerImageURI getDockerImageRepository() {
 		return new DockerImageURI(asString(DOCKER_IMAGE_REPO));
 	}
-
 	
 	@Override
 	public Collection<String> getTagNames() {
