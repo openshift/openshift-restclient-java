@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.model.KubernetesResource;
@@ -31,12 +32,13 @@ import com.openshift.restclient.model.image.IImageStreamImport;
  */
 public class ImageStreamImport extends KubernetesResource implements IImageStreamImport {
 
-	private static final String IMAGE_DOCKER_IMAGE_REFERENCE = "image.dockerImageReference";
-	private static final String STATUS = "status";
-	private static final String STATUS_IMAGES = "status.images";
 	private static final String FROM_KIND = "from.kind";
+	private static final String IMAGE_DOCKER_IMAGE_REFERENCE = "image.dockerImageReference";
 	private static final String SPEC_IMAGES = "spec.images";
 	private static final String SPEC_IMPORT = "spec.import";
+	private static final String STATUS = "status";
+	private static final String STATUS_IMAGES = "status.images";
+	private static final String TAG = "tag";
 
 	public ImageStreamImport(ModelNode node, IClient client, Map<String, String[]> overrideProperties) {
 		super(node, client, overrideProperties);
@@ -56,7 +58,7 @@ public class ImageStreamImport extends KubernetesResource implements IImageStrea
 	public void addImage(String fromKind, DockerImageURI imageUri) {
 		ModelNode image = new ModelNode();
 		set(image, FROM_KIND, fromKind);
-		set(image, "from.name", imageUri.getUriWithoutTag());
+		set(image, "from.name", imageUri.getAbsoluteUri());
 		get(SPEC_IMAGES).add(image);
 	}
 
@@ -76,11 +78,12 @@ public class ImageStreamImport extends KubernetesResource implements IImageStrea
 	@Override
 	public String getImageJsonFor(DockerImageURI uri) {
 		String prefix = uri.getUriWithoutTag();
+		String tag = uri.getTag();
 		ModelNode images = get(STATUS_IMAGES);
 		if(images.isDefined()) {
 			Optional<ModelNode> node = images.asList()
 				.stream()
-				.filter(n->asString(n, IMAGE_DOCKER_IMAGE_REFERENCE).startsWith(prefix))
+				.filter(n->asString(n, IMAGE_DOCKER_IMAGE_REFERENCE).startsWith(prefix) && tag.equals(asString(n,TAG)))
 				.findFirst();
 			if(node.isPresent()) {
 				return node.get().toJSONString(true);

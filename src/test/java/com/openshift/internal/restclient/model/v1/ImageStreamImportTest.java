@@ -60,8 +60,8 @@ public class ImageStreamImportTest {
 	@Test
 	public void testGetImageJsonFor() {
 		DockerImageURI uri = new DockerImageURI("jcantrill/swarm-helloworld");
-		assertTrue(StringUtils.isNotBlank(stream.getImageJsonFor(uri)));
+		assertTrue("Exp. to find the json blob for the given image", StringUtils.isNotBlank(stream.getImageJsonFor(uri)));
 
-		assertNull(stream.getImageJsonFor(new DockerImageURI("foo/bar")));
+		assertNull("Exp. to not find the json blob", stream.getImageJsonFor(new DockerImageURI("foo/bar")));
 	}
 }
