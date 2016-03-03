@@ -30,7 +30,6 @@ import com.openshift.internal.restclient.http.HttpClientException;
 import com.openshift.internal.restclient.http.NotFoundException;
 import com.openshift.internal.restclient.http.UnauthorizedException;
 import com.openshift.internal.restclient.http.UrlConnectionHttpClientBuilder;
-import com.openshift.internal.restclient.model.Status;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
@@ -52,6 +51,7 @@ import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.IStatus;
 import com.openshift.restclient.model.user.IUser;
 
 /**
@@ -471,10 +471,10 @@ public class DefaultClient implements IClient, IHttpConstants{
 		final String token = strategy != null ? strategy.getToken() : "";
 		if (e.getMessage() != null
 				&& e.getMessage().startsWith("{")) {
-			Status status = factory.create(e.getMessage());
+			IStatus status = factory.create(e.getMessage());
 			if(status.getCode() == STATUS_FORBIDDEN) {
 				if(StringUtils.isNotBlank(token)) { //truly forbidden
-					return new ResourceForbiddenException(status.getMessage(), e);
+					return new ResourceForbiddenException(status.getMessage(), status, e);
 				}else {
 					return new com.openshift.restclient.authorization.UnauthorizedException(authClient.getAuthorizationDetails(this.baseUrl.toString()));
 				}
