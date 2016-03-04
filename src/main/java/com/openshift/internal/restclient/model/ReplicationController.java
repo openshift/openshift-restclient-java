@@ -69,28 +69,37 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		if(specContainers.isDefined()) { //should ALWAYS exist
 			List<ModelNode> containers = specContainers.asList();
 			if(!containers.isEmpty()) {
-				ModelNode var = new ModelNode();
-				set(var, NAME, name);
-				set(var, VALUE, value);
-				
+
 				Optional<ModelNode> opt = containers.stream().filter(n->defaultedContainerName.equals(asString(n, NAME))).findFirst();
 				ModelNode node =  opt.isPresent() ? opt.get() : containers.get(0);
 				ModelNode envNode = get(node, ENV);
-				
-				envNode.add(var);
-				
+
+				List<ModelNode> varList = new ArrayList<>(envNode.asList());
+
+				//Check if variable already exists
+				Optional<ModelNode> targetVar = varList.stream().filter(n->name.equals(asString(n, NAME))).findFirst();
+
+				ModelNode var;
+				if (targetVar.isPresent()) {
+					var = targetVar.get();
+					int i = varList.indexOf(var);
+					set(var, VALUE, value);
+					varList.set(i, var);
+				} else {
+					var = new ModelNode();
+					set(var, NAME, name);
+					set(var, VALUE, value);
+					varList.add(var);
+				}
+				envNode.set(varList);
 			}
 		}
 	}
-
-
 
 	@Override
 	public Collection<IEnvironmentVariable> getEnvironmentVariables() {
 		return getEnvironmentVariables(null);
 	}
-
-
 
 	@Override
 	public Collection<IEnvironmentVariable> getEnvironmentVariables(String containerName) {
@@ -112,8 +121,6 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		}
 		return Collections.emptyList();
 	}
-
-
 
 	@Override
 	public int getDesiredReplicaCount() {
@@ -161,8 +168,8 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	@Override
 	public Collection<String> getImages() {
 		ModelNode node = get(SPEC_TEMPLATE_CONTAINERS);
-		if(node.getType() != ModelType.LIST) return new ArrayList<String>();
-		Collection<String> list = new ArrayList<String>();
+		if(node.getType() != ModelType.LIST) return new ArrayList<>();
+		Collection<String> list = new ArrayList<>();
 		for (ModelNode entry : node.asList()) {
 			list.add(entry.get(IMAGE).asString());
 		}
@@ -243,6 +250,4 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		}
 		return volumes;
 	}
-	
-	
 }
