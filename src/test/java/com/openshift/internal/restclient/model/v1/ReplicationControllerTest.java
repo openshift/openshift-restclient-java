@@ -9,7 +9,9 @@
 package com.openshift.internal.restclient.model.v1;
 
 import static com.openshift.internal.util.JBossDmrExtentions.getPath;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -97,11 +99,20 @@ public class ReplicationControllerTest {
 	
 	@Test
 	public void testEnvironmentVariable() {
+		//add
 		rc.setEnvironmentVariable("foo", "bar");
 		Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables();
 		Optional<IEnvironmentVariable> envVar = envVars.stream().filter(e->"foo".equals(e.getName())).findFirst();
 		assertTrue("Exp. to find env var", envVar.isPresent());
 		assertEquals("bar", envVar.get().getValue());
+
+		//update
+		int size = rc.getEnvironmentVariables().size();
+		rc.setEnvironmentVariable("foo", "baz");
+		assertEquals(size, rc.getEnvironmentVariables().size());
+		envVars = rc.getEnvironmentVariables();
+		envVar = envVars.stream().filter(e->"foo".equals(e.getName())).findFirst();
+		assertEquals("baz", envVar.get().getValue());
 	}
 
 	@Test
@@ -207,6 +218,5 @@ public class ReplicationControllerTest {
 		Object [] contVolNames = container.getVolumes().stream().map(IVolume::getName).toArray();
 		assertArrayEquals(sourceNames,contVolNames);
 	}
-	
-	
+
 }
