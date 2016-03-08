@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.model.KubernetesResource;
@@ -33,11 +32,11 @@ import com.openshift.restclient.model.image.IImageStreamImport;
 public class ImageStreamImport extends KubernetesResource implements IImageStreamImport {
 
 	private static final String FROM_KIND = "from.kind";
-	private static final String IMAGE_DOCKER_IMAGE_REFERENCE = "image.dockerImageReference";
+	public static final String IMAGE_DOCKER_IMAGE_REFERENCE = "image.dockerImageReference";
 	private static final String SPEC_IMAGES = "spec.images";
 	private static final String SPEC_IMPORT = "spec.import";
 	private static final String STATUS = "status";
-	private static final String STATUS_IMAGES = "status.images";
+	public static final String STATUS_IMAGES = "status.images";
 	private static final String TAG = "tag";
 
 	public ImageStreamImport(ModelNode node, IClient client, Map<String, String[]> overrideProperties) {

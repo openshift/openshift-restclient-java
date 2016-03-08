@@ -28,6 +28,7 @@ public interface IHttpConstants {
 	public static final String PROPERTY_AUTHORIZATION = "Authorization";
 	public static final String PROPERTY_ACCEPT = "Accept";
 	public static final String PROPERTY_USER_AGENT = "User-Agent";
+	public static final String PROPERTY_WWW_AUTHENTICATE = "Www-Authenticate";
 	
 	public static final String PROPERTY_AUTHKEY = "broker_auth_key";
 	public static final String PROPERTY_AUTHIV = "broker_auth_iv";
