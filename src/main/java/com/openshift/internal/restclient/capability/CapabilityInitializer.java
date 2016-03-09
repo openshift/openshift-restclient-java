@@ -22,6 +22,7 @@ import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPor
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryRSync;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateListCapability;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateProcessing;
+import com.openshift.internal.restclient.capability.resources.PropertyAccessCapability;
 import com.openshift.internal.restclient.capability.resources.TagCapability;
 import com.openshift.internal.restclient.capability.resources.TemplateTraceability;
 import com.openshift.internal.restclient.capability.resources.UpdateableCapability;
@@ -40,6 +41,7 @@ import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.capability.resources.IProjectTemplateList;
 import com.openshift.restclient.capability.resources.IProjectTemplateProcessing;
+import com.openshift.restclient.capability.resources.IPropertyAccessCapability;
 import com.openshift.restclient.capability.resources.IRSyncable;
 import com.openshift.restclient.capability.resources.ITags;
 import com.openshift.restclient.capability.resources.ITemplateTraceability;
@@ -127,6 +129,7 @@ public class CapabilityInitializer {
 		initializeCapability(capabilities, ITags.class, new TagCapability(resource));
 		initializeCapability(capabilities, IClientCapability.class, new ClientCapability(client));
 		initializeCapability(capabilities, IUpdatable.class, new UpdateableCapability(resource));
+		initializeCapability(capabilities, IPropertyAccessCapability.class, new PropertyAccessCapability(resource));
 	}
 	
 	public static void initializeClientCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IClient client){
