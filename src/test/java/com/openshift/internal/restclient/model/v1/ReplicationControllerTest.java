@@ -12,6 +12,8 @@ import static com.openshift.internal.util.JBossDmrExtentions.getPath;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +47,7 @@ import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.model.IReplicationController;
 import com.openshift.restclient.model.ISecretKeySelector;
 import com.openshift.restclient.model.volume.IVolume;
+import com.openshift.restclient.model.volume.IVolumeMount;
 import com.openshift.restclient.model.volume.IVolumeSource;
 import com.openshift.restclient.utils.Samples;
 
@@ -178,6 +181,22 @@ public class ReplicationControllerTest {
 		assertArrayEquals(exp , rc.getImages().toArray());
 	}
 	
+	@Test 
+	public void testGetContainer() {
+		assertNull(rc.getContainer(" "));
+		assertNotNull(rc.getContainer("ruby-helloworld-database"));
+	}
+	@Test 
+	public void testGetContainers() {
+		Collection<IContainer> containers = rc.getContainers();
+		assertNotNull(containers);
+		assertEquals(1, containers.size());
+		
+		String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
+		node.get(path).clear();
+		assertNotNull(rc.getContainers());
+	}
+	
 	@Test
 	public void testAddContainer() throws JSONException {
 		//remove containers hack
@@ -218,5 +237,49 @@ public class ReplicationControllerTest {
 		Object [] contVolNames = container.getVolumes().stream().map(IVolume::getName).toArray();
 		assertArrayEquals(sourceNames,contVolNames);
 	}
+	
+	@Test
+	public void testAddContainerAllowsContainerToBeFurtherManipulated()  throws JSONException{
+		//remove containers hack
+		String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
+		node.get(path).clear();
+		
+		//setup
+		DockerImageURI uri = new DockerImageURI("aproject/an_image_name");
+		IPort port = mock(IPort.class);
+		when(port.getProtocol()).thenReturn("TCP");
+		when(port.getContainerPort()).thenReturn(8080);
+		Set<IPort> ports = new HashSet<>();
+		ports.add(port);
+		
+		IVolumeMount mount = mock(IVolumeMount.class);
+		when(mount.getName()).thenReturn(uri.getName() +"-"+1);
+		when(mount.getMountPath()).thenReturn("/tmp");
+		when(mount.isReadOnly()).thenReturn(Boolean.FALSE);
+		Set<IVolumeMount> mounts = new HashSet<>();
+		mounts.add(mount);
+		
+		IContainer container = rc.addContainer(uri.getName());
+		container.setImage(uri);
+		container.setPorts(ports);
+		container.setVolumeMounts(mounts);
+		
+		ModelNode exp = new ModelNodeBuilder()
+				.set("name", uri.getName())
+				.set("image",uri.toString())
+				.add("ports", new ModelNodeBuilder()
+					.set("containerPort", port.getContainerPort())
+					.set("protocol", port.getProtocol())
+				)
+				.add("volumeMounts", new ModelNodeBuilder()
+					.set("name", uri.getName() +"-"+1)
+					.set("mountPath", "/tmp")
+					.set("readOnly", false)
+				)
+				.build();
+		
+		JSONAssert.assertEquals(exp.toJSONString(false), container.toJSONString(), true);
+	}
+	
 
 }

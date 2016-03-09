@@ -118,7 +118,26 @@ public interface IReplicationController  extends IResource{
 	 */
 	IContainer addContainer(DockerImageURI tag, Set<IPort> containerPorts, Map<String, String> envVars);
 
+	/**
+	 * Add a container with the given name 
+	 * @param name
+	 * @return
+	 */
 	IContainer addContainer(String name);
+	
+	/**
+	 * Retrieve a container by name or null if it is not found
+	 * @param name
+	 * @return the container or null if not found
+	 */
+	IContainer getContainer(String name);
+
+	/**
+	 * Retrieve the containers defined in spec
+	 * @param name
+	 * @return collection of containers or empty collection
+	 */
+	Collection<IContainer> getContainers();
 	
 	/**
 	 * Add or update a label to the template spec;
@@ -132,4 +151,6 @@ public interface IReplicationController  extends IResource{
 	 * @return
 	 */
 	Set<IVolumeSource> getVolumes();
+
+	void setContainers(Collection<IContainer> containers);
 }
