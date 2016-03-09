@@ -12,6 +12,7 @@ package com.openshift.restclient;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.ResourceFactory;
@@ -26,6 +27,8 @@ public class ClientBuilder {
 	
 	private String baseUrl;
 	private ISSLCertificateCallback sslCertificateCallback;
+	private X509Certificate certificate;
+	private String certificateAlias;
 	private IResourceFactory resourceFactory;
 	private IAuthorizationStrategy authStrategy;
 
@@ -35,6 +38,12 @@ public class ClientBuilder {
 	
 	public ClientBuilder sslCertificateCallback(ISSLCertificateCallback callback) {
 		this.sslCertificateCallback = callback;
+		return this;
+	}
+	
+	public ClientBuilder sslCertificate(String alias, X509Certificate cert) {
+		this.certificateAlias = alias;
+		this.certificate = cert;
 		return this;
 	}
 	
@@ -52,7 +61,7 @@ public class ClientBuilder {
 		try {
 			ISSLCertificateCallback sslCallback = defaultIfNull(this.sslCertificateCallback, new NoopSSLCertificateCallback());
 			IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
-			DefaultClient client = new DefaultClient(new URL(this.baseUrl), null, sslCallback, factory);
+			DefaultClient client = new DefaultClient(new URL(this.baseUrl), null, sslCallback, factory, certificateAlias, certificate);
 			
 			client.setAuthorizationStrategy(authStrategy);
 			

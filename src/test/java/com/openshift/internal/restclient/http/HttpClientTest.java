@@ -16,6 +16,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -150,6 +152,36 @@ public class HttpClientTest extends TestTimer {
 		})
 		.client();
 		client.get(httpsServerFake.getUrl(), IHttpClient.NO_TIMEOUT);
+	}
+	
+	@Test
+	public void shouldCertificateBeInTrustStore() throws Throwable {
+		X509Certificate certOne = mock(X509Certificate.class);
+		when(certOne.getSigAlgName()).thenReturn("sig1");
+		UrlConnectionHttpClient client = (UrlConnectionHttpClient) new UrlConnectionHttpClientBuilder()
+		.setAcceptMediaType(ACCEPT_APPLICATION_JSON)
+		.setUserAgent("com.openshift.client.test")
+		.setCertificate(httpsServerFake.getUrl().toString(), certOne)
+		.setSSLCertificateCallback(new ISSLCertificateCallback() {
+			
+			@Override
+			public boolean allowHostname(String hostname, SSLSession session) {
+				return true;
+			}
+			
+			@Override
+			public boolean allowCertificate(X509Certificate[] chain) {
+				return true;
+			}
+		})
+		.client();
+		X509Certificate[] certs = client.getTrustedCertificates();
+		for (X509Certificate cert : certs) {
+			if (cert.getSigAlgName().equals("sig1")) {
+				return;
+			}
+		}
+		throw new Throwable("Did not find our certificate.");
 	}
 	
 	/**

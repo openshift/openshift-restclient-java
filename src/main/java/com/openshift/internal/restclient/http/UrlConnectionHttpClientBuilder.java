@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.http;
 
+import java.security.cert.X509Certificate;
+
 import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.authorization.IAuthorizationStrategy;
@@ -27,6 +29,8 @@ public class UrlConnectionHttpClientBuilder {
 	private String version;
 	private Integer configTimeout;
 	private ISSLCertificateCallback callback;
+	private String certificateAlias;
+	private X509Certificate certificate;
 	private String excludeSSLCipherRegex;
 	private IAuthorizationStrategy authStrategy;
 
@@ -42,6 +46,12 @@ public class UrlConnectionHttpClientBuilder {
 	
 	public UrlConnectionHttpClientBuilder setCredentials(String username, String password, String token) {
 		return setAuthorizationStrategy(new BasicAuthorizationStrategy(username, password, token));
+	}
+	
+	public UrlConnectionHttpClientBuilder setCertificate(String alias, X509Certificate cert) {
+		this.certificateAlias = alias;
+		this.certificate = cert;
+		return this;
 	}
 	
 	public UrlConnectionHttpClientBuilder setConfigTimeout (Integer configTimeout) {
@@ -71,7 +81,7 @@ public class UrlConnectionHttpClientBuilder {
 	
 	public IHttpClient client() {
 		UrlConnectionHttpClient urlClient = new UrlConnectionHttpClient(
-				userAgent, acceptedMediaType, version, callback, configTimeout, excludeSSLCipherRegex);
+				userAgent, acceptedMediaType, version, callback, configTimeout, excludeSSLCipherRegex, certificateAlias, certificate);
 		urlClient.setAuthorizationStrategy(authStrategy);
 		return urlClient;
 	}
