@@ -15,6 +15,7 @@ import java.net.URL;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.ResourceFactory;
+import com.openshift.restclient.authorization.IAuthorizationStrategy;
 
 /**
  * Builder to create IClient instances.
@@ -26,6 +27,7 @@ public class ClientBuilder {
 	private String baseUrl;
 	private ISSLCertificateCallback sslCertificateCallback;
 	private IResourceFactory resourceFactory;
+	private IAuthorizationStrategy authStrategy;
 
 	public ClientBuilder(String baseUrl) {
 		this.baseUrl = baseUrl;
@@ -40,12 +42,21 @@ public class ClientBuilder {
 		this.resourceFactory = factory;
 		return this;
 	}
+
+	public ClientBuilder resourceFactory(IAuthorizationStrategy authStrategy) {
+		this.authStrategy = authStrategy;
+		return this;
+	}
 	
 	public IClient build() {
 		try {
 			ISSLCertificateCallback sslCallback = defaultIfNull(this.sslCertificateCallback, new NoopSSLCertificateCallback());
 			IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
-			return new DefaultClient(new URL(this.baseUrl), null, sslCallback, factory);
+			DefaultClient client = new DefaultClient(new URL(this.baseUrl), null, sslCallback, factory);
+			
+			client.setAuthorizationStrategy(authStrategy);
+			
+			return client;
 		} catch (MalformedURLException e) {
 			throw new OpenShiftException(e, "");
 		}

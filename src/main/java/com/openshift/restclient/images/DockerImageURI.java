@@ -85,22 +85,50 @@ public class DockerImageURI {
 		return this.registryHost;
 	}
 
+	/**
+	 * Get the docker tag as repo:9999/username/name:tag 
+	 * @return
+	 */
 	public String getAbsoluteUri() {
 		return buildUri(registryHost, userName, name, tag);
 	}
 
+	/**
+	 * Get the docker tag as username/name:tag only
+	 * @return
+	 */
 	public String getBaseUri() {
 		return buildUri(null, userName, name, tag);
 	}
-
+	
+	/**
+	 * Get the docker tag as username/name only
+	 * @return
+	 */
+	public String getUriUserNameAndName() {
+		return buildUri(null, userName, name, null);
+	}
+	
+	/**
+	 * Get the docker tag as repo:9999/username/name only
+	 * @return
+	 */
 	public String getUriWithoutTag() {
 		return buildUri(registryHost, userName, name, null);
 	}
 	
+	/**
+	 * Get the docker tag as username/name:tag only
+	 * @return
+	 */
 	public String getUriWithoutHost() {
 		return buildUri(null, userName, name, tag);
 	}
 
+	/**
+	 * Get the docker tag as name:tag only
+	 * @return
+	 */
 	public String getNameAndTag() {
 		return buildUri(null, null, name, tag);
 	}

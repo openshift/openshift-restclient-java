@@ -18,12 +18,14 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.openshift.restclient.ClientBuilder;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.NoopSSLCertificateCallback;
 import com.openshift.restclient.authorization.AuthorizationClientFactory;
 import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.authorization.IAuthorizationClient;
 import com.openshift.restclient.authorization.IAuthorizationContext;
+import com.openshift.restclient.authorization.IAuthorizationDetails;
 import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.model.IResource;
 
@@ -49,13 +51,7 @@ public class IntegrationTestHelper {
 	}
 
 	public IClient createClient(){
-		DefaultClient client = null;
-		try {
-			client = new DefaultClient(new URL(prop.getProperty(KEY_SERVER_URL)), new NoopSSLCertificateCallback());
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-		return client;
+		return new ClientBuilder(prop.getProperty(KEY_SERVER_URL)).build();
 	}
 
 	public IClient createClientForBasicAuth() {
