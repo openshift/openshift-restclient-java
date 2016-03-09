@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,6 +205,20 @@ public class DefaultClientTest {
 
 		assertThat(tokenClientTwo).isEqualTo(tokenClientTwo);
 	}
+
+	@Test
+	public void clientShouldEqualClientWithDifferentCert() throws Exception {
+		X509Certificate certOne = mock(X509Certificate.class);
+		when(certOne.getSigAlgName()).thenReturn("sig1");
+		DefaultClient certClientOne = new DefaultClient(baseUrl, null, null, null, "cert1", certOne);
+
+		X509Certificate certTwo = mock(X509Certificate.class);
+		when(certTwo.getSigAlgName()).thenReturn("sig2");
+		DefaultClient certClientTwo = new DefaultClient(baseUrl, null, null, null, "cert2", certTwo);
+
+		assertThat(certClientTwo).isEqualTo(certClientOne);
+	}
+
 
 
 

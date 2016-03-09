@@ -13,6 +13,7 @@ import static com.openshift.internal.restclient.capability.CapabilityInitializer
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -85,8 +86,12 @@ public class DefaultClient implements IClient, IHttpConstants{
 	}
 	
 	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory){
+		this(baseUrl, httpClient, sslCertCallback, factory, null, null);
+	}
+	
+	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory, String alias, X509Certificate cert){
 		this.baseUrl = baseUrl;
-		client = httpClient != null ? httpClient : newIHttpClient(sslCertCallback);
+		client = httpClient != null ? httpClient : newIHttpClient(sslCertCallback, alias, cert);
 		this.factory = factory;
 		if(this.factory != null) {
 			this.factory.setClient(this);
@@ -100,9 +105,10 @@ public class DefaultClient implements IClient, IHttpConstants{
 	/*
 	 * Factory method for testing
 	 */
-	private IHttpClient newIHttpClient(ISSLCertificateCallback sslCertCallback){
+	private IHttpClient newIHttpClient(ISSLCertificateCallback sslCertCallback, String alias, X509Certificate cert){
 		return  new UrlConnectionHttpClientBuilder()
 		.setAcceptMediaType("application/json")
+		.setCertificate(alias, cert)
 		.setSSLCertificateCallback(sslCertCallback)
 		.client();
 	}
@@ -508,7 +514,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		this.authClient.setSSLCertificateCallback(callback);
 		this.client.setSSLCertificateCallback(callback);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -69,18 +69,64 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	private String excludedSSLCipherRegex;
 	private IAuthorizationStrategy authStrategy;
 
+	private TrustManagerFactory trustManagerFactory;
+	private NoSuchAlgorithmException trustManagerFactoryException;
+
 	public UrlConnectionHttpClient(String userAgent, String acceptedMediaType, String version){
 		this(userAgent, acceptedMediaType, version, null, null, null);
 	}
-
+	
 	public UrlConnectionHttpClient(String userAgent, String acceptedMediaType,
 			String version, ISSLCertificateCallback callback, Integer configTimeout, String excludedSSLCipherRegex) {
+		this(userAgent, acceptedMediaType, version, callback, configTimeout, excludedSSLCipherRegex, null, null);
+	}
+
+	public UrlConnectionHttpClient(String userAgent, String acceptedMediaType,
+			String version, ISSLCertificateCallback callback, Integer configTimeout, String excludedSSLCipherRegex,
+			String alias, X509Certificate cert) {
 		this.userAgent = userAgent;
 		this.acceptedMediaType = acceptedMediaType;
 		this.acceptedVersion = version;
 		this.sslAuthorizationCallback = callback;
 		this.configTimeout = configTimeout;
 		this.excludedSSLCipherRegex = excludedSSLCipherRegex;
+		this.initTrustManagerFactory(alias, cert);
+	}
+	
+	private void initTrustManagerFactory(String alias, X509Certificate cert) {
+		try {
+			trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			if (alias != null && cert != null) {
+				KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+				// need this load to initialize the key store, and allow for the subsequent set certificate entry
+				ks.load(null, null);
+				cert.checkValidity();
+				ks.setCertificateEntry(alias, cert);
+				// testing has proven that you can only call init() once for a TrustManagerFactory wrt loading certs
+				// from the KeyStore ... subsequent KeyStore.setCertificateEntry / TrustManagerFactory.init calls are 
+				// ignored.
+				// So if a specific cert is required to validate this connection's communication with the server, add it up front
+				// in the ctor.
+				trustManagerFactory.init(ks);
+			} else {
+				trustManagerFactory.init((KeyStore)null);
+			}
+			
+		} catch (NoSuchAlgorithmException e) {
+			LOGGER.warn("Could not get trust manager factory.", e);
+			trustManagerFactoryException = e;
+		} catch (KeyStoreException e) {
+			LOGGER.warn("Count not get key store.", e);
+		} catch (CertificateException e) {
+			LOGGER.warn("An invalid certificate was provided to this connection.", e);
+		} catch (IOException e) {
+			LOGGER.warn("An IO exception occurred while setting up a cert with the trust store.", e);
+		}
+	}
+	
+	// not part of IHttpClient currently, only put in place for test verification
+	public X509Certificate[] getTrustedCertificates() throws KeyStoreException, NoSuchAlgorithmException {
+		return getCurrentTrustManager().getAcceptedIssuers();
 	}
 	
 	@Override
@@ -420,10 +466,9 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	}
 	
 	private X509TrustManager getCurrentTrustManager() throws NoSuchAlgorithmException, KeyStoreException {
-		TrustManagerFactory trustManagerFactory = 
-				TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-		trustManagerFactory.init((KeyStore) null);
-
+		if (trustManagerFactoryException != null)
+			throw trustManagerFactoryException;
+		
 		X509TrustManager x509TrustManager = null;
 		for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
 			if (trustManager instanceof X509TrustManager) {
@@ -432,6 +477,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			}
 		}
 		return x509TrustManager;
+		
 	}
 	
 	@Override
@@ -466,7 +512,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 		public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
 			try {
-				trustManager.checkServerTrusted(chain, authType);
+					trustManager.checkServerTrusted(chain, authType);
 			} catch (CertificateException e) {
 				if (!callback.allowCertificate(chain)) {
 					throw e;
