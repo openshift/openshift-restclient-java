@@ -11,11 +11,13 @@ package com.openshift.internal.restclient.model.v1;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.jboss.dmr.ModelNode;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.model.Pod;
@@ -23,6 +25,7 @@ import com.openshift.internal.restclient.model.Port;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.utils.Samples;
@@ -33,10 +36,10 @@ import com.openshift.restclient.utils.Samples;
 public class PodTest {
 
 	private static final String VERSION = "v1";
-	private static IPod pod;
+	private IPod pod;
 	
-	@BeforeClass
-	public static void setup(){
+	@Before
+	public void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_POD.getContentAsString());
 		pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.POD));
@@ -74,4 +77,15 @@ public class PodTest {
 		assertEquals(ports, pod.getContainerPorts());
 	}
 
+	@Test
+	public void testAddContainer() {
+		Collection<IContainer> initial = pod.getContainers();
+		IContainer foo = pod.addContainer("foo");
+		foo.setLifecycle("bar");
+		Collection<IContainer> containers = pod.getContainers();
+		assertEquals(initial.size() + 1, containers.size());
+		
+		Optional<IContainer> container = containers.stream().filter(c->"foo".equals(c.getName()) && "bar".equals(c.getLifecycle())).findFirst();
+		assertTrue("Exp. the container to be added", container.isPresent());
+	}
 }
