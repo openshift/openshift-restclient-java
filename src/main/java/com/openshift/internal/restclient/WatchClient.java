@@ -67,9 +67,11 @@ public class WatchClient implements IHttpConstants, IWatcher{
 	private class WatchEndpoint extends WebSocketAdapter{
 		private IOpenShiftWatchListener listener;
 		private List<IResource> resources;
+		private final String kind;
 
-		public WatchEndpoint(IOpenShiftWatchListener listener) {
+		public WatchEndpoint(IOpenShiftWatchListener listener, String kind) {
 			this.listener = listener;
+			this.kind = kind;
 		}
 		
 		public void setResources(List<IResource> resources) {
@@ -78,14 +80,15 @@ public class WatchClient implements IHttpConstants, IWatcher{
 		
 		@Override
 		public void onWebSocketClose(int statusCode, String reason) {
-			LOGGER.debug("WatchSocket closed");
+			LOGGER.debug("WatchSocket closed for kind {}", kind);
+			getSession().close(statusCode, reason);
 			super.onWebSocketClose(statusCode, reason);
 			listener.disconnected();
 		}
 
 		@Override
 		public void onWebSocketConnect(Session session) {
-			LOGGER.debug("WatchSocket connected");
+			LOGGER.debug("WatchSocket connected {}", kind);
 			super.onWebSocketConnect(session);
 			listener.connected(resources);
 
@@ -93,7 +96,7 @@ public class WatchClient implements IHttpConstants, IWatcher{
 
 		@Override
 		public void onWebSocketError(Throwable err) {
-			LOGGER.debug("WatchSocket Error", err);
+			LOGGER.debug("WatchSocket Error for kind " + kind, err);
 			listener.error(createOpenShiftException("WatchSocket Error", err));
 		}
 
@@ -113,10 +116,9 @@ public class WatchClient implements IHttpConstants, IWatcher{
 	
 	public IWatcher watch(Collection<String> kinds, String namespace, IOpenShiftWatchListener listener) {
 		try {
-			start();
 			ClientUpgradeRequest request = newRequest(this.client.getAuthorizationStrategy().getToken());	
 			for (String kind : kinds) {
-				WatchEndpoint socket = new WatchEndpoint(listener);
+				WatchEndpoint socket = new WatchEndpoint(listener, kind);
 				final String resourceVersion = getResourceVersion(kind, namespace, socket);
 				
 				final String endpoint = new URLBuilder(baseUrl, typeMappings)
@@ -135,13 +137,14 @@ public class WatchClient implements IHttpConstants, IWatcher{
 	
 	private void connect(WatchEndpoint socket, String endpoint, ClientUpgradeRequest request) throws Exception {
 		synchronized (wsClient) {
+			start();
 			wsClient.connect(socket, new URI(endpoint), request).get();
 		}
 	}
 	
 	public void start() {
-		if(wsClient.isStarted() || wsClient.isStarting()) return;
 		synchronized (wsClient) {
+			if(wsClient.isStarted() || wsClient.isStarting()) return;
 			try {
 				wsClient.start();
 			} catch (Exception e) {
