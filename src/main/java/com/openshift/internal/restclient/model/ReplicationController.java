@@ -25,6 +25,7 @@ import org.jboss.dmr.ModelType;
 
 import com.openshift.internal.restclient.model.volume.VolumeMount;
 import com.openshift.internal.restclient.model.volume.VolumeSource;
+import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IContainer;
@@ -59,8 +60,6 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	public void setEnvironmentVariable(String name, String value) {
 		setEnvironmentVariable(null, name, value);
 	}
-
-
 
 	@Override
 	public void setEnvironmentVariable(String containerName, String name, String value) {
@@ -178,6 +177,30 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	}
 	
 	@Override
+	public IContainer getContainer(String name) {
+		if(StringUtils.isBlank(name)) {
+			return null;
+		}
+		ModelNode containers = get(SPEC_TEMPLATE_CONTAINERS);
+		if(containers.isDefined() && containers.getType() == ModelType.LIST ) {
+			Optional<ModelNode> first = containers.asList().stream().filter(n->name.equals(JBossDmrExtentions.asString(n, this.propertyKeys, NAME))).findFirst();
+			if(first.isPresent()) {
+				return new Container(first.get(), this.propertyKeys);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Collection<IContainer> getContainers() {
+		ModelNode containers = get(SPEC_TEMPLATE_CONTAINERS);
+		if(containers.isDefined() && containers.getType() == ModelType.LIST ) {
+			return containers.asList().stream().map(n->new Container(n, this.propertyKeys)).collect(Collectors.toList());
+		}
+		return Collections.emptyList();
+	}
+
+	@Override
 	public void addTemplateLabel(String key, String value) {
 		ModelNode labels = get(SPEC_TEMPLATE_LABELS);
 		labels.get(key).set(value);
@@ -240,6 +263,15 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		return container;
 	}
 
+	@Override
+	public void setContainers(Collection<IContainer> containers) {
+		ModelNode nodeContainers = get(SPEC_TEMPLATE_CONTAINERS);
+		nodeContainers.clear();
+		if (containers != null) {
+			containers.forEach(c -> nodeContainers.add(ModelNode.fromJSONString(c.toJSONString())));
+		}
+	}
+	
 	@Override
 	public Set<IVolumeSource> getVolumes() {
 		ModelNode vol = get(VOLUMES);
