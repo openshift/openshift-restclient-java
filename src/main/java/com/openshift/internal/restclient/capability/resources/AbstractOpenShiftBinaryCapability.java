@@ -162,11 +162,14 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 		if(process == null) return;
 		cleanup();
 		if(!process.isAlive()) {
-			LOG.debug("OpenShiftBinaryCapability process exit code {}", process.exitValue());
-			try {
-				LOG.debug("OpenShiftBinaryCapability process error stream", IOUtils.toString(process.getErrorStream()));
-			} catch (IOException e) {
-				LOG.debug("IOException trying to debug the process error stream", e);
+			final int exitValue = process.exitValue();
+			LOG.debug("OpenShiftBinaryCapability process exit code {}", exitValue);
+			if(exitValue != 0) {
+				try {
+					LOG.debug("OpenShiftBinaryCapability process error stream", IOUtils.toString(process.getErrorStream()));
+				} catch (IOException e) {
+					LOG.debug("IOException trying to debug the process error stream", e);
+				}
 			}
 			process = null;
 			return;

@@ -17,13 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
-import com.openshift.internal.restclient.authorization.AuthorizationClient;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
-import com.openshift.restclient.authorization.IAuthorizationClient;
-import com.openshift.restclient.authorization.IAuthorizationContext;
-import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
@@ -36,6 +31,7 @@ import com.openshift.restclient.model.IPod;
  */
 public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
 
+	private static final String HELLO_OPENSHIFT = "docker-registry-1-uuho4";
 	private IntegrationTestHelper helper = new IntegrationTestHelper();
 	@Before
 	public void setUp() throws Exception {
@@ -44,26 +40,23 @@ public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
 	@Test
 	public void testLogRetrieval() {
 		System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
-		IClient client = helper.createClient();
-		client.setAuthorizationStrategy(new BasicAuthorizationStrategy("admin", "admin", ""));
-		IAuthorizationClient authClient = new AuthorizationClient(client);
-		IAuthorizationContext context = authClient.getContext(client.getBaseURL().toString());
-		client.setAuthorizationStrategy(new TokenAuthorizationStrategy(context.getToken()));
-		client.get(ResourceKind.POD, "hello-openshift", "openshift-dev");
-		IPod pod = client.get(ResourceKind.POD, "hello-openshift", "openshift-dev");
+		IClient client = helper.createClientForBasicAuth();
+		IPod pod = client.get(ResourceKind.POD, HELLO_OPENSHIFT, "default");
 
 		pod.accept(new CapabilityVisitor<IPodLogRetrieval, Object>() {
 
 			@Override
 			public Object visit(IPodLogRetrieval cap) {
 				try {
-					BufferedInputStream os = new BufferedInputStream(cap.getLogs(true));
+					BufferedInputStream os = new BufferedInputStream(cap.getLogs(false, ""));//HELLO_OPENSHIFT));
 					int c;
 					while((c = os.read()) != -1) {
 						System.out.print((char)c);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+				}finally {
+					cap.stop();
 				}
 				return null;
 			}

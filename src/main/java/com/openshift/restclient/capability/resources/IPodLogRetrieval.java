@@ -28,10 +28,24 @@ public interface IPodLogRetrieval extends ICapability {
 	 * @return  the log output stream
 	 */
 	InputStream getLogs(boolean follow);
+
+	/**
+	 * Return the logs from the pod, optionally following them
+	 * @param   follow  true; if following, Default: false
+	 * @param  container   the name of the container in the pod to get logs
+	 *                     uses the first container if empty
+	 * @return  the log output stream
+	 */
+	InputStream getLogs(boolean follow, String container);
 	
 	/**
-	 * Stop retrieving logs
+	 * Stop retrieving logs for all containers
 	 */
 	void stop();
+
+	/**
+	 * Stop retrieving logs for a specific container
+	 */
+	void stop(String container);
 
 }

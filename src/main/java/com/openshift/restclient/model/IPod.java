@@ -47,4 +47,21 @@ public interface IPod extends IResource {
 	 * containers are using
 	 */
 	Set<IPort> getContainerPorts();
+	
+	/**
+	 * Add a container with the given name.  This is 
+	 * useful if creating a pod directly without a 
+	 * resource controller
+	 * 
+	 * @param name
+	 * @return
+	 */
+	IContainer addContainer(String name);
+	
+	/**
+	 * Retrieve all the containers spec'd
+	 * for the pod
+	 * @return collection of containers
+	 */
+	Collection<IContainer> getContainers();
 }

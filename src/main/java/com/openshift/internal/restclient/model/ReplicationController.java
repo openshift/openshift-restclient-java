@@ -159,6 +159,7 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	public void setReplicaSelector(Map<String, String> selector) {
 		get(SPEC_SELECTOR).clear();
 		set(SPEC_SELECTOR, selector);
+		selector.forEach((k,v)->addTemplateLabel(k,v));
 	}
 	@Override
 	public int getCurrentReplicaCount() {
