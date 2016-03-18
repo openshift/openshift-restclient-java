@@ -38,6 +38,7 @@ import com.openshift.restclient.model.build.IDockerBuildStrategy;
 import com.openshift.restclient.model.build.IGitBuildSource;
 import com.openshift.restclient.model.build.IImageChangeTrigger;
 import com.openshift.restclient.model.build.ISTIBuildStrategy;
+import com.openshift.restclient.model.build.ISourceBuildStrategy;
 import com.openshift.restclient.model.build.IWebhookTrigger;
 
 /**
@@ -67,6 +68,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	private static final String BUILD_CONFIG_IMAGECHANGE_IMAGE = "imageChange.image";
 	private static final String BUILD_CONFIG_IMAGECHANGE_NAME = "imageChange.from.name";
 	private static final String BUILD_CONFIG_IMAGECHANGE_TAG = "imageChange.tag";
+	private static final String SOURCE_STRATEGY =  "spec.strategy";
 
 
 	public BuildConfig(ModelNode node, IClient client, Map<String, String []> overrideProperties) {
@@ -208,7 +210,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			}
 			break;
 		case BuildStrategyType.STI:
-		case BuildStrategyType.SOURCE:
 			if ( !(strategy instanceof ISTIBuildStrategy)) {
 				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement ISTIBuildStrategy");
 			}
@@ -223,6 +224,10 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			if(sti.getEnvironmentVariables() != null) {
 				setEnvMap(BUILDCONFIG_STI_ENV, sti.getEnvironmentVariables());
 			}
+			break;
+		case BuildStrategyType.SOURCE:
+			ISourceBuildStrategy source = (ISourceBuildStrategy) strategy;
+			get(SOURCE_STRATEGY).set(ModelNode.fromJSONString(source.toString()));
 			break;
 		case BuildStrategyType.DOCKER:
 			if ( !(strategy instanceof IDockerBuildStrategy)) {
@@ -261,11 +266,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 					);
 		case BuildStrategyType.STI:
 		case BuildStrategyType.SOURCE:
-			return (T) new SourceBuildStrategy(asString(BUILDCONFIG_STI_IMAGE),
-					asString(BUILDCONFIG_STI_SCRIPTS),
-					asBoolean(BUILDCONFIG_STI_INCREMENTAL),
-					getEnvMap(BUILDCONFIG_STI_ENV)
-					);
+			return (T) new SourceBuildStrategy(get(SOURCE_STRATEGY), getPropertyKeys());
 
 		case BuildStrategyType.DOCKER:
 			return (T) new DockerBuildStrategy(

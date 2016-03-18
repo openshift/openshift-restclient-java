@@ -240,7 +240,7 @@ public class JBossDmrExtentions {
 		}
 		return modelNode.asBoolean();
 	}
-
+	
 	public static ModelNode get(ModelNode node, Map<String, String []> propertyKeys, String key){
 		return node.get(getPath(propertyKeys,key));
 	}

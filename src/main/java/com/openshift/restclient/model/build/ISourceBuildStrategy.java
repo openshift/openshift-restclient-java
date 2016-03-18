@@ -10,11 +10,35 @@
  ******************************************************************************/
 package com.openshift.restclient.model.build;
 
+import java.util.Collection;
+import java.util.Map;
+
+import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.IEnvironmentVariable;
+
 /**
  * 
  * @author Jeff Cantrill
  *
  */
-public interface ISourceBuildStrategy extends ISTIBuildStrategy{
+public interface ISourceBuildStrategy extends IBuildStrategy{
+	
+	/**
+	 * Returns the Builder Image used to execute the build
+	 */
+	DockerImageURI getImage();
+	void setImage(DockerImageURI image);
+	
+	String getScriptsLocation();
+	void setScriptsLocation(String location);
+	
+	Map<String, String> getEnvironmentVariables();
+	void setEnvironmentVariables(Map<String, String> envVars);
+	
+	Collection<IEnvironmentVariable> getEnvVars();
+	void setEnvVars(Collection<IEnvironmentVariable> envVars);
+
+	boolean incremental();
+	void setIncremental(boolean isIncremental);
 
 }

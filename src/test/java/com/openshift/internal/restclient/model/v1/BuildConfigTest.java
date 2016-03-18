@@ -15,6 +15,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import org.junit.Test;
 
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.BuildConfig;
+import com.openshift.internal.restclient.model.ModelNodeBuilder;
 import com.openshift.internal.restclient.model.build.GitBuildSource;
 import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
 import com.openshift.internal.restclient.model.build.SourceBuildStrategy;
@@ -32,6 +34,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
+import com.openshift.restclient.model.IEnvironmentVariable;
 import com.openshift.restclient.model.build.BuildSourceType;
 import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.BuildTriggerType;
@@ -113,9 +116,17 @@ public class BuildConfigTest {
 	public void setSourceBuildStrategy() {
 		BuildConfig writeConfig = new ResourceFactory(client){}.create(VERSION, ResourceKind.BUILD_CONFIG);
 
-		Map<String, String> env = new HashMap<String, String>();
-		env.put("foo", "bar");
-		writeConfig.setBuildStrategy(new SourceBuildStrategy("ruby-20-centos7:latest", "alocation", true, env));
+		ModelNode node = new ModelNodeBuilder()
+			.set("type", BuildStrategyType.SOURCE)
+			.set(SourceBuildStrategy.FROM_IMAGE, "ruby-20-centos7:latest")
+			.set(SourceBuildStrategy.SCRIPTS, "alocation")
+			.set(SourceBuildStrategy.INCREMENTAL, true)
+			.add(SourceBuildStrategy.ENV, new ModelNodeBuilder()
+				.set("name", "foo")
+				.set("value", "bar"))
+			.build();
+		
+		writeConfig.setBuildStrategy(new SourceBuildStrategy(node, new HashMap<>()));
 
 		assertSourceBuildStrategy(reCreateBuildConfig(writeConfig).getBuildStrategy());
 	}
@@ -147,9 +158,26 @@ public class BuildConfigTest {
 		assertEquals(new DockerImageURI("ruby-20-centos7:latest"), source.getImage());
 		assertEquals("alocation", source.getScriptsLocation());
 		assertEquals(true, source.incremental());
-		assertEquals(1, source.getEnvironmentVariables().size());
-		assertTrue("Exp. to find the environment variable",source.getEnvironmentVariables().containsKey("foo"));
-		assertEquals("bar",source.getEnvironmentVariables().get("foo"));
+		
+		Map<String, String> envVars = source.getEnvironmentVariables();
+		assertEquals(1, envVars.size());
+		assertTrue("Exp. to find the environment variable",envVars.containsKey("foo"));
+		assertEquals("bar",envVars.get("foo"));
+		
+		envVars.put("newKey", "newValue");
+		source.setEnvironmentVariables(envVars);
+		envVars = source.getEnvironmentVariables();
+		assertEquals(2, envVars.size());
+		assertTrue("Exp. to find the environment variable",envVars.containsKey("newKey"));
+		assertEquals("newValue",envVars.get("newKey"));
+		
+		Collection<IEnvironmentVariable> vars = source.getEnvVars();
+		assertTrue(vars.stream().filter(e->"newKey".equals(e.getName())).findFirst().isPresent());
+		
+		vars.remove(vars.toArray()[0]);
+		source.setEnvVars(vars);
+		vars = source.getEnvVars();
+		assertEquals(1, vars.size());
 	}
 
 	private BuildConfig reCreateBuildConfig(BuildConfig config) {

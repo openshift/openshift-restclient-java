@@ -107,11 +107,7 @@ public class Build extends KubernetesResource implements IBuild{
 						getEnvMap("spec.strategy.customStrategy.env")
 					);
 		case BuildStrategyType.SOURCE:
-			return (T) new SourceBuildStrategy(asString("spec.strategy.sourceStrategy.from.name"),
-					asString("spec.strategy.sourceStrategy.scripts"),
-					asBoolean("spec.strategy.sourceStrategy.incremental"),
-					getEnvMap("spec.strategy.sourceStrategy.env")
-					);
+			return (T) new SourceBuildStrategy(get("spec.strategy"), getPropertyKeys());
 
 		case BuildStrategyType.DOCKER:
 
