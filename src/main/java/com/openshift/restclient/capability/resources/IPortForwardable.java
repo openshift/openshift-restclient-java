@@ -117,6 +117,10 @@ public interface IPortForwardable extends IBinaryCapability {
 			return true;
 		}
 		
+		@Override
+		public String toString() {
+			return getName() + ": " + this.localPort + "->" + this.getRemotePort();
+		}
 		
 	}
 }

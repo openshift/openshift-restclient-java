@@ -24,20 +24,17 @@ public interface IResource extends ICapable, Annotatable {
 	Map<String, String> getMetadata();
 
 	/**
-	 * Retrieves the list of capabilities supported by this resource
-	 * @return
+	 * @return the list of capabilities supported by this resource
 	 */
 	Set<Class<? extends ICapability>>  getCapabilities();
 	
 	/**
-	 * Returns the resource kind
-	 * @return
+	 * @return the resource kind
 	 */
 	String getKind();
 	
 	/**
-	 * returns the version of this resource
-	 * @return
+	 * @return the version of this resource
 	 */
 	String getApiVersion();
 

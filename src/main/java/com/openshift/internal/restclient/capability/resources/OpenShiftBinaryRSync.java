@@ -12,6 +12,9 @@ package com.openshift.internal.restclient.capability.resources;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
@@ -38,31 +41,57 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 	private Peer source;
 	private Peer destination;
 
-	public OpenShiftBinaryRSync(IClient client) {
+	private final Executor executor = Executors.newCachedThreadPool(); 
+	
+	/**
+	 * Constructor.
+	 * @param client the client to connect to OpenShift. 
+	 */
+	public OpenShiftBinaryRSync(final IClient client) {
 		super(client);
 	}
 
 	@Override
-	public void sync(Peer source, Peer destination) throws OpenShiftException {
+	public InputStream sync(Peer source, Peer destination) throws OpenShiftException {
 		this.source = source;
 		this.destination = destination;
 		start();
-		waitForExit(source.getLocation(), destination.getLocation(), getProcess());
+		// monitor the process completion in a separate thread
+		this.executor.execute(() -> {
+			try {
+				this.getProcess().waitFor();
+			} catch (Exception e) {
+			}
+			
+		});
+		final SequenceInputStream is = new SequenceInputStream(getProcess().getInputStream(), getProcess().getErrorStream());
+		return is;
 	}
 
-	private void waitForExit(String source, String destination, Process process) {
+	@Override
+	public boolean isDone() {
+		return !getProcess().isAlive();
+	}
+	
+	@Override
+	public int exitValue() {
+		return getProcess().exitValue();
+	}
+	
+	@Override
+	public void await() throws InterruptedException {
 		try {
-			if (process == null) {
+			if (getProcess() == null) {
 				throw new OpenShiftException("Could not sync %s to %s, no process was launched.", 
 						destination);
 			}
-			if (!process.waitFor(WAIT_FOR_EXIT_TIMEOUT, TimeUnit.MINUTES)) {
+			if (!getProcess().waitFor(WAIT_FOR_EXIT_TIMEOUT, TimeUnit.MINUTES)) {
 				throw new OpenShiftException("Syncing %s to %s did not terminate within %d minutes.", 
 						source, destination, WAIT_FOR_EXIT_TIMEOUT);
 			}
 			
-			if (process.exitValue() != 0) {
-				String errorMessage = getErrorMessage(process.getErrorStream());
+			if (getProcess().exitValue() != 0) {
+				String errorMessage = getErrorMessage(getProcess().getErrorStream());
 				throw new OpenShiftException("Syncing %s to %s failed"
 						+ (StringUtil.isBlank(errorMessage) ? "" : ":%s"),
 						source, destination, errorMessage);
@@ -122,4 +151,5 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 				.append(destination.getParameter());
 		return args.toString();
 	}
+	
 }
