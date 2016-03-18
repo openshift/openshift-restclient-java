@@ -29,6 +29,8 @@ import com.openshift.restclient.authorization.IAuthorizationDetails;
 import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.model.IResource;
 
+import static org.junit.Assert.fail;
+
 /**
  * @author Jeff Cantrill
  */
@@ -44,10 +46,10 @@ public class IntegrationTestHelper {
 
 	private static final Logger LOG = LoggerFactory.getLogger(IntegrationTestHelper.class);
 
-	private Properties prop = new Properties();
+	private final Properties prop;
 
-	public IntegrationTestHelper(){
-		loadProperties();
+	public IntegrationTestHelper() {
+		this.prop = loadProperties(INTEGRATIONTEST_PROPERTIES);
 	}
 
 	public IClient createClient(){
@@ -73,16 +75,39 @@ public class IntegrationTestHelper {
 		return String.format("%s-%s",getDefaultNamespace(), new Random().nextInt(9999));
 	}
 
-	private void loadProperties(){
-        try {
-            prop.load(getClass().getResourceAsStream(INTEGRATIONTEST_PROPERTIES));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+	/**
+	 * Loads the properties from the given {@code propertyFileName}, then
+	 * overrides from the System properties if any was given (this is a convenient way to
+	 * override the default settings and avoid conflicting with the properties file in git)
+	 * 
+	 * @return the properties to use in the test
+	 * @throws IOException 
+	 */
+	private static Properties loadProperties(final String propertyFileName) {
+		final Properties properties = new Properties();
+		try {
+			properties.load(IntegrationTestHelper.class.getResourceAsStream(propertyFileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail("Failed to load properties from file " + INTEGRATIONTEST_PROPERTIES + ": " + e.getMessage());
+		}
+		overrideIfExists(properties, KEY_SERVER_URL);
+		overrideIfExists(properties, KEY_DEFAULT_PROJECT);
+		overrideIfExists(properties, KEY_OPENSHIFT_LOCATION);
+		overrideIfExists(properties, KEY_USER);
+		overrideIfExists(properties, KEY_PASSWORD);
+		return properties;
 	}
-
+	
+	
+	private static void overrideIfExists(final Properties properties, final String propertyName){
+		// then override with the VM arguments (if any)
+		final String propertyValue = System.getProperty(propertyName);
+		if (propertyValue != null) {
+			properties.setProperty(propertyName, propertyValue);
+		}
+	}
+	
 	public static void cleanUpResource(IClient client, IResource resource) {
 		try {
 			Thread.sleep(1000);
@@ -105,4 +130,8 @@ public class IntegrationTestHelper {
 		return  prop.getProperty(KEY_PASSWORD);
 	}
 
+	public String getServerUrl() {
+		return  prop.getProperty(KEY_SERVER_URL);
+	}
+	
 }
