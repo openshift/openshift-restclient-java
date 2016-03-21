@@ -53,7 +53,7 @@ public class DockerRegistryImageStreamImportCapability implements IImageStreamIm
 	private static final String PARENT = "parent";
 	private static final String REALM = "realm";
 	private static final Logger LOG = LoggerFactory.getLogger(IImageStreamImportCapability.class);
-	private static final String DEFAULT_DOCKER_REGISTRY = "https://registry-1.docker.io/v2/";
+	private static final String DEFAULT_DOCKER_REGISTRY = "https://registry-1.docker.io/v2";
 	private IResourceFactory factory;
 	private IProject project;
 
@@ -143,7 +143,9 @@ public class DockerRegistryImageStreamImportCapability implements IImageStreamIm
 			request.header(PROPERTY_AUTHORIZATION, String.format("%s %s", AUTHORIZATION_BEARER, token));
 			
 		}
+		LOG.debug("retrieveMetaData uri: " + regUri);
 		ContentResponse response = request.send();
+		LOG.debug("retrieveMetaData response: " + response.toString());
 		switch(response.getStatus()) {
 		case STATUS_OK:
 			return new DockerResponse(DockerResponse.DATA, response.getContentAsString());
