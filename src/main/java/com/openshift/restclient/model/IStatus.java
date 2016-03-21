@@ -16,6 +16,9 @@ package com.openshift.restclient.model;
  */
 public interface IStatus extends IResource {
 
+	public static final String SUCCESS = "Success";
+	public static final String FAILURE = "Failure";
+	
 	/**
 	 * Returns the status message
 	 * @return
@@ -40,4 +43,10 @@ public interface IStatus extends IResource {
 	 * @return
 	 */
 	boolean isFailure();
+
+	/**
+	 * Returns {@code true} if this status represent success}
+	 * @return
+	 */
+	boolean isSuccess();
 }
