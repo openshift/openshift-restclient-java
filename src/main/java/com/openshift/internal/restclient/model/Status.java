@@ -45,7 +45,12 @@ public class Status extends KubernetesResource implements IStatus{
 
 	@Override
 	public boolean isFailure() {
-		return "Failure".equals(getStatus());
+		return FAILURE.equalsIgnoreCase(getStatus());
+	}
+
+	@Override
+	public boolean isSuccess() {
+		return SUCCESS.equalsIgnoreCase(getStatus());
 	}
 
 }
