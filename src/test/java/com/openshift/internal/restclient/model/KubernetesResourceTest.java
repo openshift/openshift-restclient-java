@@ -54,7 +54,7 @@ public class KubernetesResourceTest {
 		annotations.get("template").set("foobar");
 		
 		node.get(KubernetesResource.METADATA_NAME).set("bartender");
-		node.get(KubernetesResource.NAMESPACE).set("foofighters");
+		node.get(KubernetesResource.METADATA_NAMESPACE).set("foofighters");
 		
 		return node;
 	}
@@ -207,7 +207,7 @@ public class KubernetesResourceTest {
 		assertEquals(resource, otherResource);
 
 		// operation
-		otherResource.set(KubernetesResource.NAMESPACE, "karate");
+		otherResource.set(KubernetesResource.METADATA_NAMESPACE, "karate");
 		
 		// verification
 		assertThat(resource).isNotEqualTo(otherResource);

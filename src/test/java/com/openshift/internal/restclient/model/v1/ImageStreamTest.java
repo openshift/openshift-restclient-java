@@ -58,6 +58,14 @@ public class ImageStreamTest {
 	}
 	
 	@Test
+	public void testAddTagWithNamespace() {
+		ITagReference tag = stream.addTag("1234", ResourceKind.IMAGE_STREAM_TAG, "foo/bar", "fromNmspc");
+		Optional<ITagReference> actTag = stream.getTags().stream().filter(t->"1234".equals(t.getName())).findFirst();
+		assertTrue("Exp. the tag to have been added",actTag.isPresent());
+		assertEquals(tag.toJson(), actTag.get().toJson());
+	}
+	
+	@Test
 	public void getDockerImageRepository() {
 		assertEquals(new DockerImageURI("172.30.224.48:5000/openshift/wildfly:latest"), stream.getDockerImageRepository());
 	}
