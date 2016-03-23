@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
@@ -102,7 +103,7 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 		}
 	}
 	
-	private String getErrorMessage(InputStream errorStream) {
+	private static String getErrorMessage(InputStream errorStream) {
 		try {
 			return IOUtils.toString(errorStream);
 		} catch (IOException e) {
@@ -124,7 +125,7 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 				&& hasPodPeer(source, destination);
 	}
 
-	private boolean hasPodPeer(Peer source, Peer destination) {
+	private static boolean hasPodPeer(Peer source, Peer destination) {
 		return source.isPod()
 				|| destination.isPod();
 	}
@@ -141,15 +142,11 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 	
 	@Override
 	protected String buildArgs() {
-		StringBuilder args = new StringBuilder("rsync ");
-		addUser(args);
-		addToken(args);
-		addServer(args);
-		addSkipTlsVerify(args)
-				.append(source.getParameter())
-				.append(" ")
+		final StringBuilder argsBuilder = new StringBuilder("rsync ");
+		argsBuilder.append(getUserFlag()).append(getTokenFlag()).append(getServerFlag()).append(getSkipTlsVerifyFlag())
+				.append(getExclusionFlags()).append(getNoPermsFlags()).append(source.getParameter()).append(" ")
 				.append(destination.getParameter());
-		return args.toString();
+		return argsBuilder.toString();
 	}
 	
 }

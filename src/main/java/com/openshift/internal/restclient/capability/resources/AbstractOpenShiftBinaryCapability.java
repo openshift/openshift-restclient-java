@@ -10,7 +10,10 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -83,42 +86,88 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 		Runtime.getRuntime().addShutdownHook(new Thread(runnable));
 	}
 	
-	protected StringBuilder addUser(final StringBuilder builder) {
-		builder.append("--user=")
-				.append(client.getCurrentUser().getName())
-				.append(" ");
-		return builder;
+	protected String getUserFlag() {
+		final StringBuilder argBuilder = new StringBuilder();
+		argBuilder.append("--user=").append(client.getCurrentUser().getName()).append(" ");
+		return argBuilder.toString();
 	}
 
-	protected StringBuilder addServer(final StringBuilder builder) {
-		builder.append("--server=")
-				.append(client.getBaseURL())
-				.append(" ");
-		return builder;
+	/**
+	 * @return
+	 */
+	protected String getServerFlag() {
+		final StringBuilder argBuilder = new StringBuilder();
+		argBuilder.append("--server=").append(client.getBaseURL()).append(" ");
+		return argBuilder.toString();
 	}
 
-	protected StringBuilder addToken(final StringBuilder builder) {
-		builder.append("--token=");
+	/**
+	 * Adds the authentication token
+	 * @return the command-line argument to use the current token 
+	 */
+	protected String getTokenFlag() {
+		final StringBuilder argBuilder = new StringBuilder();
+		argBuilder.append("--token=");
 		client.getAuthorizationStrategy().accept(new IAuthorizationStrategyVisitor() {
 			
 			@Override
 			public void visit(TokenAuthorizationStrategy strategy) {
-				builder.append(strategy.getToken());
+				argBuilder.append(strategy.getToken());
 			}
 			
 			@Override
 			public void visit(BasicAuthorizationStrategy strategy) {
-				builder.append(strategy.getToken());
+				argBuilder.append(strategy.getToken());
 			}
 		});
-		builder.append(" ");
-		return builder;
+		argBuilder.append(" ");
+		return argBuilder.toString();
 	}
 	
-	protected StringBuilder addSkipTlsVerify(StringBuilder args) {
-		return args.append("--insecure-skip-tls-verify=true ");
+	/**
+	 * @return the command-line flag to use insecure connection (skip TLS verification)
+	 */
+	protected String getSkipTlsVerifyFlag() {
+		return "--insecure-skip-tls-verify=true ";
 	}
-
+	
+	/**
+	 * @return the command-line flag to exclude some files/directories that do
+	 *         not need to be synchronized between the remote pod and the local
+	 *         deployment directory.
+	 */
+	protected String getExclusionFlags() {
+		// no support for multiple exclusion, so excluding '.git' only for now
+//		return Stream.of(dir(".git"), ".gitignore", dir(".svn"), ".classpath", dir(".settings"), ".project")
+//				.map(exclusion -> "--exclude='" + exclusion + "'").collect(Collectors.joining(" ")) + " ";
+		return "--exclude='.git' ";
+	}
+	
+	/**
+	 * @return the command-line flag to avoid transferring permissions.
+	 */
+	protected String getNoPermsFlags() {
+		// no support for multiple exclusion, so excluding '.git' only for now
+//		return Stream.of(dir(".git"), ".gitignore", dir(".svn"), ".classpath", dir(".settings"), ".project")
+//				.map(exclusion -> "--exclude='" + exclusion + "'").collect(Collectors.joining(" ")) + " ";
+		return "--no-perms=true ";
+	}
+	
+	/**
+	 * Appends the {@link File#separator} to the given {@code name} if it was not already set.
+	 * @param name the directory name
+	 * @return the directory name with the trailing {@link File#separator}
+	 */
+	private static String dir(final String name) {
+		if(name.endsWith(File.separator)) {
+			return name;
+		}
+		return name + File.separator;
+	}
+	
+	/**
+	 * Starts the {@link Process} to run the {@code oc} command.
+	 */
 	public final void start() {
 		String location = getOpenShiftBinaryLocation();
 		if(!validate()) {
@@ -158,6 +207,9 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 		}
 	}
 
+	/**
+	 * Stops the {@link Process} running the {@code oc} command.
+	 */
 	public final synchronized void stop() {
 		if(process == null) return;
 		cleanup();

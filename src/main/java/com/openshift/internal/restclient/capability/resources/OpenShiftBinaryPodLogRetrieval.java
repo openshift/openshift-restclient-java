@@ -15,7 +15,6 @@ import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -95,7 +94,6 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 		
 		private String container;
 		private boolean follow;
-		private Consumer<String> cacheFlush;
 		private SequenceInputStream is;
 
 		PodLogs(IClient client, boolean follow, String container){
@@ -141,20 +139,17 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 
 		@Override
 		protected String buildArgs() {
-			StringBuilder args = new StringBuilder();
-			args.append("logs ");
-			addSkipTlsVerify(args);
-			addServer(args)
-			.append(" ").append(pod.getName()).append(" ")
-			.append("-n ").append(pod.getNamespace()).append(" ");
-			addToken(args);
+			final StringBuilder argsBuilder = new StringBuilder();
+			argsBuilder.append("logs ").append(getSkipTlsVerifyFlag()).append(getServerFlag()).append(" ")
+					.append(pod.getName()).append(" ").append("-n ").append(pod.getNamespace()).append(" ")
+					.append(getTokenFlag());
 			if(follow) {
-				args.append(" -f ");
+				argsBuilder.append(" -f ");
 			}
 			if(StringUtils.isNotBlank(container)) {
-				args.append( " -c ").append(container);
+				argsBuilder.append( " -c ").append(container);
 			}
-			return args.toString();
+			return argsBuilder.toString();
 		}
 	}
 	
