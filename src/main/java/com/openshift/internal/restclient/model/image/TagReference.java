@@ -35,6 +35,12 @@ public class TagReference extends ModelNodeAdapter implements ITagReference, Res
 		from.setName(fromName);
 	}
 	
+	public TagReference(String name, String fromKind, String fromName, String fromNamespace) {
+		this(name, fromKind, fromName);
+		ObjectReference from = (ObjectReference) getFrom();
+		from.setNamespace(fromNamespace);
+	}
+	
 	public TagReference(ModelNode node, Map<String, String[]> propertyKeys) {
 		super(node, propertyKeys);
 	}

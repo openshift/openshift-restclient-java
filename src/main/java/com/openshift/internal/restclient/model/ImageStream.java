@@ -86,6 +86,15 @@ public class ImageStream extends KubernetesResource implements IImageStream {
 	}
 
 	@Override
+	public ITagReference addTag(String name, String fromKind, String fromName, String fromNamespace) {
+		TagReference reference = new TagReference(name, fromKind, fromName, fromNamespace);
+		//add last since its copy of node.  future sets will do nothing
+		ModelNode tags = get(SPEC_TAGS);
+		tags.add(reference.getNode());
+		return reference;
+	}
+
+	@Override
 	public void setTag(String newTag, String fromTag) {
 		ModelNode tags = get(SPEC_TAGS);
 		ModelNode tag = new ModelNode();

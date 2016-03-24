@@ -176,11 +176,11 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	
 	@Override
 	public String getNamespace(){
-		return asString(NAMESPACE);
+		return asString(METADATA_NAMESPACE);
 	}
 	
 	public void setNamespace(String namespace){
-		set(NAMESPACE, namespace);
+		set(METADATA_NAMESPACE, namespace);
 	}
 
 	@Override

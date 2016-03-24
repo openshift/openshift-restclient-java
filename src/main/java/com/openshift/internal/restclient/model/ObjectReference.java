@@ -42,6 +42,10 @@ public class ObjectReference implements IObjectReference {
 	public void setName(String name) {
 		set(node, KEYS, NAME, name);
 	}
+	
+	public void setNamespace(String namespace) {
+		set(node, KEYS, NAMESPACE, namespace);
+	}
 
 	@Override
 	public String getApiVersion() {
