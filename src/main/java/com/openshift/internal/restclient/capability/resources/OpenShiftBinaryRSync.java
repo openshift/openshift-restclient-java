@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
