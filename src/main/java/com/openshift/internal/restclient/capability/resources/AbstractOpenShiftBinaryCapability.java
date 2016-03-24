@@ -10,10 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -138,8 +135,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	 */
 	protected String getExclusionFlags() {
 		// no support for multiple exclusion, so excluding '.git' only for now
-//		return Stream.of(dir(".git"), ".gitignore", dir(".svn"), ".classpath", dir(".settings"), ".project")
-//				.map(exclusion -> "--exclude='" + exclusion + "'").collect(Collectors.joining(" ")) + " ";
+		// see https://github.com/openshift/origin/issues/8223
 		return "--exclude='.git' ";
 	}
 	
@@ -147,22 +143,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	 * @return the command-line flag to avoid transferring permissions.
 	 */
 	protected String getNoPermsFlags() {
-		// no support for multiple exclusion, so excluding '.git' only for now
-//		return Stream.of(dir(".git"), ".gitignore", dir(".svn"), ".classpath", dir(".settings"), ".project")
-//				.map(exclusion -> "--exclude='" + exclusion + "'").collect(Collectors.joining(" ")) + " ";
 		return "--no-perms=true ";
-	}
-	
-	/**
-	 * Appends the {@link File#separator} to the given {@code name} if it was not already set.
-	 * @param name the directory name
-	 * @return the directory name with the trailing {@link File#separator}
-	 */
-	private static String dir(final String name) {
-		if(name.endsWith(File.separator)) {
-			return name;
-		}
-		return name + File.separator;
 	}
 	
 	/**
