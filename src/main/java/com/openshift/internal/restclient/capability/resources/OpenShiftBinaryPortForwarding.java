@@ -10,7 +10,12 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.model.IPod;
 
@@ -22,8 +27,8 @@ import com.openshift.restclient.model.IPod;
  */
 public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapability implements IPortForwardable {
 	
-	private IPod pod;
-	private PortPair[] pairs = new PortPair[] {};
+	private final IPod pod;
+	private final Collection<PortPair> pairs = new ArrayList<>();
 
 	public OpenShiftBinaryPortForwarding(IPod pod, IClient client) {
 		super(client);
@@ -32,12 +37,12 @@ public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapabi
 
 	@Override
 	protected void cleanup() {
-		this.pairs = new PortPair[] {};
+		this.pairs.clear();
 	}
 
 	@Override
 	protected boolean validate() {
-		return pairs.length != 0;
+		return !pairs.isEmpty();
 	}
 
 	@Override
@@ -56,21 +61,29 @@ public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapabi
 	}
 
 	@Override
-	public PortPair[] getPortPairs() {
+	public Collection<PortPair> getPortPairs() {
 		return pairs;
 	}
 
 	@Override
-	public synchronized void forwardPorts(PortPair... ports) {
-		this.pairs = ports;
-		start();
+	public synchronized void forwardPorts(final Collection<PortPair> ports, final OpenShiftBinaryOption... options) {
+		if (ports != null && !ports.isEmpty()) {
+			this.pairs.addAll(ports);
+		} else {
+			throw new OpenShiftException("Port-forwarding was invoked but not port was specified.");
+		}
+		start(options);
 	}
 
 	@Override
-	protected String buildArgs() {
+	protected String buildArgs(final List<OpenShiftBinaryOption> options) {
 		final StringBuilder argBuilder = new StringBuilder();
-		argBuilder.append("port-forward ").append(getSkipTlsVerifyFlag()).append(getServerFlag()).append(getTokenFlag())
-				.append("-n ").append(pod.getNamespace()).append(" ").append("-p ").append(pod.getName()).append(" ");
+		argBuilder.append("port-forward ");
+		if(options.contains(OpenShiftBinaryOption.SKIP_TLS_VERIFY)) {
+			argBuilder.append(getSkipTlsVerifyFlag());
+		}
+		argBuilder.append(getServerFlag()).append(getTokenFlag()).append("-n ").append(pod.getNamespace()).append(" ")
+				.append("-p ").append(pod.getName()).append(" ");
 		for (PortPair pair : pairs) {
 			argBuilder.append(pair.getLocalPort()).append(":").append(pair.getRemotePort()).append(" ");
 		}

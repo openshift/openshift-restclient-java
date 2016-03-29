@@ -26,6 +26,7 @@ import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
+import com.openshift.restclient.capability.IBinaryCapability.OpenShiftBinaryOption;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.model.IPod;
 
@@ -57,7 +58,7 @@ public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
 			@Override
 			public Object visit(IPodLogRetrieval cap) {
 				try {
-					BufferedInputStream os = new BufferedInputStream(cap.getLogs(true));
+					BufferedInputStream os = new BufferedInputStream(cap.getLogs(true, OpenShiftBinaryOption.SKIP_TLS_VERIFY));
 					int c;
 					while((c = os.read()) != -1) {
 						System.out.print((char)c);
