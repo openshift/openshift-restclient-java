@@ -94,7 +94,7 @@ public class AuthorizationClient implements IAuthorizationClient {
 		}catch(ResourceForbiddenException e) {
 			//the response if token is invalid because we tried to
 			//get the current user
-		}catch(UnauthorizedException e) {
+		}catch(UnauthorizedException | com.openshift.internal.restclient.http.UnauthorizedException e) {
 			openshiftClient.setAuthorizationStrategy(configuredAuthStrategy);
 			return getContextUsingCredentials(baseURL, credentialsProvider);
 		}finally{
