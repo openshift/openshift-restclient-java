@@ -12,7 +12,7 @@ package com.openshift.internal.restclient.capability.resources;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.SequenceInputStream;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -52,20 +52,20 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 	}
 
 	@Override
-	public InputStream sync(Peer source, Peer destination) throws OpenShiftException {
+	public InputStream sync(final Peer source, final Peer destination, final OpenShiftBinaryOption... options) throws OpenShiftException {
 		this.source = source;
 		this.destination = destination;
-		start();
+		start(options);
 		// monitor the process completion in a separate thread
 		this.executor.execute(() -> {
 			try {
 				this.getProcess().waitFor();
-			} catch (Exception e) {
+			} catch (InterruptedException e) {
+				throw new OpenShiftException("Error occurred while waiting for rsync operation to complete", e);
 			}
 			
 		});
-		final SequenceInputStream is = new SequenceInputStream(getProcess().getInputStream(), getProcess().getErrorStream());
-		return is;
+		return getProcess().getInputStream();
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 			if (getProcess().exitValue() != 0) {
 				String errorMessage = getErrorMessage(getProcess().getErrorStream());
 				throw new OpenShiftException("Syncing %s to %s failed"
-						+ (StringUtil.isBlank(errorMessage) ? "" : ":%s"),
+						+ (StringUtil.isBlank(errorMessage) ? "" : ": %s"),
 						source, destination, errorMessage);
 			}
 		} catch (InterruptedException e) {
@@ -140,10 +140,19 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 	}
 	
 	@Override
-	protected String buildArgs() {
+	protected String buildArgs(final List<OpenShiftBinaryOption> options) {
 		final StringBuilder argsBuilder = new StringBuilder("rsync ");
-		argsBuilder.append(getUserFlag()).append(getTokenFlag()).append(getServerFlag()).append(getSkipTlsVerifyFlag())
-				.append(getExclusionFlags()).append(getNoPermsFlags()).append(source.getParameter()).append(" ")
+		argsBuilder.append(getUserFlag()).append(getTokenFlag()).append(getServerFlag());
+		if(options.contains(OpenShiftBinaryOption.SKIP_TLS_VERIFY)) {
+			argsBuilder.append(getSkipTlsVerifyFlag());
+		}
+		if(options.contains(OpenShiftBinaryOption.EXCLUDE_GIT_FOLDER)) {
+			argsBuilder.append(getGitFolderExclusionFlag());
+		}
+		if(options.contains(OpenShiftBinaryOption.NO_PERMS)) {
+			argsBuilder.append(getNoPermsFlags());
+		}
+		argsBuilder.append(source.getParameter()).append(" ")
 				.append(destination.getParameter());
 		return argsBuilder.toString();
 	}
