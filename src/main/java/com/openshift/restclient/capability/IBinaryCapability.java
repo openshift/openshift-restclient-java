@@ -13,6 +13,18 @@ package com.openshift.restclient.capability;
  */
 public interface IBinaryCapability extends ICapability {
 	
+	/**
+	 * Optional arguments to pass when running the {@code oc} command.
+	 */
+	public enum OpenShiftBinaryOption {
+		/** option to skip verifying the certificates during TLS connection establishment. */
+		SKIP_TLS_VERIFY,
+		/** option to exclude the {@code .git} folder in the list of files/folders to synchronize. */
+		EXCLUDE_GIT_FOLDER,
+		/** option to not transfer file permissions. */
+		NO_PERMS;
+	}
+	
 	static final String OPENSHIFT_BINARY_LOCATION = "openshift.restclient.oc.location";
 
 }

@@ -11,6 +11,8 @@
 package com.openshift.internal.restclient.capability.resources;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -56,10 +58,10 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	protected abstract boolean validate();
 	
 	/**
-	 * Callback for building args to be sent to the oc command
-	 * @return
+	 * Callback for building args to be sent to the {@code oc} command.
+	 * @return the String representation of all the arguments to use when running the {@code oc} command. 
 	 */
-	protected abstract String buildArgs();
+	protected abstract String buildArgs(final List<OpenShiftBinaryOption> options);
 
 	protected IClient getClient() {
 		return client;
@@ -133,7 +135,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	 *         not need to be synchronized between the remote pod and the local
 	 *         deployment directory.
 	 */
-	protected String getExclusionFlags() {
+	protected String getGitFolderExclusionFlag() {
 		// no support for multiple exclusion, so excluding '.git' only for now
 		// see https://github.com/openshift/origin/issues/8223
 		return "--exclude='.git' ";
@@ -148,17 +150,18 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	
 	/**
 	 * Starts the {@link Process} to run the {@code oc} command.
+	 * @param options the command line options
 	 */
-	public final void start() {
+	public final void start(final OpenShiftBinaryOption... options) {
 		String location = getOpenShiftBinaryLocation();
 		if(!validate()) {
 			return;
 		}
-		startProcess(location);
+		startProcess(location, options);
 	}
 	
-	private void startProcess(String location) {
-		String cmdLine = new StringBuilder(location).append(' ').append(buildArgs()).toString();
+	private void startProcess(final String location, final OpenShiftBinaryOption... options) {
+		String cmdLine = new StringBuilder(location).append(' ').append(buildArgs(Arrays.asList(options))).toString();
 		String[] args = StringUtils.split(cmdLine, " ");
 		ProcessBuilder builder = new ProcessBuilder(args);
 		LOG.debug("OpenShift binary args: {}", builder.command());

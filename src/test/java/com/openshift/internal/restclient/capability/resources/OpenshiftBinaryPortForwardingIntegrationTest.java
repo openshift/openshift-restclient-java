@@ -13,6 +13,7 @@ package com.openshift.internal.restclient.capability.resources;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 import org.jboss.dmr.ModelNode;
@@ -27,6 +28,7 @@ import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
+import com.openshift.restclient.capability.IBinaryCapability.OpenShiftBinaryOption;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.capability.resources.IPortForwardable.PortPair;
 
@@ -58,7 +60,7 @@ public class OpenshiftBinaryPortForwardingIntegrationTest {
 
 			@Override
 			public Object visit(IPortForwardable capability) {
-				capability.forwardPorts(new PortPair(8181, port));
+				capability.forwardPorts(Arrays.asList(new PortPair(8181, port)), OpenShiftBinaryOption.SKIP_TLS_VERIFY);
 				try {
 					Thread.sleep(5 * 1000);
 					curl();

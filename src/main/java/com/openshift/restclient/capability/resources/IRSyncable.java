@@ -26,9 +26,10 @@ public interface IRSyncable extends IBinaryCapability {
 	 * Synchronize the give {@code destination} with the given {@code source}
 	 * @param source the source of the rsync
 	 * @param destination the destination of the rsync
+	 * @param options the options to pass to the underlying {@code oc rsync} command
 	 * @return the underlying {@link Process} streams to be displayed in a console.
 	 */
-	InputStream sync(Peer source, Peer destination);
+	InputStream sync(Peer source, Peer destination, OpenShiftBinaryOption... options);
 		
 	/**
 	 * Stop rsync'ing, forcibly if necessary.

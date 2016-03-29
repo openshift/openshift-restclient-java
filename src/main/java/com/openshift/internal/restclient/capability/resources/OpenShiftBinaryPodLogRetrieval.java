@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.capability.IBinaryCapability.OpenShiftBinaryOption;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.model.IPod;
 
@@ -48,26 +50,26 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 	}
 	
 	@Override
-	public InputStream getLogs(boolean follow) {
-		return getLogs(follow, null);
+	public InputStream getLogs(final boolean follow, final OpenShiftBinaryOption... options) {
+		return getLogs(follow, null, options);
 	}
 
 	@Override
-	public InputStream getLogs(boolean follow, String container) {
-		container = StringUtils.defaultIfBlank(container, "");
+	public InputStream getLogs(final boolean follow, final String container, final OpenShiftBinaryOption... options) {
+		final String normalizedContainer = StringUtils.defaultIfBlank(container, "");
 		synchronized (cache) {
-			if(cache.containsKey(container)) {
-				return cache.get(container).getLogs();
+			if(cache.containsKey(normalizedContainer)) {
+				return cache.get(normalizedContainer).getLogs();
 			}
 			PodLogs logs = null;
 			try {
-				logs = new PodLogs(client, follow, container);
+				logs = new PodLogs(client, follow, normalizedContainer);
 				return logs.getLogs();
 			}catch(Exception e) {
 				throw e;
 			}finally {
 				if(logs != null) {
-					cache.put(container, logs);
+					cache.put(normalizedContainer, logs);
 				}
 			}
 		}
@@ -138,9 +140,13 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 		}
 
 		@Override
-		protected String buildArgs() {
+		protected String buildArgs(final List<OpenShiftBinaryOption> options) {
 			final StringBuilder argsBuilder = new StringBuilder();
-			argsBuilder.append("logs ").append(getSkipTlsVerifyFlag()).append(getServerFlag()).append(" ")
+			argsBuilder.append("logs ");
+			if(options.contains(OpenShiftBinaryOption.SKIP_TLS_VERIFY)) {
+				argsBuilder.append(getSkipTlsVerifyFlag());
+			}
+			argsBuilder.append(getServerFlag()).append(" ")
 					.append(pod.getName()).append(" ").append("-n ").append(pod.getNamespace()).append(" ")
 					.append(getTokenFlag());
 			if(follow) {
