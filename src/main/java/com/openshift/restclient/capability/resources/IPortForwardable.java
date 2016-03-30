@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.restclient.capability.resources;
 
+import java.util.Collection;
+
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.model.IPort;
@@ -23,16 +25,18 @@ public interface IPortForwardable extends IBinaryCapability {
 
 	/**
 	 * Forward the ports to a pod.  This is a non-blocking call
-	 * @param pairs
+	 * @param pairs the pairs of local/remote ports to link together
+	 * @param options
+	 *            the options to pass to the underlying {@code oc} command
 	 * @throws OpenShiftException if unable to forward ports
 	 */
-	void forwardPorts(PortPair...pairs);
+	void forwardPorts(Collection<PortPair> pairs, OpenShiftBinaryOption...options);
 	
 	/**
 	 * The port pairs.
 	 * @return The pairs when forwarding or an empty array; 
 	 */
-	PortPair[] getPortPairs();
+	Collection<PortPair> getPortPairs();
 	
 	/**
 	 * Stop forwarding ports, forcibly if necessary
