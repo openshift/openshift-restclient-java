@@ -63,7 +63,7 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 			}
 			PodLogs logs = null;
 			try {
-				logs = new PodLogs(client, follow, normalizedContainer);
+				logs = new PodLogs(client, follow, normalizedContainer, options);
 				return logs.getLogs();
 			}catch(Exception e) {
 				throw e;
@@ -97,16 +97,18 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 		private String container;
 		private boolean follow;
 		private SequenceInputStream is;
+		private OpenShiftBinaryOption[] options;
 
-		PodLogs(IClient client, boolean follow, String container){
+		PodLogs(IClient client, boolean follow, String container, OpenShiftBinaryOption... options){
 			super(client);
 			this.follow = follow;
 			this.container = container;
+			this.options = options;
 		}
 
 		public synchronized InputStream getLogs() {
 			if(is == null) {
-				start();
+				start(options);
 				is = new SequenceInputStream(getProcess().getInputStream(), getProcess().getErrorStream());
 			}
 			return is;
