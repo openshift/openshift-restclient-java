@@ -16,8 +16,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.UpgradeException;
@@ -47,16 +53,81 @@ import com.openshift.restclient.model.IResource;
   */
 public class WatchClient implements IHttpConstants, IWatcher{
 	private static final Logger LOGGER = LoggerFactory.getLogger(WatchClient.class);
+	private static final long DEFAULT_LOCK_TIMEOUT = 30 * 1000;
+
 	private URL baseUrl;
 	private Map<String, String> typeMappings;
 	private IResourceFactory factory;
 	private IClient client;
 	private static WebSocketClient wsClient;
+	private static AtomicReference<Status> status = new AtomicReference<>(Status.Stopped);
+	private static Lock lock = new ReentrantLock();
+	private static Condition isStarted = lock.newCondition();
+	private static long lockTimeout; 
 	
-	static {
-		wsClient = newWebSocketClient();
+	private enum Status {
+		Started,
+		Starting,
+		Stopped,
+		Stopping
 	}
 	
+	static {
+		lockTimeout = getLockTimeout();
+		// TODO: move this to lazy creation
+		wsClient = createWebSocketClient();
+	}
+
+	private static WebSocketClient createWebSocketClient() {
+		WebSocketClient wsClient = newWebSocketClient();
+		wsClient.addLifeCycleListener(new LifeCycle.Listener() {
+
+			@Override
+			public void lifeCycleStopping(LifeCycle event) {
+				status.set(Status.Stopping);
+			}
+
+			@Override
+			public void lifeCycleStopped(LifeCycle event) {
+				status.set(Status.Stopped);
+			}
+
+			@Override
+			public void lifeCycleStarting(LifeCycle event) {
+				status.set(Status.Starting);
+			}
+
+			@Override
+			public void lifeCycleStarted(LifeCycle event) {
+				status.set(Status.Started);
+				try {
+					if (lock.tryLock(lockTimeout, TimeUnit.MILLISECONDS)) {
+						isStarted.signalAll();
+					}
+				} catch (InterruptedException e) {
+					LOGGER.debug("Exception while trying to get lock", e);
+				} finally {
+					lock.unlock();
+				}
+			}
+
+			@Override
+			public void lifeCycleFailure(LifeCycle event, Throwable cause) {
+				LOGGER.error("The watchclient failed:", cause);
+				status.set(Status.Stopped);
+			}
+		});
+		return wsClient;
+	}
+
+	private static long getLockTimeout() {
+		try {
+			return Long.parseLong(System.getProperty("com.openshift.restclient.watchlocktimeoutms", String.valueOf(DEFAULT_LOCK_TIMEOUT)));
+		} catch (NumberFormatException e) {
+			return DEFAULT_LOCK_TIMEOUT;
+		}
+	}
+
 	public WatchClient(URL baseUrl, Map<String, String> typeMappings, IClient client) {
 		this.baseUrl = baseUrl;
 		this.typeMappings = typeMappings;
@@ -136,30 +207,33 @@ public class WatchClient implements IHttpConstants, IWatcher{
 	}
 	
 	private void connect(WatchEndpoint socket, String endpoint, ClientUpgradeRequest request) throws Exception {
-		synchronized (wsClient) {
-			start();
-			wsClient.connect(socket, new URI(endpoint), request).get();
+		start();
+		if(status.get() == Status.Starting) {
+			isStarted.await(lockTimeout, TimeUnit.MILLISECONDS);
 		}
+		wsClient.connect(socket, new URI(endpoint), request);
 	}
 	
 	public void start() {
-		synchronized (wsClient) {
-			if(wsClient.isStarted() || wsClient.isStarting()) return;
-			try {
-				wsClient.start();
-			} catch (Exception e) {
-				throw createOpenShiftException(String.format("Could not start watchClient"),e);
-			}
+		if(status.get() == Status.Started 
+				|| status.get() == Status.Starting) {
+			return;
+		}
+		try {
+			wsClient.start();
+		} catch (Exception e) {
+			throw createOpenShiftException(String.format("Could not start watchClient"),e);
 		}
 	}
 	
 	@Override
 	public void stop(){
+		if(status.get() == Status.Stopping
+				|| status.get() == Status.Stopped) {
+			return;
+		}
 		try {
-			synchronized (wsClient) {
-				if(wsClient.isStopping() || wsClient.isStopped()) return;
-				wsClient.stop();
-			}
+			wsClient.stop();
 		} catch (Exception e) {
 			LOGGER.debug("Unable to stop the watch client",e);
 		}
@@ -206,6 +280,5 @@ public class WatchClient implements IHttpConstants, IWatcher{
 		default:
 			return new OpenShiftException(e, message);
 		}
-	}
-	
+	}	
 }
