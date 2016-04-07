@@ -11,9 +11,9 @@ package com.openshift.internal.restclient.model.v1;
 import static com.openshift.internal.util.JBossDmrExtentions.getPath;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -119,6 +119,14 @@ public class ReplicationControllerTest {
 	}
 
 	@Test
+	public void testEnvironmentVariableFromMissingEnv() {
+		String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
+		ModelNode containers = node.get(path);
+		containers.get(0).remove("env");
+		testEnvironmentVariable();
+	}
+
+	@Test
 	public void testEnvironmentVariableForANamedContainer() {
 		rc.setEnvironmentVariable("ruby-helloworld-database", "fooz", "balls");
 		Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables("ruby-helloworld-database");
@@ -129,27 +137,31 @@ public class ReplicationControllerTest {
 	
 	@Test
 	public void setReplicaSelector() {
-		Map<String, String> exp = new HashMap<String, String>();
+		Map<String, String> exp = new HashMap<>();
 		exp.put("foo", "bar");
-		node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
-		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
 		rc.setReplicaSelector(exp);
 		assertEquals(exp, rc.getReplicaSelector());
 	}
 
 	@Test
+	public void setReplicaSelectorFromMissingSelector() {
+		String[] path = new String[]{"status"};
+		node.get(path).clear();
+		setReplicaSelector();
+	}
+
+
+	@Test
 	public void setReplicaSelectorWithKeyValue() {
-		Map<String, String> exp = new HashMap<String, String>();
+		Map<String, String> exp = new HashMap<>();
 		exp.put("foo", "bar");
-		node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
-		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
 		rc.setReplicaSelector("foo","bar");
 		assertEquals(exp, rc.getReplicaSelector());
 	}
 	
 	@Test
 	public void getReplicaSelector() {
-		Map<String, String> labels = new HashMap<String, String>();
+		Map<String, String> labels = new HashMap<>();
 		labels.put("name", "database");
 		labels.put("deployment", "database-1");
 		labels.put("deploymentconfig", "database");
@@ -202,7 +214,6 @@ public class ReplicationControllerTest {
 		//remove containers hack
 		String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
 		node.get(path).clear();
-		
 		//setup
 		DockerImageURI uri = new DockerImageURI("aproject/an_image_name");
 		IPort port = mock(IPort.class);

@@ -73,7 +73,10 @@ public class ReplicationController extends KubernetesResource implements IReplic
 				ModelNode node =  opt.isPresent() ? opt.get() : containers.get(0);
 				ModelNode envNode = get(node, ENV);
 
-				List<ModelNode> varList = new ArrayList<>(envNode.asList());
+				List<ModelNode> varList = new ArrayList<>();
+				if (ModelType.LIST.equals(envNode.getType())){
+					varList.addAll(envNode.asList());
+				}
 
 				//Check if variable already exists
 				Optional<ModelNode> targetVar = varList.stream().filter(n->name.equals(asString(n, NAME))).findFirst();
