@@ -58,9 +58,7 @@ public class JBossDmrExtentions {
 				}else {
 					sanitize(child);
 				}
-				if(child.getType() == ModelType.OBJECT && child.keys().size() == 0) {
-					emptyKeys.add(key);
-				}else if(child.getType() == ModelType.LIST) {
+				if(child.getType() == ModelType.LIST) {
 					List<ModelNode> entries = child.asList();
 					if(entries.isEmpty()) {
 						emptyKeys.add(key);

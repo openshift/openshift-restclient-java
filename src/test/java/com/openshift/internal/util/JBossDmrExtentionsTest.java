@@ -51,7 +51,7 @@ public class JBossDmrExtentionsTest {
 		node.get("xyz").add(complex);
 		node.get("def").add(new ModelNode());
 		node.get("abc").set("xyx");
-		assertEquals("{\"xyz\" : [1,3,{\"sub1a\" : \"avalue\"}], \"abc\" : \"xyx\"}", toJsonString(node, true));
+		assertEquals("{\"foo\" : {}, \"xyz\" : [1,3,{\"sub1\" : {}, \"sub1a\" : \"avalue\"}], \"abc\" : \"xyx\"}", toJsonString(node, true));
 	}
 	
 	@Test
