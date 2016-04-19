@@ -222,6 +222,7 @@ public class ResourceFactory implements IResourceFactory{
 		String version = client.getOpenShiftAPIVersion();
 		KubernetesResource resource = (KubernetesResource) create(version, kind, true);
 		resource.setName(name);
+		resource.setNamespace(namespace);
 		if(StringUtils.isNotEmpty(namespace)) {
 			resource.setNamespace(namespace);
 		}
