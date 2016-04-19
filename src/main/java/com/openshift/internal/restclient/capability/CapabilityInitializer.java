@@ -28,6 +28,7 @@ import com.openshift.internal.restclient.capability.resources.TemplateTraceabili
 import com.openshift.internal.restclient.capability.resources.UpdateableCapability;
 import com.openshift.internal.restclient.capability.server.ServerTemplateProcessing;
 import com.openshift.internal.restclient.model.Service;
+import com.openshift.internal.restclient.model.build.BuildConfigBuilder;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.resources.IBuildCancelable;
@@ -53,6 +54,7 @@ import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.build.IBuildConfigBuilder;
 
 /**
  * Convenience class to initialize capabilies.  Only adds entry
@@ -134,5 +136,6 @@ public class CapabilityInitializer {
 	
 	public static void initializeClientCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IClient client){
 		initializeCapability(capabilities, ITemplateProcessing.class, new ServerTemplateProcessing(client));
+		initializeCapability(capabilities, IBuildConfigBuilder.class, new BuildConfigBuilder(client));
 	}
 }

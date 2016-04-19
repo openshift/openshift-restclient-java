@@ -35,15 +35,27 @@ public class GitBuildSource implements IGitBuildSource {
 	public String getURI() {
 		return uri;
 	}
+	
+	public void setURI(String uri) {
+		this.uri = uri;
+	}
 
 	@Override
 	public String getRef() {
 		return ref;
 	}
+	
+	public void setRef(String ref) {
+		this.ref = ref;
+	}
 
 	@Override
 	public String getContextDir() {
 		return contextDir;
+	}
+	
+	public void setContextDir(String contextDir) {
+		this.contextDir = contextDir;
 	}
 
 }

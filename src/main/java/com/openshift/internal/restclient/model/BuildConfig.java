@@ -50,6 +50,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	private static final String BUILDCONFIG_SOURCE_TYPE = "spec.source.type";
 	private static final String BUILDCONFIG_SOURCE_URI = "spec.source.git.uri";
 	private static final String BUILDCONFIG_SOURCE_REF = "spec.source.git.ref";
+	
 	public static final String BUILDCONFIG_TYPE = "spec.strategy.type";
 	private static final String BUILDCONFIG_CUSTOM_IMAGE = "spec.strategy.customStrategy.image";
 	private static final String BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET = "spec.strategy.customStrategy.exposeDockerSocket";
@@ -75,8 +76,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		super(node, client, null);
 		CapabilityInitializer.initializeCapabilities(getModifiableCapabilities(), this, client);
 	}
-	
-	
+
 	@Override
 	public IObjectReference getBuildOutputReference() {
 		ModelNode node = get("spec.output.to");
@@ -91,7 +91,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		List<ModelNode> list = get(BUILDCONFIG_TRIGGERS).asList();
 		final String url = getClient() != null ? getClient().getResourceURI(this) : "";
 		for (ModelNode node : list) {
-			String type = node.get("type").asString();
+			String type = node.get(TYPE).asString();
 			switch(type){
 				case BuildTriggerType.generic:
 				case BuildTriggerType.GENERIC:
@@ -110,6 +110,8 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 							asString(node, BUILD_CONFIG_IMAGECHANGE_TAG))
 					);
 					break;
+				case BuildTriggerType.CONFIG_CHANGE:
+					triggers.add(new ImageChangeTrigger(BuildTriggerType.CONFIG_CHANGE, null, null));
 				default:
 			}
 		}
@@ -138,22 +140,22 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GITHUB_SECRET)).set(github.getSecret());
 			break;
 		case BuildTriggerType.imageChange:
-		case BuildTriggerType.IMAGE_CHANGE:
+		case BuildTriggerType.IMAGE_CHANGE:{
 			if(!(trigger instanceof IImageChangeTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type imageChange does not implement IImageChangeTrigger");
 			}
 			IImageChangeTrigger image = (IImageChangeTrigger)trigger;
-			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_IMAGE)).set(defaultIfNull(image.getImage()));
-			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_NAME)).set(defaultIfNull(image.getFrom()));
-			triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_TAG)).set(StringUtils.defaultIfBlank(image.getTag(), ""));
+			if(image.getImage() != null)
+				triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_IMAGE)).set(image.getImage().toString());
+			if(image.getFrom() != null)
+				triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_NAME)).set(image.getFrom().toString());
+			if(StringUtils.isNotEmpty(image.getTag()))
+				triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_TAG)).set(StringUtils.defaultIfBlank(image.getTag(), ""));
 			break;
+			
+			}
 		}
-		triggerNode.get("type").set(trigger.getType());
-	}
-	
-	private String defaultIfNull(DockerImageURI uri) {
-		if(uri == null) return "";
-		return uri.toString();
+		triggerNode.get(TYPE).set(trigger.getType());
 	}
 
 	@Override

@@ -24,7 +24,7 @@ public class ImageChangeTrigger implements IImageChangeTrigger {
 	private final String type;
 
 	public ImageChangeTrigger(String image, String from, String tag) {
-		this(BuildTriggerType.imageChange, image, from, tag);
+		this(BuildTriggerType.IMAGE_CHANGE, image, from, tag);
 	}
 	
 	public ImageChangeTrigger(String type, String image, String from, String tag) {
