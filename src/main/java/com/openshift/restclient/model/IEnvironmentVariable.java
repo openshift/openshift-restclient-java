@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
+import com.openshift.internal.restclient.model.JSONSerializeable;
+
 /**
  * Environment variable representation to
  * allow more complex values then
@@ -20,7 +22,7 @@ package com.openshift.restclient.model;
  * @author jeff.cantrill
  *
  */
-public interface IEnvironmentVariable {
+public interface IEnvironmentVariable extends JSONSerializeable{
 	
 	/**
 	 * The name of the env var
@@ -49,4 +51,8 @@ public interface IEnvironmentVariable {
 	static interface IEnvVarSource{
 		
 	}
+
+	@Override
+	String toJson();
+	
 }

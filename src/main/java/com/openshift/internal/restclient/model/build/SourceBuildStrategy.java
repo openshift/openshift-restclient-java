@@ -90,7 +90,7 @@ public class SourceBuildStrategy extends ModelNodeAdapter implements ISourceBuil
 		String [] path = JBossDmrExtentions.getPath(getPropertyKeys(), ENV);
 		ModelNode envNode = getNode().get(path);
 		envNode.clear();
-		envVars.forEach(v->envNode.add(ModelNode.fromJSONString(v.toString())));
+		envVars.forEach(v->envNode.add(ModelNode.fromJSONString(v.toJson())));
 	}
 
 	@Override
