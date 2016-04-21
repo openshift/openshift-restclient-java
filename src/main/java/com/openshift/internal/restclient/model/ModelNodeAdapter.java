@@ -22,7 +22,7 @@ import com.openshift.internal.util.JBossDmrExtentions;
  * @author Jeff Cantrill
  *
  */
-public class ModelNodeAdapter {
+public class ModelNodeAdapter implements JSONSerializeable {
 	
 	private ModelNode node;
 	private Map<String, String []> propertyKeys;
@@ -37,6 +37,7 @@ public class ModelNodeAdapter {
 		return node;
 	}
 	
+	@Override
 	public String toJson() {
 		return toJson(false);
 	}
