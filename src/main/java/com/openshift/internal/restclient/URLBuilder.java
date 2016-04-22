@@ -137,7 +137,7 @@ public class URLBuilder {
 			url.append("/namespaces/")
 				.append(namespace);
 		}
-		url.append("/").append(ResourceKind.pluralize(kind));
+		url.append("/").append(ResourceKind.pluralize(kind, true, true));
 		if (name != null) {
 			url.append("/").append(name);
 		}

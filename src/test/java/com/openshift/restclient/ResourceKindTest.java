@@ -33,17 +33,29 @@ public class ResourceKindTest {
 
 	@Test
 	public void testPluralizeWhenEndsWithAnS() {
-		assertEquals("status",ResourceKind.pluralize(ResourceKind.STATUS));
+		assertEquals("Status",ResourceKind.pluralize(ResourceKind.STATUS));
 	}
 
 	@Test
 	public void testPluralizeWhenEndsWithY() {
-		assertEquals("families",ResourceKind.pluralize("Family"));
+		assertEquals("Families",ResourceKind.pluralize("Family"));
 	}
 
 	@Test
 	public void testPluralizeWhenEndsWithAnythingElse() {
-		assertEquals("services",ResourceKind.pluralize(ResourceKind.SERVICE));
+		assertEquals("Services",ResourceKind.pluralize(ResourceKind.SERVICE));
+	}
+	@Test
+	public void testPluralizeCamelCaseKind() {
+		assertEquals("ReplicationControllers",ResourceKind.pluralize(ResourceKind.REPLICATION_CONTROLLER));
+	}
+	@Test
+	public void testPluralizeCamelCaseKindForceLower() {
+		assertEquals("replicationcontrollers",ResourceKind.pluralize(ResourceKind.REPLICATION_CONTROLLER, true, true));
+	}
+	@Test
+	public void testPluralizeCamelCaseKindUncapitalize() {
+		assertEquals("replicationControllers",ResourceKind.pluralize(ResourceKind.REPLICATION_CONTROLLER, false, true));
 	}
 
 }
