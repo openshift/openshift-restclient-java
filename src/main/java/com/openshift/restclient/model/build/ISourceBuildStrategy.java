@@ -29,6 +29,12 @@ public interface ISourceBuildStrategy extends IBuildStrategy{
 	DockerImageURI getImage();
 	void setImage(DockerImageURI image);
 	
+	String getFromKind();
+	void setFromKind(String kind);
+
+	String getFromNamespace();
+	void setFromNamespace(String namespace);
+	
 	String getScriptsLocation();
 	void setScriptsLocation(String location);
 	
@@ -36,6 +42,12 @@ public interface ISourceBuildStrategy extends IBuildStrategy{
 	void setEnvironmentVariables(Map<String, String> envVars);
 	
 	Collection<IEnvironmentVariable> getEnvVars();
+	
+	/**
+	 * Setting using a null collection will early return without
+	 * modification to the strategy
+	 * @param envVars
+	 */
 	void setEnvVars(Collection<IEnvironmentVariable> envVars);
 
 	boolean incremental();

@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -29,6 +28,7 @@ import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IEnvironmentVariable;
+import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.ISourceBuildStrategy;
 
 /**
@@ -39,17 +39,40 @@ import com.openshift.restclient.model.build.ISourceBuildStrategy;
 public class SourceBuildStrategy extends ModelNodeAdapter implements ISourceBuildStrategy, ResourcePropertyKeys{
 
 	public static final String FROM_IMAGE =  "sourceStrategy.from.name";
+	public static final String FROM_KIND =  "sourceStrategy.from.kind";
+	public static final String FROM_NAMESPACE =  "sourceStrategy.from.namespace";
 	public static final String SCRIPTS = "sourceStrategy.scripts";
 	public static final String INCREMENTAL = "sourceStrategy.incremental";
 	public static final String ENV = "sourceStrategy.env";
 
 	public SourceBuildStrategy(ModelNode node, Map<String, String []> propertyKeys) {
 		super(node, propertyKeys);
+		set(node, propertyKeys, TYPE, BuildStrategyType.SOURCE);
 	}
 
 	@Override
 	public String getType() {
-		return asString(getNode(), getPropertyKeys(), "type");
+		return asString(getNode(), getPropertyKeys(), TYPE);
+	}
+	
+	@Override
+	public String getFromNamespace() {
+		return asString(getNode(), getPropertyKeys(), FROM_NAMESPACE);
+	}
+
+	@Override
+	public void setFromNamespace(String namespace) {
+		set(getNode(), getPropertyKeys(), FROM_NAMESPACE, namespace);
+	}
+
+	@Override
+	public String getFromKind() {
+		return asString(getNode(),getPropertyKeys(), FROM_KIND);
+	}
+
+	@Override
+	public void setFromKind(String kind) {
+		set(getNode(),getPropertyKeys(), FROM_KIND, kind);
 	}
 
 	@Override
@@ -87,6 +110,7 @@ public class SourceBuildStrategy extends ModelNodeAdapter implements ISourceBuil
 
 	@Override
 	public void setEnvVars(Collection<IEnvironmentVariable> envVars) {
+		if(envVars == null) return;
 		String [] path = JBossDmrExtentions.getPath(getPropertyKeys(), ENV);
 		ModelNode envNode = getNode().get(path);
 		envNode.clear();
