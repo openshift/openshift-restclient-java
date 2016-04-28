@@ -149,6 +149,13 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	}
 	
 	/**
+	 * @return the command-line flag to delete extraneous file from destination directories.
+	 */
+	protected String getDeleteFlags() {
+		return "--delete ";
+	}
+
+	/**
 	 * Starts the {@link Process} to run the {@code oc} command.
 	 * @param options the command line options
 	 */

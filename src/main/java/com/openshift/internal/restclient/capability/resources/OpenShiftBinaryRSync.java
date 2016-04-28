@@ -152,6 +152,9 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 		if(options.contains(OpenShiftBinaryOption.NO_PERMS)) {
 			argsBuilder.append(getNoPermsFlags());
 		}
+		if(options.contains(OpenShiftBinaryOption.DELETE)) {
+			argsBuilder.append(getDeleteFlags());
+		}
 		argsBuilder.append(source.getParameter()).append(" ")
 				.append(destination.getParameter());
 		return argsBuilder.toString();

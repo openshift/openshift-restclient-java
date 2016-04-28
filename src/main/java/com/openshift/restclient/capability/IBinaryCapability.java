@@ -22,7 +22,9 @@ public interface IBinaryCapability extends ICapability {
 		/** option to exclude the {@code .git} folder in the list of files/folders to synchronize. */
 		EXCLUDE_GIT_FOLDER,
 		/** option to not transfer file permissions. */
-		NO_PERMS;
+		NO_PERMS,
+		/** option to delete delete extraneous files from destination directories**/
+		DELETE
 	}
 	
 	static final String OPENSHIFT_BINARY_LOCATION = "openshift.restclient.oc.location";
