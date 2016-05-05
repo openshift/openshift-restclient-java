@@ -31,6 +31,12 @@ public class ClientBuilder {
 	private String certificateAlias;
 	private IResourceFactory resourceFactory;
 	private IAuthorizationStrategy authStrategy;
+	private String withUserName;
+	private Object token;
+
+	public ClientBuilder() {
+		this(null);
+	}
 
 	public ClientBuilder(String baseUrl) {
 		this.baseUrl = baseUrl;
@@ -52,11 +58,44 @@ public class ClientBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public ClientBuilder resourceFactory(IAuthorizationStrategy authStrategy) {
 		this.authStrategy = authStrategy;
 		return this;
 	}
+
+	public ClientBuilder authorizationStrategy(IAuthorizationStrategy authStrategy) {
+		this.authStrategy = authStrategy;
+		return this;
+	}
 	
+	public ClientBuilder toCluster(String baseUrl) {
+		this.baseUrl = baseUrl;
+		return this;
+	}
+
+	public ClientBuilder withUserName(String userName) {
+		this.withUserName = userName;
+		return this;
+	}
+	
+	public ClientBuilder usingToken(String userName) {
+		this.token = token;
+		return this;
+	}
+	
+	/**
+	 * Build a client using the config loading rules defined http://janetkuo.github.io/kubernetes/v1.0/docs/user-guide/kubeconfig-file.html.  Brief summary
+	 * of loading order:
+	 * 
+	 * 1. use explicit values set in builder
+	 *   a. username/token
+	 *   b. authStrategy
+	 * 2. currentContext of config file located at $KUBECONFIG
+	 * 3. currentContext of config file located at ~/.kube/config 
+	 * 
+	 * @return
+	 */
 	public IClient build() {
 		try {
 			ISSLCertificateCallback sslCallback = defaultIfNull(this.sslCertificateCallback, new NoopSSLCertificateCallback());
