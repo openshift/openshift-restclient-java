@@ -256,7 +256,7 @@ public class ReplicationControllerTest {
 		node.get(path).clear();
 		
 		//setup
-		DockerImageURI uri = new DockerImageURI("aproject/an_image_name");
+		DockerImageURI uri = new DockerImageURI("arepo/aproject/an_image_name");
 		IPort port = mock(IPort.class);
 		when(port.getProtocol()).thenReturn("TCP");
 		when(port.getContainerPort()).thenReturn(8080);
