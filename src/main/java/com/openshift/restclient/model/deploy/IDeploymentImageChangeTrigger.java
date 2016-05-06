@@ -33,6 +33,18 @@ public interface IDeploymentImageChangeTrigger extends IDeploymentTrigger {
 	 */
 	void setFrom(DockerImageURI fromImage);
 	
+	/**
+	 * The namespace of the ImageStreamTag
+	 * @param namespace
+	 */
+	void setNamespace(String namespace);
+
+	/**
+	 * @return The namespace of the ImageStreamTag
+	 * 
+	 */
+	String getNamespace();
+
 	void setKind(String kind);
 	
 	String getKind();

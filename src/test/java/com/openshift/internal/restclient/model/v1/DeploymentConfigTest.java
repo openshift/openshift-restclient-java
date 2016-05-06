@@ -66,6 +66,8 @@ public class DeploymentConfigTest {
 		assertTrue("Expected to find a config change trigger", IDeploymentConfigChangeTrigger.class.isAssignableFrom(trigger.get(0).getClass()));
 		assertTrue("Expected to find a config change trigger", IDeploymentImageChangeTrigger.class.isAssignableFrom(trigger.get(1).getClass()));
 		
+		IDeploymentImageChangeTrigger ict = (IDeploymentImageChangeTrigger) trigger.get(1);
+		assertEquals("foo", ict.getNamespace());
 	}
 	
 	@Test
