@@ -57,5 +57,16 @@ public interface IImageStreamImport extends IResource {
 	 * @param uri
 	 * @return json string or null if not matched.
 	 */
+	@Deprecated
 	String getImageJsonFor(DockerImageURI uri);
+
+	/**
+	 * Get the raw json docker metadata for
+	 * the given tag.  Assumes the result was
+	 * success
+	 * 
+	 * @param tag  a tag for the image
+	 * @return json string or null if not matched.
+	 */
+	String getImageJsonFor(String tag);
 }

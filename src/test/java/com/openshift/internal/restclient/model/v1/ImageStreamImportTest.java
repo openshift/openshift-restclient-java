@@ -22,7 +22,6 @@ import com.openshift.internal.restclient.model.image.ImageStreamImport;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IStatus;
 import com.openshift.restclient.model.image.IImageStreamImport;
 import com.openshift.restclient.utils.Samples;
@@ -59,9 +58,8 @@ public class ImageStreamImportTest {
 	
 	@Test
 	public void testGetImageJsonFor() {
-		DockerImageURI uri = new DockerImageURI("jcantrill/swarm-helloworld");
-		assertTrue("Exp. to find the json blob for the given image", StringUtils.isNotBlank(stream.getImageJsonFor(uri)));
+		assertTrue("Exp. to find the json blob for the given image", StringUtils.isNotBlank(stream.getImageJsonFor("latest")));
 
-		assertNull("Exp. to not find the json blob", stream.getImageJsonFor(new DockerImageURI("foo/bar")));
+		assertNull("Exp. to not find the json blob", stream.getImageJsonFor("bar"));
 	}
 }

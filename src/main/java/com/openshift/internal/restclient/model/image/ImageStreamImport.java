@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.model.KubernetesResource;
@@ -76,13 +77,16 @@ public class ImageStreamImport extends KubernetesResource implements IImageStrea
 
 	@Override
 	public String getImageJsonFor(DockerImageURI uri) {
-		String prefix = uri.getUriWithoutTag();
-		String tag = uri.getTag();
+		return getImageJsonFor(uri.getTag());
+	}
+
+	@Override
+	public String getImageJsonFor(String tag) {
 		ModelNode images = get(STATUS_IMAGES);
-		if(images.isDefined()) {
+		if(images.isDefined() && StringUtils.isNotBlank(tag)) {
 			Optional<ModelNode> node = images.asList()
 				.stream()
-				.filter(n->asString(n, IMAGE_DOCKER_IMAGE_REFERENCE).startsWith(prefix) && tag.equals(asString(n,TAG)))
+				.filter(n->tag.equals(asString(n,TAG)))
 				.findFirst();
 			if(node.isPresent()) {
 				return node.get().toJSONString(true);
