@@ -451,6 +451,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 			typeMappings.put(ResourceKind.SERVICE, k8eEndpoint);
 			typeMappings.put(ResourceKind.SECRET, k8eEndpoint);
 			typeMappings.put(ResourceKind.SERVICE_ACCOUNT, k8eEndpoint);
+			typeMappings.put(ResourceKind.CONFIG_MAP, k8eEndpoint);
 		}
 		return typeMappings;
 	}
