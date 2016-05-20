@@ -35,15 +35,16 @@ public enum Samples {
 	V1_PERSISTENT_VOLUME("openshift3/v1_persistent_volume.json"),
 	V1_REPLICATION_CONTROLLER("openshift3/v1_replication_controller.json"), 
 	V1_ROLE_BINDING("openshift3/v1_role_binding.json"), 
-	V1_ROUTE("openshift3/v1_route.json"), 
-	V1_ROUTE_WO_TLS("openshift3/v1_route_wo_tls.json"), 
+	V1_ROUTE("openshift3/v1_route.json"),
+	V1_ROUTE_WO_TLS("openshift3/v1_route_wo_tls.json"),
 	V1_SERVICE("openshift3/v1_service.json"),
 	V1_SERVICE_ACCOUNT("openshift3/v1_service_account.json"),
 	V1_Status("openshift3/v1_status.json"),
 	V1_TEMPLATE("openshift3/v1_template.json"), 
 	V1_USER("openshift3/v1_user.json"),
 	V1_SECRET("openshift3/v1_secret.json"),
-	V1_UNRECOGNIZED("openshift3/v1_unrecognized.json");
+	V1_UNRECOGNIZED("openshift3/v1_unrecognized.json"),
+	V1_CONFIG_MAP("openshift3/v1_config_map.json");
 
 	private static final String SAMPLES_FOLDER = "/samples/";
 

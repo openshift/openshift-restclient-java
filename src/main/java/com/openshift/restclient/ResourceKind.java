@@ -54,6 +54,7 @@ public final class ResourceKind {
 	public static final String SERVICE = "Service";
 	public static final String SECRET = "Secret";
 	public static final String SERVICE_ACCOUNT = "ServiceAccount";
+	public static final String CONFIG_MAP = "ConfigMap";
 	/*
 	 * These are not true resources that can be used (mostly) in
 	 * RESTful operations
@@ -128,6 +129,8 @@ public final class ResourceKind {
 		set.add(SERVICE);
 		set.add(SECRET);
 		set.add(SERVICE_ACCOUNT);
+		set.add(CONFIG_MAP);
+
 		/*
 		 * These are not true resources that can be used (mostly) in
 		 * RESTful operations
