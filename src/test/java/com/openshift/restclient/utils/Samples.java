@@ -20,6 +20,11 @@ import org.apache.commons.io.IOUtils;
  */
 public enum Samples {
 
+	GROUP_ENDPONT_API_V1("openshift3/api_v1_endpoint.json"),
+	GROUP_ENDPONT_OAPI_V1("openshift3/oapi_v1_endpoint.json"),
+	GROUP_ENDPONT_APIS("openshift3/apis_endpoint.json"),
+	GROUP_ENDPONT_APIS_EXTENSIONS("openshift3/apis_endpoint_extensions.json"),
+	
 	//v1
 	V1_KUBE_CONFIG("openshift3/v1_kubeconfig.yaml"),
 

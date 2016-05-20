@@ -76,6 +76,7 @@ public final class ResourceKind {
 	public static Collection<String> values() {
 		return values;
 	}
+	
 	public static String pluralize(String kind) {
 		return pluralize(kind, false, false);
 	}	

@@ -15,7 +15,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
@@ -35,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.model.KubernetesResource;
+import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
 import com.openshift.restclient.IOpenShiftWatchListener.ChangeType;
@@ -56,7 +56,7 @@ public class WatchClient implements IHttpConstants, IWatcher{
 	private static final long DEFAULT_LOCK_TIMEOUT = 30 * 1000;
 
 	private URL baseUrl;
-	private Map<String, String> typeMappings;
+	private IApiTypeMapper typeMappings;
 	private IResourceFactory factory;
 	private IClient client;
 	private static WebSocketClient wsClient;
@@ -128,7 +128,7 @@ public class WatchClient implements IHttpConstants, IWatcher{
 		}
 	}
 
-	public WatchClient(URL baseUrl, Map<String, String> typeMappings, IClient client) {
+	public WatchClient(URL baseUrl, IApiTypeMapper typeMappings, IClient client) {
 		this.baseUrl = baseUrl;
 		this.typeMappings = typeMappings;
 		this.factory = client.getResourceFactory();
