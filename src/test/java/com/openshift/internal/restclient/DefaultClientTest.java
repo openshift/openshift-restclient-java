@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014-2015 Red Hat, Inc.
+ * Copyright (c) 2014-2016 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -41,6 +40,7 @@ import com.openshift.restclient.model.IPod;
 
 /**
  * @author Jeff Cantrill
+ * @author Andre Dietisheim
  */
 public class DefaultClientTest {
 
@@ -55,36 +55,33 @@ public class DefaultClientTest {
 
 	@Before
 	public void setUp() throws Exception{
+		this.factory = new ResourceFactory(null);
 		this.baseUrl = new URL("http://myopenshift");
-		URL kubeApi = new URL(baseUrl, "api");
-		URL osApi = new URL(baseUrl, "oapi");
-		URL osLegacyApi = new URL(baseUrl, "osapi");
-		givenAClient();
+		this.httpClient = mock(IHttpClient.class);
+		this.client = new DefaultClient(baseUrl, httpClient, null, factory);
+
 		givenAPodList();
 		when(httpClient.get(any(URL.class), anyInt()))
 			.thenReturn(response.toJSONString(false));
+		URL kubeApi = new URL(baseUrl, "api");
 		when(httpClient.get(eq(kubeApi), anyInt()))
 			.thenReturn("{\"versions\": [ \""+VERSION+"\"]}");
+		URL osApi = new URL(baseUrl, "oapi");
 		when(httpClient.get(eq(osApi), anyInt()))
 			.thenReturn("{\"versions\": [ \""+VERSION+"\"]}");
+		URL osLegacyApi = new URL(baseUrl, "osapi");
 		when(httpClient.get(eq(osLegacyApi), anyInt()))
-		.thenReturn("{\"versions\": []}");
-	}
-
-	private void givenAClient() throws MalformedURLException{
-		httpClient = mock(IHttpClient.class);
-		factory = new ResourceFactory(null);
-		client = new DefaultClient(baseUrl, httpClient, null, factory);
+			.thenReturn("{\"versions\": []}");
 	}
 
 	private void givenAPodList(){
-		podFrontEnd = factory.create(VERSION, ResourceKind.POD);
+		this.podFrontEnd = factory.create(VERSION, ResourceKind.POD);
 		podFrontEnd.setName("frontend");
 		podFrontEnd.setNamespace("aNamespace");
 		podFrontEnd.addLabel("name", "frontend");
 		podFrontEnd.addLabel("env", "production");
 
-		podBackEnd = factory.create(VERSION, ResourceKind.POD);
+		this.podBackEnd = factory.create(VERSION, ResourceKind.POD);
 		podBackEnd.setName("backend");
 		podBackEnd.setNamespace("aNamespace");
 		podBackEnd.addLabel("name", "backend");
@@ -95,7 +92,7 @@ public class DefaultClientTest {
 		otherPod.setNamespace("aNamespace");
 		otherPod.addLabel("env", "production");
 
-		response = new ModelNode();
+		this.response = new ModelNode();
 		response.get("apiVersion").set(VERSION);
 		response.get("kind").set("PodList");
 		ModelNode items = response.get("items");
@@ -165,18 +162,6 @@ public class DefaultClientTest {
 				.isNotEqualTo(new DefaultClient(new URL("http://localhost:8443"), null));
 	}
 	
-	@Test
-	public void clientShouldNotEqualClientWithDifferentStrategy() throws Exception {
-		DefaultClient tokenClient = new DefaultClient(baseUrl, null);
-		tokenClient.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
-
-		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null);
-		basicAuthClient.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "aPassword", "aPassword"));
-
-		assertThat(tokenClient).isNotEqualTo(basicAuthClient);
-	}
-
-	@Test
 	public void client_should_equal_client_with_same_TokenAuthStrategy_with_different_token() throws Exception {
 		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
 		tokenClientOne.setAuthorizationStrategy(new TokenAuthorizationStrategy("tokenOne", "aUser"));
@@ -218,6 +203,39 @@ public class DefaultClientTest {
 		tokenClientTwo.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "differentPassword", "differentToken"));
 
 		assertThat(tokenClientOne).isEqualTo(tokenClientTwo);
+	}
+
+	@Test
+	public void tokenAuthClient_should_equal_basicAuthclient_with_same_username() throws Exception {
+		DefaultClient tokenClient = new DefaultClient(baseUrl, null);
+		tokenClient.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
+
+		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null);
+		basicAuthClient.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "aPassword", "differentToken"));
+
+		assertThat(tokenClient).isEqualTo(basicAuthClient);
+	}
+
+	@Test
+	public void tokenAuthClient_should_not_equal_basicAuthclient_with_different_username() throws Exception {
+		DefaultClient tokenClient = new DefaultClient(baseUrl, null);
+		tokenClient.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
+
+		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null);
+		basicAuthClient.setAuthorizationStrategy(new BasicAuthorizationStrategy("differentUser", "aPassword", "aToken"));
+
+		assertThat(tokenClient).isNotEqualTo(basicAuthClient);
+	}
+
+	@Test
+	public void basicAuthClient_should_equal_tokenClient_with_same_username() throws Exception {
+		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null);
+		basicAuthClient.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "aPassword", "differentToken"));
+
+		DefaultClient tokenClient = new DefaultClient(baseUrl, null);
+		tokenClient.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
+
+		assertThat(basicAuthClient).isEqualTo(tokenClient);
 	}
 
 	@Test
