@@ -58,7 +58,7 @@ public class TokenAuthorizationStrategyTest {
 	}
 
 	@Test
-	public void TokenStrategiesShoulEqualTokenStrategyWithSameUsername() {
+	public void TokenStrategiesShoulEqualTokenStrategyWithSameUsernameAndSameToken() {
 		TokenAuthorizationStrategy tokenStrategy1 = new TokenAuthorizationStrategy("123", "aUser");
 		TokenAuthorizationStrategy tokenStrategy2 = new TokenAuthorizationStrategy("123", "aUser");
 		assertThat(tokenStrategy1).isEqualTo(tokenStrategy2);
