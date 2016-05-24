@@ -11,7 +11,7 @@ Usage
 -----
     IClient client = new ClientFactory().create(url, sslCertCallback);
     client.setAuthorizationStrategy(new TokenAuthorizationStrategy("ADSASEAWRA-AFAEWAAA");
-    List<IProject> projects = client.list(ResourceKind.PROJECTS, "test-namespace");
+    List<IProject> projects = client.list(ResourceKind.PROJECTS, "test-project");
 
 Download
 --------
