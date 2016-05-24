@@ -177,33 +177,47 @@ public class DefaultClientTest {
 	}
 
 	@Test
-	public void clientShouldEqualClientWithSameStrategyAndDifferentToken() throws Exception {
+	public void client_should_equal_client_with_same_TokenAuthStrategy_with_different_token() throws Exception {
 		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
-		IAuthorizationStrategy tokenStrategyOne = mock(TokenAuthorizationStrategy.class);
-		when(tokenStrategyOne.getToken()).thenReturn("tokenOne");
-		tokenClientOne.setAuthorizationStrategy(tokenStrategyOne);
+		tokenClientOne.setAuthorizationStrategy(new TokenAuthorizationStrategy("tokenOne", "aUser"));
 
 		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
-		IAuthorizationStrategy tokenStrategyTwo = mock(TokenAuthorizationStrategy.class);
-		when(tokenStrategyTwo.getToken()).thenReturn("tokenTwo");
-		tokenClientTwo.setAuthorizationStrategy(tokenStrategyTwo);
+		tokenClientTwo.setAuthorizationStrategy(new TokenAuthorizationStrategy("tokenTwo", "aUser"));
 
-		assertThat(tokenClientTwo).isEqualTo(tokenClientTwo);
+		assertThat(tokenClientOne).isEqualTo(tokenClientTwo);
 	}
 
 	@Test
-	public void clientShouldEqualClientWithSameStrategyAndDifferentUsername() throws Exception {
+	public void client_should_not_equal_client_with_same_TokenAuthStrategy_with_different_username() throws Exception {
 		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
-		IAuthorizationStrategy tokenStrategyOne = mock(TokenAuthorizationStrategy.class);
-		when(tokenStrategyOne.getUsername()).thenReturn("aUser");
-		tokenClientOne.setAuthorizationStrategy(tokenStrategyOne);
+		tokenClientOne.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
 
 		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
-		IAuthorizationStrategy tokenStrategyTwo = mock(TokenAuthorizationStrategy.class);
-		when(tokenStrategyOne.getUsername()).thenReturn("differentuser");
-		tokenClientTwo.setAuthorizationStrategy(tokenStrategyTwo);
+		tokenClientTwo.setAuthorizationStrategy(new TokenAuthorizationStrategy("differentToken", "aUser"));
 
-		assertThat(tokenClientTwo).isEqualTo(tokenClientTwo);
+		assertThat(tokenClientOne).isEqualTo(tokenClientTwo);
+	}
+
+	@Test
+	public void client_should_not_equal_client_with_same_BasicAuthStrategy_with_different_username() throws Exception {
+		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
+		tokenClientOne.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "aPassword", "aToken"));
+
+		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
+		tokenClientTwo.setAuthorizationStrategy(new BasicAuthorizationStrategy("differentUser", "aPassword", "aToken"));
+
+		assertThat(tokenClientOne).isNotEqualTo(tokenClientTwo);
+	}
+
+	@Test
+	public void client_should_equal_client_with_same_BasicAuthStrategy_with_different_password_and_different_token() throws Exception {
+		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
+		tokenClientOne.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "aPassword", "aToken"));
+
+		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
+		tokenClientTwo.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "differentPassword", "differentToken"));
+
+		assertThat(tokenClientOne).isEqualTo(tokenClientTwo);
 	}
 
 	@Test
