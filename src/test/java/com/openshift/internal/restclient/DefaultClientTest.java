@@ -168,10 +168,10 @@ public class DefaultClientTest {
 	@Test
 	public void clientShouldNotEqualClientWithDifferentStrategy() throws Exception {
 		DefaultClient tokenClient = new DefaultClient(baseUrl, null);
-		tokenClient.setAuthorizationStrategy(mock(TokenAuthorizationStrategy.class));
+		tokenClient.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
 
 		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null);
-		basicAuthClient.setAuthorizationStrategy(mock(BasicAuthorizationStrategy.class));
+		basicAuthClient.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "aPassword", "aPassword"));
 
 		assertThat(tokenClient).isNotEqualTo(basicAuthClient);
 	}
@@ -193,9 +193,9 @@ public class DefaultClientTest {
 		tokenClientOne.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
 
 		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
-		tokenClientTwo.setAuthorizationStrategy(new TokenAuthorizationStrategy("differentToken", "aUser"));
+		tokenClientTwo.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "differentUser"));
 
-		assertThat(tokenClientOne).isEqualTo(tokenClientTwo);
+		assertThat(tokenClientOne).isNotEqualTo(tokenClientTwo);
 	}
 
 	@Test
