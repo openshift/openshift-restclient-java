@@ -558,7 +558,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 			if (other.strategy == null) {
 				return false;
 			}
-			return ObjectUtils.equals(strategy, other.strategy);
+			return ObjectUtils.equals(strategy.getUsername(), other.strategy.getUsername());
 		}
 	}
 	

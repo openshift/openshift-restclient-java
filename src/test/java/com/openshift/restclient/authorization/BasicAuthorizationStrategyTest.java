@@ -25,23 +25,23 @@ import com.openshift.restclient.utils.Base64Coder;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class BasicAuthorizationStrategyTest {
-	
+
 	@Mock
 	private IRequest request;
 	private BasicAuthorizationStrategy strategy;
-	
+
 	@Before
 	public void setup(){
 		strategy= new BasicAuthorizationStrategy("aUserName", "aPassword",null);
 	}
-	
+
 	@Test
 	public void testAuthorize() {
 		String usernamePassword =  String.format("Basic %s", Base64Coder.encode("aUserName:aPassword"));
 		strategy.authorize(request);
 		verify(request).setProperty(eq("Authorization"), eq(usernamePassword));
 	}
-	
+
 	@Test
 	public void BasicStrategyShouldEqualBasicStrategyWithDifferentUsername() {
 		assertThat(new BasicAuthorizationStrategy("aUsername", "aPassword", null))
