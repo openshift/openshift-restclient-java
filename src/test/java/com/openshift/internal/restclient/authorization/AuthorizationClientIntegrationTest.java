@@ -8,19 +8,19 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.authorization;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Categories.ExcludeCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.DefaultClientIntegrationTest;
 import com.openshift.internal.restclient.IntegrationTestHelper;
-import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.authorization.UnauthorizedException;
@@ -35,12 +35,10 @@ public class AuthorizationClientIntegrationTest {
 
 	private IntegrationTestHelper helper = new IntegrationTestHelper();
 	private IClient client;
-	private AuthorizationClient authClient;
 
 	@Before
 	public void setup () {
 		client = helper.createClient();
-		authClient = new AuthorizationClient(client);
 	}
 
 	/*---------- These are tests that should pass when server is configured for oauth auth. No expectations regarding others */
