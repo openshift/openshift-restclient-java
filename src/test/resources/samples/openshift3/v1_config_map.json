@@ -1,0 +1,15 @@
+{
+    "kind": "ConfigMap",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "generic",
+        "namespace": "petproject",
+        "selfLink": "/api/v1/namespaces/petproject/configmaps/generic",
+        "uid": "9d20daa7-1de6-11e6-b751-b8aeed734df6",
+        "resourceVersion": "5642",
+        "creationTimestamp": "2016-05-19T17:24:59Z"
+    },
+    "data": {
+        "key1": "config1"
+    }
+}
