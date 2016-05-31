@@ -25,8 +25,8 @@ public enum Samples {
 
 	V1_BUILD_CONFIG("openshift3/v1_build_config.json"),
 	V1_BUILD_CONFIG_LIST("openshift3/v1_build_config_list.json"),
-	V1_DEPLOYMENT_CONIFIG("openshift3/v1_deployment_config.json"), 
-	V1_IMAGE_STREAM("openshift3/v1_image_stream.json"), 
+	V1_DEPLOYMENT_CONIFIG("openshift3/v1_deployment_config.json"),
+	V1_IMAGE_STREAM("openshift3/v1_image_stream.json"),
 	V1_IMAGE_STREAM_IMPORT("openshift3/v1_image_stream_import.json"), 
 	V1_BUILD("openshift3/v1_build.json"), 
 	V1_OBJECT_REF("openshift3/v1_objectref.json"), 
@@ -46,7 +46,8 @@ public enum Samples {
 	V1_USER("openshift3/v1_user.json"),
 	V1_SECRET("openshift3/v1_secret.json"),
 	V1_UNRECOGNIZED("openshift3/v1_unrecognized.json"),
-	V1_CONFIG_MAP("openshift3/v1_config_map.json");
+	V1_CONFIG_MAP("openshift3/v1_config_map.json"),
+	V1_CONFIG_MAP_LIST_EMPTY("openshift3/v1_config_map_list_empty.json");
 
 	private static final String SAMPLES_FOLDER = "/samples/";
 
