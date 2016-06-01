@@ -99,6 +99,47 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	}
 
 	@Override
+	public void removeEnvironmentVariable(String name) {
+		removeEnvironmentVariable(null, name);
+	}
+
+	@Override
+	public void removeEnvironmentVariable(String containerName, String name) {
+		if(name == null) {
+			throw new IllegalArgumentException("Name cannot be null.");
+		}
+		String defaultedContainerName = StringUtils.defaultIfBlank(containerName, "");
+		ModelNode specContainers = get(SPEC_TEMPLATE_CONTAINERS);
+		if(specContainers.isDefined()) { //should ALWAYS exist
+			List<ModelNode> containers = specContainers.asList();
+			if(!containers.isEmpty()) {
+
+				Optional<ModelNode> opt = containers.stream().filter(n->defaultedContainerName.equals(asString(n, NAME))).findFirst();
+				ModelNode node =  opt.isPresent() ? opt.get() : containers.get(0);
+				ModelNode envNode = get(node, ENV);
+
+				List<ModelNode> varList = new ArrayList<>();
+				if (ModelType.LIST.equals(envNode.getType())){
+					varList.addAll(envNode.asList());
+				}
+
+				//Check if variable exists
+				Optional<ModelNode> targetVar = varList.stream().filter(n->name.equals(asString(n, NAME))).findFirst();
+
+				ModelNode var;
+				if (targetVar.isPresent()) {
+					var = targetVar.get();
+					int i = varList.indexOf(var);
+					varList.remove(i);
+					envNode.set(varList);
+				} else {
+					//do nothing
+				}
+			}
+		}
+	}
+
+	@Override
 	public Collection<IEnvironmentVariable> getEnvironmentVariables() {
 		return getEnvironmentVariables(null);
 	}
