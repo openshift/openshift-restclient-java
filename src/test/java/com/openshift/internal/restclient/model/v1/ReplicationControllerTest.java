@@ -116,6 +116,9 @@ public class ReplicationControllerTest {
 		envVars = rc.getEnvironmentVariables();
 		envVar = envVars.stream().filter(e->"foo".equals(e.getName())).findFirst();
 		assertEquals("baz", envVar.get().getValue());
+
+		rc.removeEnvironmentVariable("foo");
+		assertEquals(size - 1, rc.getEnvironmentVariables().size());
 	}
 
 	@Test

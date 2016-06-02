@@ -44,6 +44,28 @@ public interface IReplicationController  extends IResource{
 	void setEnvironmentVariable(String containerName, String name, String value);
 	
 	/**
+	 * Removes an environment variable with the given name.
+	 * Returns silently if the name is not found
+	 * 
+	 * @throws IllegalArgumentException if name is null
+	 * 
+	 * @param name
+	 */
+	public void removeEnvironmentVariable(String name);
+	
+	/**
+	 * Removes an environment variable with the given name and
+	 * value on the given container.  Returns silently
+	 * if the containerName or the name is not found
+	 * 
+	 * @throws IllegalArgumentException if name is null
+	 * 
+	 * @param containerName
+	 * @param name
+	 */
+	public void removeEnvironmentVariable(String containerName, String name);
+	
+	/**
 	 * Return the list of env vars of the first container
 	 * @return
 	 */
