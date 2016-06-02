@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ import org.junit.Test;
 
 import com.openshift.internal.restclient.model.ImageStream;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
+import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
@@ -35,11 +37,12 @@ public class ImageStreamTest {
 	private static final String VERSION = "v1";
 	private static IClient client;
 	private IImageStream stream;
+	private ModelNode node;
 
 	@Before
 	public void setup(){
 		client = mock(IClient.class);
-		ModelNode node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM.getContentAsString());
+		node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM.getContentAsString());
 		stream = new ImageStream(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM));
 	}
 	
@@ -67,7 +70,10 @@ public class ImageStreamTest {
 	
 	@Test
 	public void getDockerImageRepository() {
-		assertEquals(new DockerImageURI("172.30.224.48:5000/openshift/wildfly:latest"), stream.getDockerImageRepository());
+		DockerImageURI uri = new DockerImageURI("172.30.224.48:5000/openshift/wildfly:latest");
+		assertEquals(uri, stream.getDockerImageRepository());
+		node.get("spec").clear();
+		assertEquals(uri, stream.getDockerImageRepository());
 	}
 
 	@Test
