@@ -1,0 +1,256 @@
+{
+  "kind": "APIResourceList",
+  "groupVersion": "v1",
+  "resources": [
+    {
+      "name": "buildconfigs",
+      "namespaced": true,
+      "kind": "BuildConfig"
+    },
+    {
+      "name": "buildconfigs/instantiate",
+      "namespaced": true,
+      "kind": "BuildRequest"
+    },
+    {
+      "name": "buildconfigs/instantiatebinary",
+      "namespaced": true,
+      "kind": "BinaryBuildRequestOptions"
+    },
+    {
+      "name": "buildconfigs/webhooks",
+      "namespaced": true,
+      "kind": "Status"
+    },
+    {
+      "name": "builds",
+      "namespaced": true,
+      "kind": "Build"
+    },
+    {
+      "name": "builds/clone",
+      "namespaced": true,
+      "kind": "BuildRequest"
+    },
+    {
+      "name": "builds/details",
+      "namespaced": true,
+      "kind": "Build"
+    },
+    {
+      "name": "builds/log",
+      "namespaced": true,
+      "kind": "BuildLog"
+    },
+    {
+      "name": "clusternetworks",
+      "namespaced": false,
+      "kind": "ClusterNetwork"
+    },
+    {
+      "name": "clusterpolicies",
+      "namespaced": false,
+      "kind": "ClusterPolicy"
+    },
+    {
+      "name": "clusterpolicybindings",
+      "namespaced": false,
+      "kind": "ClusterPolicyBinding"
+    },
+    {
+      "name": "clusterrolebindings",
+      "namespaced": false,
+      "kind": "ClusterRoleBinding"
+    },
+    {
+      "name": "clusterroles",
+      "namespaced": false,
+      "kind": "ClusterRole"
+    },
+    {
+      "name": "deploymentconfigrollbacks",
+      "namespaced": true,
+      "kind": "DeploymentConfigRollback"
+    },
+    {
+      "name": "deploymentconfigs",
+      "namespaced": true,
+      "kind": "DeploymentConfig"
+    },
+    {
+      "name": "deploymentconfigs/log",
+      "namespaced": true,
+      "kind": "DeploymentLog"
+    },
+    {
+      "name": "deploymentconfigs/scale",
+      "namespaced": true,
+      "kind": "Scale"
+    },
+    {
+      "name": "generatedeploymentconfigs",
+      "namespaced": true,
+      "kind": "DeploymentConfig"
+    },
+    {
+      "name": "groups",
+      "namespaced": false,
+      "kind": "Group"
+    },
+    {
+      "name": "hostsubnets",
+      "namespaced": false,
+      "kind": "HostSubnet"
+    },
+    {
+      "name": "identities",
+      "namespaced": false,
+      "kind": "Identity"
+    },
+    {
+      "name": "images",
+      "namespaced": false,
+      "kind": "Image"
+    },
+    {
+      "name": "imagestreamimages",
+      "namespaced": true,
+      "kind": "ImageStreamImage"
+    },
+    {
+      "name": "imagestreamimports",
+      "namespaced": true,
+      "kind": "ImageStreamImport"
+    },
+    {
+      "name": "imagestreammappings",
+      "namespaced": true,
+      "kind": "ImageStreamMapping"
+    },
+    {
+      "name": "imagestreams",
+      "namespaced": true,
+      "kind": "ImageStream"
+    },
+    {
+      "name": "imagestreams/secrets",
+      "namespaced": true,
+      "kind": "SecretList"
+    },
+    {
+      "name": "imagestreams/status",
+      "namespaced": true,
+      "kind": "ImageStream"
+    },
+    {
+      "name": "imagestreamtags",
+      "namespaced": true,
+      "kind": "ImageStreamTag"
+    },
+    {
+      "name": "localresourceaccessreviews",
+      "namespaced": true,
+      "kind": "LocalResourceAccessReview"
+    },
+    {
+      "name": "localsubjectaccessreviews",
+      "namespaced": true,
+      "kind": "LocalSubjectAccessReview"
+    },
+    {
+      "name": "netnamespaces",
+      "namespaced": false,
+      "kind": "NetNamespace"
+    },
+    {
+      "name": "oauthaccesstokens",
+      "namespaced": false,
+      "kind": "OAuthAccessToken"
+    },
+    {
+      "name": "oauthauthorizetokens",
+      "namespaced": false,
+      "kind": "OAuthAuthorizeToken"
+    },
+    {
+      "name": "oauthclientauthorizations",
+      "namespaced": false,
+      "kind": "OAuthClientAuthorization"
+    },
+    {
+      "name": "oauthclients",
+      "namespaced": false,
+      "kind": "OAuthClient"
+    },
+    {
+      "name": "policies",
+      "namespaced": true,
+      "kind": "Policy"
+    },
+    {
+      "name": "policybindings",
+      "namespaced": true,
+      "kind": "PolicyBinding"
+    },
+    {
+      "name": "processedtemplates",
+      "namespaced": true,
+      "kind": "Template"
+    },
+    {
+      "name": "projectrequests",
+      "namespaced": false,
+      "kind": "ProjectRequest"
+    },
+    {
+      "name": "projects",
+      "namespaced": false,
+      "kind": "Project"
+    },
+    {
+      "name": "resourceaccessreviews",
+      "namespaced": true,
+      "kind": "ResourceAccessReview"
+    },
+    {
+      "name": "rolebindings",
+      "namespaced": true,
+      "kind": "RoleBinding"
+    },
+    {
+      "name": "roles",
+      "namespaced": true,
+      "kind": "Role"
+    },
+    {
+      "name": "routes",
+      "namespaced": true,
+      "kind": "Route"
+    },
+    {
+      "name": "routes/status",
+      "namespaced": true,
+      "kind": "Route"
+    },
+    {
+      "name": "subjectaccessreviews",
+      "namespaced": true,
+      "kind": "SubjectAccessReview"
+    },
+    {
+      "name": "templates",
+      "namespaced": true,
+      "kind": "Template"
+    },
+    {
+      "name": "useridentitymappings",
+      "namespaced": false,
+      "kind": "UserIdentityMapping"
+    },
+    {
+      "name": "users",
+      "namespaced": false,
+      "kind": "User"
+    }
+  ]
+}

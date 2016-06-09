@@ -32,6 +32,7 @@ import com.openshift.internal.restclient.http.NotFoundException;
 import com.openshift.internal.restclient.http.UnauthorizedException;
 import com.openshift.internal.restclient.http.UrlConnectionHttpClientBuilder;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
+import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
 import com.openshift.restclient.IResourceFactory;
@@ -74,22 +75,19 @@ public class DefaultClient implements IClient, IHttpConstants{
 	private static final String OS_API_LEGACY_ENDPOINT = "osapi";
 	private static final String OS_API_ENDPOINT = "oapi";
 	
-	private final Map<String, String> typeMappings = new HashMap<String, String>();
 	private String openShiftVersion;
 	private String kubernetesVersion;
 	private IAuthorizationStrategy strategy;
 	private IAuthorizationClient authClient;
-	
-	@Deprecated
-	public DefaultClient(URL baseUrl, ISSLCertificateCallback sslCertCallback){
-		this(baseUrl, null, sslCertCallback, null);
-	}
+	private IApiTypeMapper typeMapper;
 	
 	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory){
-		this(baseUrl, httpClient, sslCertCallback, factory, null, null);
+		this(baseUrl, httpClient, sslCertCallback, factory, null, null, null);
 	}
-	
-	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory, String alias, X509Certificate cert){
+	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory, String alias, X509Certificate cert) {
+		this(baseUrl, httpClient, sslCertCallback, factory, alias, cert, null);
+	}
+	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory, String alias, X509Certificate cert, IApiTypeMapper typeMapper){
 		this.baseUrl = baseUrl;
 		client = httpClient != null ? httpClient : newIHttpClient(sslCertCallback, alias, cert);
 		this.factory = factory;
@@ -100,6 +98,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		kubernetesVersion = System.getProperty(SYSTEM_PROP_K8E_API_VERSION, null);
 		authClient = new AuthorizationClientFactory().create(this);	
 		authClient.setSSLCertificateCallback(sslCertCallback);
+		this.typeMapper = typeMapper != null ? typeMapper :  new ApiTypeMapper(baseUrl.toString(), client);
 	}
 	
 	/*
@@ -120,13 +119,13 @@ public class DefaultClient implements IClient, IHttpConstants{
 	
 	@Override
 	public IWatcher watch(String namespace, IOpenShiftWatchListener listener, String...kinds) {
-	WatchClient watcher = new WatchClient(getBaseURL(), getTypeMappings(), this);
+	WatchClient watcher = new WatchClient(getBaseURL(), typeMapper, this);
 	return watcher.watch(Arrays.asList(kinds), namespace, listener);
 	}
 
 	@Override
 	public String getResourceURI(IResource resource) {
-		return new URLBuilder(getBaseURL(), getTypeMappings(), resource).build().toString();
+		return new URLBuilder(getBaseURL(), typeMapper, resource).build().toString();
 	}
 
 	@Override
@@ -143,10 +142,10 @@ public class DefaultClient implements IClient, IHttpConstants{
 	@Override
 	public <T extends IResource> List<T> list(String kind, String namespace, Map<String, String> labels) {
 		try {
-			if(!getTypeMappings().containsKey(kind))
+			if(!typeMapper.isSupported(kind))
 				// TODO: replace with specific runtime exception
 				throw new RuntimeException("No OpenShift resource endpoint for type: " + kind);
-			URLBuilder builder = new URLBuilder(this.baseUrl, getTypeMappings())
+			URLBuilder builder = new URLBuilder(this.baseUrl, typeMapper)
 				.kind(kind)
 				.namespace(namespace);
 			final URL endpoint = builder.build();
@@ -204,7 +203,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		if(ResourceKind.LIST.equals(resource.getKind())) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		try {
 			namespace = ResourceKind.PROJECT.equals(resource.getKind()) ? "" : namespace;
-			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
+			final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
 				.kind(resource.getKind())
 				.namespace(namespace)
 				.build();
@@ -222,8 +221,8 @@ public class DefaultClient implements IClient, IHttpConstants{
 	public <T extends IResource> T create(String kind, String namespace, String name, String subresource, IResource payload) {
 		if(ResourceKind.LIST.equals(kind)) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		try {
-			namespace = ResourceKind.PROJECT.equals(kind) ? "" : namespace;
-			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
+			namespace = ResourceKind.PROJECT.equals(kind) ? null : namespace;
+			final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
 					.kind(kind)
 					.name(name)
 					.namespace(namespace)
@@ -243,7 +242,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 	public <T extends IResource> T update(T resource) {
 		if(ResourceKind.LIST.equals(resource.getKind())) throw new UnsupportedOperationException("Update operation not supported for resource type 'List'");
 		try {
-			final URL endpoint = new URLBuilder(getBaseURL(), getTypeMappings())
+			final URL endpoint = new URLBuilder(getBaseURL(), typeMapper)
 				.resource(resource)
 				.namespace(resource.getNamespace())
 				.build();
@@ -262,7 +261,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		if(ResourceKind.LIST.equals(resource.getKind())) throw new UnsupportedOperationException("Delete operation not supported for resource type 'List'");
 		try {
 			String namespace = ResourceKind.PROJECT.equals(resource.getKind()) ? "" : resource.getNamespace();
-			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
+			final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
 				.resource(resource)
 				.namespace(namespace)
 				.build();
@@ -281,7 +280,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 	@Override
 	public IList get(String kind, String namespace) {
 		try {
-			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
+			final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
 				.kind(kind)
 				.namespace(namespace)
 				.build();
@@ -300,7 +299,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 	public <T extends IResource> T get(String kind, String name, String namespace) {
 		try {
 			namespace = ResourceKind.PROJECT.equals(kind) ? "" : namespace;
-			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
+			final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
 				.kind(kind)
 				.name(name)
 				.namespace(namespace)
@@ -407,53 +406,6 @@ public class DefaultClient implements IClient, IHttpConstants{
 			LOGGER.error("Unauthorized exception. Can system:anonymous get the API endpoint", e);
 			return new ArrayList<T>();
 		}
-	}
-	private Map<String, String> getTypeMappings(){
-		return getTypeMappings(null);
-	}
-	private Map<String, String> getTypeMappings(String apiVersion){
-		if(typeMappings.isEmpty()){
-			//OpenShift endpoints
-			final String version = StringUtils.defaultIfEmpty(apiVersion, getOpenShiftAPIVersion());
-			final String osEndpoint = String.format("%s/%s", OS_API_ENDPOINT, version);
-			typeMappings.put(ResourceKind.BUILD, osEndpoint);
-			typeMappings.put(ResourceKind.BUILD_CONFIG, osEndpoint);
-			typeMappings.put(ResourceKind.DEPLOYMENT_CONFIG, osEndpoint);
-			typeMappings.put(ResourceKind.IMAGE_STREAM, osEndpoint);
-			typeMappings.put(ResourceKind.IMAGE_STREAM_TAG, osEndpoint);
-			typeMappings.put(ResourceKind.IMAGE_STREAM_IMPORT, osEndpoint);
-			typeMappings.put(ResourceKind.OAUTH_ACCESS_TOKEN, osEndpoint);
-			typeMappings.put(ResourceKind.OAUTH_AUTHORIZE_TOKEN, osEndpoint);
-			typeMappings.put(ResourceKind.OAUTH_CLIENT, osEndpoint);
-			typeMappings.put(ResourceKind.OAUTH_CLIENT_AUTHORIZATION, osEndpoint);
-			typeMappings.put(ResourceKind.POLICY, osEndpoint);
-			typeMappings.put(ResourceKind.POLICY_BINDING, osEndpoint);
-			typeMappings.put(ResourceKind.PROJECT, osEndpoint);
-			typeMappings.put(ResourceKind.PROJECT_REQUEST, osEndpoint);
-			typeMappings.put(ResourceKind.ROLE, osEndpoint);
-			typeMappings.put(ResourceKind.ROLE_BINDING, osEndpoint);
-			typeMappings.put(ResourceKind.ROUTE, osEndpoint);
-			typeMappings.put(ResourceKind.TEMPLATE, osEndpoint);
-			typeMappings.put(ResourceKind.USER, osEndpoint);
-			//not real kinds
-			typeMappings.put(ResourceKind.PROCESSED_TEMPLATES, osEndpoint);
-			
-			//Kubernetes endpoints
-			final String k8eApiVersion = StringUtils.defaultIfEmpty(apiVersion, getKubernetesVersion());
-			final String k8eEndpoint = String.format("%s/%s", API_ENDPOINT, k8eApiVersion);
-			typeMappings.put(ResourceKind.EVENT, k8eEndpoint);
-			typeMappings.put(ResourceKind.POD, k8eEndpoint);
-			typeMappings.put(ResourceKind.PVC, k8eEndpoint);
-			typeMappings.put(ResourceKind.PERSISTENT_VOLUME, k8eEndpoint);
-			typeMappings.put(ResourceKind.LIMIT_RANGE, k8eEndpoint);
-			typeMappings.put(ResourceKind.REPLICATION_CONTROLLER, k8eEndpoint);
-			typeMappings.put(ResourceKind.RESOURCE_QUOTA, k8eEndpoint);
-			typeMappings.put(ResourceKind.SERVICE, k8eEndpoint);
-			typeMappings.put(ResourceKind.SECRET, k8eEndpoint);
-			typeMappings.put(ResourceKind.SERVICE_ACCOUNT, k8eEndpoint);
-			typeMappings.put(ResourceKind.CONFIG_MAP, k8eEndpoint);
-		}
-		return typeMappings;
 	}
 
 	@Override

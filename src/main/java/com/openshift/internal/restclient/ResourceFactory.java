@@ -25,7 +25,6 @@ import org.jboss.dmr.ModelNode;
 import com.openshift.internal.restclient.model.Build;
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.internal.restclient.model.Config;
-import com.openshift.internal.restclient.model.ConfigMap;
 import com.openshift.internal.restclient.model.DeploymentConfig;
 import com.openshift.internal.restclient.model.ImageStream;
 import com.openshift.internal.restclient.model.KubernetesEvent;
@@ -109,7 +108,6 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.SERVICE, Service.class);
 		IMPL_MAP.put(ResourceKind.SECRET, Secret.class);
 		IMPL_MAP.put(ResourceKind.SERVICE_ACCOUNT, ServiceAccount.class);
-		IMPL_MAP.put(ResourceKind.CONFIG_MAP, ConfigMap.class);
 		
 		//fallback
 		IMPL_MAP.put(ResourceKind.UNRECOGNIZED, KubernetesResource.class);

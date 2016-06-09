@@ -1,0 +1,62 @@
+{
+  "kind": "APIGroupList",
+  "groups": [
+    {
+      "name": "autoscaling",
+      "versions": [
+        {
+          "groupVersion": "autoscaling/v1",
+          "version": "v1"
+        }
+      ],
+      "preferredVersion": {
+        "groupVersion": "autoscaling/v1",
+        "version": "v1"
+      },
+      "serverAddressByClientCIDRs": [
+        {
+          "clientCIDR": "0.0.0.0/0",
+          "serverAddress": "172.28.128.4:443"
+        }
+      ]
+    },
+    {
+      "name": "batch",
+      "versions": [
+        {
+          "groupVersion": "batch/v1",
+          "version": "v1"
+        }
+      ],
+      "preferredVersion": {
+        "groupVersion": "batch/v1",
+        "version": "v1"
+      },
+      "serverAddressByClientCIDRs": [
+        {
+          "clientCIDR": "0.0.0.0/0",
+          "serverAddress": "172.28.128.4:443"
+        }
+      ]
+    },
+    {
+      "name": "extensions",
+      "versions": [
+        {
+          "groupVersion": "extensions/v1beta1",
+          "version": "v1beta1"
+        }
+      ],
+      "preferredVersion": {
+        "groupVersion": "extensions/v1beta1",
+        "version": "v1beta1"
+      },
+      "serverAddressByClientCIDRs": [
+        {
+          "clientCIDR": "0.0.0.0/0",
+          "serverAddress": "172.28.128.4:443"
+        }
+      ]
+    }
+  ]
+}

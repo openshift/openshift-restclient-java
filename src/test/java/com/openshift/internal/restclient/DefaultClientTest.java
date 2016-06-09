@@ -12,13 +12,10 @@ package com.openshift.internal.restclient;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -28,6 +25,8 @@ import java.util.Map;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.restclient.IResourceFactory;
@@ -42,36 +41,33 @@ import com.openshift.restclient.model.IPod;
  * @author Jeff Cantrill
  * @author Andre Dietisheim
  */
-public class DefaultClientTest {
+@RunWith(MockitoJUnitRunner.class)
+public class DefaultClientTest extends TypeMapperFixture{
+
+	private static final String VERSION = "v1";
 
 	private DefaultClient client;
-	private IHttpClient httpClient;
+//	private IHttpClient httpClient;
 	private ModelNode response;
 	private Pod podFrontEnd;
 	private Pod podBackEnd;
 	private IResourceFactory factory;
 	private URL baseUrl;
-	private static final String VERSION = "v1";
+	
 
 	@Before
 	public void setUp() throws Exception{
-		this.factory = new ResourceFactory(null);
+		super.setUp();
 		this.baseUrl = new URL("http://myopenshift");
-		this.httpClient = mock(IHttpClient.class);
-		this.client = new DefaultClient(baseUrl, httpClient, null, factory);
-
+		givenAClient();
 		givenAPodList();
-		when(httpClient.get(any(URL.class), anyInt()))
+		when(getHttpClient().get(eq(new URL("http://myopenshift/api/v1/namespaces/aNamespace/pods")), anyInt()))
 			.thenReturn(response.toJSONString(false));
-		URL kubeApi = new URL(baseUrl, "api");
-		when(httpClient.get(eq(kubeApi), anyInt()))
-			.thenReturn("{\"versions\": [ \""+VERSION+"\"]}");
-		URL osApi = new URL(baseUrl, "oapi");
-		when(httpClient.get(eq(osApi), anyInt()))
-			.thenReturn("{\"versions\": [ \""+VERSION+"\"]}");
-		URL osLegacyApi = new URL(baseUrl, "osapi");
-		when(httpClient.get(eq(osLegacyApi), anyInt()))
-			.thenReturn("{\"versions\": []}");
+	}
+
+	private void givenAClient() throws MalformedURLException{
+		factory = new ResourceFactory(null);
+		client = new DefaultClient(baseUrl, getHttpClient(), null, factory, null, null, getApiTypeMapper());
 	}
 
 	private void givenAPodList(){
@@ -118,7 +114,7 @@ public class DefaultClientTest {
 		IAuthorizationStrategy strategy = mock(IAuthorizationStrategy.class);
 		client.setAuthorizationStrategy(strategy );
 
-		verify(httpClient).setAuthorizationStrategy(eq(strategy));
+		verify(getHttpClient()).setAuthorizationStrategy(eq(strategy));
 	}
 
 	@Test
@@ -152,21 +148,21 @@ public class DefaultClientTest {
 
 	@Test
 	public void clientShouldEqualClientWithSameUrl() throws Exception {
-		assertThat(new DefaultClient(baseUrl, null))
-			.isEqualTo(new DefaultClient(baseUrl, null));
+		assertThat(new DefaultClient(baseUrl, null, null, null))
+			.isEqualTo(new DefaultClient(baseUrl, null, null, null));
 	}
 		
 	@Test
 	public void clientShouldNotEqualClientWithDifferentUrl() throws Exception {
-		assertThat(new DefaultClient(baseUrl, null))
-				.isNotEqualTo(new DefaultClient(new URL("http://localhost:8443"), null));
+		assertThat(new DefaultClient(baseUrl, null, null, null))
+				.isNotEqualTo(new DefaultClient(new URL("http://localhost:8443"), null, null, null));
 	}
 	
 	public void client_should_equal_client_with_same_TokenAuthStrategy_with_different_token() throws Exception {
-		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null, null, null);
 		tokenClientOne.setAuthorizationStrategy(new TokenAuthorizationStrategy("tokenOne", "aUser"));
 
-		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null, null, null);
 		tokenClientTwo.setAuthorizationStrategy(new TokenAuthorizationStrategy("tokenTwo", "aUser"));
 
 		assertThat(tokenClientOne).isEqualTo(tokenClientTwo);
@@ -174,10 +170,10 @@ public class DefaultClientTest {
 
 	@Test
 	public void client_should_not_equal_client_with_same_TokenAuthStrategy_with_different_username() throws Exception {
-		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null, null, null);
 		tokenClientOne.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
 
-		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null, null, null);
 		tokenClientTwo.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "differentUser"));
 
 		assertThat(tokenClientOne).isNotEqualTo(tokenClientTwo);
@@ -185,10 +181,10 @@ public class DefaultClientTest {
 
 	@Test
 	public void client_should_not_equal_client_with_same_BasicAuthStrategy_with_different_username() throws Exception {
-		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null, null, null);
 		tokenClientOne.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "aPassword", "aToken"));
 
-		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null, null, null);
 		tokenClientTwo.setAuthorizationStrategy(new BasicAuthorizationStrategy("differentUser", "aPassword", "aToken"));
 
 		assertThat(tokenClientOne).isNotEqualTo(tokenClientTwo);
@@ -196,10 +192,10 @@ public class DefaultClientTest {
 
 	@Test
 	public void client_should_equal_client_with_same_BasicAuthStrategy_with_different_password_and_different_token() throws Exception {
-		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClientOne = new DefaultClient(baseUrl, null, null, null);
 		tokenClientOne.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "aPassword", "aToken"));
 
-		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClientTwo = new DefaultClient(baseUrl, null, null, null);
 		tokenClientTwo.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "differentPassword", "differentToken"));
 
 		assertThat(tokenClientOne).isEqualTo(tokenClientTwo);
@@ -207,10 +203,10 @@ public class DefaultClientTest {
 
 	@Test
 	public void tokenAuthClient_should_equal_basicAuthclient_with_same_username() throws Exception {
-		DefaultClient tokenClient = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClient = new DefaultClient(baseUrl, null, null, null);
 		tokenClient.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
 
-		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null);
+		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null, null, null);
 		basicAuthClient.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "aPassword", "differentToken"));
 
 		assertThat(tokenClient).isEqualTo(basicAuthClient);
@@ -218,10 +214,10 @@ public class DefaultClientTest {
 
 	@Test
 	public void tokenAuthClient_should_not_equal_basicAuthclient_with_different_username() throws Exception {
-		DefaultClient tokenClient = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClient = new DefaultClient(baseUrl, null, null, null);
 		tokenClient.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
 
-		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null);
+		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null, null, null);
 		basicAuthClient.setAuthorizationStrategy(new BasicAuthorizationStrategy("differentUser", "aPassword", "aToken"));
 
 		assertThat(tokenClient).isNotEqualTo(basicAuthClient);
@@ -229,10 +225,10 @@ public class DefaultClientTest {
 
 	@Test
 	public void basicAuthClient_should_equal_tokenClient_with_same_username() throws Exception {
-		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null);
+		DefaultClient basicAuthClient = new DefaultClient(baseUrl, null, null, null);
 		basicAuthClient.setAuthorizationStrategy(new BasicAuthorizationStrategy("aUser", "aPassword", "differentToken"));
 
-		DefaultClient tokenClient = new DefaultClient(baseUrl, null);
+		DefaultClient tokenClient = new DefaultClient(baseUrl, null, null, null);
 		tokenClient.setAuthorizationStrategy(new TokenAuthorizationStrategy("aToken", "aUser"));
 
 		assertThat(basicAuthClient).isEqualTo(tokenClient);
