@@ -67,11 +67,16 @@ public class AuthorizationClient implements IAuthorizationClient {
 
 
 	public AuthorizationClient(IClient client) {
-		this.openshiftClient = client;
-		setSSLCertificateCallback(new NoopSSLCertificateCallback());
+		this(client, TIMEOUT);
 	}
 	
 	
+	public AuthorizationClient(IClient client, int connectTimeoutMillis) {
+		this.openshiftClient = client;
+		setSSLCertificateCallback(new NoopSSLCertificateCallback());
+	}
+
+
 	@Override
 	public IAuthorizationDetails getAuthorizationDetails(final String baseURL) {
 		try {
