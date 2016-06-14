@@ -10,10 +10,12 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.BufferedInputStream;
+import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
@@ -23,6 +25,7 @@ import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.model.IPod;
+import com.openshift.restclient.model.IResource;
 
 /**
  * 
@@ -31,22 +34,21 @@ import com.openshift.restclient.model.IPod;
  */
 public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
 
-	private static final String HELLO_OPENSHIFT = "docker-registry-1-uuho4";
 	private IntegrationTestHelper helper = new IntegrationTestHelper();
-	@Before
-	public void setUp() throws Exception {
-	}
+	private Exception ex;
 
 	@Test
 	public void testLogRetrieval() {
 		System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
 		IClient client = helper.createClientForBasicAuth();
-		IPod pod = client.get(ResourceKind.POD, HELLO_OPENSHIFT, "default");
+		List<IResource> pods = client.list(ResourceKind.POD, "default");
+		IPod pod = (IPod) pods.stream().filter(p->p.getName().startsWith("docker-registry")).findFirst().orElse(null);
+		assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
 
-		pod.accept(new CapabilityVisitor<IPodLogRetrieval, Object>() {
+		ex = pod.accept(new CapabilityVisitor<IPodLogRetrieval, Exception>() {
 
 			@Override
-			public Object visit(IPodLogRetrieval cap) {
+			public Exception visit(IPodLogRetrieval cap) {
 				try {
 					BufferedInputStream os = new BufferedInputStream(cap.getLogs(false, ""));//HELLO_OPENSHIFT));
 					int c;
@@ -54,13 +56,14 @@ public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
 						System.out.print((char)c);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					return e;
 				}finally {
 					cap.stop();
 				}
 				return null;
 			}
 
-		}, new Object());
+		}, null);
+		assertNull("Expected no exception", ex);
 	}
 }

@@ -20,8 +20,9 @@ public class UnauthorizedException extends OpenShiftException {
 
 	private static final long serialVersionUID = -3999801367045252906L;
 	private static final String MSG_BASE = "Unauthorized to access resource.";
-	private IAuthorizationDetails details;
+	private String message;
 	private IStatus status;
+	private IAuthorizationDetails details;
 	
 	public UnauthorizedException(IAuthorizationDetails details) {
 		this(details, null);
@@ -29,8 +30,15 @@ public class UnauthorizedException extends OpenShiftException {
 
 	public UnauthorizedException(IAuthorizationDetails details, IStatus status) {
 		super(String.format("%s See the authorization details for additional information or contact your system administrator.", MSG_BASE));
-		this.details = details;
 		this.status = status;
+		this.details = details;
+		if(details != null) {
+			if(StringUtils.isNotBlank(details.getScheme())){
+				message = String.format("%s You can access the server using %s authentication.", MSG_BASE, details.getScheme());
+			}else
+				message = details.getMessage();
+		}else
+			message = super.getMessage();
 	}
 	
 	public IAuthorizationDetails getAuthorizationDetails() {
@@ -39,11 +47,7 @@ public class UnauthorizedException extends OpenShiftException {
 
 	@Override
 	public String getMessage() {
-		String scheme = details.getScheme();
-		if(StringUtils.isNotBlank(scheme)){
-			return String.format("%s You can access the server using %s authentication.", MSG_BASE, scheme);
-		}
-		return StringUtils.defaultIfEmpty(details.getMessage(), super.getMessage());
+		return message;
 	}
 
 	@Override

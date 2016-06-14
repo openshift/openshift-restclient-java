@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.openshift.restclient.model.IStatus;
 
 /**
@@ -27,11 +29,26 @@ public class OpenShiftException extends RuntimeException {
 	}
 	
 	public OpenShiftException(Throwable cause, IStatus status, String message, Object... arguments ) {
-		super(String.format(message, arguments), cause);
+		super(String.format(StringUtils.defaultIfBlank(message, ""), arguments), cause);
 		this.status = status;
 	}		
 	
 	public IStatus getStatus(){
 		return this.status;
 	}
+	
+	public boolean hasStatus() {
+		return this.status != null;
+	}
+	
+	@Override
+	public String getMessage() {
+		if(hasStatus()) {
+			return super.getMessage() + " " + status.getMessage();
+		}
+		return super.getMessage();
+	}
+	
+	
+	
 }

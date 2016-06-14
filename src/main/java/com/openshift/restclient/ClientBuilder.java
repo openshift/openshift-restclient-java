@@ -10,13 +10,30 @@
  ******************************************************************************/
 package com.openshift.restclient;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.ResourceFactory;
-import com.openshift.restclient.authorization.IAuthorizationStrategy;
+import com.openshift.internal.restclient.authorization.AuthorizationContext;
+import com.openshift.internal.restclient.okhttp.OpenShiftAuthenticator;
+import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
+import com.openshift.restclient.http.IHttpConstants;
+import com.openshift.restclient.utils.SSLUtils;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Builder to create IClient instances.
@@ -26,14 +43,20 @@ import com.openshift.restclient.authorization.IAuthorizationStrategy;
 public class ClientBuilder {
 	
 	private String baseUrl;
-	private ISSLCertificateCallback sslCertificateCallback;
+	private ISSLCertificateCallback sslCertificateCallback = new NoopSSLCertificateCallback();
 	private X509Certificate certificate;
 	private String certificateAlias;
 	private IResourceFactory resourceFactory;
-	private IAuthorizationStrategy authStrategy;
-	private String withUserName;
-	private Object token;
-	private int connectTimeoutMillies;
+	private String userName;
+	private String token;
+	private String password;
+	
+	private int readTimeout = IHttpConstants.DEFAULT_READ_TIMEOUT;
+	private TimeUnit readTimeoutUnit = TimeUnit.MILLISECONDS;
+	private int connectTimeout = IHttpConstants.DEFAULT_READ_TIMEOUT;
+	private TimeUnit connectTimeoutUnit = TimeUnit.MILLISECONDS;
+	private int writeTimeout = IHttpConstants.DEFAULT_READ_TIMEOUT;
+	private TimeUnit writeTimeoutUnit = TimeUnit.MILLISECONDS;
 
 	public ClientBuilder() {
 		this(null);
@@ -44,7 +67,7 @@ public class ClientBuilder {
 	}
 	
 	public ClientBuilder sslCertificateCallback(ISSLCertificateCallback callback) {
-		this.sslCertificateCallback = callback;
+		this.sslCertificateCallback = callback == null ? new NoopSSLCertificateCallback() : callback;
 		return this;
 	}
 	
@@ -59,29 +82,39 @@ public class ClientBuilder {
 		return this;
 	}
 
-	@Deprecated
-	public ClientBuilder resourceFactory(IAuthorizationStrategy authStrategy) {
-		this.authStrategy = authStrategy;
-		return this;
-	}
-
-	public ClientBuilder authorizationStrategy(IAuthorizationStrategy authStrategy) {
-		this.authStrategy = authStrategy;
-		return this;
-	}
-	
 	public ClientBuilder toCluster(String baseUrl) {
 		this.baseUrl = baseUrl;
 		return this;
 	}
 
 	public ClientBuilder withUserName(String userName) {
-		this.withUserName = userName;
+		this.userName = userName;
+		return this;
+	}
+
+	public ClientBuilder withPassword(String password) {
+		this.password = password;
 		return this;
 	}
 	
-	public ClientBuilder usingToken(String userName) {
+	public ClientBuilder usingToken(String token) {
 		this.token = token;
+		return this;
+	}
+
+	public ClientBuilder withConnectTimeout(int timeout, TimeUnit unit) {
+		this.connectTimeout = timeout;
+		this.connectTimeoutUnit = unit;
+		return this;
+	}
+	public ClientBuilder withReadTimeout(int timeout, TimeUnit unit) {
+		this.readTimeout = timeout;
+		this.readTimeoutUnit = unit;
+		return this;
+	}
+	public ClientBuilder withWriteTimeout(int timeout, TimeUnit unit) {
+		this.writeTimeout = timeout;
+		this.writeTimeoutUnit = unit;
 		return this;
 	}
 	
@@ -92,7 +125,7 @@ public class ClientBuilder {
 	 * @return
 	 */
 	public ClientBuilder withConnectTimeout(int connectInMillis) {
-		this.connectTimeoutMillies = connectInMillis;
+		this.connectTimeout = connectInMillis;
 		return this;
 	}
 	
@@ -107,18 +140,39 @@ public class ClientBuilder {
 	 * 3. currentContext of config file located at ~/.kube/config 
 	 * 
 	 * @return
+	 * @throws KeyManagementException 
 	 */
 	public IClient build() {
 		try {
-			ISSLCertificateCallback sslCallback = defaultIfNull(this.sslCertificateCallback, new NoopSSLCertificateCallback());
-			IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
-			DefaultClient client = new DefaultClient(new URL(this.baseUrl), null, sslCallback, factory, certificateAlias, certificate, connectTimeoutMillies);
+			TrustManagerFactory trustManagerFactory = initTrustManagerFactory(certificateAlias, certificate);
+			X509TrustManager trustManager  = getCurrentTrustManager(trustManagerFactory);
+			SSLContext sslContext = SSLUtils.getSSLContext(trustManager);
+
+			ResponseCodeInterceptor responseCodeInterceptor = new ResponseCodeInterceptor();
+			OpenShiftAuthenticator authenticator = new OpenShiftAuthenticator();
+
+			OkHttpClient.Builder builder = new OkHttpClient.Builder()
+				.addInterceptor(responseCodeInterceptor)
+				.authenticator(authenticator)
+				.readTimeout(readTimeout, readTimeoutUnit)
+				.writeTimeout(writeTimeout, writeTimeoutUnit)
+				.connectTimeout(connectTimeout, connectTimeoutUnit)
+				.hostnameVerifier(this.sslCertificateCallback)
+				.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+			OkHttpClient okClient = builder.build();
 			
-			client.setAuthorizationStrategy(authStrategy);
+			IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
+			AuthorizationContext authContext = new AuthorizationContext(token, userName, password);
+			DefaultClient client = new DefaultClient(new URL(this.baseUrl), okClient, factory, null, authContext);
+			
+			authContext.setClient(client);
+			responseCodeInterceptor.setClient(client);
+			authenticator.setClient(client);
+			authenticator.setOkClient(okClient);
 			
 			return client;
-		} catch (MalformedURLException e) {
-			throw new OpenShiftException(e, "");
+		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException e) {
+			throw new OpenShiftException(e, "Unable to initialize client");
 		}
 	}
 	
@@ -127,4 +181,66 @@ public class ClientBuilder {
 			return value;
 		return aDefault;
 	}
+	
+	private X509TrustManager getCurrentTrustManager(TrustManagerFactory trustManagerFactory) throws NoSuchAlgorithmException, KeyStoreException {
+		for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
+			if (trustManager instanceof X509TrustManager) {
+				X509TrustManager x509TrustManager = (X509TrustManager) trustManager;
+				return new CallbackTrustManager(x509TrustManager, this.sslCertificateCallback);
+			}
+		}
+		return null;
+		
+	}
+	
+	private TrustManagerFactory initTrustManagerFactory(String alias, X509Certificate cert) throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
+			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			if (alias != null && cert != null) {
+				KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+				// need this load to initialize the key store, and allow for the subsequent set certificate entry
+				ks.load(null, null);
+				cert.checkValidity();
+				ks.setCertificateEntry(alias, cert);
+				// testing has proven that you can only call init() once for a TrustManagerFactory wrt loading certs
+				// from the KeyStore ... subsequent KeyStore.setCertificateEntry / TrustManagerFactory.init calls are 
+				// ignored.
+				// So if a specific cert is required to validate this connection's communication with the server, add it up front
+				// in the ctor.
+				trustManagerFactory.init(ks);
+			} else {
+				trustManagerFactory.init((KeyStore)null);
+			}
+			return trustManagerFactory;
+	}
+	
+	private static class CallbackTrustManager implements X509TrustManager {
+
+		private X509TrustManager trustManager;
+		private ISSLCertificateCallback callback;
+
+		private CallbackTrustManager(X509TrustManager currentTrustManager, ISSLCertificateCallback callback) 
+				throws NoSuchAlgorithmException, KeyStoreException {
+			this.trustManager = currentTrustManager; 
+			this.callback = callback;
+		}
+		
+		public X509Certificate[] getAcceptedIssuers() {
+			return trustManager.getAcceptedIssuers();
+		}
+
+		public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+			try {
+					trustManager.checkServerTrusted(chain, authType);
+			} catch (CertificateException e) {
+				if (!callback.allowCertificate(chain)) {
+					throw e;
+				}
+			}
+		}
+
+		public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+			trustManager.checkServerTrusted(chain, authType);
+		}
+	}
+
 }

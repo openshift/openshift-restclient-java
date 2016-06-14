@@ -10,7 +10,10 @@ package com.openshift.internal.restclient.authorization;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.openshift.restclient.IClient;
+import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.authorization.IAuthorizationContext;
+import com.openshift.restclient.authorization.IAuthorizationDetails;
 import com.openshift.restclient.model.user.IUser;
 
 /**
@@ -22,11 +25,19 @@ public class AuthorizationContext implements IAuthorizationContext {
 	private String expires;
 	private String scheme;
 	private IUser user;
-
+	private String userName;
+	private String password;
+	private IClient client;
+	
 	public AuthorizationContext(String scope){
 		this.scheme = scope;
 	}
 	
+	public AuthorizationContext(String token, String userName, String password){
+		this.token = token;
+		this.userName = userName;
+		this.password = password;
+	}
 
 	public AuthorizationContext(String token, String expires, IUser user, String scheme){
 		this.token = token;
@@ -35,9 +46,31 @@ public class AuthorizationContext implements IAuthorizationContext {
 		this.scheme = scheme;
 	}
 	
+	public AuthorizationContext clone() {
+		AuthorizationContext context = new AuthorizationContext(this.token, this.expires, this.user, this.scheme);
+		context.setUserName(this.userName);
+		context.setPassword(this.password);
+		context.setClient(this.client);
+		return context;
+	}
+	
+	public void setClient(IClient client){
+		this.client = client;
+	}
+	
 	@Override
 	public boolean isAuthorized() {
+		if(user == null) {
+			synchronized (this) {
+				user = client.get(ResourceKind.USER, "~", "");
+			}
+		}
 		return StringUtils.isNotEmpty(token);
+	}
+
+	@Override
+	public IAuthorizationDetails getAuthorizationDetails() {
+		return new AuthorizationDetails(String.format("%s/oauth/token/request", client.getBaseURL()));
 	}
 
 	@Override
@@ -59,5 +92,40 @@ public class AuthorizationContext implements IAuthorizationContext {
 	public IUser getUser() {
 		return user;
 	}
+	
+	public void setUser(IUser user) {
+		this.user = user;
+	}
+
+
+	@Override
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+
+	@Override
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+
+	@Override
+	public String getUserName() {
+		return this.userName;
+	}
+
+
+	@Override
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+
+	@Override
+	public String getPassword() {
+		return this.password;
+	}
+	
 	
 }

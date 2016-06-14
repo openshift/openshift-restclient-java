@@ -50,11 +50,13 @@ public class ListTest {
 	}
 	
 	@Test
-	public void testItemKindsAreDefined() {
+	public void testItemKindAndApiVersionAreDefined() {
 		IList resource = createList(Samples.V1_BUILD_CONFIG_LIST);
 		Collection<IResource> items = resource.getItems();
 		assertTrue("Expected to be entries in the list",items.size() >0 );
-		assertEquals(ResourceKind.BUILD_CONFIG, items.iterator().next().getKind());
+		IResource bc = items.iterator().next();
+		assertEquals(ResourceKind.BUILD_CONFIG, bc.getKind());
+		assertEquals("v1", bc.getApiVersion());
 	}
 
 	@Test

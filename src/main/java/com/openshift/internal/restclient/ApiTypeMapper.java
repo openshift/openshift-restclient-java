@@ -10,8 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,16 +28,16 @@ import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.internal.restclient.http.HttpClientException;
-import com.openshift.internal.restclient.http.NotFoundException;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.http.IHttpClient;
-import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IResource;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Typemapper to determine the endpoints for
@@ -54,16 +53,21 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 	private static final String API_GROUPS_API = "apis";
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApiTypeMapper.class);
 	private final String baseUrl;
-	private final IHttpClient client;
+	private final OkHttpClient client;
 	private List<VersionedApiResource> resourceEndpoints;
 	private Map<String, String> preferedVersion = new HashMap<>(2);
 	private AtomicBoolean initialized = new AtomicBoolean(false);
 	
-	public ApiTypeMapper(String baseUrl, IHttpClient client) {
+	public ApiTypeMapper(String baseUrl, OkHttpClient client) {
 		this.baseUrl = baseUrl;
 		this.client = client;
 		preferedVersion.put(KUBE_API, KubernetesAPIVersion.v1.toString());
 		preferedVersion.put(OS_API, OpenShiftAPIVersion.v1.toString());
+	}
+
+	@Override
+	public String getPreferedVersionFor(String endpoint) {
+		return preferedVersion.get(endpoint);
 	}
 
 	@Override
@@ -191,19 +195,14 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 		try {
 			final URL url = new URL(new URL(this.baseUrl), endpoint);
 			LOGGER.debug(url.toString());
-			String response = client.get(url, IHttpConstants.DEFAULT_READ_TIMEOUT);
-			LOGGER.debug(response);
-			return response;
-		} catch (MalformedURLException | SocketTimeoutException e) {
-			throw new OpenShiftException(e,"");
-		//HACK - This gets us around a server issue
-		} catch (HttpClientException e) {
-			if(e instanceof NotFoundException) {
-				throw new com.openshift.restclient.NotFoundException(e);
-			}
-			LOGGER.error("Unauthorized exception. Can system:anonymous get the API endpoint", e);
-			throw e;
-		}
+			Request request = new Request.Builder()
+					.url(url)
+					.build();
+			Response response = client.newCall(request).execute();
+			return response.body().string();
+		} catch (IOException e) {
+			throw new OpenShiftException(e,"Unable to read endpoint %s/%s", this.baseUrl, endpoint);
+		} 
 	}
 	
 	static class ApiGroup implements IApiGroup{

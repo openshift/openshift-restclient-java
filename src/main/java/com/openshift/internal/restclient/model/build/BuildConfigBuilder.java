@@ -220,6 +220,15 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 			return this;
 		}
 
+		@Override
+		public ISourceStrategyBuilder fromDockerImage(String tag) {
+			this.tag = tag;
+			this.fromKind = "DockerImage";
+			return this;
+		}
+		
+		
+
 	}
 
 }

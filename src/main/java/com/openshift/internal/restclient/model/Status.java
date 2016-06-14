@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
@@ -24,6 +25,9 @@ public class Status extends KubernetesResource implements IStatus{
 	private static final String STATUS_CODE = "code";
 	private static final String STATUS_STATUS = "status";
 
+	public Status(String json) {
+		this(ModelNode.fromJSONString(json), null, new HashMap<>());
+	}
 
 	public Status(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
@@ -37,7 +41,7 @@ public class Status extends KubernetesResource implements IStatus{
 	public int getCode() {
 		return asInt(STATUS_CODE);
 	}
-
+	
 	@Override
 	public String getStatus() {
 		return asString(STATUS_STATUS);

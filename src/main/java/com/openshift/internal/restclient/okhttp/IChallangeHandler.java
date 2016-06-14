@@ -8,22 +8,33 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.restclient.capability.resources;
+package com.openshift.internal.restclient.okhttp;
 
-import com.openshift.restclient.capability.ICapability;
-import com.openshift.restclient.model.IBuild;
+import okhttp3.Headers;
+import okhttp3.Request;
+import okhttp3.Request.Builder;
 
 /**
- * Capability to cancel a build that is running
+ * A challange handler that can retrieve a token
  * @author jeff.cantrill
  *
  */
-public interface IBuildCancelable extends ICapability {
+interface IChallangeHandler{
 	
 	/**
-	 * Cancel the build
+	 * Is able to handle a challange given the auth mechanism
+	 * provided in the header
+	 * 
+	 * @param headers
+	 * @return true if can handle, false otherwise
+	 */
+	boolean canHandle(Headers headers);
+	
+	/**
+	 * Handle the challange
+	 * 
+	 * @param builder
 	 * @return
 	 */
-	IBuild cancel();
-
+	Request.Builder handleChallange(Builder builder);
 }

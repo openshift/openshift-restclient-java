@@ -8,22 +8,27 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.restclient.capability.resources;
+package com.openshift.restclient;
 
-import com.openshift.restclient.capability.ICapability;
-import com.openshift.restclient.model.IBuild;
+import com.openshift.restclient.model.IStatus;
 
 /**
- * Capability to cancel a build that is running
+ * The exception thrown when the client is trying to submit a request
+ * to with parameters that are not accepted by the server
+ * 
  * @author jeff.cantrill
  *
  */
-public interface IBuildCancelable extends ICapability {
-	
+public class BadRequestException extends OpenShiftException {
+
+
 	/**
-	 * Cancel the build
-	 * @return
+	 * 
 	 */
-	IBuild cancel();
+	private static final long serialVersionUID = -333562634088784896L;
+
+	public BadRequestException(Throwable e, IStatus status, String endpoint) {
+		super(e, status, "%s", endpoint);
+	}
 
 }

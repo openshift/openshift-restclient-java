@@ -26,6 +26,8 @@ import com.openshift.restclient.model.IResource;
  */
 public class List extends KubernetesResource implements IList{
 
+	private static final String ITEMS = "items";
+	
 	private String kind;
 	private Collection<IResource> items;
 	public List(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
@@ -34,13 +36,12 @@ public class List extends KubernetesResource implements IList{
 		if(StringUtils.isNotBlank(listKind)) {
 			kind = listKind.substring(0, listKind.length() - "List".length());
 		}
-		
 	}
 	
 	@Override
 	public Collection<IResource> getItems(){
 		if(items == null) {
-			String key = getNode().has(OBJECTS) ? OBJECTS : "items";
+			String key = getNode().has(OBJECTS) ? OBJECTS : ITEMS;
 			ModelNode listNode = get(key);
 			if (listNode.isDefined()) {
 				Collection<ModelNode> nodes = get(key).asList();
@@ -50,6 +51,9 @@ public class List extends KubernetesResource implements IList{
 					for (ModelNode node : nodes) {
 						if (kind != null && !node.get(KIND).isDefined()) {
 							set(node, KIND, kind);
+						}
+						if(!node.get(APIVERSION).isDefined()) {
+							set(node, APIVERSION, getApiVersion());
 						}
 						IResource resource = factory.create(node.toJSONString(true));
 						items.add(resource);

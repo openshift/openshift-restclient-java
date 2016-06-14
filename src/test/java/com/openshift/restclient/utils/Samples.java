@@ -55,7 +55,9 @@ public enum Samples {
 	V1_CONFIG_MAP_LIST_EMPTY("openshift3/v1_config_map_list_empty.json"),
 	V1_EMPTYDIR_VOLUME_SOURCE("openshift3/v1_empty_dir_volume_source.json"),
 	V1_SECRET_VOLUME_SOURCE("openshift3/v1_secret_volume_source.json"),
-	V1_PVC_VOLUME_SOURCE("openshift3/v1_pvc_volume_source.json");
+	V1_PVC_VOLUME_SOURCE("openshift3/v1_pvc_volume_source.json"),
+
+	V1_DOCKER_IMAGE_MANIFEST("dockerregistry/v1_image_manifest.json");
 
 	private static final String SAMPLES_FOLDER = "/samples/";
 

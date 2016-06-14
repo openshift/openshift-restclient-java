@@ -8,14 +8,18 @@
  ******************************************************************************/
 package com.openshift.internal.util;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 
 /**
  * Helper methods for manipulating URIs
@@ -23,11 +27,15 @@ import org.apache.http.client.utils.URLEncodedUtils;
  * @author Jeff Cantrill
  */
 public class URIUtils {
+	private static final Logger LOG = Logger.getLogger(URIUtils.class);
 	
 	private URIUtils(){
 	}
 	
 	public static  Map<String, String> splitFragment(String location){
+		if(StringUtils.isEmpty(location)) {
+			return Collections.emptyMap();
+		}
 		URI uri = null;
 		try {
 			uri = new URI(location);
@@ -44,8 +52,17 @@ public class URIUtils {
 	public static Map<String,String> splitQuery(String q) {
 		HashMap<String, String> params = new HashMap<String, String>();
 		if (q != null) {
-			for (NameValuePair pair : URLEncodedUtils.parse(q, StandardCharsets.UTF_8)) {
-				params.put(pair.getName(), pair.getValue());
+			try {
+				String decoded = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
+				String[] split = decoded.split("&");
+				for (String pair : split) {
+					String[] keyValue = pair.split("=");
+					if(keyValue.length >= 2) {
+						params.put(keyValue[0], keyValue[1]);
+					}
+				}
+			} catch (UnsupportedEncodingException e) {
+				LOG.error("Unable to decode " + q, e);
 			}
 		}
 		return params;

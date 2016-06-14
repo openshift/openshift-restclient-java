@@ -11,11 +11,7 @@
 package com.openshift.internal.restclient;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
-
-import java.net.URL;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +19,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.IService;
@@ -39,10 +34,10 @@ public class ApiTypeMapperTest extends TypeMapperFixture {
 	public void testKubernetesResourceIsSupportedAfterInitiallyErrorIsThrown() throws Exception {
 		IService resource = factory.stub(ResourceKind.SERVICE);
 		try {
-			when(getHttpClient().get(eq(new URL(super.base + "/api")), anyInt())).thenThrow(new RuntimeException());
+			getHttpClient().whenRequestTo(TypeMapperFixture.base + "/api").thenThrow(new RuntimeException());
 			assertTrue("Exp. Kube support", mapper.isSupported(resource));
 		}catch(RuntimeException e) {
-			when(getHttpClient().get(eq(new URL(base + "/api")), anyInt())).thenReturn(super.VERSIONS);
+			getHttpClient().whenRequestTo(TypeMapperFixture.base + "/api").thenReturn(responseOf(TypeMapperFixture.VERSIONS));
 			assertTrue("Exp. Kube support", mapper.isSupported(resource));
 		}
 	}
