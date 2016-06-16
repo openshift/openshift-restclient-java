@@ -67,7 +67,7 @@ public class DefaultClientTest extends TypeMapperFixture{
 
 	private void givenAClient() throws MalformedURLException{
 		factory = new ResourceFactory(null);
-		client = new DefaultClient(baseUrl, getHttpClient(), null, factory, null, null, getApiTypeMapper());
+		client = new DefaultClient(baseUrl, getHttpClient(), null, factory, null, null, getApiTypeMapper(), IHttpClient.NO_TIMEOUT);
 	}
 
 	private void givenAPodList(){
@@ -238,11 +238,11 @@ public class DefaultClientTest extends TypeMapperFixture{
 	public void clientShouldEqualClientWithDifferentCert() throws Exception {
 		X509Certificate certOne = mock(X509Certificate.class);
 		when(certOne.getSigAlgName()).thenReturn("sig1");
-		DefaultClient certClientOne = new DefaultClient(baseUrl, null, null, null, "cert1", certOne);
+		DefaultClient certClientOne = new DefaultClient(baseUrl, null, null, null, "cert1", certOne, IHttpClient.NO_TIMEOUT);
 
 		X509Certificate certTwo = mock(X509Certificate.class);
 		when(certTwo.getSigAlgName()).thenReturn("sig2");
-		DefaultClient certClientTwo = new DefaultClient(baseUrl, null, null, null, "cert2", certTwo);
+		DefaultClient certClientTwo = new DefaultClient(baseUrl, null, null, null, "cert2", certTwo, IHttpClient.NO_TIMEOUT);
 
 		assertThat(certClientTwo).isEqualTo(certClientOne);
 	}
