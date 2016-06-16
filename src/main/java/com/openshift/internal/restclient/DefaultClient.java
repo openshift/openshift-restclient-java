@@ -82,21 +82,24 @@ public class DefaultClient implements IClient, IHttpConstants{
 	private IApiTypeMapper typeMapper;
 	
 	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory){
-		this(baseUrl, httpClient, sslCertCallback, factory, null, null, null);
+		this(baseUrl, httpClient, sslCertCallback, factory, null, null, null, IHttpClient.NO_TIMEOUT);
 	}
-	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory, String alias, X509Certificate cert) {
-		this(baseUrl, httpClient, sslCertCallback, factory, alias, cert, null);
+	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory, String alias, X509Certificate cert, int configTimeoutMillies) {
+		this(baseUrl, httpClient, sslCertCallback, factory, alias, cert, null, configTimeoutMillies);
 	}
-	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory, String alias, X509Certificate cert, IApiTypeMapper typeMapper){
+	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory, String alias, X509Certificate cert, IApiTypeMapper typeMapper, int configTimeoutMillies){
 		this.baseUrl = baseUrl;
-		client = httpClient != null ? httpClient : newIHttpClient(sslCertCallback, alias, cert);
+		client = httpClient != null ? httpClient : newIHttpClient(sslCertCallback, alias, cert, configTimeoutMillies);
 		this.factory = factory;
 		if(this.factory != null) {
 			this.factory.setClient(this);
 		}
 		openShiftVersion = System.getProperty(SYSTEM_PROP_OPENSHIFT_API_VERSION, null);
 		kubernetesVersion = System.getProperty(SYSTEM_PROP_K8E_API_VERSION, null);
-		authClient = new AuthorizationClientFactory().create(this);	
+		authClient = new AuthorizationClientFactory.AuthorizationClientBuilder()
+				.withClient(this)
+				.withConnectTimeout(configTimeoutMillies)
+				.build();	
 		authClient.setSSLCertificateCallback(sslCertCallback);
 		this.typeMapper = typeMapper != null ? typeMapper :  new ApiTypeMapper(baseUrl.toString(), client);
 	}
@@ -104,11 +107,12 @@ public class DefaultClient implements IClient, IHttpConstants{
 	/*
 	 * Factory method for testing
 	 */
-	private IHttpClient newIHttpClient(ISSLCertificateCallback sslCertCallback, String alias, X509Certificate cert){
+	private IHttpClient newIHttpClient(ISSLCertificateCallback sslCertCallback, String alias, X509Certificate cert, int configTimeoutMillies){
 		return  new UrlConnectionHttpClientBuilder()
 		.setAcceptMediaType("application/json")
 		.setCertificate(alias, cert)
 		.setSSLCertificateCallback(sslCertCallback)
+		.setConfigTimeout(configTimeoutMillies)
 		.client();
 	}
 	

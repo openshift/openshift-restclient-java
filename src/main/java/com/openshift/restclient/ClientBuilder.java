@@ -33,6 +33,7 @@ public class ClientBuilder {
 	private IAuthorizationStrategy authStrategy;
 	private String withUserName;
 	private Object token;
+	private int connectTimeoutMillies;
 
 	public ClientBuilder() {
 		this(null);
@@ -85,6 +86,17 @@ public class ClientBuilder {
 	}
 	
 	/**
+	 * The connect timeout parameter used for establishing
+	 * the connection to a remote server
+	 * @param connectInMillis  A value in milliseconds
+	 * @return
+	 */
+	public ClientBuilder withConnectTimeout(int connectInMillis) {
+		this.connectTimeoutMillies = connectInMillis;
+		return this;
+	}
+	
+	/**
 	 * Build a client using the config loading rules defined http://janetkuo.github.io/kubernetes/v1.0/docs/user-guide/kubeconfig-file.html.  Brief summary
 	 * of loading order:
 	 * 
@@ -100,7 +112,7 @@ public class ClientBuilder {
 		try {
 			ISSLCertificateCallback sslCallback = defaultIfNull(this.sslCertificateCallback, new NoopSSLCertificateCallback());
 			IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
-			DefaultClient client = new DefaultClient(new URL(this.baseUrl), null, sslCallback, factory, certificateAlias, certificate);
+			DefaultClient client = new DefaultClient(new URL(this.baseUrl), null, sslCallback, factory, certificateAlias, certificate, connectTimeoutMillies);
 			
 			client.setAuthorizationStrategy(authStrategy);
 			
