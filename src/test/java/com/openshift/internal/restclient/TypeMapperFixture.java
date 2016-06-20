@@ -25,7 +25,8 @@ import com.openshift.restclient.utils.Samples;
 
 public class TypeMapperFixture {
 	
-	private static final String VERSIONS = "{ \"versions\": [\"v1\"]}";
+	protected static final String VERSIONS = "{ \"versions\": [\"v1\"]}";
+	protected static final String base = "https://localhost:8443";
 	
 	@Mock
 	private IHttpClient client;
@@ -41,7 +42,6 @@ public class TypeMapperFixture {
 	
 	@Before
 	public void setUp() throws Exception {
-		String base = "https://localhost:8443";
 		when(client.get(eq(new URL(base + "/api")), anyInt())).thenReturn(VERSIONS);
 		when(client.get(eq(new URL(base + "/oapi")), anyInt())).thenReturn(VERSIONS);
 		when(client.get(eq(new URL(base + "/apis")), anyInt())).thenReturn(Samples.GROUP_ENDPONT_APIS.getContentAsString());
