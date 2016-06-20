@@ -64,15 +64,18 @@ public class AuthorizationClient implements IAuthorizationClient {
 	private SSLContext sslContext;
 	private X509HostnameVerifier hostnameVerifier = new AllowAllHostnameVerifier();
 	private IClient openshiftClient;
+	private int connectTimeoutMillis;
 
 
 	public AuthorizationClient(IClient client) {
 		this(client, TIMEOUT);
+		connectTimeoutMillis = TIMEOUT;
 	}
 	
 	
 	public AuthorizationClient(IClient client, int connectTimeoutMillis) {
 		this.openshiftClient = client;
+		this.connectTimeoutMillis = connectTimeoutMillis;
 		setSSLCertificateCallback(new NoopSSLCertificateCallback());
 	}
 
@@ -116,9 +119,9 @@ public class AuthorizationClient implements IAuthorizationClient {
 		try {
 			OpenShiftAuthorizationRedirectStrategy redirectStrategy = new OpenShiftAuthorizationRedirectStrategy(openshiftClient);
 			RequestConfig defaultRequestConfig = RequestConfig.custom()
-					.setSocketTimeout(TIMEOUT)
-					.setConnectTimeout(TIMEOUT)
-					.setConnectionRequestTimeout(TIMEOUT)
+					.setSocketTimeout(connectTimeoutMillis)
+					.setConnectTimeout(connectTimeoutMillis)
+					.setConnectionRequestTimeout(connectTimeoutMillis)
 					.setStaleConnectionCheckEnabled(true)
 					.build();
 			client = HttpClients.custom()
