@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.UnsupportedEndpointException;
 import com.openshift.restclient.authorization.ResourceForbiddenException;
 import com.openshift.restclient.capability.resources.IImageStreamImportCapability;
 import com.openshift.restclient.images.DockerImageURI;
@@ -53,8 +54,8 @@ public class ImageStreamImportCapability implements IImageStreamImportCapability
 					return result;
 				}
 			}
-		}catch(ResourceForbiddenException e) {
-			LOG.info("Unsuccessful in trying OpenShift server. ImageStreamImport may not be supported.");
+		}catch(ResourceForbiddenException | UnsupportedEndpointException e) {
+			LOG.info("Unsuccessful in trying OpenShift server. ImageStreamImport is not supported.");
 		}
 		LOG.debug("Unsuccessful in trying OpenShift server.  Trying dockerhub v2 registry...");
 		DockerRegistryImageStreamImportCapability reg = new DockerRegistryImageStreamImportCapability(this.project, client.getResourceFactory());

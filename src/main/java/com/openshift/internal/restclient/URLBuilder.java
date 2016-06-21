@@ -25,6 +25,7 @@ import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.UnsupportedEndpointException;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IResource;
 
@@ -137,7 +138,7 @@ public class URLBuilder {
 	
 	private void buildWithNamespaceInPath(StringBuilder url) {
 		if(!typeMappings.isSupported(apiVersion, kind)) {
-			throw new OpenShiftException("Unable to determine the api endpoint for kind '%s'", kind);
+			throw new UnsupportedEndpointException("Unable to determine the api endpoint for kind '%s'", kind);
 		}
 		url.append("/");
 		IVersionedApiResource apiResource = typeMappings.getEndpointFor(apiVersion, kind);

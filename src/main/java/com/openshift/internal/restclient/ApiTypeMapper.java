@@ -118,19 +118,20 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 		if(resourceEndpoints != null) {
 			return;
 		}
-		resourceEndpoints = new ArrayList<>();
+		List<VersionedApiResource> resourceEndpoints = new ArrayList<>();
 		Collection<ApiGroup> groups = getLegacyGroups();
 		groups.addAll(getApiGroups());
 		groups.forEach(g->{
 			Collection<String> versions = g.getVersions();
 			versions.forEach(v->{
 				Collection<ModelNode> resources = getResources(g, v);
-				addEndpoints(g.getPrefix(), g.getName(), v, resources);
+				addEndpoints(resourceEndpoints, g.getPrefix(), g.getName(), v, resources);
 			});
 		});
+		this.resourceEndpoints = resourceEndpoints;
 	}
 	
-	private void addEndpoints(final String prefix, final String apiGroupName, final String version, final Collection<ModelNode> nodes) {
+	private void addEndpoints(List<VersionedApiResource> endpoints, final String prefix, final String apiGroupName, final String version, final Collection<ModelNode> nodes) {
 		for (ModelNode node : nodes) {
 			String name = node.get(NAME).asString();
 			String capability = null;
@@ -141,12 +142,12 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 			}
 			boolean namespaced = node.get("namespaced").asBoolean();
 			VersionedApiResource resource = new VersionedApiResource(prefix, apiGroupName, version, name, node.get(KIND).asString(), namespaced);
-			if(!resourceEndpoints.contains(resource)) {
-				resourceEndpoints.add(resource);
+			if(!endpoints.contains(resource)) {
+				endpoints.add(resource);
 			}
 			if(capability != null) {
-				int index = resourceEndpoints.indexOf(resource);
-				resourceEndpoints.get(index).addCapability(capability);
+				int index = endpoints.indexOf(resource);
+				endpoints.get(index).addCapability(capability);
 			}
 		}
 	}
@@ -347,6 +348,11 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 			return capabilities.contains(capability);
 		}
 		
+		@Override
+		public String toString() {
+			return String.format("%s/%s/%s/%s/%s", prefix, apiGroupName, version, name, version,kind);
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
