@@ -294,6 +294,22 @@ public class ReplicationControllerTest {
 		
 		JSONAssert.assertEquals(exp.toJSONString(false), container.toJSONString(), true);
 	}
-	
 
+	@Test
+	public void testAddSecretVolumeToPodSpec() throws JSONException {
+            IVolumeMount volumeMount = new IVolumeMount() {
+                    public String getName() { return "my-secret"; }
+                    public String getMountPath() { return "/path/to/my/secret/"; }
+                    public boolean isReadOnly() { return true; }
+                    public void setName(String name) {}
+                    public void setMountPath(String path) {}
+                    public void setReadOnly(boolean readonly) {}
+                };
+            ((ReplicationController) rc).addSecretVolumeToPodSpec(volumeMount, "the-secret");
+            Set<IVolumeSource> podSpecVolumes = rc.getVolumes();
+            Optional vol = podSpecVolumes.stream()
+                .filter(v->v.getName().equals(volumeMount.getName()))
+                .findFirst();
+            assertTrue("Expected to find secret volume in pod spec", vol.isPresent());
+        }
 }
