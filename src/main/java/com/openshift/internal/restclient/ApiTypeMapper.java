@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +57,7 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 	private final IHttpClient client;
 	private List<VersionedApiResource> resourceEndpoints;
 	private Map<String, String> preferedVersion = new HashMap<>(2);
+	private AtomicBoolean initialized = new AtomicBoolean(false);
 	
 	public ApiTypeMapper(String baseUrl, IHttpClient client) {
 		this.baseUrl = baseUrl;
@@ -114,21 +116,25 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 		return new VersionedApiResource(prefix, version, ResourceKind.pluralize(kind, true, true));
 	}
 	
-	private synchronized void init() {
-		if(resourceEndpoints != null) {
-			return;
+	private void init() {
+		if(initialized.compareAndSet(false, true)) {
+			try {
+				List<VersionedApiResource> resourceEndpoints = new ArrayList<>();
+				Collection<ApiGroup> groups = getLegacyGroups();
+				groups.addAll(getApiGroups());
+				groups.forEach(g->{
+					Collection<String> versions = g.getVersions();
+					versions.forEach(v->{
+						Collection<ModelNode> resources = getResources(g, v);
+						addEndpoints(resourceEndpoints, g.getPrefix(), g.getName(), v, resources);
+					});
+				});
+				this.resourceEndpoints = resourceEndpoints;
+			}catch(Exception e) {
+				initialized.set(false);
+				throw e;
+			}
 		}
-		List<VersionedApiResource> resourceEndpoints = new ArrayList<>();
-		Collection<ApiGroup> groups = getLegacyGroups();
-		groups.addAll(getApiGroups());
-		groups.forEach(g->{
-			Collection<String> versions = g.getVersions();
-			versions.forEach(v->{
-				Collection<ModelNode> resources = getResources(g, v);
-				addEndpoints(resourceEndpoints, g.getPrefix(), g.getName(), v, resources);
-			});
-		});
-		this.resourceEndpoints = resourceEndpoints;
 	}
 	
 	private void addEndpoints(List<VersionedApiResource> endpoints, final String prefix, final String apiGroupName, final String version, final Collection<ModelNode> nodes) {
