@@ -283,22 +283,40 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		return container;
 	}
 	
-	private void addEmptyDirVolumeToPodSpec(VolumeMount volume) {
-		ModelNode volNode = get(VOLUMES);
+        private boolean hasVolumeNamed(ModelNode volNode, String name) {
 		if(volNode.isDefined()) {
 			List<ModelNode> podVolumes = volNode.asList();
 			for (ModelNode node : podVolumes) {
-				if(volume.getName().equals(asString(node,NAME))) {
-					//already exists
-					return;
+				if(name.equals(asString(node,NAME))) {
+					return true;
 				}
 			}
 		}
+                return false;
+	}
+
+        private void addEmptyDirVolumeToPodSpec(VolumeMount volume) {
+		ModelNode volNode = get(VOLUMES);
+                if (hasVolumeNamed(volNode, volume.getName())) {
+                        //already exists
+                        return;
+                }
 		ModelNode podVolume = volNode.add();
 		set(podVolume,NAME,volume.getName());
 		set(podVolume,"emptyDir.medium","");
 	}
-	
+
+        public void addSecretVolumeToPodSpec(IVolumeMount volume, String secretName) {
+		ModelNode volNode = get(VOLUMES);
+                if (hasVolumeNamed(volNode, volume.getName())) {
+                        //already exists
+                        return;
+                }
+		ModelNode podVolume = volNode.add();
+		set(podVolume,NAME,volume.getName());
+		set(podVolume,"secret.secretName",secretName);
+	}
+
 	@Override
 	public IContainer addContainer(String name) {
 		ModelNode containers = get(SPEC_TEMPLATE_CONTAINERS);
