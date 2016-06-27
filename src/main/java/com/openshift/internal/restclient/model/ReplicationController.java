@@ -19,6 +19,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.openshift.internal.restclient.model.volume.EmptyDirVolumeSource;
+import com.openshift.restclient.model.volume.IEmptyDirVolumeSource;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
@@ -283,7 +285,7 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		return container;
 	}
 	
-        private boolean hasVolumeNamed(ModelNode volNode, String name) {
+	private boolean hasVolumeNamed(ModelNode volNode, String name) {
 		if(volNode.isDefined()) {
 			List<ModelNode> podVolumes = volNode.asList();
 			for (ModelNode node : podVolumes) {
@@ -292,29 +294,18 @@ public class ReplicationController extends KubernetesResource implements IReplic
 				}
 			}
 		}
-                return false;
+		return false;
 	}
 
-        private void addEmptyDirVolumeToPodSpec(VolumeMount volume) {
+	private void addEmptyDirVolumeToPodSpec(VolumeMount volume) {
 		ModelNode volNode = get(VOLUMES);
-                if (hasVolumeNamed(volNode, volume.getName())) {
-                        //already exists
-                        return;
-                }
-		ModelNode podVolume = volNode.add();
-		set(podVolume,NAME,volume.getName());
-		set(podVolume,"emptyDir.medium","");
-	}
-
-        public void addSecretVolumeToPodSpec(IVolumeMount volume, String secretName) {
-		ModelNode volNode = get(VOLUMES);
-                if (hasVolumeNamed(volNode, volume.getName())) {
-                        //already exists
-                        return;
-                }
-		ModelNode podVolume = volNode.add();
-		set(podVolume,NAME,volume.getName());
-		set(podVolume,"secret.secretName",secretName);
+		if (hasVolumeNamed(volNode, volume.getName())) {
+			//already exists
+			return;
+		}
+		IEmptyDirVolumeSource volumeSource = new EmptyDirVolumeSource(volume.getName());
+		volumeSource.setMedium("");
+		addVolume(volumeSource);
 	}
 
 	@Override
@@ -340,9 +331,19 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		Set<IVolumeSource> volumes = new HashSet<>();
 		if(vol.isDefined()) {
 			for (ModelNode node : vol.asList()) {
-				volumes.add(new VolumeSource(node));
+				volumes.add(VolumeSource.create(node));
 			}
 		}
 		return volumes;
+	}
+
+	@Override
+	public void addVolume(IVolumeSource volumeSource) {
+		ModelNode volList = get(VOLUMES);
+		if (hasVolumeNamed(volList, volumeSource.getName())) {
+			//already exists
+			return;
+		}
+		volList.add(ModelNode.fromJSONString(volumeSource.toJSONString()));
 	}
 }

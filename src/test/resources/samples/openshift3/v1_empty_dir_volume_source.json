@@ -1,0 +1,6 @@
+{
+    "name": "mysource",
+    "emptyDir": {
+        "medium": "mymedium"
+    }
+}

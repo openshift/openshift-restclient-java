@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.openshift.internal.restclient.model.volume.SecretVolumeSource;
+import com.openshift.restclient.model.volume.ISecretVolumeSource;
 import org.jboss.dmr.ModelNode;
 import org.json.JSONException;
 import org.junit.Before;
@@ -305,7 +307,9 @@ public class ReplicationControllerTest {
                     public void setMountPath(String path) {}
                     public void setReadOnly(boolean readonly) {}
                 };
-            ((ReplicationController) rc).addSecretVolumeToPodSpec(volumeMount, "the-secret");
+            SecretVolumeSource source = new SecretVolumeSource(volumeMount.getName());
+		    source.setSecretName("the-secret");
+	        rc.addVolume(source);
             Set<IVolumeSource> podSpecVolumes = rc.getVolumes();
             Optional vol = podSpecVolumes.stream()
                 .filter(v->v.getName().equals(volumeMount.getName()))
