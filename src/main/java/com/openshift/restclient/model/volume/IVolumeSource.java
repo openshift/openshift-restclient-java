@@ -16,6 +16,9 @@ package com.openshift.restclient.model.volume;
  *
  */
 public interface IVolumeSource {
-
 	String getName();
+
+	void setName(String name);
+
+	String toJSONString();
 }

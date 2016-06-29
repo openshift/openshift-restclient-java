@@ -174,5 +174,12 @@ public interface IReplicationController  extends IResource{
 	 */
 	Set<IVolumeSource> getVolumes();
 
+	/**
+	 * Adds a volume to the pod spec. If a volume with the same name already exists, the volume is not added.
+	 *
+	 * @param volumeSource The volume to add to the pod spec
+     */
+	void addVolume(IVolumeSource volumeSource);
+
 	void setContainers(Collection<IContainer> containers);
 }
