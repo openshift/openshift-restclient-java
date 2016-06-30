@@ -20,6 +20,8 @@ import com.openshift.restclient.model.volume.IPersistentVolumeClaim;
 import com.openshift.restclient.model.volume.PVCAccessModes;
 import com.openshift.restclient.utils.Samples;
 
+import java.util.Collections;
+
 /**
  * @author Jeff Cantrill
  */
@@ -39,6 +41,13 @@ public class PVCTest {
 	public void testGetAccessModes(){
 		assertArrayEquals(new String[] {PVCAccessModes.READ_WRITE_ONCE}, claim.getAccessModes().toArray());
 	}
+
+	@Test
+	public void testSetAccessModes() {
+		claim.setAccessModes(Collections.singleton(PVCAccessModes.READ_WRITE_MANY));
+		assertArrayEquals(new String[] {PVCAccessModes.READ_WRITE_MANY}, claim.getAccessModes().toArray());
+	}
+
 	
 	@Test
 	public void testGetStatus(){
@@ -48,6 +57,12 @@ public class PVCTest {
 	@Test
 	public void testGetRequestedStorage(){
 		assertEquals("15m", claim.getRequestedStorage());
+	}
+
+	@Test
+	public void testSetRequestedStorage() {
+		claim.setRequestedStorage("1Gi");
+		assertEquals("1Gi", claim.getRequestedStorage());
 	}
 
 }
