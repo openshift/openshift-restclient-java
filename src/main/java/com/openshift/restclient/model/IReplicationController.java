@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.volume.IVolume;
 import com.openshift.restclient.model.volume.IVolumeSource;
 
 /**
@@ -180,6 +181,13 @@ public interface IReplicationController  extends IResource{
 	 * @param volumeSource The volume to add to the pod spec
      */
 	void addVolume(IVolumeSource volumeSource);
+
+	/**
+	 * Sets the volumes associated with the pod spec. Existing volumes will be overwritten.
+	 *
+	 * @param volumes The volumes to assign to the pod spec.
+     */
+	void setVolumes(Set<IVolumeSource> volumes);
 
 	void setContainers(Collection<IContainer> containers);
 }

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import com.openshift.internal.restclient.model.volume.EmptyDirVolumeSource;
 import com.openshift.restclient.model.volume.IEmptyDirVolumeSource;
+import com.openshift.restclient.model.volume.IVolume;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
@@ -335,6 +336,15 @@ public class ReplicationController extends KubernetesResource implements IReplic
 			}
 		}
 		return volumes;
+	}
+
+	@Override
+	public void setVolumes(Set<IVolumeSource> volumeSources) {
+		ModelNode vol = get(VOLUMES);
+		vol.clear();
+		if (volumeSources != null) {
+			volumeSources.forEach(v -> vol.add(ModelNode.fromJSONString(v.toJSONString())));
+		}
 	}
 
 	@Override
