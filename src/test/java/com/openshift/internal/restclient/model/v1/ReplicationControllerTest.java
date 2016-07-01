@@ -17,15 +17,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import com.openshift.internal.restclient.model.volume.EmptyDirVolumeSource;
 import com.openshift.internal.restclient.model.volume.SecretVolumeSource;
 import com.openshift.restclient.model.volume.ISecretVolumeSource;
 import org.jboss.dmr.ModelNode;
@@ -295,6 +289,15 @@ public class ReplicationControllerTest {
 				.build();
 		
 		JSONAssert.assertEquals(exp.toJSONString(false), container.toJSONString(), true);
+	}
+
+	@Test
+	public void testSetVolumes() {
+		IVolumeSource source = new EmptyDirVolumeSource("myvolume");
+		rc.setVolumes(Collections.singleton(source));
+		Set<IVolumeSource> volumes = rc.getVolumes();
+		assertEquals(1, volumes.size());
+		assertEquals("myvolume", volumes.iterator().next().getName());
 	}
 
 	@Test
