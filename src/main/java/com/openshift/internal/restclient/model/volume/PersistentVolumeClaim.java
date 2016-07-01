@@ -48,8 +48,20 @@ public class PersistentVolumeClaim extends KubernetesResource implements IPersis
 	}
 
 	@Override
+	public void setAccessModes(Set<String> accessModes) {
+		ModelNode modelNode = get(PVC_ACCESS_MODES);
+		modelNode.clear();
+		accessModes.stream().forEach(modelNode::add);
+	}
+
+	@Override
 	public String getRequestedStorage() {
 		return asString(PVC_REQUESTED_STORAGE);
+	}
+
+	@Override
+	public void setRequestedStorage(String requestedStorage) {
+		set(PVC_REQUESTED_STORAGE, requestedStorage);
 	}
 
 	@Override
