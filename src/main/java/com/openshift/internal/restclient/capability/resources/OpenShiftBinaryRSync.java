@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.jetty.util.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +93,7 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 			if (getProcess().exitValue() != 0) {
 				String errorMessage = getErrorMessage(getProcess().getErrorStream());
 				throw new OpenShiftException("Syncing %s to %s failed"
-						+ (StringUtil.isBlank(errorMessage) ? "" : ": %s"),
+						+ (StringUtils.isBlank(errorMessage) ? "" : ": %s"),
 						source, destination, errorMessage);
 			}
 		} catch (InterruptedException e) {

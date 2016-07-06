@@ -9,6 +9,8 @@
 package com.openshift.internal.restclient;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static com.openshift.internal.restclient.IntegrationTestHelper.*;
 
 import java.net.MalformedURLException;
 import java.util.List;
@@ -20,14 +22,16 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.model.Project;
 import com.openshift.internal.restclient.model.Service;
+import com.openshift.internal.restclient.model.project.OpenshiftProjectRequest;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
+import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.authorization.UnauthorizedException;
 import com.openshift.restclient.model.IProject;
-import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.project.IProjectRequest;
 import com.openshift.restclient.model.template.ITemplate;
-import com.openshift.restclient.utils.Samples;
 
 /**
  * @author Jeff Cantrill
@@ -50,18 +54,38 @@ public class DefaultClientIntegrationTest {
 	}
 	
 	@Test
+	public void testAuthContextIsAuthorizedWithValidUserNameAndPassword() {
+		client = helper.createClient();
+		client.getAuthorizationContext().setUserName(helper.getDefaultClusterAdminUser());
+		client.getAuthorizationContext().setPassword(helper.getDefaultClusterAdminPassword());
+		client.getAuthorizationContext().isAuthorized();
+	}
+	@Test(expected=UnauthorizedException.class)
+	public void testAuthContextIsAuthorizedWithoutPasswordThrows() {
+		client = helper.createClient();
+		client.getAuthorizationContext().setUserName(helper.getDefaultClusterAdminUser());
+		client.getAuthorizationContext().isAuthorized();
+	}
+	
+	@Test
+	public void testReady() {
+		client.getServerReadyStatus();
+	}
+	
+	@Test
 	public void testListTemplates(){
 		Template template = null; 
-		Project project = null;
+		IProject project = null;
 		
 		try {
-			project = factory.create(VERSION, ResourceKind.PROJECT);
-			project.setName(helper.generateNamespace());
-			template = factory.create(Samples.V1_TEMPLATE.getContentAsString());
-			template.setNamespace(project.getName());
+			OpenshiftProjectRequest projectRequest = factory.create(VERSION, ResourceKind.PROJECT_REQUEST);
+			projectRequest.setName(helper.generateNamespace());
+			template = factory.stub(ResourceKind.TEMPLATE, "mytemplate");
 			
-			project = client.create(project);
+			project = (IProject) client.create(projectRequest);
 			template = client.create(template, project.getNamespace());
+			
+			assertNotNull("Exp. the template to be found but was not", waitForResource(client, ResourceKind.TEMPLATE, project.getName(), template.getName(), 5 * MILLISECONDS_PER_SECOND));
 			
 			List<ITemplate> list = client.list(ResourceKind.TEMPLATE, project.getName());
 			assertEquals(1, list.size());
@@ -78,16 +102,16 @@ public class DefaultClientIntegrationTest {
 	public void testResourceLifeCycle() throws MalformedURLException {
 		
 		
-		IProject project = factory.create(VERSION, ResourceKind.PROJECT);
-		((Project) project).setName(helper.generateNamespace());
-		LOG.debug(String.format("Stubbing project: %s", project));
+		IProjectRequest projectRequest = factory.create(VERSION, ResourceKind.PROJECT_REQUEST);
+		((OpenshiftProjectRequest) projectRequest).setName(helper.generateNamespace());
+		LOG.debug(String.format("Stubbing project request: %s", projectRequest));
 		
-		IProject other = factory.create(VERSION, ResourceKind.PROJECT);
-		((Project) other).setName(helper.generateNamespace());
-		LOG.debug(String.format("Stubbing project: %s", project));
+		IProjectRequest otherProjectRequest = factory.create(VERSION, ResourceKind.PROJECT_REQUEST);
+		((OpenshiftProjectRequest) otherProjectRequest).setName(helper.generateNamespace());
+		LOG.debug(String.format("Stubbing project request: %s", otherProjectRequest));
 		
 		Service service = factory.create(VERSION, ResourceKind.SERVICE);
-		service.setNamespace(project.getName()); //this will be the project's namespace
+		service.setNamespace(projectRequest.getName()); //this will be the project's namespace
 		service.setName("some-service");
 		service.setTargetPort(6767);
 		service.setPort(6767);
@@ -95,7 +119,7 @@ public class DefaultClientIntegrationTest {
 		LOG.debug(String.format("Stubbing service: %s", service));
 
 		Service otherService = factory.create(VERSION, ResourceKind.SERVICE);
-		otherService.setNamespace(other.getName()); //this will be the project's namespace
+		otherService.setNamespace(otherProjectRequest.getName()); //this will be the project's namespace
 		otherService.setName("some-other-service");
 		otherService.setTargetPort(8787);
 		otherService.setPort(8787);
@@ -103,11 +127,13 @@ public class DefaultClientIntegrationTest {
 		
 		LOG.debug(String.format("Stubbing service: %s", otherService));
 		
+		IProject project = null;
+		IProject other = null;
 		try{
-			project = client.create(project);
+			project = (IProject) client.create(projectRequest);
 			LOG.debug(String.format("Created project: %s", project));
 
-			other = client.create(other);
+			other = (IProject) client.create(otherProjectRequest);
 			LOG.debug(String.format("Created project: %s", project));
 			
 			LOG.debug(String.format("Creating service: %s", service));
@@ -132,6 +158,8 @@ public class DefaultClientIntegrationTest {
 			
 			assertEquals("Expected there to be only one service returned", 1, services.size());
 			assertEquals("Expected to get the service with the correct name", service.getName(), services.get(0).getName());
+		}catch(OpenShiftException e) {
+			e.printStackTrace();
 		}finally{
 			cleanUpResource(client, project);
 			cleanUpResource(client, other);
@@ -139,16 +167,6 @@ public class DefaultClientIntegrationTest {
 			cleanUpResource(client, otherService);
 		}
 		
-	}
-
-	private void cleanUpResource(IClient client, IResource resource){
-		try{
-			Thread.sleep(1000);
-			LOG.debug(String.format("Deleting resource: %s", resource));
-//			client.delete(resource);
-		}catch(Exception e){
-			LOG.error("Exception deleting", e);
-		}
 	}
 
 }

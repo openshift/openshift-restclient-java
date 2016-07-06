@@ -8,19 +8,10 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.server;
 
-import java.util.Collection;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.jboss.dmr.ModelNode;
-
-import com.openshift.internal.restclient.OpenShiftAPIVersion;
-import com.openshift.internal.restclient.model.KubernetesResource;
+import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
-import com.openshift.restclient.model.IResource;
-import com.openshift.restclient.model.template.IParameter;
 import com.openshift.restclient.model.template.ITemplate;
 
 /**
@@ -36,7 +27,11 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 	
 	@Override
 	public boolean isSupported() {
-		return true;
+		IApiTypeMapper mapper = client.adapt(IApiTypeMapper.class);
+		if(mapper != null) {
+			return mapper.isSupported(ResourceKind.PROCESSED_TEMPLATES);
+		}
+		return false;
 	}
 
 	@Override
@@ -44,89 +39,10 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 		return this.getClass().getSimpleName();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ITemplate process(ITemplate template, String namespace) {
-		return client.create(new TemplateConfigAdapter(template, namespace));
+		return client.execute("POST", ResourceKind.PROCESSED_TEMPLATES, namespace, null, null, template);
+
 	}
 	
-	protected static class TemplateConfigAdapter extends KubernetesResource implements ITemplate {
-		
-		private ITemplate template;
-		private String namespace;
-
-		public TemplateConfigAdapter(ITemplate template, String namespace){
-			super(new ModelNode(), null, null);
-			this.template = template;
-			this.namespace = namespace;
-		}
-
-		@Override
-		public String getName() {
-			return template.getName();
-		}
-
-		@Override
-		public String getNamespace(){
-			return namespace;
-		}
-		
-		@Override
-		public String getKind() {
-			return ResourceKind.PROCESSED_TEMPLATES;
-		}
-
-		@Override
-		public String toString() {
-			return template.toString();
-		}
-
-		@Override
-		public Collection<IResource> getItems() {
-			return template.getItems();
-		}
-
-		@Override
-		public Map<String, IParameter> getParameters() {
-			return template.getParameters();
-		}
-
-		@Override
-		public void updateParameterValues(Collection<IParameter> parameters) {
-			template.updateParameterValues(parameters);
-		}
-		
-		
-
-		@Override
-		public void updateParameter(String key, String value) {
-			template.updateParameter(key, value);
-		}
-
-		@Override
-		public Map<String, String> getObjectLabels() {
-			return template.getObjectLabels();
-		}
-
-		@Override
-		public void addObjectLabel(String key, String value) {
-			template.addObjectLabel(key, value);
-		}
-
-		@Override
-		public boolean isMatching(String text) {
-			if (StringUtils.isEmpty(text)) {
-				return true;
-			}
-			if (text.equals(getNamespace())) {
-				return true;
-			}
-			if (template == null) {
-				return false;
-			}
-			
-			return template.isMatching(text);
-		}
-		
-	}
 }

@@ -22,9 +22,6 @@ import org.slf4j.LoggerFactory;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.OpenShiftContext;
 import com.openshift.restclient.OpenShiftException;
-import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
-import com.openshift.restclient.authorization.IAuthorizationStrategyVisitor;
-import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.resources.LocationNotFoundException;
 
@@ -87,7 +84,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	
 	protected String getUserFlag() {
 		final StringBuilder argBuilder = new StringBuilder();
-		argBuilder.append("--user=").append(client.getCurrentUser().getName()).append(" ");
+		argBuilder.append("--user=").append(client.getAuthorizationContext().getUserName()).append(" ");
 		return argBuilder.toString();
 	}
 
@@ -105,22 +102,9 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	 * @return the command-line argument to use the current token 
 	 */
 	protected String getTokenFlag() {
-		final StringBuilder argBuilder = new StringBuilder();
-		argBuilder.append("--token=");
-		client.getAuthorizationStrategy().accept(new IAuthorizationStrategyVisitor() {
-			
-			@Override
-			public void visit(TokenAuthorizationStrategy strategy) {
-				argBuilder.append(strategy.getToken());
-			}
-			
-			@Override
-			public void visit(BasicAuthorizationStrategy strategy) {
-				argBuilder.append(strategy.getToken());
-			}
-		});
-		argBuilder.append(" ");
-		return argBuilder.toString();
+		return new StringBuilder("--token=")
+			.append(client.getAuthorizationContext().getToken())
+			.append(" ").toString();
 	}
 	
 	/**

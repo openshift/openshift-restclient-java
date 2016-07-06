@@ -16,6 +16,7 @@ import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IEnvironmentVariable;
 import com.openshift.restclient.model.IResourceBuilder;
+import com.openshift.restclient.model.build.IBuildConfigBuilder.IGitSourceBuilder;
 
 public interface IBuildConfigBuilder extends IResourceBuilder<IBuildConfig, IBuildConfigBuilder>, ICapability {
 
@@ -42,7 +43,7 @@ public interface IBuildConfigBuilder extends IResourceBuilder<IBuildConfig, IBui
 		
 		/**
 		 * The imagestream tag in form of 'name:tag"
-		 * @param tag
+		 * @param tag 'name:tag'
 		 * @return
 		 */
 		ISourceStrategyBuilder fromImageStreamTag(String tag);
@@ -50,6 +51,12 @@ public interface IBuildConfigBuilder extends IResourceBuilder<IBuildConfig, IBui
 		ISourceStrategyBuilder inNamespace(String namespace);
 		
 		ISourceStrategyBuilder withEnvVars(List<IEnvironmentVariable> envVars);
+
+		/**
+		 * @param tag  docker pullspec
+		 * @return
+		 */
+		ISourceStrategyBuilder fromDockerImage(String tag);
 		
 	}
 	

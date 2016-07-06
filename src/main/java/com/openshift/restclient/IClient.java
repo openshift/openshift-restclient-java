@@ -13,12 +13,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.openshift.restclient.authorization.IAuthorizationClient;
-import com.openshift.restclient.authorization.IAuthorizationStrategy;
+import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.capability.ICapable;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
-import com.openshift.restclient.model.user.IUser;
 
 /**
  * Client is the the simplest interface for interacting with the OpenShift
@@ -27,7 +25,7 @@ import com.openshift.restclient.model.user.IUser;
  * @author Jeff Cantrill
  *
  */
-public interface IClient extends ICapable, IAuthorizationClient{
+public interface IClient extends ICapable, Cloneable {
 	
 	IWatcher watch(String namespace, IOpenShiftWatchListener listener, String...kinds);
 	
@@ -126,6 +124,19 @@ public interface IClient extends ICapable, IAuthorizationClient{
 	 * @throws UnsupportedOperationException if the resource is a list
 	 */
 	<T extends IResource> void delete(T resource);
+	
+	
+	/**
+	 * Raw execution of a request
+	 * @param httpMethod  HttpMethod (e.g. POST)
+	 * @param kind        
+	 * @param namespace
+	 * @param name
+	 * @param subresource  subresource or capability
+	 * @param payload      the payload to sumit.  only valid on non-get operations
+	 * @return
+	 */
+	<T extends IResource> T execute(String httpMethod, String kind, String namespace, String name, String subresource, IResource payload);
 
 	/**
 	 * 
@@ -149,13 +160,10 @@ public interface IClient extends ICapable, IAuthorizationClient{
 	String getOpenShiftAPIVersion() throws UnsupportedVersionException;
 	
 	/**
-	 * Sets the authorization strategy for the client when
-	 * making requests to the server
-	 * @param strategy
+	 * The authorization context for this client.
+	 * @return  The context which will never be null
 	 */
-	void setAuthorizationStrategy(IAuthorizationStrategy strategy);
-
-	IAuthorizationStrategy getAuthorizationStrategy();
+	IAuthorizationContext getAuthorizationContext();
 	
 	/**
 	 * Returns the resource factory used to create resources based on the
@@ -165,9 +173,21 @@ public interface IClient extends ICapable, IAuthorizationClient{
 	IResourceFactory getResourceFactory();
 	
 	/**
-	 * @return the user associated with the current session
+	 * Adapt this class to the given type
+	 * @param klass
+	 * @return an instance of the class or null if it can not
 	 */
-	IUser getCurrentUser();
+	default <T> T adapt(Class<T> klass) {
+		return null;
+	};
+	
+	/**
+	 * Query the server to determine if it
+	 * is ready
+	 * @return
+	 * @throws OpenShiftException
+	 */
+	String getServerReadyStatus();
 
-
+	IClient clone();
 }

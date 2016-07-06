@@ -12,13 +12,10 @@ package com.openshift.internal.restclient.authorization;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.ParseException;
+import org.junit.Before;
 import org.junit.Test;
+
+import okhttp3.Headers;
 
 /**
  * @author Jeff Cantrill
@@ -31,8 +28,13 @@ public class AuthorizationDetailsTest {
 	 * Warning: 199 OpenShift "You must obtain an API token by visiting https://127.0.0.1:8443/oauth/token/request"
 	 * code 401
 	 */
-	private List<Header> headers = new ArrayList<Header>();
+	private Headers.Builder builder = new Headers.Builder();
 
+	@Before
+	public void setUp() {
+		
+	}
+	
 	@Test
 	public void testMessageDetailsWithoutAuthorizationHeader() {
 		givenHeader("Link", "<https://127.0.0.1:8443/oauth/token/request>; rel=\"related\"");
@@ -51,35 +53,11 @@ public class AuthorizationDetailsTest {
 	}
 
 	private AuthorizationDetails whenCreatingAnAuthorizationScheme() {
-		return new AuthorizationDetails(headers.toArray(new Header[] {}));
+		return new AuthorizationDetails(builder.build());
 	}
 
 	private void givenHeader(String name, String value) {
-		headers.add(new FakeHeader(name, value));
+		builder.add(name, value);
 	}
 
-	private static class FakeHeader implements Header{
-		private String name;
-		private String value;
-
-		FakeHeader(String name, String value){
-			this.name = name;
-			this.value = value;
-		}
-		@Override
-		public String getName() {
-			return name;
-		}
-
-		@Override
-		public String getValue() {
-			return value;
-		}
-
-		@Override
-		public HeaderElement[] getElements() throws ParseException {
-			throw new UnsupportedOperationException("Method not supported in test impl");
-		}
-
-	}
 }

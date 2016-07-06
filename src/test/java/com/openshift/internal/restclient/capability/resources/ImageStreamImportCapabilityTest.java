@@ -24,6 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.capability.resources.IImageStreamImportCapability;
+import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IStatus;

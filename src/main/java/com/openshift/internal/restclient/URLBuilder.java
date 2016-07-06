@@ -66,28 +66,28 @@ public class URLBuilder {
 	 * @param baseUrl
 	 * @param typeMappings the map of kinds to endpoint
 	 */
-	URLBuilder(URL baseUrl, IApiTypeMapper typeMappings) {
+	public URLBuilder(URL baseUrl, IApiTypeMapper typeMappings) {
 		this.baseUrl = baseUrl.toString().replaceAll("/*$", "");
 		this.typeMappings = typeMappings;
 	}
 	
-	URLBuilder apiVersion(String apiVersion){
+	public URLBuilder apiVersion(String apiVersion){
 		this.apiVersion = apiVersion;
 		return this;
 	}
 
-	URLBuilder namespace(String namespace){
+	public URLBuilder namespace(String namespace){
 		if(StringUtils.isBlank(namespace)) return this;
 		this.namespace = namespace;
 		return this;
 	}
 	
-	URLBuilder name(String name) {
+	public URLBuilder name(String name) {
 		this.name = name;
 		return this;
 	}
 
-	URLBuilder kind(String kind) {
+	public URLBuilder kind(String kind) {
 		if(!ResourceKind.values().contains(kind)) {
 			LOG.warn(String.format("There kind '%s' is not recognized by this client; this operation may fail.", kind));
 		}
@@ -95,7 +95,7 @@ public class URLBuilder {
 		return this;
 	}
 
-	URLBuilder resource(IResource resource) {
+	public URLBuilder resource(IResource resource) {
 		if (resource == null) return this;
 		this.name = resource.getName();
 		kind(resource.getKind());
@@ -103,13 +103,13 @@ public class URLBuilder {
 		return this;
 	}
 
-	URLBuilder addParmeter(String key, String value) {
+	public URLBuilder addParmeter(String key, String value) {
 		params.put(key, value);
 		return this;
 	}
 	
 
-	URLBuilder subresource(String value) {
+	public URLBuilder subresource(String value) {
 		this.subResource = value;
 		return this;
 	}
@@ -119,7 +119,7 @@ public class URLBuilder {
 	 * a resource kind must be provided
 	 * @return
 	 */
-	URL build() {
+	public URL build() {
 		StringBuilder url = new StringBuilder(baseUrl);
 		if (kind == null)
 			throw new RuntimeException(

@@ -13,9 +13,9 @@ package com.openshift.internal.restclient.authorization;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.Header;
-
 import com.openshift.restclient.authorization.IAuthorizationDetails;
+
+import okhttp3.Headers;
 
 /**
  * @author Jeff Cantrill
@@ -47,21 +47,20 @@ public class AuthorizationDetails implements IAuthorizationDetails {
 		}
 	}
 
-	public AuthorizationDetails(Header[] headers) {
-		for (Header header : headers) {
-			final String name = header.getName();
+	public AuthorizationDetails(Headers headers) {
+		for (String name : headers.names()) {
 			if(LINK.equalsIgnoreCase(name)) {
-				Matcher matcher = LINK_RE.matcher(header.getValue());
+				Matcher matcher = LINK_RE.matcher(headers.get(name));
 				if(matcher.find()) {
 					link = matcher.group(1);
 				}
 			}else if(WARNING.equalsIgnoreCase(name)) {
-				Matcher matcher = WARNING_RE.matcher(header.getValue());
+				Matcher matcher = WARNING_RE.matcher(headers.get(name));
 				if(matcher.find()) {
 					message = matcher.group(1);
 				}
 			}else if(WWW_AUTHENTICATE.equalsIgnoreCase(name)) {
-				scheme = header.getValue();
+				scheme = headers.get(name);
 				if(scheme.contains("realm")) {
 					scheme = scheme.split(" ")[0];
 				}
@@ -69,6 +68,13 @@ public class AuthorizationDetails implements IAuthorizationDetails {
 		}
 	}
 
+
+	public AuthorizationDetails(Headers headers, String link) {
+		this(headers);
+		if(link != null) {
+			this.link = link;
+		}
+	}
 
 	@Override
 	public String getScheme() {

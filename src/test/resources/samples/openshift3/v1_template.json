@@ -3,25 +3,25 @@
     "apiVersion": "v1",
     "metadata": {
         "name": "ruby-helloworld-sample",
-        "namespace": "test",
-        "selfLink": "/osapi/v1beta3/namespaces/test/templates/ruby-helloworld-sample",
-        "uid": "1affe776-0fab-11e5-9467-080027893417",
-        "resourceVersion": "366",
-        "creationTimestamp": "2015-06-10T19:58:47Z",
+        "namespace": "myproject",
+        "selfLink": "/oapi/v1/namespaces/myproject/templates/ruby-helloworld-sample",
+        "uid": "870dab76-38c7-11e6-8e5e-3c970e32f15a",
+        "resourceVersion": "86618",
+        "creationTimestamp": "2016-06-22T22:20:29Z",
+        "labels": {
+            "abc": "xyz",
+            "foo": "bar"
+        },
         "annotations": {
             "description": "This example shows how to create a simple ruby application in openshift origin v3",
             "iconClass": "icon-ruby",
             "tags": "instant-app,ruby,mysql"
-        },
-        "labels" : {
-        	"foo" : "bar",
-        	"abc" : "xyz"
         }
     },
     "objects": [
         {
             "kind": "Service",
-            "apiVersion": "v1beta3",
+            "apiVersion": "v1",
             "metadata": {
                 "name": "frontend",
                 "creationTimestamp": null
@@ -49,7 +49,7 @@
         },
         {
             "kind": "Route",
-            "apiVersion": "v1beta3",
+            "apiVersion": "v1",
             "metadata": {
                 "name": "route-edge",
                 "creationTimestamp": null
@@ -71,7 +71,7 @@
         },
         {
             "kind": "ImageStream",
-            "apiVersion": "v1beta3",
+            "apiVersion": "v1",
             "metadata": {
                 "name": "origin-ruby-sample",
                 "creationTimestamp": null
@@ -83,7 +83,7 @@
         },
         {
             "kind": "ImageStream",
-            "apiVersion": "v1beta3",
+            "apiVersion": "v1",
             "metadata": {
                 "name": "ruby-20-centos7",
                 "creationTimestamp": null
@@ -97,7 +97,7 @@
         },
         {
             "kind": "BuildConfig",
-            "apiVersion": "v1beta3",
+            "apiVersion": "v1",
             "metadata": {
                 "name": "ruby-sample-build",
                 "creationTimestamp": null,
@@ -154,7 +154,7 @@
         },
         {
             "kind": "DeploymentConfig",
-            "apiVersion": "v1beta3",
+            "apiVersion": "v1",
             "metadata": {
                 "name": "frontend",
                 "creationTimestamp": null
@@ -282,7 +282,7 @@
         },
         {
             "kind": "Service",
-            "apiVersion": "v1beta3",
+            "apiVersion": "v1",
             "metadata": {
                 "name": "database",
                 "creationTimestamp": null
@@ -310,7 +310,7 @@
         },
         {
             "kind": "DeploymentConfig",
-            "apiVersion": "v1beta3",
+            "apiVersion": "v1",
             "metadata": {
                 "name": "database",
                 "creationTimestamp": null
@@ -436,7 +436,7 @@
             "description": "database password",
             "generate": "expression",
             "from": "[a-zA-Z0-9]{8}",
-            "required" : true
+            "required": true
         },
         {
             "name": "MYSQL_DATABASE",

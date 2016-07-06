@@ -25,7 +25,7 @@ public interface ITemplate extends IResource {
 	 * creates
 	 * @return
 	 */
-	Collection<IResource> getItems();
+	Collection<IResource> getObjects();
 	
 	/**
 	 * Returns a map of parameter names to parameters.

@@ -48,7 +48,7 @@ public class TemplateTest{
 
 	@Test
 	public void testGetItems() {
-		assertEquals("Exp. the number of items to be more than zero", 8, template.getItems().size());
+		assertEquals("Exp. the number of items to be more than zero", 8, template.getObjects().size());
 	}
 
 	@Test

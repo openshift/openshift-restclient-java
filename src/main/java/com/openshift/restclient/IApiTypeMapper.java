@@ -22,6 +22,8 @@ import com.openshift.restclient.model.IResource;
  */
 public interface IApiTypeMapper {
 	
+	String getPreferedVersionFor(String endpoint);
+	
 	/**
 	 * return the versioned endpoint for the given kind
 	 * @param version   the apiVersion, null or empty is best guess

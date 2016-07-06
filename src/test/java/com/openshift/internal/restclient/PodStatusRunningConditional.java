@@ -8,22 +8,24 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package com.openshift.restclient.capability.resources;
+package com.openshift.internal.restclient;
 
-import com.openshift.restclient.capability.ICapability;
-import com.openshift.restclient.model.IBuild;
+import com.openshift.internal.restclient.IntegrationTestHelper.ReadyConditional;
+import com.openshift.restclient.model.IPod;
+import com.openshift.restclient.model.IResource;
 
 /**
- * Capability to cancel a build that is running
+ * Conditional to determin if a pod has acheived Running Status
  * @author jeff.cantrill
  *
  */
-public interface IBuildCancelable extends ICapability {
-	
-	/**
-	 * Cancel the build
-	 * @return
-	 */
-	IBuild cancel();
+public class PodStatusRunningConditional implements ReadyConditional {
 
+	@Override
+	public boolean isReady(IResource resource) {
+		if(resource == null) return false;
+		if(!(resource instanceof IPod)) return false;
+		IPod pod = (IPod) resource;
+		return "Running".equals(pod.getStatus());
+	}
 }

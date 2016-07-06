@@ -18,11 +18,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +25,9 @@ import org.slf4j.LoggerFactory;
 import com.openshift.internal.restclient.model.ModelNodeBuilder;
 import com.openshift.internal.restclient.model.image.ImageStreamImport;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
+import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.internal.util.JBossDmrExtentions;
+import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.resources.IImageStreamImportCapability;
@@ -38,6 +35,11 @@ import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.image.IImageStreamImport;
+
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Retrieve metadata directly from docker.
@@ -48,7 +50,6 @@ public class DockerRegistryImageStreamImportCapability implements IImageStreamIm
 	
 	private static final String TOKEN = "token";
 	private static final String STATUS_STATUS = "status.status";
-	private static final int TIMEOUT = 10 * 1000; //10 seconds
 	private static final String ID = "id";
 	private static final String PARENT = "parent";
 	private static final String REALM = "realm";
@@ -56,10 +57,17 @@ public class DockerRegistryImageStreamImportCapability implements IImageStreamIm
 	private static final String DEFAULT_DOCKER_REGISTRY = "https://registry-1.docker.io/v2";
 	private IResourceFactory factory;
 	private IProject project;
+	private OkHttpClient okClient;
 
-	public DockerRegistryImageStreamImportCapability(IProject project, IResourceFactory factory) {
+	public DockerRegistryImageStreamImportCapability(IProject project, IResourceFactory factory, IClient client) {
 		this.factory = factory;
 		this.project = project;
+		this.okClient = client.adapt(OkHttpClient.class);
+		if(okClient != null) {
+			okClient = okClient.newBuilder()
+					.followRedirects(true)
+					.build();
+		}
 	}
 	
 	@Override
@@ -72,24 +80,28 @@ public class DockerRegistryImageStreamImportCapability implements IImageStreamIm
 		return DockerRegistryImageStreamImportCapability.class.getSimpleName();
 	}
 	
-	private boolean registryExists(HttpClient client) throws Exception{
-		ContentResponse response = client.newRequest(DEFAULT_DOCKER_REGISTRY).send();
+	private boolean registryExists(OkHttpClient client) throws Exception{
+		Request req = new Request.Builder()
+				.url(DEFAULT_DOCKER_REGISTRY)
+				.header(ResponseCodeInterceptor.X_OPENSHIFT_IGNORE_RCI, "true")
+				.build();
+		Response response = client.newCall(req).execute();
 		if(response == null) return false;
-		return (response.getStatus() == STATUS_UNAUTHORIZED || response.getStatus() == STATUS_OK);
+		return (response.code() == STATUS_UNAUTHORIZED || response.code() == STATUS_OK);
 	}
 	
 	/**
 	 * @return the token required to pull docker metadata
 	 */
-	private String retrieveAuthToken(HttpClient client, String details) throws Exception {
+	private String retrieveAuthToken(OkHttpClient client, String details) throws Exception {
 		if(StringUtils.isNotBlank(details)) {
 			Map<String, String> auth = parseAuthDetails(details);
 			if(auth.containsKey(REALM)) {
-				Request request = createAuthRequest(client, auth);
-				ContentResponse response = request.send();
+				Request request = createAuthRequest(auth);
+				Response response = client.newCall(request).execute();
 				LOG.debug("Auth response: " + response.toString());
-				if(response.getStatus() == STATUS_OK && response.getHeaders().contains(PROPERTY_CONTENT_TYPE, MEDIATYPE_APPLICATION_JSON)) {
-						ModelNode tokenNode = ModelNode.fromJSONString(response.getContentAsString());
+				if(response.code() == STATUS_OK && MEDIATYPE_APPLICATION_JSON.equals(response.headers().get(PROPERTY_CONTENT_TYPE))) {
+						ModelNode tokenNode = ModelNode.fromJSONString(response.body().string());
 						if(tokenNode.hasDefined(TOKEN)) {
 							return tokenNode.get(TOKEN).asString();
 						}else {
@@ -105,14 +117,19 @@ public class DockerRegistryImageStreamImportCapability implements IImageStreamIm
 		return null;
 	}
 	
-	private Request createAuthRequest(HttpClient client, Map<String, String> authParams) {
-		Request request = client.newRequest(StringUtils.strip(authParams.get(REALM),"\""));
+	private Request createAuthRequest(Map<String, String> authParams) {
+		HttpUrl.Builder builder = HttpUrl.parse(StringUtils.strip(authParams.get(REALM),"\""))
+			.newBuilder();
 		for (Entry<String, String> e: authParams.entrySet()) {
 			if(!REALM.equals(e.getKey())) {
-				request.param(StringUtils.strip(e.getKey(),"\""), StringUtils.strip(e.getValue(),"\""));
+				builder.addQueryParameter(StringUtils.strip(e.getKey(),"\""), StringUtils.strip(e.getValue(),"\""));
 			}
 		}
-		LOG.debug("Auth request uri: " + request.getURI());
+		Request request = new Request.Builder()
+				.url(builder.build())
+				.header(ResponseCodeInterceptor.X_OPENSHIFT_IGNORE_RCI, "true")
+				.build();
+		LOG.debug("Auth request uri: " + request.url());
 		return request;
 	}
 	
@@ -132,25 +149,27 @@ public class DockerRegistryImageStreamImportCapability implements IImageStreamIm
 		return map;
 	}
 	
-	private DockerResponse retrieveMetaData(HttpClient client, String token, DockerImageURI uri) throws Exception {
+	private DockerResponse retrieveMetaData(OkHttpClient client, String token, DockerImageURI uri) throws Exception {
 		String regUri = String.format("%s/%s/%s/manifests/%s", 
 					DEFAULT_DOCKER_REGISTRY,
 					StringUtils.defaultIfBlank(uri.getUserName(),"library"),
 					uri.getName(),
 					uri.getTag());
-		Request request = client.newRequest(regUri);
+		Request.Builder builder = new Request.Builder()
+				.url(regUri)
+				.header(ResponseCodeInterceptor.X_OPENSHIFT_IGNORE_RCI, "true");
 		if(token != null) {
-			request.header(PROPERTY_AUTHORIZATION, String.format("%s %s", AUTHORIZATION_BEARER, token));
+			builder.header(PROPERTY_AUTHORIZATION, String.format("%s %s", AUTHORIZATION_BEARER, token));
 			
 		}
 		LOG.debug("retrieveMetaData uri: " + regUri);
-		ContentResponse response = request.send();
+		Response response = client.newCall(builder.build()).execute();
 		LOG.debug("retrieveMetaData response: " + response.toString());
-		switch(response.getStatus()) {
+		switch(response.code()) {
 		case STATUS_OK:
-			return new DockerResponse(DockerResponse.DATA, response.getContentAsString());
+			return new DockerResponse(DockerResponse.DATA, response.body().string());
 		case STATUS_UNAUTHORIZED:
-			return new DockerResponse(DockerResponse.AUTH, response.getHeaders().get(HttpHeader.WWW_AUTHENTICATE));
+			return new DockerResponse(DockerResponse.AUTH, response.headers().get(IHttpConstants.PROPERTY_WWW_AUTHENTICATE));
 		}
 		LOG.info("Unable to retrieve docker meta data: " + response.toString());
 		return null;
@@ -175,39 +194,27 @@ public class DockerRegistryImageStreamImportCapability implements IImageStreamIm
 
 	@Override
 	public IImageStreamImport importImageMetadata(DockerImageURI uri) {
-		
-		HttpClient client = null;
-		try {
-			SslContextFactory sslFactory = new SslContextFactory(true);
-			client = new HttpClient(sslFactory);
-			client.setConnectTimeout(TIMEOUT);
-			client.start();
-			if(registryExists(client)) {
-				String token = null;
-				DockerResponse response = retrieveMetaData(client, token, uri);
-				if(DockerResponse.AUTH.equals(response.getResponseType())){
-					LOG.debug("Unauthorized.  Trying to retrieve token...");
-					token = retrieveAuthToken(client, response.getData());
-					response = retrieveMetaData(client, token, uri);
-				}
-				if(DockerResponse.DATA.equals(response.getResponseType())) {
-					String meta = response.getData();
-					LOG.debug("Raw Docker image metadata: " + meta);
-					return buildResponse(meta, uri);
-				}else {
-					LOG.info("Unable to retrieve image metadata from docker registry");
-					return buildErrorResponse(uri);
-				}
-			}
-		} catch (Exception e) {
-			LOG.error("Exception while trying to retrieve image metadata from docker", e);
-		}finally {
+		if(okClient != null) {
 			try {
-				if(client != null) {
-					client.stop();
+				if(registryExists(okClient)) {
+					String token = null;
+					DockerResponse response = retrieveMetaData(okClient, token, uri);
+					if(DockerResponse.AUTH.equals(response.getResponseType())){
+						LOG.debug("Unauthorized.  Trying to retrieve token...");
+						token = retrieveAuthToken(okClient, response.getData());
+						response = retrieveMetaData(okClient, token, uri);
+					}
+					if(DockerResponse.DATA.equals(response.getResponseType())) {
+						String meta = response.getData();
+						LOG.debug("Raw Docker image metadata: " + meta);
+						return buildResponse(meta, uri);
+					}else {
+						LOG.info("Unable to retrieve image metadata from docker registry");
+						return buildErrorResponse(uri);
+					}
 				}
 			} catch (Exception e) {
-				LOG.warn("Exception while trying to stop http client", e);
+				LOG.error("Exception while trying to retrieve image metadata from docker", e);
 			}
 		}
 		return buildErrorResponse(uri);
@@ -234,7 +241,8 @@ public class DockerRegistryImageStreamImportCapability implements IImageStreamIm
 			.set("tag", uri.getTag())
 			.set("image.metadata.name", uri.getName())
 			.set(ImageStreamImport.IMAGE_DOCKER_IMAGE_REFERENCE,uri.getUriUserNameAndName())
-			.set("image.dockerImageMetadata", last);
+			.set("image.dockerImageMetadata", last)
+			.set("status.code", IHttpConstants.STATUS_OK);
 
 		return buildImageStreamImport(uri, builder.build());
 	}
@@ -251,35 +259,43 @@ public class DockerRegistryImageStreamImportCapability implements IImageStreamIm
 	private ModelNode findNewestHistoryEntry(ModelNode root) {
 		ModelNode history = root.get("history");
 		List<ModelNode> entries = history.asList().stream().map(n->ModelNode.fromJSONString(n.get("v1Compatibility").asString())).collect(Collectors.toList());
-		entries.sort(new Comparator<ModelNode>() {
+		entries.sort(new ManifestComparator());
 
-			@Override
-			public int compare(ModelNode one, ModelNode two) {
-				String parent1 = one.has(PARENT ) ? one.get(PARENT).asString() : null;
-				String parent2 = two.has(PARENT ) ? one.get(PARENT).asString() : null;
-				if(parent1 == null && parent2 != null) {
-					return -1;
-				}else if(parent1 != null && parent2 == null) {
-					return 1;
-				}else if(parent1 == null && parent2 == null) {
-					return 0; //we should never get here
-				}
-				String id1 = one.get(ID).asString();
-				String id2 = two.get(ID).asString();
-				
-				if(parent2.equals(id1)) {
-					return -1;
-				}else if(parent1.equals(id2)) {
-					return 1;
-				}
-				
-				return 0; //we should never get here
-			}
-		});
 		
-		ModelNode last = entries.get(0);
+		ModelNode last = entries.get(entries.size() - 1);
 		LOG.debug("newest history: " + last.toJSONString(false));
 		return last;
 	}
 
+	/**
+	 * Sorts history entries ordering from oldest to newest
+	 * by comparing the entry id to its referenced parent
+	 * @author jeff.cantrill
+	 *
+	 */
+	static class ManifestComparator implements Comparator<ModelNode> {
+		
+		@Override
+		public int compare(ModelNode one, ModelNode two) {
+			String parent1 = one.has(PARENT) ? one.get(PARENT).asString() : null;
+			String parent2 = two.has(PARENT) ? one.get(PARENT).asString() : null;
+			if(parent1 == null && parent2 != null) {
+				return -1;
+			}else if(parent1 != null && parent2 == null) {
+				return 1;
+			}else if(parent1 == null && parent2 == null) {
+				return 0; //we should never get here
+			}
+			String id1 = one.get(ID).asString();
+			String id2 = two.get(ID).asString();
+			
+			if(parent2.equals(id1)) {
+				return -1;
+			}else if(parent1.equals(id2)) {
+				return 1;
+			}
+			
+			return 0; //we should never get here
+		}
+	}
 }
