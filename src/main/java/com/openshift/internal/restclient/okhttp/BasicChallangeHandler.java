@@ -39,7 +39,10 @@ public class BasicChallangeHandler implements IChallangeHandler{
 
 	@Override
 	public Builder handleChallange(Builder builder) {
-		StringBuilder value = new StringBuilder(context.getUserName()).append(":");
+		StringBuilder value = new StringBuilder();
+		if(StringUtils.isNotBlank(context.getUserName())) {
+			value.append(context.getUserName()).append(":");
+		}
 		if(StringUtils.isNotBlank(context.getPassword())) {
 			value.append(context.getPassword());
 		}

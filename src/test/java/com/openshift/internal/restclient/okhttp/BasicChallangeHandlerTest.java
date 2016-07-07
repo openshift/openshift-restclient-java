@@ -59,6 +59,17 @@ public class BasicChallangeHandlerTest {
 		assertTrue("Exp. auth to not be blank", StringUtils.isNotBlank(authorization));
 		assertTrue("Exp. auth to be basic", authorization.startsWith(OpenShiftAuthenticator.AUTHORIZATION_BASIC));
 	}
+
+	@Test
+	public void testHandleChallangeWhenUsernameIsNull() {
+		when(context.getUserName()).thenReturn(null);
+		Builder builder = new Request.Builder()
+				.url("http://foo");
+		Request request = handler.handleChallange(builder).build();
+		String authorization = request.header(OpenShiftAuthenticator.PROPERTY_AUTHORIZATION);
+		assertTrue("Exp. auth to not be blank", StringUtils.isNotBlank(authorization));
+		assertTrue("Exp. auth to be basic", authorization.startsWith(OpenShiftAuthenticator.AUTHORIZATION_BASIC));
+	}
 	
 	private Headers givenHeader(String name, String value) {
 		return new Headers.Builder()
