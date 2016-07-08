@@ -162,7 +162,7 @@ public class IntegrationTestHelper {
 			LOG.debug(String.format("Deleting resource: %s", resource));
 			client.delete(resource);
 		} catch (Exception e) {
-			LOG.error("Exception deleting", e);
+			LOG.warn("Exception deleting", e);
 		}
 	}
 	
