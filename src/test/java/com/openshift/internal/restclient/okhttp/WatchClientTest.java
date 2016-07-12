@@ -8,20 +8,38 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.internal.restclient;
+package com.openshift.internal.restclient.okhttp;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
+
+import java.io.IOException;
 
 import org.junit.Test;
 
+import com.openshift.internal.restclient.DefaultClient;
+import com.openshift.internal.restclient.okhttp.WatchClient.WatchEndpoint;
+import com.openshift.restclient.IOpenShiftWatchListener;
+import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.IOpenShiftWatchListener.ChangeType;
 
 /**
  * @author Andre Dietisheim
  */
 public class WatchClientTest {
+	
+	@Test
+	public void testOnFailureCallBackNotifiesListener() {
+		DefaultClient client = null;
+		
+		IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
+		
+		WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
+		endpoint.onFailure(new IOException(), null);
+		verify(listener).error(any(Throwable.class));
+	}
 
 	@Test
 	public void changeTypeShouldEqualSameChangeType() {

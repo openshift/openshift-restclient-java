@@ -13,7 +13,10 @@ package com.openshift.internal.restclient.okhttp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +29,7 @@ import com.openshift.internal.restclient.URLBuilder;
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
 import com.openshift.restclient.IWatcher;
 import com.openshift.restclient.OpenShiftException;
@@ -45,12 +49,13 @@ import okio.Buffer;
 
 public class WatchClient implements IWatcher, IHttpConstants {
 
+	private static final int CODE_NORAMAL_STOP = 1000;
 	private static final Logger LOGGER = LoggerFactory.getLogger(WatchClient.class);
 	private DefaultClient client;
 	private OkHttpClient okClient;
-	private static AtomicReference<Status> status = new AtomicReference<>(Status.Stopped);
-	private WebSocket wsClient;
+	private AtomicReference<Status> status = new AtomicReference<>(Status.Stopped);
 	private IApiTypeMapper typeMappings;
+	private Map<String, WatchEndpoint> endpointMap = Collections.synchronizedMap(new HashMap<>());
 	
 	private enum Status {
 		Started,
@@ -67,46 +72,45 @@ public class WatchClient implements IWatcher, IHttpConstants {
 	
 	@Override
 	public void stop() {
-		if(status.get() == Status.Stopping
-				|| status.get() == Status.Stopped) {
-			return;
+		if(status.compareAndSet(Status.Started, Status.Stopping)) {
+			Map<String, WatchEndpoint> endpoints = new HashMap<>(endpointMap);
+			endpointMap.clear();
+			endpoints.values().forEach(w->w.close());
+			status.set(Status.Stopped);
 		}
-		try {
-			if(wsClient != null) {
-				wsClient.close(1000, "Client was asked to stop.");
-				wsClient = null;
-				status.set(Status.Stopped);
-			}
-		} catch (Exception e) {
-			LOGGER.debug("Unable to stop the watch client",e);
-		}	
 	}
 	
 	public IWatcher watch(Collection<String> kinds, String namespace, IOpenShiftWatchListener listener) {
 		
-		try {
-			for (String kind : kinds) {
-				WatchEndpoint socket = new WatchEndpoint(listener, kind);
-				final String resourceVersion = getResourceVersion(kind, namespace, socket);
-				
-				final String endpoint = new URLBuilder(client.getBaseURL(), this.typeMappings)
-						.kind(kind)
-						.namespace(namespace)
-						.watch()
-						.addParmeter(ResourcePropertyKeys.RESOURCE_VERSION, resourceVersion)
-						.websocket();
-				Request request = client.newRequestBuilderTo(endpoint)
-						.header(PROPERTY_ORIGIN, client.getBaseURL().toString())
-						.header(PROPERTY_USER_AGENT, "openshift-restclient-java")
-						.build();	
-				WebSocketCall call = WebSocketCall.create(okClient, request);
-				call.enqueue(socket);
-			}
-		} catch (Exception e) {
+		if(status.compareAndSet(Status.Stopped, Status.Starting)) {
 			try {
-				throw ResponseCodeInterceptor.createOpenShiftException(client, 500, String.format("Could not watch resources in namespace %s: %s", namespace, e.getMessage()), null, e);
-			} catch (IOException e1) {
-				throw new OpenShiftException(e1, "IOException trying to create an OpenShift specific exception");
+				for (String kind : kinds) {
+					WatchEndpoint socket = new WatchEndpoint(client, listener, kind);
+					final String resourceVersion = getResourceVersion(kind, namespace, socket);
+					
+					final String endpoint = new URLBuilder(client.getBaseURL(), this.typeMappings)
+							.kind(kind)
+							.namespace(namespace)
+							.watch()
+							.addParmeter(ResourcePropertyKeys.RESOURCE_VERSION, resourceVersion)
+							.websocket();
+					Request request = client.newRequestBuilderTo(endpoint)
+							.header(PROPERTY_ORIGIN, client.getBaseURL().toString())
+							.header(PROPERTY_USER_AGENT, "openshift-restclient-java")
+							.build();	
+					WebSocketCall call = WebSocketCall.create(okClient.newBuilder().build(), request);
+					endpointMap.put(kind, socket);
+					call.enqueue(socket);
+				}
+				status.set(Status.Started);
+			} catch (Exception e) {
+				endpointMap.clear();
+				status.set(Status.Stopped);
+				try {
+					throw ResponseCodeInterceptor.createOpenShiftException(client, 0, String.format("Could not watch resources in namespace %s: %s", namespace, e.getMessage()), null, e);
+				} catch (IOException e1) {
+					throw new OpenShiftException(e1, "IOException trying to create an OpenShift specific exception");
+				}
 			}
 		}
 		return this;
@@ -121,15 +125,29 @@ public class WatchClient implements IWatcher, IHttpConstants {
 		return list.getResourceVersion();
 	}
 	
-	private class WatchEndpoint implements WebSocketListener{
+	static class WatchEndpoint implements WebSocketListener{
 		
 		private IOpenShiftWatchListener listener;
 		private List<IResource> resources;
 		private final String kind;
+		private final IClient client;
+		private WebSocket wsClient;
 		
-		public WatchEndpoint(IOpenShiftWatchListener listener, String kind) {
+		public WatchEndpoint(IClient client, IOpenShiftWatchListener listener, String kind) {
 			this.listener = listener;
 			this.kind = kind;
+			this.client = client;
+		}
+		
+		void close() {
+			try {
+				if(wsClient != null) {
+					wsClient.close(CODE_NORAMAL_STOP, "Client was asked to stop.");
+					wsClient = null;
+				}
+			} catch (Exception e) {
+				LOGGER.debug("Unable to stop the watch client",e);
+			}
 		}
 		
 		public void setResources(List<IResource> resources) {
@@ -140,12 +158,11 @@ public class WatchClient implements IWatcher, IHttpConstants {
 		public void onClose(int statusCode, String reason) {
 			LOGGER.debug("WatchSocket closed for kind: {}, code: {}, reason: {}", new Object[]{kind, statusCode, reason});
 			listener.disconnected();
-			status.set(Status.Stopped);
 		}
 
 		@Override
 		public void onFailure(IOException err, Response response) {
-			LOGGER.debug("WatchSocket Error for kind " + kind, err);
+			LOGGER.debug("WatchSocket Error for kind {}: {}", kind, err);
 			try {
 				if(response == null) {
 					listener.error(ResponseCodeInterceptor.createOpenShiftException(client, 0, "", "", err));
@@ -175,7 +192,6 @@ public class WatchClient implements IWatcher, IHttpConstants {
 		@Override
 		public void onOpen(WebSocket socket, Response response) {
 			LOGGER.debug("WatchSocket connected for {}", kind);
-			status.set(Status.Started);
 			wsClient = socket;
 			listener.connected(resources);
 		}
