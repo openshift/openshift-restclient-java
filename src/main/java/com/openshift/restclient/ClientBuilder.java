@@ -33,6 +33,7 @@ import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.utils.SSLUtils;
 
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 
 /**
@@ -50,6 +51,9 @@ public class ClientBuilder {
 	private String userName;
 	private String token;
 	private String password;
+	
+	private int maxRequests = 64;
+	private int maxRequestsPerHost = 10;
 	
 	private int readTimeout = IHttpConstants.DEFAULT_READ_TIMEOUT;
 	private TimeUnit readTimeoutUnit = TimeUnit.MILLISECONDS;
@@ -150,10 +154,17 @@ public class ClientBuilder {
 
 			ResponseCodeInterceptor responseCodeInterceptor = new ResponseCodeInterceptor();
 			OpenShiftAuthenticator authenticator = new OpenShiftAuthenticator();
+			Dispatcher dispatcher = new Dispatcher();
+			
+			//hiding these for now to since not certain
+			//if we need to really expose them.
+			dispatcher.setMaxRequests(maxRequests);
+			dispatcher.setMaxRequestsPerHost(maxRequestsPerHost);
 
 			OkHttpClient.Builder builder = new OkHttpClient.Builder()
 				.addInterceptor(responseCodeInterceptor)
 				.authenticator(authenticator)
+				.dispatcher(dispatcher)
 				.readTimeout(readTimeout, readTimeoutUnit)
 				.writeTimeout(writeTimeout, writeTimeoutUnit)
 				.connectTimeout(connectTimeout, connectTimeoutUnit)

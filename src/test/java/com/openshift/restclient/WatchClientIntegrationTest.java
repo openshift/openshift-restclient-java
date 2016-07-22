@@ -39,6 +39,16 @@ public class WatchClientIntegrationTest {
 	private IntegrationTestHelper helper = new IntegrationTestHelper();
 	private IClient client;
 	private IResource project;
+	public static final String [] KINDS = new String[] {
+			ResourceKind.BUILD_CONFIG, 
+			ResourceKind.DEPLOYMENT_CONFIG, 
+			ResourceKind.SERVICE, 
+			ResourceKind.POD,
+			ResourceKind.REPLICATION_CONTROLLER, 
+			ResourceKind.BUILD, 
+			ResourceKind.IMAGE_STREAM, 
+			ResourceKind.ROUTE
+	};
 
 	private ExecutorService service;
 	private boolean isError;
@@ -58,10 +68,10 @@ public class WatchClientIntegrationTest {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	@Test(timeout=30000)
+	@Test(timeout=60000)
 	public void test() throws Exception{
 		List results = new ArrayList();
-		CountDownLatch latch = new CountDownLatch(2);
+		CountDownLatch latch = new CountDownLatch(KINDS.length);
 		IOpenShiftWatchListener listener = new IOpenShiftWatchListener() {
 
 			@SuppressWarnings("unchecked")
@@ -90,7 +100,7 @@ public class WatchClientIntegrationTest {
 		
 		IWatcher watcher = null;
 		try {
-			watcher = client.watch(project.getName(), listener, ResourceKind.SERVICE, ResourceKind.POD);
+			watcher = client.watch(project.getName(), listener, KINDS);
 			latch.await();
 			assertFalse("Expected connection without error",isError);
 			IService service = client.getResourceFactory().stub(ResourceKind.SERVICE,"hello-world", project.getName());
