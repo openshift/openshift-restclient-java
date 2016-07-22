@@ -193,14 +193,9 @@ public class DefaultClient implements IClient, IHttpConstants{
 				.build();
 			
 		try {
-			Request.Builder builder = newRequestBuilderTo(endpoint.toString());
-			if(!HttpMethod.GET.toString().equals(method)) {
-				String json = payload == null ? "" : payload.toJson(true);
-				builder.method(method.toString(), 
-						RequestBody.create(MediaType.parse(MEDIATYPE_APPLICATION_JSON), json));
-				LOGGER.debug("About to send payload: {}", json);
-			}
-			Request request = builder.build();
+			Request request = newRequestBuilderTo(endpoint.toString())
+					.method(method, getPayload(method, payload))
+					.build();
 			LOGGER.debug("About to make {} request: {}", request.method(), request);
 			try(Response result = client.newCall(request).execute()){
 				String response =  result.body().string();
@@ -209,6 +204,18 @@ public class DefaultClient implements IClient, IHttpConstants{
 			}
 		} catch (IOException e){
 			throw new OpenShiftException(e, "Unable to execute request to %s", endpoint);
+		}
+	}
+	
+	private RequestBody getPayload(String method, IResource payload) {
+		switch(method.toUpperCase()){
+			case "GET":
+			case "DELETE":
+				return null;
+			default:
+				String json = payload == null ? "" : payload.toJson(true);
+				LOGGER.debug("About to send payload: {}", json);
+				return RequestBody.create(MediaType.parse(MEDIATYPE_APPLICATION_JSON), json);
 		}
 	}
 	

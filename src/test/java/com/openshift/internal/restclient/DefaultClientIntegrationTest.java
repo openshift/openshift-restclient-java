@@ -29,7 +29,9 @@ import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.authorization.UnauthorizedException;
+import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IProject;
+import com.openshift.restclient.model.build.IBuildConfigBuilder;
 import com.openshift.restclient.model.project.IProjectRequest;
 import com.openshift.restclient.model.template.ITemplate;
 
@@ -99,7 +101,7 @@ public class DefaultClientIntegrationTest {
 	}
 	
 	@Test
-	public void testResourceLifeCycle() throws MalformedURLException {
+	public void testResourceLifeCycle() { 
 		
 		
 		IProjectRequest projectRequest = factory.create(VERSION, ResourceKind.PROJECT_REQUEST);
@@ -158,8 +160,22 @@ public class DefaultClientIntegrationTest {
 			
 			assertEquals("Expected there to be only one service returned", 1, services.size());
 			assertEquals("Expected to get the service with the correct name", service.getName(), services.get(0).getName());
-		}catch(OpenShiftException e) {
-			e.printStackTrace();
+			
+			IBuildConfigBuilder builder = client.adapt(IBuildConfigBuilder.class);
+			IBuildConfig bc = builder.named("test")
+				.fromGitSource()
+					.fromGitUrl("https://github.com/openshift/origin.git")
+					.inContextDir("examples/hello-openshift")
+				.end()
+				.usingSourceStrategy()
+					.fromDockerImage("foo/bar")
+				.end()
+				.toImageStreamTag("foo/bar:latest")
+				.build();
+			bc = client.create(bc, project.getNamespace());
+			LOG.debug(String.format("Created bc: %s", bc.getName()));
+			LOG.debug(String.format("Trying to delete bc: %s", bc.getName()));
+			client.delete(bc);
 		}finally{
 			cleanUpResource(client, project);
 			cleanUpResource(client, other);
