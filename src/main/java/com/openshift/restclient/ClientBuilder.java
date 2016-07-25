@@ -134,14 +134,7 @@ public class ClientBuilder {
 	}
 	
 	/**
-	 * Build a client using the config loading rules defined http://janetkuo.github.io/kubernetes/v1.0/docs/user-guide/kubeconfig-file.html.  Brief summary
-	 * of loading order:
-	 * 
-	 * 1. use explicit values set in builder
-	 *   a. username/token
-	 *   b. authStrategy
-	 * 2. currentContext of config file located at $KUBECONFIG
-	 * 3. currentContext of config file located at ~/.kube/config 
+	 * Build a client  
 	 * 
 	 * @return
 	 * @throws KeyManagementException 

@@ -99,6 +99,7 @@ public class WatchClient implements IWatcher, IHttpConstants {
 							.header(PROPERTY_USER_AGENT, "openshift-restclient-java")
 							.build();	
 					WebSocketCall call = WebSocketCall.create(okClient.newBuilder().build(), request);
+					socket.setCall(call);
 					endpointMap.put(kind, socket);
 					call.enqueue(socket);
 				}
@@ -132,6 +133,7 @@ public class WatchClient implements IWatcher, IHttpConstants {
 		private final String kind;
 		private final IClient client;
 		private WebSocket wsClient;
+		private WebSocketCall call;
 		
 		public WatchEndpoint(IClient client, IOpenShiftWatchListener listener, String kind) {
 			this.listener = listener;
@@ -139,14 +141,23 @@ public class WatchClient implements IWatcher, IHttpConstants {
 			this.client = client;
 		}
 		
+		public void setCall(WebSocketCall call) {
+			this.call = call;
+		}
+
 		void close() {
 			try {
 				if(wsClient != null) {
 					wsClient.close(CODE_NORAMAL_STOP, "Client was asked to stop.");
-					wsClient = null;
 				}
+				if(call != null) {
+					call.cancel();
+				}
+				listener.disconnected();
 			} catch (Exception e) {
 				LOGGER.debug("Unable to stop the watch client",e);
+			}finally {
+				wsClient = null;
 			}
 		}
 		
