@@ -203,4 +203,9 @@ public class URLBuilder {
 		return url;
 	}
 
+	public URLBuilder addParameters(Map<String, String> params) {
+		params.forEach((k,v)->addParmeter(k, v));
+		return this;
+	}
+
 }

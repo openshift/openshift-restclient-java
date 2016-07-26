@@ -372,6 +372,9 @@ public class DefaultClient implements IClient, IHttpConstants{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T adapt(Class<T> klass) {
+		if(DefaultClient.class.equals(klass)){
+			return (T) this;
+		}
 		if(OkHttpClient.class.equals(klass)) {
 			return (T) this.client;
 		}
