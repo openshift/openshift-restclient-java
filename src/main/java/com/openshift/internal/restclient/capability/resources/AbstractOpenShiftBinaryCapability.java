@@ -155,7 +155,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 		String cmdLine = new StringBuilder(location).append(' ').append(buildArgs(Arrays.asList(options))).toString();
 		String[] args = StringUtils.split(cmdLine, " ");
 		ProcessBuilder builder = new ProcessBuilder(args);
-		builder.environment().clear();
+		builder.environment().remove("KUBECONFIG");
 		LOG.debug("OpenShift binary args: {}", builder.command());
 		try {
 			process = builder.start();
