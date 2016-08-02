@@ -16,7 +16,7 @@ import java.util.Comparator;
 public interface APIModelVersion {
 
 	int getOrder();
-	
+
 	static class VersionComparitor implements Comparator<APIModelVersion> {
 		@Override
 		public int compare(APIModelVersion v1, APIModelVersion v2) {
