@@ -20,7 +20,8 @@
             "requests": {
                 "storage": "15m"
             }
-        }
+        },
+        "volumeName": "pv02"
     },
     "status": {
         "phase": "Pending"
