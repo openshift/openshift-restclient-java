@@ -64,5 +64,10 @@ public class PVCTest {
 		claim.setRequestedStorage("1Gi");
 		assertEquals("1Gi", claim.getRequestedStorage());
 	}
+	
+	@Test
+	public void testGetVolumeName() {
+		assertEquals("pv02", claim.getVolumeName());
+	}
 
 }

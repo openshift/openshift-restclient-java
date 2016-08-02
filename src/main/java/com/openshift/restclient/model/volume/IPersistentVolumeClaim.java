@@ -52,4 +52,9 @@ public interface IPersistentVolumeClaim extends IResource {
 	 * @return
 	 */
 	String getStatus();
+	
+	/**
+	 * The volume name
+	 */
+	String getVolumeName();
 }
