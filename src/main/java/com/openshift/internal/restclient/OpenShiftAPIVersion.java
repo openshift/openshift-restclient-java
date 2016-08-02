@@ -18,8 +18,9 @@ public enum OpenShiftAPIVersion implements APIModelVersion{
 	@Deprecated
 	v1beta3(2),
 	v1(3);
-	
+
 	private int order;
+
 	OpenShiftAPIVersion(int order){
 		this.order = order;
 	}
