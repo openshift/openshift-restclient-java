@@ -26,6 +26,8 @@ public interface IHttpConstants {
 	public static final int STATUS_UNAUTHORIZED = 401;
 	public static final int STATUS_FORBIDDEN = 403;
 	public static final int STATUS_NOT_FOUND = 404;
+	
+	public static final int STATUS_NORMAL_STOP = 1000;
 
 	public static final String PROPERTY_CONTENT_TYPE = "Content-Type";
 	public static final String PROPERTY_AUTHORIZATION = "Authorization";

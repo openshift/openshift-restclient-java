@@ -49,7 +49,6 @@ import okio.Buffer;
 
 public class WatchClient implements IWatcher, IHttpConstants {
 
-	private static final int CODE_NORAMAL_STOP = 1000;
 	private static final Logger LOGGER = LoggerFactory.getLogger(WatchClient.class);
 	private DefaultClient client;
 	private OkHttpClient okClient;
@@ -148,7 +147,8 @@ public class WatchClient implements IWatcher, IHttpConstants {
 		void close() {
 			try {
 				if(wsClient != null) {
-					wsClient.close(CODE_NORAMAL_STOP, "Client was asked to stop.");
+					wsClient.close(STATUS_NORMAL_STOP, "Client was asked to stop.");
+					wsClient = null;
 				}
 				if(call != null) {
 					call.cancel();

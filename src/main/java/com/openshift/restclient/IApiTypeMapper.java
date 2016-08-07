@@ -29,7 +29,7 @@ public interface IApiTypeMapper {
 	 * @param version   the apiVersion, null or empty is best guess
 	 * @param kind
 	 * @return
-	 * @throws OpenShiftException if unable to determine the endpoint for the given kind
+	 * @throws UnsupportedEndpointException if unable to determine the endpoint for the given kind
 	 */
 	IVersionedApiResource getEndpointFor(String apiVersion, String kind);
 

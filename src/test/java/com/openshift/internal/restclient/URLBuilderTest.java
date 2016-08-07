@@ -14,6 +14,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,12 +43,16 @@ public class URLBuilderTest extends TypeMapperFixture{
 	public void testBuildingURLForAWatchService() throws Exception {
 		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1,"foo");
 		
+		Map<String,String> params = new HashMap<>();
+		params.put("foo", "bar");
+		
 		String url = builder.
 				resource(resource)
 				.watch()
 				.addParmeter("resourceVersion", "123")
+				.addParameters(params)
 				.build().toString();
-		assertEquals(String.format("%s/api/v1/namespaces/foo/services?watch=true&resourceVersion=123", BASE_URL),url.toString());
+		assertEquals(String.format("%s/api/v1/namespaces/foo/services?watch=true&resourceVersion=123&foo=bar", BASE_URL),url.toString());
 	}
 	
 	@Test

@@ -33,6 +33,7 @@ import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.UnsupportedEndpointException;
 import com.openshift.restclient.model.IResource;
 
 import okhttp3.OkHttpClient;
@@ -80,7 +81,7 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 		init();
 		IVersionedApiResource apiresource = endpointFor(apiVersion, kind);
 		if(apiresource == null) {
-			throw new OpenShiftException("No endpoint found for %s, version %s", kind, apiVersion);
+			throw new UnsupportedEndpointException("No endpoint found for %s, version %s", kind, apiVersion);
 		}
 		return apiresource;
 	}
