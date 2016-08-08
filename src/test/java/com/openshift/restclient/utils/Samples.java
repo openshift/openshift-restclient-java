@@ -31,6 +31,7 @@ public enum Samples {
 	V1_BUILD_CONFIG("openshift3/v1_build_config.json"),
 	V1_BUILD_CONFIG_LIST("openshift3/v1_build_config_list.json"),
 	V1_DEPLOYMENT_CONIFIG("openshift3/v1_deployment_config.json"),
+	V1_EVENT("openshift3/v1_event.json"),
 	V1_IMAGE_STREAM("openshift3/v1_image_stream.json"),
 	V1_IMAGE_STREAM_IMPORT("openshift3/v1_image_stream_import.json"), 
 	V1_BUILD("openshift3/v1_build.json"), 
