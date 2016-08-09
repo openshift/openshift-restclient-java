@@ -10,6 +10,11 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.resources.IBuildTriggerable;
@@ -30,17 +35,21 @@ public class BuildTrigger implements IBuildTriggerable {
 	private IResource resource;
 	private IClient client;
 	private final String subresource;
+	private String commitId;
+	private List<String> causes;
 
 	public BuildTrigger(IBuildConfig buildConfig, IClient client) {
 		this.resource = buildConfig;
 		this.client = client;
 		this.subresource = BUILDCONFIG_SUBRESOURCE;
+		this.causes = new ArrayList<>();
 	}
 
 	public BuildTrigger(IBuild build, IClient client) {
 		this.resource = build;
 		this.client = client;
 		this.subresource = BUILD_SUBRESOURCE;
+		this.causes = new ArrayList<>();
 	}
 
 	@Override
@@ -56,14 +65,37 @@ public class BuildTrigger implements IBuildTriggerable {
 	@Override
 	public IBuild trigger() {
 		IBuildRequest request = client.getResourceFactory().stub(ResourceKind.BUILD_REQUEST, resource.getName());
+		if(StringUtils.isNotEmpty(commitId))
+			request.setCommitId(commitId);
+		causes.forEach(c->request.addBuildCause(c));
 		return client.create(resource.getKind(), resource.getNamespace(), resource.getName(), subresource, request);
 	}
 
-	@Override
+	@Override @Deprecated
 	public IBuild trigger(String commitId) {
 		IBuildRequest request = client.getResourceFactory().stub(ResourceKind.BUILD_REQUEST, resource.getName());
 		request.setCommitId(commitId);
 		return client.create(resource.getKind(), resource.getNamespace(), resource.getName(), subresource, request);
+	}
+
+	@Override
+	public void setCommitId(String commitId) {
+		this.commitId = commitId;
+	}
+
+	@Override
+	public String getCommitId() {
+		return commitId;
+	}
+
+	@Override
+	public void addBuildCause(String cause) {
+		causes.add(cause);
+	}
+
+	@Override
+	public List<String> getBuildCauses() {
+		return new ArrayList<>(causes);
 	}
 	
 	
