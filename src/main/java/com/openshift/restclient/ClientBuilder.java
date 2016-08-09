@@ -134,6 +134,28 @@ public class ClientBuilder {
 	}
 	
 	/**
+	 * The maximum concurrent requests for this client.
+	 * 
+	 * @param maxRequests the maximum number of concurrent requests
+	 * @return the client builder
+	 */
+	public ClientBuilder withMaxRequests(int maxRequests) {
+	    this.maxRequests = maxRequests;
+	    return this;
+	}
+	
+    /**
+     * The maximum concurrent request for this client for a single host.
+     * 
+     * @param maxRequestsPerHost the maximum number of concurrent requests for a single host
+     * @return the client builder
+     */
+	public ClientBuilder withMaxRequestsPerHost(int maxRequestsPerHost) {
+	    this.maxRequestsPerHost = maxRequestsPerHost;
+	    return this;
+	}
+	
+	/**
 	 * Build a client  
 	 * 
 	 * @return
