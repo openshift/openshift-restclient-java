@@ -134,9 +134,9 @@ public class ClientBuilder {
 	}
 	
 	/**
-	 * The maximum concurrent websocket requests for this client.
+	 * The maximum concurrent requests for this client.
 	 * 
-	 * @param maxRequests the maximum number of concurrent web socket requests
+	 * @param maxRequests the maximum number of concurrent requests
 	 * @return the client builder
 	 */
 	public ClientBuilder withMaxRequests(int maxRequests) {
@@ -145,9 +145,9 @@ public class ClientBuilder {
 	}
 	
     /**
-     * The maximum concurrent websocket request for this client for a single host.
+     * The maximum concurrent request for this client for a single host.
      * 
-     * @param maxRequestsPerHost the maximum number of concurrent web socket requests for a single host
+     * @param maxRequestsPerHost the maximum number of concurrent requests for a single host
      * @return the client builder
      */
 	public ClientBuilder withMaxRequestsPerHost(int maxRequestsPerHost) {
