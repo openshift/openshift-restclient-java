@@ -33,6 +33,7 @@ import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.utils.SSLUtils;
 
+import okhttp3.Authenticator;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 
@@ -51,6 +52,7 @@ public class ClientBuilder {
 	private String userName;
 	private String token;
 	private String password;
+	private Authenticator proxyAuthenticator;
 	
 	private int maxRequests = 64;
 	private int maxRequestsPerHost = 10;
@@ -121,6 +123,11 @@ public class ClientBuilder {
 		this.writeTimeoutUnit = unit;
 		return this;
 	}
+
+	public ClientBuilder proxyAuthenticator(Authenticator proxyAuthenticator) {
+		this.proxyAuthenticator = proxyAuthenticator;
+		return this;
+	}
 	
 	/**
 	 * The connect timeout parameter used for establishing
@@ -185,6 +192,11 @@ public class ClientBuilder {
 				.connectTimeout(connectTimeout, connectTimeoutUnit)
 				.hostnameVerifier(this.sslCertificateCallback)
 				.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+
+			if (proxyAuthenticator != null) {
+				builder.proxyAuthenticator(proxyAuthenticator);
+			}
+
 			OkHttpClient okClient = builder.build();
 			
 			IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
