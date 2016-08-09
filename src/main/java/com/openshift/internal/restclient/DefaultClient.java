@@ -327,7 +327,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((baseUrl == null) ? 0 : baseUrl.hashCode());
+		result = prime * result + ((baseUrl == null) ? 0 : baseUrl.toString().hashCode());
 		result = prime * result + ((kubernetesVersion == null) ? 0 : kubernetesVersion.hashCode());
 		result = prime * result + ((openShiftVersion == null) ? 0 : openShiftVersion.hashCode());
 		result = prime * result + ((authContext == null || authContext.getToken() == null) ? 0 : authContext.getToken().hashCode());
@@ -346,7 +346,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		if (baseUrl == null) {
 			if (other.baseUrl != null)
 				return false;
-		} else if (!baseUrl.equals(other.baseUrl))
+		} else if (!baseUrl.toString().equals(other.baseUrl.toString()))
 			return false;
 		if (kubernetesVersion == null) {
 			if (other.kubernetesVersion != null)
