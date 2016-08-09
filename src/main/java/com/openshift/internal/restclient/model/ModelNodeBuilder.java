@@ -37,6 +37,11 @@ public class ModelNodeBuilder {
 		return this;
 	}
 
+	public ModelNodeBuilder set(String path, ModelNode child) {
+		JBossDmrExtentions.get(node, PROPS, path).set(child);
+		return this;
+	}
+
 	public ModelNodeBuilder set(String path, int value) {
 		JBossDmrExtentions.set(node, PROPS, path, value);
 		return this;

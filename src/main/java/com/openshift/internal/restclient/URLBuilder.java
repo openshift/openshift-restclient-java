@@ -21,8 +21,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.UnsupportedEndpointException;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IResource;
 
@@ -40,10 +43,12 @@ public class URLBuilder {
 	private String kind;
 	private String name;
 	private Map<String, String> params = new HashMap<String, String>();
-	private final Map<String, String> typeMappings;
+	private final IApiTypeMapper typeMappings;
 
+	private String apiVersion;
 	private String namespace;
 	private String subResource;
+
 
 	/**
 	 * 
@@ -51,7 +56,7 @@ public class URLBuilder {
 	 * @param typeMappings the map of kinds to endpoint
 	 * @param resource
 	 */
-	URLBuilder(URL baseUrl, Map<String, String> typeMappings, IResource resource) {
+	URLBuilder(URL baseUrl, IApiTypeMapper typeMappings, IResource resource) {
 		this(baseUrl, typeMappings);
 		resource(resource);
 	}
@@ -61,23 +66,28 @@ public class URLBuilder {
 	 * @param baseUrl
 	 * @param typeMappings the map of kinds to endpoint
 	 */
-	URLBuilder(URL baseUrl, Map<String, String> typeMappings) {
+	public URLBuilder(URL baseUrl, IApiTypeMapper typeMappings) {
 		this.baseUrl = baseUrl.toString().replaceAll("/*$", "");
 		this.typeMappings = typeMappings;
 	}
 	
-	URLBuilder namespace(String namespace){
+	public URLBuilder apiVersion(String apiVersion){
+		this.apiVersion = apiVersion;
+		return this;
+	}
+
+	public URLBuilder namespace(String namespace){
 		if(StringUtils.isBlank(namespace)) return this;
 		this.namespace = namespace;
 		return this;
 	}
 	
-	URLBuilder name(String name) {
+	public URLBuilder name(String name) {
 		this.name = name;
 		return this;
 	}
 
-	URLBuilder kind(String kind) {
+	public URLBuilder kind(String kind) {
 		if(!ResourceKind.values().contains(kind)) {
 			LOG.warn(String.format("There kind '%s' is not recognized by this client; this operation may fail.", kind));
 		}
@@ -85,7 +95,7 @@ public class URLBuilder {
 		return this;
 	}
 
-	URLBuilder resource(IResource resource) {
+	public URLBuilder resource(IResource resource) {
 		if (resource == null) return this;
 		this.name = resource.getName();
 		kind(resource.getKind());
@@ -93,13 +103,13 @@ public class URLBuilder {
 		return this;
 	}
 
-	URLBuilder addParmeter(String key, String value) {
+	public URLBuilder addParmeter(String key, String value) {
 		params.put(key, value);
 		return this;
 	}
 	
 
-	URLBuilder subresource(String value) {
+	public URLBuilder subresource(String value) {
 		this.subResource = value;
 		return this;
 	}
@@ -109,7 +119,7 @@ public class URLBuilder {
 	 * a resource kind must be provided
 	 * @return
 	 */
-	URL build() {
+	public URL build() {
 		StringBuilder url = new StringBuilder(baseUrl);
 		if (kind == null)
 			throw new RuntimeException(
@@ -127,19 +137,25 @@ public class URLBuilder {
 	}
 	
 	private void buildWithNamespaceInPath(StringBuilder url) {
-		url.append("/");
-		if(typeMappings.containsKey(kind))
-			url.append(typeMappings.get(kind));
-		else {
-			throw new OpenShiftException("Unable to determine the api endpoint for kind '%s'", kind);
+		if(!typeMappings.isSupported(apiVersion, kind)) {
+			throw new UnsupportedEndpointException("Unable to determine the api endpoint for kind '%s'", kind);
 		}
-		if(namespace != null && !ResourceKind.PROJECT.equals(kind)) {
+		url.append("/");
+		IVersionedApiResource apiResource = typeMappings.getEndpointFor(apiVersion, kind);
+		url.append(apiResource.getPrefix()).append("/").append(apiResource.getVersion());
+		if(namespace == null && apiResource.isNamespaced()) {
+			throw new OpenShiftException("The api endpoint for kind '%s' requires a namespace", kind);
+		}
+		if(apiResource.isNamespaced()) {
 			url.append("/namespaces/")
 				.append(namespace);
 		}
-		url.append("/").append(ResourceKind.pluralize(kind));
+		url.append("/").append(apiResource.getName());
 		if (name != null) {
 			url.append("/").append(name);
+		}
+		if(StringUtils.isNotBlank(subResource) && !apiResource.isSupported(subResource)){
+			throw new OpenShiftException("The api endpoint for kind '%s' && subresource '%s' is not supported by the cluster", kind, subResource);
 		}
 		if(StringUtils.isNotBlank(subResource)) {
 			url.append("/").append(subResource);
@@ -185,6 +201,11 @@ public class URLBuilder {
 			LOG.debug(String.format("Built url: %s", url));
 		}
 		return url;
+	}
+
+	public URLBuilder addParameters(Map<String, String> params) {
+		params.forEach((k,v)->addParmeter(k, v));
+		return this;
 	}
 
 }

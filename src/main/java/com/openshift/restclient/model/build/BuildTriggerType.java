@@ -21,6 +21,7 @@ public interface BuildTriggerType {
 	@Deprecated
 	static final String imageChange = "imageChange";
 
+	static final String CONFIG_CHANGE = "ConfigChange";
 	static final String GENERIC = "Generic";
 	static final String GITHUB = "GitHub";
 	static final String IMAGE_CHANGE = "ImageChange";

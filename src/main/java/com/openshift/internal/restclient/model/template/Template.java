@@ -66,7 +66,10 @@ public class Template extends KubernetesResource implements ITemplate{
 	}
 	
 	@Override
-	public Collection<IResource> getItems() {
+	public Collection<IResource> getObjects() {
+		if(!getNode().has(OBJECTS)) {
+			return Collections.emptyList();
+		}
 		Collection<ModelNode> nodes = get(OBJECTS).asList();
 		List<IResource> resources = new ArrayList<IResource>(nodes.size());
 		IResourceFactory factory = getClient().getResourceFactory();

@@ -16,7 +16,7 @@ package com.openshift.restclient.images;
  */
 public class DockerImageURI {
 	
-	private static final String LATEST = "latest";
+	public static final String LATEST = "latest";
 	private String registryHost;
 	private String userName;
 	private String name;
@@ -33,20 +33,22 @@ public class DockerImageURI {
 	}
 
 	public DockerImageURI(String tag){
-		String[] segments = tag.split("/");
-		switch (segments.length) {
-		case 3:
-			registryHost = segments[0];
-			userName = segments[1];
-			setNameAndTag(segments[2]);
-			break;
-		case 2:
-			userName = segments[0];
-			setNameAndTag(segments[1]);
-			break;
-		default:
-			setNameAndTag(segments[0]);
-			break;
+		if(tag != null) {
+			String[] segments = tag.split("/");
+			switch (segments.length) {
+			case 3:
+				registryHost = segments[0];
+				userName = segments[1];
+				setNameAndTag(segments[2]);
+				break;
+			case 2:
+				userName = segments[0];
+				setNameAndTag(segments[1]);
+				break;
+			default:
+				setNameAndTag(segments[0]);
+				break;
+			}
 		}
 	}
 
@@ -83,22 +85,50 @@ public class DockerImageURI {
 		return this.registryHost;
 	}
 
+	/**
+	 * Get the docker tag as repo:9999/username/name:tag 
+	 * @return
+	 */
 	public String getAbsoluteUri() {
 		return buildUri(registryHost, userName, name, tag);
 	}
 
+	/**
+	 * Get the docker tag as username/name:tag only
+	 * @return
+	 */
 	public String getBaseUri() {
 		return buildUri(null, userName, name, tag);
 	}
-
+	
+	/**
+	 * Get the docker tag as username/name only
+	 * @return
+	 */
+	public String getUriUserNameAndName() {
+		return buildUri(null, userName, name, null);
+	}
+	
+	/**
+	 * Get the docker tag as repo:9999/username/name only
+	 * @return
+	 */
 	public String getUriWithoutTag() {
 		return buildUri(registryHost, userName, name, null);
 	}
 	
+	/**
+	 * Get the docker tag as username/name:tag only
+	 * @return
+	 */
 	public String getUriWithoutHost() {
 		return buildUri(null, userName, name, tag);
 	}
 
+	/**
+	 * Get the docker tag as name:tag only
+	 * @return
+	 */
 	public String getNameAndTag() {
 		return buildUri(null, null, name, tag);
 	}

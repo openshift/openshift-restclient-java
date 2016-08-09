@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.restclient.capability.resources;
 
+import java.io.InputStream;
+
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.model.IPod;
 
@@ -20,10 +22,17 @@ import com.openshift.restclient.model.IPod;
  */
 public interface IRSyncable extends IBinaryCapability {
 
-	void sync(Peer source, Peer destination);
+	/**
+	 * Synchronize the give {@code destination} with the given {@code source}
+	 * @param source the source of the rsync
+	 * @param destination the destination of the rsync
+	 * @param options the options to pass to the underlying {@code oc rsync} command
+	 * @return the underlying {@link Process} streams to be displayed in a console.
+	 */
+	InputStream sync(Peer source, Peer destination, OpenShiftBinaryOption... options);
 		
 	/**
-	 * Stop forwarding ports, forcibly if necessary
+	 * Stop rsync'ing, forcibly if necessary.
 	 */
 	void stop();
 
@@ -96,4 +105,28 @@ public interface IRSyncable extends IBinaryCapability {
 		
 		public abstract boolean isPod();
 	}
+
+	/**
+	 * Indicates if the {@link Process} completed or not
+	 * 
+	 * @return <code>true</code> if the {@link Process} completed,
+	 *         <code>false</code> otherwise.
+	 */
+	boolean isDone();
+
+	/**
+	 * @return the {@link Process} exit value when it completed, {@code -1} if
+	 *         it's still running
+	 */
+	int exitValue();
+
+	/**
+	 * Blocks until the process is done.
+	 * 
+	 * @throws InterruptedException
+	 *             if the current thread is interrupted while waiting
+	 */
+	void await() throws InterruptedException;
+
+
 }

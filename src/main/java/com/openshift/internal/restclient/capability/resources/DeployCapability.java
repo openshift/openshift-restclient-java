@@ -55,11 +55,11 @@ public class DeployCapability implements IDeployCapability{
 	public void deploy() {
 		try {
 			final String deploymentName = getLatestDeploymentName();
-			LOG.debug("Attempting to deploy latest deployment for config '%s'.  Loading deployment: '%s'", config.getName(), deploymentName);
+			LOG.debug("Attempting to deploy latest deployment for config %s.  Loading deployment: %s", config.getName(), deploymentName);
 			IReplicationController deployment = client.get(ResourceKind.REPLICATION_CONTROLLER, deploymentName, config.getNamespace());
 			final String status = getStatusFor(deployment);
 			if(!COMPLETED_STATES.contains(status)) {
-				LOG.debug("Skipping deployment because deployment status '%s' for '%s' is not in %s", new Object [] {status, deploymentName, COMPLETED_STATES});
+				LOG.debug("Skipping deployment because deployment status %s for %s is not in %s", new Object [] {status, deploymentName, COMPLETED_STATES});
 				return;
 			}
 		}catch(OpenShiftException e) {

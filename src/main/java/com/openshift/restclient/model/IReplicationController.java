@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.volume.IVolume;
 import com.openshift.restclient.model.volume.IVolumeSource;
 
 /**
@@ -22,6 +23,62 @@ import com.openshift.restclient.model.volume.IVolumeSource;
 public interface IReplicationController  extends IResource{
 	
 	static final String DEPLOYMENT_PHASE = "openshift.io/deployment.phase";
+	
+	/**
+	 * Set an environment variable to the given name and
+	 * value on the first container in the list of containers
+	 * 
+	 * @param name
+	 * @param value
+	 */
+	void setEnvironmentVariable(String name, String value);
+
+	/**
+	 * Set an environment variable to the given name and
+	 * value on the given container.  Returns silently
+	 * if the containerName is not found
+	 * 
+	 * @param containerName
+	 * @param name
+	 * @param value
+	 */
+	void setEnvironmentVariable(String containerName, String name, String value);
+	
+	/**
+	 * Removes an environment variable with the given name.
+	 * Returns silently if the name is not found
+	 * 
+	 * @throws IllegalArgumentException if name is null
+	 * 
+	 * @param name
+	 */
+	public void removeEnvironmentVariable(String name);
+	
+	/**
+	 * Removes an environment variable with the given name and
+	 * value on the given container.  Returns silently
+	 * if the containerName or the name is not found
+	 * 
+	 * @throws IllegalArgumentException if name is null
+	 * 
+	 * @param containerName
+	 * @param name
+	 */
+	public void removeEnvironmentVariable(String containerName, String name);
+	
+	/**
+	 * Return the list of env vars of the first container
+	 * @return
+	 */
+	Collection<IEnvironmentVariable> getEnvironmentVariables();
+
+	/**
+	 * Return the list of env vars for the given container or an empty list
+	 * if the container is not found
+	 * @param containerName
+	 * @return
+	 */
+	Collection<IEnvironmentVariable> getEnvironmentVariables(String containerName);
 	
 	/**
 	 * Returns the desired number of replicas
@@ -84,7 +141,26 @@ public interface IReplicationController  extends IResource{
 	 */
 	IContainer addContainer(DockerImageURI tag, Set<IPort> containerPorts, Map<String, String> envVars);
 
+	/**
+	 * Add a container with the given name 
+	 * @param name
+	 * @return
+	 */
 	IContainer addContainer(String name);
+	
+	/**
+	 * Retrieve a container by name or null if it is not found
+	 * @param name
+	 * @return the container or null if not found
+	 */
+	IContainer getContainer(String name);
+
+	/**
+	 * Retrieve the containers defined in spec
+	 * @param name
+	 * @return collection of containers or empty collection
+	 */
+	Collection<IContainer> getContainers();
 	
 	/**
 	 * Add or update a label to the template spec;
@@ -98,4 +174,20 @@ public interface IReplicationController  extends IResource{
 	 * @return
 	 */
 	Set<IVolumeSource> getVolumes();
+
+	/**
+	 * Adds a volume to the pod spec. If a volume with the same name already exists, the volume is not added.
+	 *
+	 * @param volumeSource The volume to add to the pod spec
+     */
+	void addVolume(IVolumeSource volumeSource);
+
+	/**
+	 * Sets the volumes associated with the pod spec. Existing volumes will be overwritten.
+	 *
+	 * @param volumes The volumes to assign to the pod spec.
+     */
+	void setVolumes(Set<IVolumeSource> volumes);
+
+	void setContainers(Collection<IContainer> containers);
 }

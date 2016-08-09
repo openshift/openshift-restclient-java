@@ -9,6 +9,7 @@
 package com.openshift.restclient.authorization;
 
 import com.openshift.restclient.OpenShiftException;
+import com.openshift.restclient.model.IStatus;
 
 /**
  * @author Jeff Cantrill
@@ -20,6 +21,11 @@ public class ResourceForbiddenException extends OpenShiftException {
 	public ResourceForbiddenException(String message, Throwable e) {
 		super(message, e);
 	}
+
+	public ResourceForbiddenException(String message, IStatus status, Throwable e) {
+		super(e, status, message);
+	}
+	
 	
 
 }

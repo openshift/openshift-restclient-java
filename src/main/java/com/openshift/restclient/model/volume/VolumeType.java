@@ -30,6 +30,8 @@ public interface VolumeType {
 	static final String GLUSTERFS = "glusterfs";
 	static final String ISCSI = "iscsi";
 	static final String RBD = "rbd";
+	static final String SECRET = "secret";
+	static final String PERSISTENT_VOLUME_CLAIM = "persistentVolumeClaim";
 
 	static List<String> getTypes() {
 		return Arrays.asList(EMPTY_DIR,

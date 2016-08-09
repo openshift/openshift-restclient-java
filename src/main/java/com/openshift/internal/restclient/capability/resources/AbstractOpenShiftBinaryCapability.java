@@ -11,6 +11,8 @@
 package com.openshift.internal.restclient.capability.resources;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -20,9 +22,6 @@ import org.slf4j.LoggerFactory;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.OpenShiftContext;
 import com.openshift.restclient.OpenShiftException;
-import com.openshift.restclient.authorization.BasicAuthorizationStrategy;
-import com.openshift.restclient.authorization.IAuthorizationStrategyVisitor;
-import com.openshift.restclient.authorization.TokenAuthorizationStrategy;
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.resources.LocationNotFoundException;
 
@@ -56,10 +55,10 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	protected abstract boolean validate();
 	
 	/**
-	 * Callback for building args to be sent to the oc command
-	 * @return
+	 * Callback for building args to be sent to the {@code oc} command.
+	 * @return the String representation of all the arguments to use when running the {@code oc} command. 
 	 */
-	protected abstract String buildArgs();
+	protected abstract String buildArgs(final List<OpenShiftBinaryOption> options);
 
 	protected IClient getClient() {
 		return client;
@@ -83,54 +82,80 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 		Runtime.getRuntime().addShutdownHook(new Thread(runnable));
 	}
 	
-	protected StringBuilder addUser(final StringBuilder builder) {
-		builder.append("--user=")
-				.append(client.getCurrentUser().getName())
-				.append(" ");
-		return builder;
+	protected String getUserFlag() {
+		final StringBuilder argBuilder = new StringBuilder();
+		argBuilder.append("--user=").append(client.getAuthorizationContext().getUserName()).append(" ");
+		return argBuilder.toString();
 	}
 
-	protected StringBuilder addServer(final StringBuilder builder) {
-		builder.append("--server=")
-				.append(client.getBaseURL())
-				.append(" ");
-		return builder;
+	/**
+	 * @return
+	 */
+	protected String getServerFlag() {
+		final StringBuilder argBuilder = new StringBuilder();
+		argBuilder.append("--server=").append(client.getBaseURL()).append(" ");
+		return argBuilder.toString();
 	}
 
-	protected StringBuilder addToken(final StringBuilder builder) {
-		builder.append("--token=");
-		client.getAuthorizationStrategy().accept(new IAuthorizationStrategyVisitor() {
-			
-			@Override
-			public void visit(TokenAuthorizationStrategy strategy) {
-				builder.append(strategy.getToken());
-			}
-			
-			@Override
-			public void visit(BasicAuthorizationStrategy strategy) {
-				builder.append(strategy.getToken());
-			}
-		});
-		builder.append(" ");
-		return builder;
+	/**
+	 * Adds the authentication token
+	 * @return the command-line argument to use the current token 
+	 */
+	protected String getTokenFlag() {
+		return new StringBuilder("--token=")
+			.append(client.getAuthorizationContext().getToken())
+			.append(" ").toString();
 	}
 	
-	protected StringBuilder addSkipTlsVerify(StringBuilder args) {
-		return args.append("--insecure-skip-tls-verify=true ");
+	/**
+	 * @return the command-line flag to use insecure connection (skip TLS verification)
+	 */
+	protected String getSkipTlsVerifyFlag() {
+		return "--insecure-skip-tls-verify=true ";
+	}
+	
+	/**
+	 * @return the command-line flag to exclude some files/directories that do
+	 *         not need to be synchronized between the remote pod and the local
+	 *         deployment directory.
+	 */
+	protected String getGitFolderExclusionFlag() {
+		// no support for multiple exclusion, so excluding '.git' only for now
+		// see https://github.com/openshift/origin/issues/8223
+		return "--exclude='.git' ";
+	}
+	
+	/**
+	 * @return the command-line flag to avoid transferring permissions.
+	 */
+	protected String getNoPermsFlags() {
+		return "--no-perms=true ";
+	}
+	
+	/**
+	 * @return the command-line flag to delete extraneous file from destination directories.
+	 */
+	protected String getDeleteFlags() {
+		return "--delete ";
 	}
 
-	public final void start() {
+	/**
+	 * Starts the {@link Process} to run the {@code oc} command.
+	 * @param options the command line options
+	 */
+	public final void start(final OpenShiftBinaryOption... options) {
 		String location = getOpenShiftBinaryLocation();
 		if(!validate()) {
 			return;
 		}
-		startProcess(location);
+		startProcess(location, options);
 	}
 	
-	private void startProcess(String location) {
-		String cmdLine = new StringBuilder(location).append(' ').append(buildArgs()).toString();
+	private void startProcess(final String location, final OpenShiftBinaryOption... options) {
+		String cmdLine = new StringBuilder(location).append(' ').append(buildArgs(Arrays.asList(options))).toString();
 		String[] args = StringUtils.split(cmdLine, " ");
 		ProcessBuilder builder = new ProcessBuilder(args);
+		builder.environment().remove("KUBECONFIG");
 		LOG.debug("OpenShift binary args: {}", builder.command());
 		try {
 			process = builder.start();
@@ -158,15 +183,21 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 		}
 	}
 
+	/**
+	 * Stops the {@link Process} running the {@code oc} command.
+	 */
 	public final synchronized void stop() {
 		if(process == null) return;
 		cleanup();
 		if(!process.isAlive()) {
-			LOG.debug("OpenShiftBinaryCapability process exit code {}", process.exitValue());
-			try {
-				LOG.debug("OpenShiftBinaryCapability process error stream", IOUtils.toString(process.getErrorStream()));
-			} catch (IOException e) {
-				LOG.debug("IOException trying to debug the process error stream", e);
+			final int exitValue = process.exitValue();
+			LOG.debug("OpenShiftBinaryCapability process exit code {}", exitValue);
+			if(exitValue != 0) {
+				try {
+					LOG.debug("OpenShiftBinaryCapability process error stream", IOUtils.toString(process.getErrorStream()));
+				} catch (IOException e) {
+					LOG.debug("IOException trying to debug the process error stream", e);
+				}
 			}
 			process = null;
 			return;

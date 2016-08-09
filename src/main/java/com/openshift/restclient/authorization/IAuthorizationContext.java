@@ -25,8 +25,10 @@ public interface IAuthorizationContext {
 	IUser getUser();
 	
 	/**
-	 * 
-	 * @return true if the token is non-null; false otherwise
+	 * This can trigger a remote call if a user
+	 * has not attempted to authorize previously
+	 *  
+	 * @return true if authorized; false otherwise
 	 */
 	boolean isAuthorized();
 	
@@ -44,10 +46,49 @@ public interface IAuthorizationContext {
 	String getToken();
 	
 	/**
+	 * The token to try and use for communication
+	 * to the apiserver
+	 * @param token
+	 */
+	void setToken(String token);
+	
+	/**
+	 * A username to use for authenticating
+	 * @param userName
+	 */
+	void setUserName(String userName);
+	
+	/**
+	 * A username to use for authenticating
+	 * @return userName
+	 */
+	String getUserName();
+	
+	/**
+	 * Password to use to authenticate to retrieve a
+	 * token
+	 * @param password
+	 */
+	void setPassword(String password);
+	
+	/**
+	 * Password to use to authenticate to retrieve a
+	 * token
+	 * @return password
+	 */
+	String getPassword();
+	/**
 	 * Time in ?? when the token expires. Will return
 	 * non-null value if authorized
 	 * @return
 	 */
 	String getExpiresIn();
-
+	
+	/**
+	 * Retrieve the authorization details for a server
+	 * 
+	 * @param baseURL
+	 * @return
+	 */
+	IAuthorizationDetails getAuthorizationDetails();
 }

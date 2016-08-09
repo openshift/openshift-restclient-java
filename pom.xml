@@ -17,7 +17,7 @@
 	<!-- Artifact Information -->
 	<groupId>com.openshift</groupId>
 	<artifactId>openshift-restclient-java</artifactId>
-	<version>4.0.0-SNAPSHOT</version>
+	<version>5.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>OpenShift Java REST Client</name>
 	<url>http://openshift.redhat.com</url>
@@ -39,7 +39,7 @@
 		<version.shrinkwrap_shrinkwrap>1.0.0-beta-6</version.shrinkwrap_shrinkwrap>
 		<version.shrinkwrap_resolver>1.0.0-beta-5</version.shrinkwrap_resolver>
 		<version.shrinkwrap_descriptors>1.1.0-beta-1</version.shrinkwrap_descriptors>
-		
+
 		<!-- integration test properties file -->
 		<integrationtest.properties>${basedir}/src/test/resources/integrationTest.properties</integrationtest.properties>
 		<jar.outputDir>${project.build.directory}</jar.outputDir>
@@ -119,11 +119,30 @@
 						<outputDirectory>${jar.outputDir}</outputDirectory>
 					</configuration>
 				</plugin>
+				<plugin>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
 
 	<dependencies>
+		<dependency>
+		  <groupId>com.squareup.okhttp3</groupId>
+		  <artifactId>okhttp</artifactId>
+		  <version>3.3.1</version>
+		</dependency>
+		<dependency>
+		  <groupId>com.squareup.okhttp3</groupId>
+		  <artifactId>okhttp-ws</artifactId>
+		  <version>3.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.14</version>
+		</dependency>
 		<dependency>
 			<groupId>org.jboss</groupId>
 			<artifactId>jboss-dmr</artifactId>
@@ -181,21 +200,6 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.eclipse.jetty.websocket</groupId>
-		    <artifactId>websocket-client</artifactId>
-		    <version>9.2.13.v20150730</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpclient</artifactId>
-		    <version>4.3.6</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpcore</artifactId>
-		    <version>4.3.3</version>
 		</dependency>
 		<dependency>
 		    <groupId>commons-codec</groupId>
@@ -295,21 +299,16 @@
 						<version>2.12</version>
 						<configuration>
 							<systemPropertyVariables>
-								<libra_server>${libra_server}</libra_server>
-								<default_rhlogin>${default_rhlogin}</default_rhlogin>
-								<rhpassword>${rhpassword}</rhpassword>
-								<https.proxyHost>${proxyHost}</https.proxyHost>
-								<https.proxyPort>${proxyPort}</https.proxyPort>
-								<http.proxyHost>${proxyHost}</http.proxyHost>
-								<http.proxyPort>${proxyPort}</http.proxyPort>
-								<proxyHost>${proxyHost}</proxyHost>
-								<proxyPort>${proxyPort}</proxyPort>
+								<serverURL>${libra_server}</serverURL>
+								<default.clusteradmin.user>${default_rhlogin}</default.clusteradmin.user>
+								<default.clusteradmin.password>${rhpassword}</default.clusteradmin.password>
+								<default.openshift.location>${openshift.binary.location}</default.openshift.location>
 							</systemPropertyVariables>
 							<excludes>
-								<exclude>**/OpenShiftSuite.java</exclude>
+								<exclude>none</exclude>
 							</excludes>
 							<includes>
-								<include>**/OpenShiftIntegrationTestSuite.java</include>
+								<include>**/*IntegrationTest.java</include>
 							</includes>
 							<forkMode>none</forkMode>
 						</configuration>
@@ -326,7 +325,7 @@
 										<exclude>none</exclude>
 									</excludes>
 									<includes>
-										<include>**/integration/*Test.java</include>
+										<include>**/*IntegrationTest.java</include>
 									</includes>
 								</configuration>
 							</execution>

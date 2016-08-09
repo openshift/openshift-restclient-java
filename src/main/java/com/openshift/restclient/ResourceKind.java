@@ -28,6 +28,7 @@ public final class ResourceKind {
 	public static final String DEPLOYMENT_CONFIG = "DeploymentConfig";
 	public static final String IMAGE_STREAM = "ImageStream";
 	public static final String IMAGE_STREAM_TAG = "ImageStreamTag";
+	public static final String IMAGE_STREAM_IMPORT = "ImageStreamImport";
 	public static final String OAUTH_ACCESS_TOKEN = "OAuthAccessToken";
 	public static final String OAUTH_AUTHORIZE_TOKEN = "OAuthAuthorizeToken";
 	public static final String OAUTH_CLIENT = "OAuthClient";
@@ -53,6 +54,7 @@ public final class ResourceKind {
 	public static final String SERVICE = "Service";
 	public static final String SECRET = "Secret";
 	public static final String SERVICE_ACCOUNT = "ServiceAccount";
+	public static final String CONFIG_MAP = "ConfigMap";
 	/*
 	 * These are not true resources that can be used (mostly) in
 	 * RESTful operations
@@ -76,10 +78,22 @@ public final class ResourceKind {
 	}
 	
 	public static String pluralize(String kind) {
+		return pluralize(kind, false, false);
+	}	
+	public static String pluralize(String kind, boolean lowercase, boolean uncapitalize) {
 		if(StringUtils.isBlank(kind)) return "";
-		if(kind.endsWith("s")) return kind.toLowerCase();
-		if(kind.endsWith("y")) return kind.toLowerCase().substring(0, kind.length()-1).concat("ies");
-		return kind.toLowerCase().concat("s");
+		if(kind.endsWith("y")) 
+			kind = kind.substring(0, kind.length()-1).concat("ies");
+		else if(!kind.endsWith("s")) {
+			kind = kind.concat("s");
+		}
+		if(lowercase) {
+			kind = kind.toLowerCase();
+		}
+		if(uncapitalize) {
+			kind = StringUtils.uncapitalize(kind);
+		}
+		return kind;
 	}
 	
 	static {
@@ -89,6 +103,8 @@ public final class ResourceKind {
 		set.add(BUILD_CONFIG);
 		set.add(DEPLOYMENT_CONFIG);
 		set.add(IMAGE_STREAM );
+		set.add(IMAGE_STREAM_TAG);
+		set.add(IMAGE_STREAM_IMPORT);
 		set.add(OAUTH_ACCESS_TOKEN);
 		set.add(OAUTH_AUTHORIZE_TOKEN);
 		set.add(OAUTH_CLIENT);
@@ -114,6 +130,8 @@ public final class ResourceKind {
 		set.add(SERVICE);
 		set.add(SECRET);
 		set.add(SERVICE_ACCOUNT);
+		set.add(CONFIG_MAP);
+
 		/*
 		 * These are not true resources that can be used (mostly) in
 		 * RESTful operations

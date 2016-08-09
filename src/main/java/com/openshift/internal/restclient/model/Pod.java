@@ -16,11 +16,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IPort;
 
@@ -81,6 +83,25 @@ public class Pod extends KubernetesResource implements IPod {
 		}
 		return Collections.unmodifiableSet(ports);
 	}
+
+	@Override
+	public IContainer addContainer(String name) {
+		ModelNode containers = get(POD_CONTAINERS);
+		Container container = new Container(containers.add());
+		container.setName(name);
+		return container;
+	}
+
+	@Override
+	public Collection<IContainer> getContainers() {
+		ModelNode containers = get(POD_CONTAINERS);
+		if(containers.isDefined() && ModelType.LIST == containers.getType()) {
+			return containers.asList().stream().map(n->new Container(n, getPropertyKeys())).collect(Collectors.toList());
+		}
+		return Collections.emptyList();
+	}
+	
+	
 	
 	
 }

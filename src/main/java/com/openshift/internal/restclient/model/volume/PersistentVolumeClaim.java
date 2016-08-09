@@ -31,6 +31,7 @@ public class PersistentVolumeClaim extends KubernetesResource implements IPersis
 	private static final String PVC_ACCESS_MODES = "spec.accessModes";
 	private static final String PVC_REQUESTED_STORAGE = "spec.resources.requests.storage";
 	private static final String STATUS_PHASE = "status.phase";
+	private static final String PVC_VOLUME_NAME = "spec.volumeName";
 
 	public PersistentVolumeClaim(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
 		super(node, client, propertyKeys);
@@ -48,8 +49,20 @@ public class PersistentVolumeClaim extends KubernetesResource implements IPersis
 	}
 
 	@Override
+	public void setAccessModes(Set<String> accessModes) {
+		ModelNode modelNode = get(PVC_ACCESS_MODES);
+		modelNode.clear();
+		accessModes.stream().forEach(modelNode::add);
+	}
+
+	@Override
 	public String getRequestedStorage() {
 		return asString(PVC_REQUESTED_STORAGE);
+	}
+
+	@Override
+	public void setRequestedStorage(String requestedStorage) {
+		set(PVC_REQUESTED_STORAGE, requestedStorage);
 	}
 
 	@Override
@@ -57,4 +70,8 @@ public class PersistentVolumeClaim extends KubernetesResource implements IPersis
 		return asString(STATUS_PHASE);
 	}
 
+	@Override
+	public String getVolumeName() {
+		return asString(PVC_VOLUME_NAME);
+	}
 }

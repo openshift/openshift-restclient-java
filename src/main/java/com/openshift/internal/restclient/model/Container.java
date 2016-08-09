@@ -66,7 +66,7 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 
 	@Override
 	public void setImage(DockerImageURI tag) {
-		set(node, propertyKeys, IMAGE, tag.getUriWithoutHost());
+		set(node, propertyKeys, IMAGE, tag.getAbsoluteUri());
 	}
 
 	@Override

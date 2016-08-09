@@ -17,7 +17,7 @@ import com.openshift.restclient.model.build.IBuildTrigger;
 /**
  * @author Jeff Cantrill
  */
-public interface IBuildConfig extends IResource {
+public interface IBuildConfig extends IResource{
 	
 	/**
 	 * To defines an optional location to push the output of this build to.

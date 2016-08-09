@@ -12,6 +12,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static com.openshift.internal.util.JBossDmrExtentions.*;
 
@@ -53,7 +54,7 @@ public class KubernetesResourceTest {
 		annotations.get("template").set("foobar");
 		
 		node.get(KubernetesResource.METADATA_NAME).set("bartender");
-		node.get(KubernetesResource.NAMESPACE).set("foofighters");
+		node.get(KubernetesResource.METADATA_NAMESPACE).set("foofighters");
 		
 		return node;
 	}
@@ -77,6 +78,12 @@ public class KubernetesResourceTest {
 	@Test
 	public void testGetAnnotation() {
 		assertEquals("bar", resource.getAnnotation("foo"));
+	}
+	
+	@Test
+	public void removeAnnotation() {
+		resource.removeAnnotation("foo");
+		assertNull(resource.getAnnotation("foo"));
 	}
 
 	@Test
@@ -200,7 +207,7 @@ public class KubernetesResourceTest {
 		assertEquals(resource, otherResource);
 
 		// operation
-		otherResource.set(KubernetesResource.NAMESPACE, "karate");
+		otherResource.set(KubernetesResource.METADATA_NAMESPACE, "karate");
 		
 		// verification
 		assertThat(resource).isNotEqualTo(otherResource);

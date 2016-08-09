@@ -20,6 +20,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.deploy.IDeploymentImageChangeTrigger;
 
@@ -29,6 +30,7 @@ public class ImageChangeTrigger extends DeploymentTrigger implements IDeployment
 	private static final String DEPLOYMENTCONFIG_TRIGGER_CONTAINERS = "imageChangeParams.containerNames";
 	private static final String DEPLOYMENTCONFIG_TRIGGER_FROM = "imageChangeParams.from.name";
 	private static final String DEPLOYMENTCONFIG_TRIGGER_FROM_KIND = "imageChangeParams.from.kind";
+	private static final String FROM_NAMESPACE = "imageChangeParams.from.namespace";
 
 	public ImageChangeTrigger(ModelNode node, Map<String, String[]> propertyKeys) {
 		super(node, propertyKeys);
@@ -42,11 +44,21 @@ public class ImageChangeTrigger extends DeploymentTrigger implements IDeployment
 	@Override
 	public void setFrom(DockerImageURI fromImage) {
 		if(StringUtils.isBlank(asString(getNode(), getPropertyKeys(), DEPLOYMENTCONFIG_TRIGGER_FROM_KIND))) {
-			setKind("ImageStreamTag");
+			setKind(ResourceKind.IMAGE_STREAM_TAG);
 		}
 		set(getNode(), getPropertyKeys(), DEPLOYMENTCONFIG_TRIGGER_FROM, fromImage.getAbsoluteUri());
 	}
 	
+	@Override
+	public void setNamespace(String namespace) {
+		set(getNode(), getPropertyKeys(), FROM_NAMESPACE, namespace);
+	}
+
+	@Override
+	public String getNamespace() {
+		return asString(getNode(), getPropertyKeys(), FROM_NAMESPACE);
+	}
+
 	@Override
 	public void setKind(String kind) {
 		set(getNode(), getPropertyKeys(), DEPLOYMENTCONFIG_TRIGGER_FROM_KIND, kind);

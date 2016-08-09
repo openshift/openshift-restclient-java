@@ -118,11 +118,21 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 		ModelNode annotations = get(ANNOTATIONS);
 		annotations.get(name).set(value);
 	}
+	
+	@Override
+	public void removeAnnotation(String name) {
+		ModelNode annotations = get(ANNOTATIONS);
+		annotations.remove(name);
+	}
 
 	@Override
 	public boolean isAnnotatedWith(String key) {
 		Map<String, String> annotations = getAnnotations();
 		return annotations.containsKey(key);
+	}
+	
+	public Map<String, String []> getPropertyKeys(){
+		return this.propertyKeys;
 	}
 	
 	public IClient getClient(){
@@ -166,11 +176,11 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	
 	@Override
 	public String getNamespace(){
-		return asString(NAMESPACE);
+		return asString(METADATA_NAMESPACE);
 	}
 	
 	public void setNamespace(String namespace){
-		set(NAMESPACE, namespace);
+		set(METADATA_NAMESPACE, namespace);
 	}
 
 	@Override

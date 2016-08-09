@@ -29,30 +29,30 @@ import com.openshift.restclient.model.IResource;
  * @author Jeff Cantrill
  */
 @RunWith(MockitoJUnitRunner.class)
-public class URLBuilderTest {
+public class URLBuilderTest extends TypeMapperFixture{
 	
 	private static final String BASE_URL = "https://localhost:8443";
 	private URLBuilder builder;
-	private Map<String, String> mappings = new HashMap<String, String>();
 	
 	@Before
 	public void setup() throws MalformedURLException {
-		mappings.put(ResourceKind.SERVICE, "api/v1");
-		mappings.put(ResourceKind.PROJECT, "oapi/v1");
-		builder = new URLBuilder(new URL(BASE_URL), mappings);
-		
+		builder = new URLBuilder(new URL(BASE_URL), mapper);
 	}
 	
 	@Test
 	public void testBuildingURLForAWatchService() throws Exception {
 		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1,"foo");
 		
+		Map<String,String> params = new HashMap<>();
+		params.put("foo", "bar");
+		
 		String url = builder.
 				resource(resource)
 				.watch()
 				.addParmeter("resourceVersion", "123")
+				.addParameters(params)
 				.build().toString();
-		assertEquals(String.format("%s/api/v1/namespaces/foo/services?watch=true&resourceVersion=123", BASE_URL),url.toString());
+		assertEquals(String.format("%s/api/v1/namespaces/foo/services?watch=true&resourceVersion=123&foo=bar", BASE_URL),url.toString());
 	}
 	
 	@Test
@@ -68,7 +68,7 @@ public class URLBuilderTest {
 
 	@Test
 	public void testBaseURLWithTrailingSlash() throws Exception {
-		builder = new URLBuilder(new URL(BASE_URL + "///"), mappings);
+		builder = new URLBuilder(new URL(BASE_URL + "///"), mapper);
 		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1,"foo");
 		
 		String url = whenBuildingTheURLFor(resource, "foo");
@@ -77,13 +77,13 @@ public class URLBuilderTest {
 
 	@Test
 	public void testAddingASubResource() {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1, "foo");
+		IResource resource = givenAResource(ResourceKind.REPLICATION_CONTROLLER, KubernetesAPIVersion.v1, "foo");
 		String url = builder.
 			resource(resource)
 			.name("bar")
-			.subresource("aSubResource")
+			.subresource("status")
 			.build().toString();
-		assertEquals(String.format("%s/api/v1/namespaces/foo/services/bar/aSubResource", BASE_URL),url.toString());
+		assertEquals(String.format("%s/api/v1/namespaces/foo/replicationcontrollers/bar/status", BASE_URL),url.toString());
 	}
 	
 	private String whenBuildingTheURLFor(IResource resource, String namespace) {

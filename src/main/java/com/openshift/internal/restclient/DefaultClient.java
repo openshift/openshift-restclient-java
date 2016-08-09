@@ -10,8 +10,7 @@ package com.openshift.internal.restclient;
 
 import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeClientCapabilities;
 
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,37 +21,31 @@ import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.internal.restclient.http.HttpClientException;
-import com.openshift.internal.restclient.http.NotFoundException;
-import com.openshift.internal.restclient.http.UnauthorizedException;
-import com.openshift.internal.restclient.http.UrlConnectionHttpClientBuilder;
-import com.openshift.internal.restclient.model.Status;
-import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
+import com.openshift.internal.restclient.authorization.AuthorizationContext;
+import com.openshift.internal.restclient.okhttp.WatchClient;
+import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
 import com.openshift.restclient.IResourceFactory;
-import com.openshift.restclient.ISSLCertificateCallback;
 import com.openshift.restclient.IWatcher;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedOperationException;
-import com.openshift.restclient.authorization.AuthorizationClientFactory;
-import com.openshift.restclient.authorization.IAuthorizationClient;
 import com.openshift.restclient.authorization.IAuthorizationContext;
-import com.openshift.restclient.authorization.IAuthorizationDetails;
-import com.openshift.restclient.authorization.IAuthorizationStrategy;
-import com.openshift.restclient.authorization.ResourceForbiddenException;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
-import com.openshift.restclient.http.IHttpClient;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
-import com.openshift.restclient.model.user.IUser;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * @author Jeff Cantrill
@@ -64,49 +57,41 @@ public class DefaultClient implements IClient, IHttpConstants{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
 	private URL baseUrl;
-	private IHttpClient client;
+	private OkHttpClient client;
 	private IResourceFactory factory;
 	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
 	private boolean capabilitiesInitialized = false;
 	
-	private static final String API_ENDPOINT = "api";
-	private static final String OS_API_LEGACY_ENDPOINT = "osapi";
 	private static final String OS_API_ENDPOINT = "oapi";
 	
-	private final Map<String, String> typeMappings = new HashMap<String, String>();
 	private String openShiftVersion;
 	private String kubernetesVersion;
-	private IAuthorizationStrategy strategy;
-	private IAuthorizationClient authClient;
+	private AuthorizationContext authContext;
+	private IApiTypeMapper typeMapper;
 	
-	@Deprecated
-	public DefaultClient(URL baseUrl, ISSLCertificateCallback sslCertCallback){
-		this(baseUrl, null, sslCertCallback, null);
-	}
-	
-	public DefaultClient(URL baseUrl,  IHttpClient httpClient,  ISSLCertificateCallback sslCertCallback, IResourceFactory factory){
+	public DefaultClient(URL baseUrl,  OkHttpClient client, IResourceFactory factory, IApiTypeMapper typeMapper, AuthorizationContext authContext){
 		this.baseUrl = baseUrl;
-		client = httpClient != null ? httpClient : newIHttpClient(sslCertCallback);
+		this.client = client; 
 		this.factory = factory;
 		if(this.factory != null) {
 			this.factory.setClient(this);
 		}
 		openShiftVersion = System.getProperty(SYSTEM_PROP_OPENSHIFT_API_VERSION, null);
 		kubernetesVersion = System.getProperty(SYSTEM_PROP_K8E_API_VERSION, null);
-		authClient = new AuthorizationClientFactory().create(this);	
-		authClient.setSSLCertificateCallback(sslCertCallback);
+		this.typeMapper = typeMapper != null ? typeMapper :  new ApiTypeMapper(baseUrl.toString(), client);
+		this.authContext = authContext;
 	}
 	
-	/*
-	 * Factory method for testing
-	 */
-	private IHttpClient newIHttpClient(ISSLCertificateCallback sslCertCallback){
-		return  new UrlConnectionHttpClientBuilder()
-		.setAcceptMediaType("application/json")
-		.setSSLCertificateCallback(sslCertCallback)
-		.client();
-	}
 	
+	@Override
+	public IClient clone() {
+		AuthorizationContext context = authContext.clone();
+		DefaultClient clone = new DefaultClient(baseUrl, client, factory, typeMapper, context);
+		context.setClient(clone);
+		return clone;
+	}
+
+
 	@Override
 	public IResourceFactory getResourceFactory() {
 		return factory;
@@ -114,13 +99,13 @@ public class DefaultClient implements IClient, IHttpConstants{
 	
 	@Override
 	public IWatcher watch(String namespace, IOpenShiftWatchListener listener, String...kinds) {
-	WatchClient watcher = new WatchClient(getBaseURL(), getTypeMappings(), this);
-	return watcher.watch(Arrays.asList(kinds), namespace, listener);
+		WatchClient watcher = new WatchClient(this, this.typeMapper, this.client);
+		return watcher.watch(Arrays.asList(kinds), namespace, listener);
 	}
 
 	@Override
 	public String getResourceURI(IResource resource) {
-		return new URLBuilder(getBaseURL(), getTypeMappings(), resource).build().toString();
+		return new URLBuilder(getBaseURL(), typeMapper, resource).build().toString();
 	}
 
 	@Override
@@ -136,23 +121,9 @@ public class DefaultClient implements IClient, IHttpConstants{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends IResource> List<T> list(String kind, String namespace, Map<String, String> labels) {
-		try {
-			if(!getTypeMappings().containsKey(kind))
-				// TODO: replace with specific runtime exception
-				throw new RuntimeException("No OpenShift resource endpoint for type: " + kind);
-			URLBuilder builder = new URLBuilder(this.baseUrl, getTypeMappings())
-				.kind(kind)
-				.namespace(namespace);
-			final URL endpoint = builder.build();
-			String response = client.get(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT);
-			LOGGER.debug(String.format("List Response: %s:", response));
-			List<T> items = (List<T>) factory.createList(response, kind);
-			return filterItems(items, labels); //client filter until we can figure out how to restrict with a server call
-		} catch (HttpClientException e){
-			throw createOpenShiftException(String.format("Could not list %s resources in namespace %s: %s", kind, namespace, e.getMessage()), e);
-		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "Socket timeout listing resources");
-		} 
+		IList list = get(kind, namespace);
+		ArrayList<T> items = new ArrayList<T>((Collection<T>)list.getItems());
+		return filterItems(items, labels); //client filter until we can figure out how to restrict with a server call
 	}
 	
 	private <T extends IResource> List<T> filterItems(List<T> items, Map<String, String> labels){
@@ -171,7 +142,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		List<IResource> results = new ArrayList<IResource>(list.getItems().size());
 		for (IResource resource : list.getItems()) {
 			try{
-				results.add(createVersion(resource, namespace, resource.getApiVersion()));
+				results.add(create(resource, namespace));
 			}catch(OpenShiftException e){
 				if(e.getStatus() != null){
 					results.add(e.getStatus());
@@ -191,122 +162,111 @@ public class DefaultClient implements IClient, IHttpConstants{
 		
 	@Override
 	public <T extends IResource> T create(T resource, String namespace) {
-		return createVersion(resource, namespace, null);
-	}
-	
-	private <T extends IResource> T createVersion(T resource, String namespace, String version) {
-		if(ResourceKind.LIST.equals(resource.getKind())) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
-		try {
-			namespace = ResourceKind.PROJECT.equals(resource.getKind()) ? "" : namespace;
-			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
-				.kind(resource.getKind())
-				.namespace(namespace)
-				.build();
-			String response = client.post(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT, resource);
-			LOGGER.debug(response);
-			return factory.create(response);
-		} catch (HttpClientException e){
-			throw createOpenShiftException(String.format("Could not create resource %s in namespace '%s': %s", resource.getName(), namespace, e.getMessage()), e);
-		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "Socket timeout creating resource %s", resource.getName());
-		}
+		return execute(HttpMethod.POST, resource.getKind(), namespace, null, null, resource);
 	}
 
 	@Override
 	public <T extends IResource> T create(String kind, String namespace, String name, String subresource, IResource payload) {
-		if(ResourceKind.LIST.equals(kind)) throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
+		return execute(HttpMethod.POST, kind, namespace, name, subresource, payload);
+	}
+	
+	enum HttpMethod{
+		GET,
+		PUT,
+		POST,
+		DELETE
+	}
+	
+	private <T extends IResource> T execute(HttpMethod method, String kind, String namespace, String name, String subresource, IResource payload) {
+		return execute(method.toString(), kind, namespace, name, subresource, payload);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload) {
+		if(ResourceKind.LIST.equals(kind)) 
+			throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
+		final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
+				.kind(kind)
+				.name(name)
+				.namespace(namespace)
+				.subresource(subresource)
+				.build();
+			
 		try {
-			namespace = ResourceKind.PROJECT.equals(kind) ? "" : namespace;
-			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
-					.kind(kind)
-					.name(name)
-					.namespace(namespace)
-					.subresource(subresource)
+			Request request = newRequestBuilderTo(endpoint.toString())
+					.method(method, getPayload(method, payload))
 					.build();
-			String response = client.post(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT, payload);
-			LOGGER.debug(response);
-			return factory.create(response);
-		} catch (HttpClientException e){
-			throw createOpenShiftException(String.format("Could not create %s resource %s in namespace %s for subresource %s: %s", kind, name, namespace, subresource, e.getMessage()), e);
-		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "Socket timeout creating resource %s", name);
+			LOGGER.debug("About to make {} request: {}", request.method(), request);
+			try(Response result = client.newCall(request).execute()){
+				String response =  result.body().string();
+				LOGGER.debug("Response: {}", response);
+				return (T) factory.create(response);
+			}
+		} catch (IOException e){
+			throw new OpenShiftException(e, "Unable to execute request to %s", endpoint);
 		}
+	}
+	
+	private RequestBody getPayload(String method, IResource payload) {
+		switch(method.toUpperCase()){
+			case "GET":
+			case "DELETE":
+				return null;
+			default:
+				String json = payload == null ? "" : payload.toJson(true);
+				LOGGER.debug("About to send payload: {}", json);
+				return RequestBody.create(MediaType.parse(MEDIATYPE_APPLICATION_JSON), json);
+		}
+	}
+	
+	
+	@Override
+	public String getServerReadyStatus() {
+		try {
+			Request request = new Request.Builder()
+					.url(new URL(this.baseUrl, "healthz/ready"))
+					.header(PROPERTY_ACCEPT, "*/*")
+					.build();
+			try(Response response = client.newCall(request).execute()){
+				return response.body().string();
+			}
+		} catch (IOException e) {
+			throw new OpenShiftException(e, "Exception while trying to determine the health/ready response of the server");
+		}
+	}
+
+	public Request.Builder newRequestBuilderTo(String endpoint){
+		Request.Builder builder = new Request.Builder()
+			.url(endpoint.toString())
+			.header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON);
+		
+		String token =  null;
+		if(this.authContext != null &&  StringUtils.isNotBlank(this.authContext.getToken())){
+			token = this.authContext.getToken();
+		}
+		builder.header(IHttpConstants.PROPERTY_AUTHORIZATION, String.format("%s %s", IHttpConstants.AUTHORIZATION_BEARER, token));
+		return builder;
 	}
 	
 	@Override
 	public <T extends IResource> T update(T resource) {
-		if(ResourceKind.LIST.equals(resource.getKind())) throw new UnsupportedOperationException("Update operation not supported for resource type 'List'");
-		try {
-			final URL endpoint = new URLBuilder(getBaseURL(), getTypeMappings())
-				.resource(resource)
-				.namespace(resource.getNamespace())
-				.build();
-			String response = client.put(endpoint, IHttpClient.DEFAULT_READ_TIMEOUT, resource);
-			LOGGER.debug(response);
-			return factory.create(response);
-		} catch (HttpClientException e){
-			throw createOpenShiftException(String.format("Could not update resource %s: %s", resource.getName(), e.getMessage()), e);
-		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "Socket timeout updating resource %s", resource.getName());
-		}
+		return execute(HttpMethod.PUT, resource.getKind(), resource.getNamespace(), resource.getName(), null, resource);
 	}
 
 	@Override
 	public <T extends IResource> void delete(T resource) {
-		if(ResourceKind.LIST.equals(resource.getKind())) throw new UnsupportedOperationException("Delete operation not supported for resource type 'List'");
-		try {
-			String namespace = ResourceKind.PROJECT.equals(resource.getKind()) ? "" : resource.getNamespace();
-			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
-				.resource(resource)
-				.namespace(namespace)
-				.build();
-			LOGGER.debug(String.format("Deleting resource %s", endpoint));
-			String response = client.delete(endpoint,  IHttpClient.DEFAULT_READ_TIMEOUT);
-			LOGGER.debug(response);
-			//TODO return response object here
-		} catch (HttpClientException e){
-			throw createOpenShiftException(String.format("Could not delete resource %s: %s", resource.getName(), e.getMessage()), e);
-		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "SocketTimeout deleting resource %s", resource.getName());
-		} 
+		execute(HttpMethod.DELETE, resource.getKind(), resource.getNamespace(), resource.getName(), null, resource);
 	}
 	
 	
 	@Override
 	public IList get(String kind, String namespace) {
-		try {
-			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
-				.kind(kind)
-				.namespace(namespace)
-				.build();
-			String response = client.get(endpoint, IHttpClient.DEFAULT_READ_TIMEOUT);
-			LOGGER.debug(response);
-			return factory.create(response);
-		} catch (HttpClientException e){
-			throw createOpenShiftException(String.format("Could not list resource kind %s in namespace '%s': %s", kind, namespace, e.getMessage()), e);
-		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "SocketTimeout getting listing resource kind '%s' in namespace '%s'", kind, namespace);
-		} 
-
+		return execute(HttpMethod.GET, kind, namespace, null, null, null);
 	}
 
 	@Override
 	public <T extends IResource> T get(String kind, String name, String namespace) {
-		try {
-			namespace = ResourceKind.PROJECT.equals(kind) ? "" : namespace;
-			final URL endpoint = new URLBuilder(this.baseUrl, getTypeMappings())
-				.kind(kind)
-				.name(name)
-				.namespace(namespace)
-				.build();
-			String response = client.get(endpoint, IHttpClient.DEFAULT_READ_TIMEOUT);
-			LOGGER.debug(response);
-			return factory.create(response);
-		} catch (HttpClientException e){
-			throw createOpenShiftException(String.format("Could not get resource %s in namespace %s: %s", name, namespace, e.getMessage()), e);
-		} catch (SocketTimeoutException e) {
-			throw new OpenShiftException(e, "SocketTimeout getting resource %s", name);
-		} 
+		return execute(HttpMethod.GET, kind, namespace, name, null, null);
 	}
 
 	public synchronized void initializeCapabilities(){
@@ -340,172 +300,27 @@ public class DefaultClient implements IClient, IHttpConstants{
 		return unsupportedCapabililityValue;
 	}
 
-	public List<KubernetesAPIVersion> getKubernetesVersions() {
-		return getVersion(KubernetesAPIVersion.class, API_ENDPOINT);
-	}
-
-	public List<OpenShiftAPIVersion> getOpenShiftVersions() {
-		List<OpenShiftAPIVersion> versions = getVersion(OpenShiftAPIVersion.class, OS_API_ENDPOINT);
-		versions.addAll(getVersion(OpenShiftAPIVersion.class, OS_API_LEGACY_ENDPOINT));
-		return versions;
-	}
-
-	public String getKubernetesVersion() {
-		if(kubernetesVersion == null){
-			List<KubernetesAPIVersion> versions = getKubernetesVersions();
-			kubernetesVersion = ResourcePropertiesRegistry.getInstance().getMaxSupportedKubernetesVersion(versions).toString();
-		}
-		return kubernetesVersion; 
-	}
-
 	@Override
 	public String getOpenShiftAPIVersion() {
-		if(openShiftVersion == null){
-			List<OpenShiftAPIVersion> versions = getOpenShiftVersions();
-			openShiftVersion = ResourcePropertiesRegistry.getInstance().getMaxSupportedOpenShiftVersion(versions).toString();
-		}
-		return openShiftVersion; 
+		return typeMapper.getPreferedVersionFor(OS_API_ENDPOINT);
 	}
 	
-	private <T extends Enum<T>> List<T> getVersion(Class<T> klass, String endpoint) {
-		try {
-			final URL url = new URL(this.baseUrl, endpoint);
-			LOGGER.debug(url.toString());
-			String response = client.get(url, IHttpClient.DEFAULT_READ_TIMEOUT);
-			LOGGER.debug(response);
-			ModelNode json = ModelNode.fromJSONString(response);
-			List<ModelNode> versionNodes = json.get("versions").asList();
-			List<T> versions = new ArrayList<T>(versionNodes.size());
-			for (ModelNode node : versionNodes) {
-				try{
-					versions.add(Enum.valueOf(klass, node.asString()));
-				}catch(IllegalArgumentException e){
-					LOGGER.warn(String.format("Unsupported server version '%s' for '%s'",  node.asString(), klass.getSimpleName()));
-				}
-			}
-			return versions;
-		} catch (MalformedURLException e) {
-			LOGGER.error("Exception", e);
-			throw new OpenShiftException(e,"");
-		} catch (SocketTimeoutException e) {
-			LOGGER.error("Exception", e);
-			throw new OpenShiftException(e,"");
-		//HACK - This gets us around a server issue
-		} catch (HttpClientException e) {
-			if(e instanceof NotFoundException) {
-				throw new com.openshift.restclient.NotFoundException(e);
-			}
-			if(e.getResponseCode() != 403) {
-				throw e;
-			}
-			LOGGER.error("Unauthorized exception. Can system:anonymous get the API endpoint", e);
-			return new ArrayList<T>();
-		}
-	}
-	private Map<String, String> getTypeMappings(){
-		return getTypeMappings(null);
-	}
-	private Map<String, String> getTypeMappings(String apiVersion){
-		if(typeMappings.isEmpty()){
-			//OpenShift endpoints
-			final String version = StringUtils.defaultIfEmpty(apiVersion, getOpenShiftAPIVersion());
-			final String osEndpoint = String.format("%s/%s", OS_API_ENDPOINT, version);
-			typeMappings.put(ResourceKind.BUILD, osEndpoint);
-			typeMappings.put(ResourceKind.BUILD_CONFIG, osEndpoint);
-			typeMappings.put(ResourceKind.DEPLOYMENT_CONFIG, osEndpoint);
-			typeMappings.put(ResourceKind.IMAGE_STREAM, osEndpoint);
-			typeMappings.put(ResourceKind.IMAGE_STREAM_TAG, osEndpoint);
-			typeMappings.put(ResourceKind.OAUTH_ACCESS_TOKEN, osEndpoint);
-			typeMappings.put(ResourceKind.OAUTH_AUTHORIZE_TOKEN, osEndpoint);
-			typeMappings.put(ResourceKind.OAUTH_CLIENT, osEndpoint);
-			typeMappings.put(ResourceKind.OAUTH_CLIENT_AUTHORIZATION, osEndpoint);
-			typeMappings.put(ResourceKind.POLICY, osEndpoint);
-			typeMappings.put(ResourceKind.POLICY_BINDING, osEndpoint);
-			typeMappings.put(ResourceKind.PROJECT, osEndpoint);
-			typeMappings.put(ResourceKind.PROJECT_REQUEST, osEndpoint);
-			typeMappings.put(ResourceKind.ROLE, osEndpoint);
-			typeMappings.put(ResourceKind.ROLE_BINDING, osEndpoint);
-			typeMappings.put(ResourceKind.ROUTE, osEndpoint);
-			typeMappings.put(ResourceKind.TEMPLATE, osEndpoint);
-			typeMappings.put(ResourceKind.USER, osEndpoint);
-			//not real kinds
-			typeMappings.put(ResourceKind.PROCESSED_TEMPLATES, osEndpoint);
-			
-			//Kubernetes endpoints
-			final String k8eApiVersion = StringUtils.defaultIfEmpty(apiVersion, getKubernetesVersion());
-			final String k8eEndpoint = String.format("%s/%s", API_ENDPOINT, k8eApiVersion);
-			typeMappings.put(ResourceKind.EVENT, k8eEndpoint);
-			typeMappings.put(ResourceKind.POD, k8eEndpoint);
-			typeMappings.put(ResourceKind.PVC, k8eEndpoint);
-			typeMappings.put(ResourceKind.PERSISTENT_VOLUME, k8eEndpoint);
-			typeMappings.put(ResourceKind.LIMIT_RANGE, k8eEndpoint);
-			typeMappings.put(ResourceKind.REPLICATION_CONTROLLER, k8eEndpoint);
-			typeMappings.put(ResourceKind.RESOURCE_QUOTA, k8eEndpoint);
-			typeMappings.put(ResourceKind.SERVICE, k8eEndpoint);
-			typeMappings.put(ResourceKind.SECRET, k8eEndpoint);
-			typeMappings.put(ResourceKind.SERVICE_ACCOUNT, k8eEndpoint);
-		}
-		return typeMappings;
-	}
-
 	@Override
 	public URL getBaseURL() {
 		return this.baseUrl;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
-	public void setAuthorizationStrategy(IAuthorizationStrategy strategy) {
-		this.strategy = strategy;
-		this.client.setAuthorizationStrategy(strategy);
+	public IAuthorizationContext getAuthorizationContext() {
+		return this.authContext;
 	}
 	
-	@Override
-	public IAuthorizationStrategy getAuthorizationStrategy() {
-		return this.strategy;
+	public void setToken(String token) {
+		this.authContext.setToken(token);
 	}
-
-	private OpenShiftException createOpenShiftException(String message, HttpClientException e) {
-		LOGGER.debug(message, e);
-		final String token = strategy != null ? strategy.getToken() : "";
-		if (e.getMessage() != null
-				&& e.getMessage().startsWith("{")) {
-			Status status = factory.create(e.getMessage());
-			if(status.getCode() == STATUS_FORBIDDEN) {
-				if(StringUtils.isNotBlank(token)) { //truly forbidden
-					return new ResourceForbiddenException(status.getMessage(), e);
-				}else {
-					return new com.openshift.restclient.authorization.UnauthorizedException(authClient.getAuthorizationDetails(this.baseUrl.toString()));
-				}
-			}
-			return new OpenShiftException(e, status, message);
-		} else {
-			if(e instanceof UnauthorizedException) {
-				return new com.openshift.restclient.authorization.UnauthorizedException(authClient.getAuthorizationDetails(this.baseUrl.toString()));
-			}
-			return new OpenShiftException(e, message);
-		}
-	}
-
-	@Override
-	public IUser getCurrentUser() {
-		return get(ResourceKind.USER, "~", "");
-	}
-
-	@Override
-	public IAuthorizationContext getContext(String baseURL) {
-		return this.authClient.getContext(baseURL);
-	}
-
-	@Override
-	public IAuthorizationDetails getAuthorizationDetails(String baseURL) {
-		return this.authClient.getAuthorizationDetails(baseURL);
-	}
-
-	@Override
-	public void setSSLCertificateCallback(ISSLCertificateCallback callback) {
-		this.authClient.setSSLCertificateCallback(callback);
-		this.client.setSSLCertificateCallback(callback);
+	
+	public String getToken() {
+		return getAuthorizationContext().getToken();
 	}
 
 	@Override
@@ -515,7 +330,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		result = prime * result + ((baseUrl == null) ? 0 : baseUrl.hashCode());
 		result = prime * result + ((kubernetesVersion == null) ? 0 : kubernetesVersion.hashCode());
 		result = prime * result + ((openShiftVersion == null) ? 0 : openShiftVersion.hashCode());
-		result = prime * result + ((strategy == null || strategy.getToken() == null) ? 0 : strategy.getToken().hashCode());
+		result = prime * result + ((authContext == null || authContext.getToken() == null) ? 0 : authContext.getToken().hashCode());
 		return result;
 	}
 
@@ -544,15 +359,34 @@ public class DefaultClient implements IClient, IHttpConstants{
 		} else if (!openShiftVersion.equals(other.openShiftVersion)) {
 			return false;
 		}
-		if (strategy == null) {
-			return other.strategy == null;
+		if (authContext == null) {
+			return other.authContext == null;
 		} else {
-			if (other.strategy == null) {
+			if (other.authContext == null) {
 				return false;
 			}
-			return ObjectUtils.equals(strategy, other.strategy);
+			return ObjectUtils.equals(authContext.getUserName(), other.authContext.getUserName());
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T adapt(Class<T> klass) {
+		if(DefaultClient.class.equals(klass)){
+			return (T) this;
+		}
+		if(OkHttpClient.class.equals(klass)) {
+			return (T) this.client;
+		}
+		if(IApiTypeMapper.class.equals(klass)) {
+			return (T)this.typeMapper;
+		}
+		if(ICapability.class.isAssignableFrom(klass) && this.supports((Class<? extends ICapability>) klass)) {
+			return (T) getCapability((Class<? extends ICapability>)klass);
+		}
+		return null;
+	}
+	
 	
 	
 }

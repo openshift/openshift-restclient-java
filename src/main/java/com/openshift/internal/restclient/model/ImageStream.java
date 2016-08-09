@@ -28,7 +28,8 @@ import com.openshift.restclient.model.image.ITagReference;
  */
 public class ImageStream extends KubernetesResource implements IImageStream {
 
-	private static final String DOCKER_IMAGE_REPO = "status.dockerImageRepository";
+	private static final String DOCKER_IMAGE_REPO = "spec.dockerImageRepository";
+	private static final String STATUS_DOCKER_IMAGE_REPO = "status.dockerImageRepository";
 	private static final String SPEC_TAGS = "spec.tags";
 	private static final String STATUS_TAGS = "status.tags";
 	private static final String TAG = "tag";
@@ -44,17 +45,24 @@ public class ImageStream extends KubernetesResource implements IImageStream {
 		super(node, client, propertyKeys);
 		this.propertyKeys = propertyKeys;
 	}
-
+	
 	@Override
 	public void setDockerImageRepository(DockerImageURI uri) {
-		set(DOCKER_IMAGE_REPO, uri.getAbsoluteUri());		
+		setDockerImageRepository(uri.getAbsoluteUri());		
+	}
+
+	@Override
+	public void setDockerImageRepository(String uri) {
+		set(DOCKER_IMAGE_REPO, uri);		
 	}
 
 	@Override
 	public DockerImageURI getDockerImageRepository() {
-		return new DockerImageURI(asString(DOCKER_IMAGE_REPO));
+		if(getNode().has(getPath(DOCKER_IMAGE_REPO))) {
+			return new DockerImageURI(asString(DOCKER_IMAGE_REPO));
+		}
+		return new DockerImageURI(asString(STATUS_DOCKER_IMAGE_REPO));
 	}
-
 	
 	@Override
 	public Collection<String> getTagNames() {
@@ -75,6 +83,15 @@ public class ImageStream extends KubernetesResource implements IImageStream {
 	@Override
 	public ITagReference addTag(String name, String fromKind, String fromName) {
 		TagReference reference = new TagReference(name, fromKind, fromName);
+		//add last since its copy of node.  future sets will do nothing
+		ModelNode tags = get(SPEC_TAGS);
+		tags.add(reference.getNode());
+		return reference;
+	}
+
+	@Override
+	public ITagReference addTag(String name, String fromKind, String fromName, String fromNamespace) {
+		TagReference reference = new TagReference(name, fromKind, fromName, fromNamespace);
 		//add last since its copy of node.  future sets will do nothing
 		ModelNode tags = get(SPEC_TAGS);
 		tags.add(reference.getNode());

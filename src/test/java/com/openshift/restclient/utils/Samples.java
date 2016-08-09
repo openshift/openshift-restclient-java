@@ -20,11 +20,20 @@ import org.apache.commons.io.IOUtils;
  */
 public enum Samples {
 
+	GROUP_ENDPONT_API_V1("openshift3/api_v1_endpoint.json"),
+	GROUP_ENDPONT_OAPI_V1("openshift3/oapi_v1_endpoint.json"),
+	GROUP_ENDPONT_APIS("openshift3/apis_endpoint.json"),
+	GROUP_ENDPONT_APIS_EXTENSIONS("openshift3/apis_endpoint_extensions.json"),
+	
 	//v1
+	V1_KUBE_CONFIG("openshift3/v1_kubeconfig.yaml"),
+
 	V1_BUILD_CONFIG("openshift3/v1_build_config.json"),
 	V1_BUILD_CONFIG_LIST("openshift3/v1_build_config_list.json"),
-	V1_DEPLOYMENT_CONIFIG("openshift3/v1_deployment_config.json"), 
-	V1_IMAGE_STREAM("openshift3/v1_image_stream.json"), 
+	V1_DEPLOYMENT_CONIFIG("openshift3/v1_deployment_config.json"),
+	V1_EVENT("openshift3/v1_event.json"),
+	V1_IMAGE_STREAM("openshift3/v1_image_stream.json"),
+	V1_IMAGE_STREAM_IMPORT("openshift3/v1_image_stream_import.json"), 
 	V1_BUILD("openshift3/v1_build.json"), 
 	V1_OBJECT_REF("openshift3/v1_objectref.json"), 
 	V1_POD("openshift3/v1_pod.json"), 
@@ -34,15 +43,22 @@ public enum Samples {
 	V1_PERSISTENT_VOLUME("openshift3/v1_persistent_volume.json"),
 	V1_REPLICATION_CONTROLLER("openshift3/v1_replication_controller.json"), 
 	V1_ROLE_BINDING("openshift3/v1_role_binding.json"), 
-	V1_ROUTE("openshift3/v1_route.json"), 
-	V1_ROUTE_WO_TLS("openshift3/v1_route_wo_tls.json"), 
+	V1_ROUTE("openshift3/v1_route.json"),
+	V1_ROUTE_WO_TLS("openshift3/v1_route_wo_tls.json"),
 	V1_SERVICE("openshift3/v1_service.json"),
 	V1_SERVICE_ACCOUNT("openshift3/v1_service_account.json"),
 	V1_Status("openshift3/v1_status.json"),
 	V1_TEMPLATE("openshift3/v1_template.json"), 
 	V1_USER("openshift3/v1_user.json"),
 	V1_SECRET("openshift3/v1_secret.json"),
-	V1_UNRECOGNIZED("openshift3/v1_unrecognized.json");
+	V1_UNRECOGNIZED("openshift3/v1_unrecognized.json"),
+	V1_CONFIG_MAP("openshift3/v1_config_map.json"),
+	V1_CONFIG_MAP_LIST_EMPTY("openshift3/v1_config_map_list_empty.json"),
+	V1_EMPTYDIR_VOLUME_SOURCE("openshift3/v1_empty_dir_volume_source.json"),
+	V1_SECRET_VOLUME_SOURCE("openshift3/v1_secret_volume_source.json"),
+	V1_PVC_VOLUME_SOURCE("openshift3/v1_pvc_volume_source.json"),
+
+	V1_DOCKER_IMAGE_MANIFEST("dockerregistry/v1_image_manifest.json");
 
 	private static final String SAMPLES_FOLDER = "/samples/";
 

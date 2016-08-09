@@ -58,9 +58,7 @@ public class JBossDmrExtentions {
 				}else {
 					sanitize(child);
 				}
-				if(child.getType() == ModelType.OBJECT && child.keys().size() == 0) {
-					emptyKeys.add(key);
-				}else if(child.getType() == ModelType.LIST) {
+				if(child.getType() == ModelType.LIST) {
 					List<ModelNode> entries = child.asList();
 					if(entries.isEmpty()) {
 						emptyKeys.add(key);
@@ -131,11 +129,13 @@ public class JBossDmrExtentions {
 		HashMap<String, String> map = new HashMap<String, String>();
 		if(propertyKeys != null){
 			String [] path = getPath(propertyKeys, key);
-			ModelNode node = root.get(path);
-			if( !node.isDefined())
-				return map;
-			for (String k : node.keys()) {
-				map.put(k, node.get(k).asString());
+			if(root.has(path)) {
+				ModelNode node = root.get(path);
+				if( !node.isDefined())
+					return map;
+				for (String k : node.keys()) {
+					map.put(k, node.get(k).asString());
+				}
 			}
 		}
 		return map;
@@ -154,23 +154,25 @@ public class JBossDmrExtentions {
 	public static Set asSet(ModelNode root, Map<String, String []> propertyKeys, String key, ModelType type){
 		Set set = new HashSet();
 		String [] path = getPath(propertyKeys, key);
-		ModelNode node = root.get(path);
-		if( !node.isDefined())
-			return set;
-		for (ModelNode entry : node.asList()) {
-			Object instance = null;
-			switch(type) {
-			case STRING:
-				instance = entry.asString();
-				break;
-			case BOOLEAN:
-				instance = entry.asBoolean();
-				break;
-			case INT:
-				instance = entry.asInt();
-			default:
+		if(root.has(path)){
+			ModelNode node = root.get(path);
+			if( !node.isDefined())
+				return set;
+			for (ModelNode entry : node.asList()) {
+				Object instance = null;
+				switch(type) {
+				case STRING:
+					instance = entry.asString();
+					break;
+				case BOOLEAN:
+					instance = entry.asBoolean();
+					break;
+				case INT:
+					instance = entry.asInt();
+				default:
+				}
+				set.add(instance);
 			}
-			set.add(instance);
 		}
 		return set;
 	}
@@ -201,11 +203,14 @@ public class JBossDmrExtentions {
 	 */
 	public static int asInt(ModelNode node, Map<String, String []> propertyKeys, String key){
 		String [] path = getPath(propertyKeys, key);
-		ModelNode modelNode = node.get(path);
-		if( !modelNode.isDefined()){
-			return 0;
+		if(node.has(path)) {
+			ModelNode modelNode = node.get(path);
+			if( !modelNode.isDefined()){
+				return 0;
+			}
+			return modelNode.asInt();
 		}
-		return modelNode.asInt();
+		return 0;
 	}
 	
 	/**
@@ -217,7 +222,9 @@ public class JBossDmrExtentions {
 	 * @throws UnregisteredPropertyException   if the property is not found in the property map
 	 */
 	public static String asString(ModelNode node, Map<String, String []> propertyKeys, String key){
-		ModelNode modelNode = node.get(getPath(propertyKeys, key));
+		String[] path = getPath(propertyKeys, key);
+		if(!node.has(path)) return "";
+		ModelNode modelNode = node.get(path);
 		if( !modelNode.isDefined()){
 			return "";
 		}
@@ -234,13 +241,14 @@ public class JBossDmrExtentions {
 	 */
 	public static boolean asBoolean(ModelNode node, Map<String, String []> propertyKeys, String key) {
 		String [] path = getPath(propertyKeys, key);
+		if(!node.has(path)) return false;
 		ModelNode modelNode = node.get(path);
 		if( !modelNode.isDefined()){
 			return false;
 		}
 		return modelNode.asBoolean();
 	}
-
+	
 	public static ModelNode get(ModelNode node, Map<String, String []> propertyKeys, String key){
 		return node.get(getPath(propertyKeys,key));
 	}

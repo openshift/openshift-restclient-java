@@ -19,14 +19,26 @@ import com.openshift.restclient.model.image.ITagReference;
 public interface IImageStream extends IResource{
 
 	/**
-	 * Retrieve the docker image URI for which this image repository
-	 * is responsible
+	 * Get the image repository uri abstracted by this
+	 * image stream
 	 * @return
 	 */
 	DockerImageURI getDockerImageRepository();
 	
+	/**
+	 * Set the image repository uri abstracted by this
+	 * image stream
+	 * @return
+	 */
 	void setDockerImageRepository(DockerImageURI imageUri);
 	
+	/**
+	 * Set the image repository uri abstracted by this
+	 * image stream
+	 * @return
+	 */
+	void setDockerImageRepository(String imageUri);
+
 	/**
 	 * Sets a new tag in an image stream
 	 * 
@@ -44,6 +56,17 @@ public interface IImageStream extends IResource{
 	 * @return
 	 */
 	ITagReference addTag(String name, String fromKind, String fromName);
+	
+	/**
+	 * Add a tag to the list with the given name, namespace, and reference
+	 * to the given kind, namespace, and name.
+	 * @param name
+	 * @param fromKind
+	 * @param fromName
+	 * @param fromNamespace
+	 * @return
+	 */
+	ITagReference addTag(String name, String fromKind, String fromName, String fromNamespace);
 	
 	/**
 	 * Gets the long imagae id for the provided tag

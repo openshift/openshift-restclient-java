@@ -26,16 +26,35 @@ public interface IPersistentVolumeClaim extends IResource {
 	 * @return the {@link PVCAccessModes}
 	 */
 	Set<String> getAccessModes();
-	
+
+	/**
+	 * Set the access modes for this claim.
+	 *
+	 * @param accessModes The access modes to set
+     */
+	void setAccessModes(Set<String> accessModes);
+
 	/**
 	 * The requested storage
 	 * @return
 	 */
 	String getRequestedStorage();
-	
+
+	/**
+	 * Set the requested storage of the claim
+	 *
+	 * @param requestedStorage The requested storage capacity
+     */
+	void setRequestedStorage(String requestedStorage);
+
 	/**
 	 * The status of the claim
 	 * @return
 	 */
 	String getStatus();
+	
+	/**
+	 * The volume name
+	 */
+	String getVolumeName();
 }

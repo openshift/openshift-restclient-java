@@ -1,0 +1,29 @@
+{
+    "kind": "Event",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "nodejs.1468b1fa2928e73e",
+        "namespace": "myproject",
+        "selfLink": "/api/v1/namespaces/myproject/events/nodejs.1468b1fa2928e73e",
+        "uid": "567a41b5-5d0a-11e6-9808-507b9dfa4ab3",
+        "resourceVersion": "450",
+        "creationTimestamp": "2016-08-08T01:49:26Z"
+    },
+    "involvedObject": {
+        "kind": "DeploymentConfig",
+        "namespace": "myproject",
+        "name": "nodejs",
+        "uid": "234e71be-5d0a-11e6-9808-507b9dfa4ab3",
+        "apiVersion": "v1",
+        "resourceVersion": "445"
+    },
+    "reason": "DeploymentCreated",
+    "message": "Created new deployment \"nodejs-1\" for version 1",
+    "source": {
+        "component": "deploymentconfig-controller"
+    },
+    "firstTimestamp": "2016-08-08T01:49:26Z",
+    "lastTimestamp": "2016-08-08T01:49:26Z",
+    "count": 1,
+    "type": "Normal"
+}

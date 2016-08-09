@@ -9,7 +9,6 @@
 package com.openshift.restclient.capability.server;
 
 import com.openshift.restclient.capability.ICapability;
-import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
 
 /**
@@ -27,5 +26,5 @@ public interface ITemplateProcessing extends ICapability {
 	 * @param namespace     The namespace to use when processing the template
 	 * @return ITemplate 
 	 */
-	<T extends IResource> T process(ITemplate template, String namespace);
+	ITemplate process(ITemplate template, String namespace);
 }

@@ -16,16 +16,20 @@ import com.openshift.internal.restclient.capability.resources.ClientCapability;
 import com.openshift.internal.restclient.capability.resources.DeployCapability;
 import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
 import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
+import com.openshift.internal.restclient.capability.resources.ImageStreamImportCapability;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPodLogRetrieval;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPortForwarding;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryRSync;
+import com.openshift.internal.restclient.capability.resources.PodLogRetrievalAsync;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateListCapability;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateProcessing;
+import com.openshift.internal.restclient.capability.resources.PropertyAccessCapability;
 import com.openshift.internal.restclient.capability.resources.TagCapability;
 import com.openshift.internal.restclient.capability.resources.TemplateTraceability;
 import com.openshift.internal.restclient.capability.resources.UpdateableCapability;
 import com.openshift.internal.restclient.capability.server.ServerTemplateProcessing;
 import com.openshift.internal.restclient.model.Service;
+import com.openshift.internal.restclient.model.build.BuildConfigBuilder;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.resources.IBuildCancelable;
@@ -34,10 +38,13 @@ import com.openshift.restclient.capability.resources.IClientCapability;
 import com.openshift.restclient.capability.resources.IDeployCapability;
 import com.openshift.restclient.capability.resources.IDeploymentConfigTraceability;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
+import com.openshift.restclient.capability.resources.IImageStreamImportCapability;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
+import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.capability.resources.IProjectTemplateList;
 import com.openshift.restclient.capability.resources.IProjectTemplateProcessing;
+import com.openshift.restclient.capability.resources.IPropertyAccessCapability;
 import com.openshift.restclient.capability.resources.IRSyncable;
 import com.openshift.restclient.capability.resources.ITags;
 import com.openshift.restclient.capability.resources.ITemplateTraceability;
@@ -49,6 +56,7 @@ import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.build.IBuildConfigBuilder;
 
 /**
  * Convenience class to initialize capabilies.  Only adds entry
@@ -97,6 +105,7 @@ public class CapabilityInitializer {
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IPod pod, IClient client){
 		initializeCapability(capabilities, IPortForwardable.class, new OpenShiftBinaryPortForwarding(pod, client));
 		initializeCapability(capabilities, IPodLogRetrieval.class, new OpenShiftBinaryPodLogRetrieval(pod, client));
+		initializeCapability(capabilities, IPodLogRetrievalAsync.class, new PodLogRetrievalAsync(pod, client));
 		initializeCapability(capabilities, IRSyncable.class, new OpenShiftBinaryRSync(client));
 	}
 
@@ -108,6 +117,7 @@ public class CapabilityInitializer {
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IProject project, IClient client){
 		initializeCapability(capabilities, IProjectTemplateProcessing.class, new ProjectTemplateProcessing(project, client));
 		initializeCapability(capabilities, IProjectTemplateList.class, new ProjectTemplateListCapability(project, client));
+		initializeCapability(capabilities, IImageStreamImportCapability.class, new ImageStreamImportCapability(project, client));
 	}
 	
 	public static  void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, Service service, IClient client){
@@ -124,9 +134,11 @@ public class CapabilityInitializer {
 		initializeCapability(capabilities, ITags.class, new TagCapability(resource));
 		initializeCapability(capabilities, IClientCapability.class, new ClientCapability(client));
 		initializeCapability(capabilities, IUpdatable.class, new UpdateableCapability(resource));
+		initializeCapability(capabilities, IPropertyAccessCapability.class, new PropertyAccessCapability(resource));
 	}
 	
 	public static void initializeClientCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IClient client){
 		initializeCapability(capabilities, ITemplateProcessing.class, new ServerTemplateProcessing(client));
+		initializeCapability(capabilities, IBuildConfigBuilder.class, new BuildConfigBuilder(client));
 	}
 }

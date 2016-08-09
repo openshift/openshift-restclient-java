@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,7 +52,25 @@ public class JBossDmrExtentionsTest {
 		node.get("xyz").add(complex);
 		node.get("def").add(new ModelNode());
 		node.get("abc").set("xyx");
-		assertEquals("{\"xyz\" : [1,3,{\"sub1a\" : \"avalue\"}], \"abc\" : \"xyx\"}", toJsonString(node, true));
+		assertEquals("{\"foo\" : {}, \"xyz\" : [1,3,{\"sub1\" : {}, \"sub1a\" : \"avalue\"}], \"abc\" : \"xyx\"}", toJsonString(node, true));
+	}
+	
+	@Test
+	public void testGettersDoNotAddNodeToJsonTree() {
+		asMap(node, paths, "openshift.map");
+		assertFalse(node.has("openshift","map"));
+
+		asSet(node, paths, "openshift.set", ModelType.STRING);
+		assertFalse(node.has("openshift","set"));
+
+		asInt(node, paths, "openshift.int");
+		assertFalse(node.has("openshift","int"));
+
+		asString(node, paths, "openshift.string");
+		assertFalse(node.has("openshift","string"));
+
+		asBoolean(node, paths, "openshift.bool");
+		assertFalse(node.has("openshift","bool"));
 	}
 	
 	@Test
