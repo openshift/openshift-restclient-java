@@ -23,13 +23,19 @@ public interface IObjectReference {
 	 * @return
 	 */
 	String getKind();
+	
+	/**
+	 * The obj ref kind
+	 * @param kind
+	 */
+	void setKind(String kind);
 
 	/**
 	 * returns the api version of this resource
 	 * @return
 	 */
 	String getApiVersion();
-
+	
 	/**
 	 * returns the resource version of this resource
 	 * @return
@@ -41,12 +47,24 @@ public interface IObjectReference {
 	 * @return
 	 */
 	String getName();
+	
+	/**
+	 * The name of the obj ref
+	 * @param name
+	 */
+	void setName(String name);
 
 	/**
 	 * Returns the scope of this resource
 	 * @return
 	 */
 	String getNamespace();
+	
+	/**
+	 * The namespace for the object ref
+	 * @param namespace
+	 */
+	void setNamespace(String namespace);
 
 	String getFieldPath();
 

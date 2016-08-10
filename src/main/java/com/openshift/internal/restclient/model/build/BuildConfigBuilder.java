@@ -10,24 +10,28 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.build;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.model.BuildConfig;
-import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IEnvironmentVariable;
+import com.openshift.restclient.model.IObjectReference;
 import com.openshift.restclient.model.build.BuildTriggerType;
 import com.openshift.restclient.model.build.IBuildConfigBuilder;
 
-
+/**
+ * Impl of a builder to create buildconfigs
+ * @author jeff.cantrill
+ *
+ */
 public class BuildConfigBuilder implements IBuildConfigBuilder {
 	
 	private SourceStrategyBuilder sourceStrategyBuilder;
@@ -77,11 +81,13 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 			bc.setBuildSource(gitSourceBuilder.build());
 		}
 
-
-		//TODO move into bc
-		ModelNode node = bc.getNode();
-		JBossDmrExtentions.set(node, Collections.emptyMap(), "spec.output.to.kind", ResourceKind.IMAGE_STREAM_TAG);
-		JBossDmrExtentions.set(node, Collections.emptyMap(), "spec.output.to.name", imageStreamTagOutput);
+		DockerImageURI uri = new DockerImageURI(imageStreamTagOutput);
+		IObjectReference outRef = bc.getBuildOutputReference();
+		outRef.setKind(ResourceKind.IMAGE_STREAM_TAG);
+		outRef.setName(uri.getNameAndTag());
+		if(StringUtils.isNotBlank(uri.getUserName())) {
+			outRef.setNamespace(uri.getUserName());
+		}
 		
 		bc.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GENERIC, UUID.randomUUID().toString(), null));
 		if(buildOnImageChange) {

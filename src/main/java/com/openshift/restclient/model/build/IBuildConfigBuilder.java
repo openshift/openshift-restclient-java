@@ -16,7 +16,6 @@ import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IEnvironmentVariable;
 import com.openshift.restclient.model.IResourceBuilder;
-import com.openshift.restclient.model.build.IBuildConfigBuilder.IGitSourceBuilder;
 
 public interface IBuildConfigBuilder extends IResourceBuilder<IBuildConfig, IBuildConfigBuilder>, ICapability {
 

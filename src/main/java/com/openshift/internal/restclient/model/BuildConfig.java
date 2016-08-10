@@ -20,11 +20,9 @@ import com.openshift.internal.restclient.model.build.CustomBuildStrategy;
 import com.openshift.internal.restclient.model.build.DockerBuildStrategy;
 import com.openshift.internal.restclient.model.build.GitBuildSource;
 import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
-import com.openshift.internal.restclient.model.build.STIBuildStrategy;
 import com.openshift.internal.restclient.model.build.SourceBuildStrategy;
 import com.openshift.internal.restclient.model.build.WebhookTrigger;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IObjectReference;
 import com.openshift.restclient.model.build.BuildSourceType;
@@ -37,7 +35,6 @@ import com.openshift.restclient.model.build.ICustomBuildStrategy;
 import com.openshift.restclient.model.build.IDockerBuildStrategy;
 import com.openshift.restclient.model.build.IGitBuildSource;
 import com.openshift.restclient.model.build.IImageChangeTrigger;
-import com.openshift.restclient.model.build.ISTIBuildStrategy;
 import com.openshift.restclient.model.build.ISourceBuildStrategy;
 import com.openshift.restclient.model.build.IWebhookTrigger;
 
@@ -59,10 +56,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	public static final String BUILDCONFIG_DOCKER_NOCACHE = "spec.strategy.dockerStrategy.noCache";
 	public static final String BUILDCONFIG_DOCKER_BASEIMAGE = "spec.strategy.dockerStrategy.baseImage";
 	private static final String BUILDCONFIG_OUTPUT_REPO =  "spec.output.to.name";
-	private static final String BUILDCONFIG_STI_IMAGE =  "spec.strategy.sourceStrategy.from.name";
-	private static final String BUILDCONFIG_STI_SCRIPTS = "spec.strategy.sourceStrategy.scripts";
-	private static final String BUILDCONFIG_STI_INCREMENTAL = "spec.strategy.sourceStrategy.incremental";
-	private static final String BUILDCONFIG_STI_ENV = "spec.strategy.sourceStrategy.env";
 	private static final String BUILDCONFIG_TRIGGERS = "spec.triggers";
 	private static final String BUILD_CONFIG_WEBHOOK_GITHUB_SECRET = "github.secret";
 	private static final String BUILD_CONFIG_WEBHOOK_GENERIC_SECRET = "generic.secret";
@@ -79,11 +72,8 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
 	@Override
 	public IObjectReference getBuildOutputReference() {
-		ModelNode node = get("spec.output.to");
-		if(!node.isDefined()) return null;
-		return new ObjectReference(node);
+		return new ObjectReference(get("spec.output.to"));
 	}
-
 
 	@Override
 	public List<IBuildTrigger> getBuildTriggers() {
@@ -93,16 +83,13 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		for (ModelNode node : list) {
 			String type = node.get(TYPE).asString();
 			switch(type){
-				case BuildTriggerType.generic:
 				case BuildTriggerType.GENERIC:
 					triggers.add(new WebhookTrigger(BuildTriggerType.GENERIC,
 									asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), url));
 					break;
-				case BuildTriggerType.github:
 				case BuildTriggerType.GITHUB:
 					triggers.add(new WebhookTrigger(BuildTriggerType.GITHUB, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), url));
 					break;
-				case BuildTriggerType.imageChange:
 				case BuildTriggerType.IMAGE_CHANGE:
 					triggers.add(new ImageChangeTrigger(BuildTriggerType.IMAGE_CHANGE,
 							asString(node, BUILD_CONFIG_IMAGECHANGE_IMAGE),
@@ -123,7 +110,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		ModelNode triggers = get(BUILDCONFIG_TRIGGERS);
 		ModelNode triggerNode = triggers.add();
 		switch(trigger.getType()) {
-		case BuildTriggerType.generic:
 		case BuildTriggerType.GENERIC:
 			if(!(trigger instanceof IWebhookTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type generic does not implement IWebhookTrigger");
@@ -131,7 +117,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			IWebhookTrigger generic = (IWebhookTrigger)trigger;
 			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GENERIC_SECRET)).set(generic.getSecret());
 			break;
-		case BuildTriggerType.github:
 		case BuildTriggerType.GITHUB:
 			if(!(trigger instanceof IWebhookTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type github does not implement IWebhookTrigger");
@@ -139,7 +124,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			IWebhookTrigger github = (IWebhookTrigger)trigger;
 			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GITHUB_SECRET)).set(github.getSecret());
 			break;
-		case BuildTriggerType.imageChange:
 		case BuildTriggerType.IMAGE_CHANGE:{
 			if(!(trigger instanceof IImageChangeTrigger)) {
 				throw new IllegalArgumentException("IBuildTrigger of type imageChange does not implement IImageChangeTrigger");
@@ -211,22 +195,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 				setEnvMap(BUILDCONFIG_CUSTOM_ENV, custom.getEnvironmentVariables());
 			}
 			break;
-		case BuildStrategyType.STI:
-			if ( !(strategy instanceof ISTIBuildStrategy)) {
-				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement ISTIBuildStrategy");
-			}
-			ISTIBuildStrategy sti = (ISTIBuildStrategy)strategy;
-			if(sti.getImage() != null) {
-				set(BUILDCONFIG_STI_IMAGE, sti.getImage().toString());
-			}
-			if(sti.getScriptsLocation() != null) {
-				set(BUILDCONFIG_STI_SCRIPTS, sti.getScriptsLocation());
-			}
-			set(BUILDCONFIG_STI_INCREMENTAL, sti.incremental());
-			if(sti.getEnvironmentVariables() != null) {
-				setEnvMap(BUILDCONFIG_STI_ENV, sti.getEnvironmentVariables());
-			}
-			break;
 		case BuildStrategyType.SOURCE:
 			ISourceBuildStrategy source = (ISourceBuildStrategy) strategy;
 			get(SOURCE_STRATEGY).set(ModelNode.fromJSONString(source.toString()));
@@ -248,13 +216,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
 		set(BUILDCONFIG_TYPE, strategy.getType());
 	}
-	
-	public void setOutput(DockerImageURI imageUri){
-		//FIXME
-//		ModelNode output = getNode().get(new String []{"parameters","output"});
-//		output.get("imageTag").set(imageUri.getUriWithoutHost());
-//		output.get("registry").set(imageUri.getRepositoryHost());
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -266,7 +227,6 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 						asBoolean(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET),
 						getEnvMap(BUILDCONFIG_CUSTOM_ENV)
 					);
-		case BuildStrategyType.STI:
 		case BuildStrategyType.SOURCE:
 			return (T) new SourceBuildStrategy(get(SOURCE_STRATEGY), getPropertyKeys());
 

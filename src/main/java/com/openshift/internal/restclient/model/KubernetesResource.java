@@ -196,6 +196,10 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	}
 	
 	/*---------- utility methods ------*/
+	protected boolean has(String key) {
+		return node.has(getPath(key));
+	}
+	
 	protected ModelNode get(String key){
 		return get(node, key);
 	}
