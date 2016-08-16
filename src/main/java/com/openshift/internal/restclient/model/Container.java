@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.openshift.restclient.model.ILifecycle;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
@@ -142,13 +143,18 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 	}
 
 	@Override
-	public void setLifecycle(String lifecycle) {
-		set(node, propertyKeys, LIFECYCLE, lifecycle);
+	public void setLifecycle(ILifecycle lifecycle) {
+		ModelNode lifecycleNode = ModelNode.fromJSONString(lifecycle.toJson());
+		get(node, propertyKeys, LIFECYCLE).set(lifecycleNode);
 	}
 
 	@Override
-	public String getLifecycle() {
-		return asString(node, propertyKeys, LIFECYCLE);
+	public ILifecycle getLifecycle() {
+		if (node.has(LIFECYCLE)) {
+			return Lifecycle.fromJson(get(node, propertyKeys, LIFECYCLE));
+		} else {
+		    return new Lifecycle.Builder().build();
+		}
 	}
 	
 	@Override

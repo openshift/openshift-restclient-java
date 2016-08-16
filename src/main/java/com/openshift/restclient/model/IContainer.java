@@ -53,8 +53,8 @@ public interface IContainer {
 	void setImagePullPolicy(String policy);
 	String getImagePullPolicy();
 	
-	void setLifecycle(String lifecycle);
-	String getLifecycle();
+	void setLifecycle(ILifecycle lifecycle);
+	ILifecycle getLifecycle();
 	
 	@Deprecated
 	void setVolumes(Set<IVolume> volumes);
