@@ -30,7 +30,7 @@ public class UnrecognizedResourceTest{
 	@Before
 	public void setUp(){
 		IClient client = mock(IClient.class);
-		service = new ResourceFactory(client).create(Samples.V1_UNRECOGNIZED.getContentAsString(), false);
+		service = new ResourceFactory(client).create(Samples.V1_UNRECOGNIZED.getContentAsString());
 	}
 	
 	@Test

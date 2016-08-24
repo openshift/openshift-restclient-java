@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
+import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,6 +59,7 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	public ReplicationController(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
 		this.propertyKeys = propertyKeys;
+		initializeCapabilities(getModifiableCapabilities(), this, getClient());
 	}
 	
 	@Override
