@@ -45,6 +45,8 @@ public enum Samples {
 	V1_ROLE_BINDING("openshift3/v1_role_binding.json"), 
 	V1_ROUTE("openshift3/v1_route.json"),
 	V1_ROUTE_WO_TLS("openshift3/v1_route_wo_tls.json"),
+	V1_ROUTE_PORT_NUMERIC("openshift3/v1_route_port_numeric.json"),
+	V1_ROUTE_PORT_NAME("openshift3/v1_route_port_name.json"),
 	V1_SERVICE("openshift3/v1_service.json"),
 	V1_SERVICE_ACCOUNT("openshift3/v1_service_account.json"),
 	V1_Status("openshift3/v1_status.json"),
