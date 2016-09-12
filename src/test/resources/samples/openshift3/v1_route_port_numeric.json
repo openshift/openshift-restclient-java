@@ -1,0 +1,31 @@
+{
+    "kind": "Route",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "route-edge",
+        "namespace": "test",
+        "selfLink": "/osapi/v1beta3/namespaces/test/routes/route-edge",
+        "uid": "5dfdb081-0fab-11e5-9467-080027893417",
+        "resourceVersion": "383",
+        "creationTimestamp": "2015-06-10T20:00:39Z",
+        "labels": {
+            "foo": "bar",
+            "template": "application-template-stibuild"
+        },
+        "annotations": {
+            "openshift.io/host.generated": "false"
+        }
+    },
+    "spec": {
+        "host": "www.example.com",
+        "path" : "/abc",
+        "to": {
+            "kind": "Service",
+            "name": "frontend"
+        },
+        "port": {
+            "targetPort": 8080
+        }
+    },
+    "status": {}
+}

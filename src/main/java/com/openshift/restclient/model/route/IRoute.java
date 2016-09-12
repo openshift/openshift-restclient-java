@@ -87,4 +87,18 @@ public interface IRoute extends IResource {
 	 * @return java.lang.String   The route url
 	 */
 	String getURL();
+	
+    /**
+     * Retrieves the target port of this route.
+     * 
+     * @return target port or null if there is not one
+     */
+    ITargetPort getPort();
+    
+    /**
+     * Create a target port if one is not defined or return
+     * the existing one
+     * @return
+     */
+    ITargetPort createPort();
 }
