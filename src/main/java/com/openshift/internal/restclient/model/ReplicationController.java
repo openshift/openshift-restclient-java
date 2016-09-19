@@ -248,6 +248,11 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	}
 
 	@Override
+	public Map<String, String> getTemplateLabels() {
+		return asMap(SPEC_TEMPLATE_LABELS);
+	}
+
+	@Override
 	public void addTemplateLabel(String key, String value) {
 		ModelNode labels = get(SPEC_TEMPLATE_LABELS);
 		labels.get(key).set(value);
