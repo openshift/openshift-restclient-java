@@ -30,4 +30,12 @@ public interface IProjectTemplateList extends ICapability {
 	 * @return
 	 */
 	Collection<ITemplate> getCommonTemplates();
+
+	/**
+     * Retrieve the common templates from the server (e.g. 'openshift' namespace)
+     * @return
+     */
+    default Collection<ITemplate> getCommonTemplates(String clusterNamespace) {
+        throw new UnsupportedOperationException();
+    }
 }
