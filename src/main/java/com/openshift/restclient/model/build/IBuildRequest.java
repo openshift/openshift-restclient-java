@@ -46,4 +46,12 @@ public interface IBuildRequest extends IResource {
 	 * @return list of reasons for the build
 	 */
 	List<String> getBuildCauses();
+
+	/**
+	 * Sets an environment variable in this build request
+	 * @param name The name of the environment variable to set
+	 * @param value The value of the variable
+	 */
+	void setEnvironmentVariable(String name, String value);
+
 }
