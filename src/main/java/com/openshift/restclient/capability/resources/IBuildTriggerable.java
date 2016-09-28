@@ -10,10 +10,10 @@
  ******************************************************************************/
 package com.openshift.restclient.capability.resources;
 
-import java.util.List;
-
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.IBuild;
+
+import java.util.List;
 
 /**
  * Capability to trigger a build based on the build configuration
@@ -63,5 +63,12 @@ public interface IBuildTriggerable extends ICapability {
 	 * @return list of reasons for the build
 	 */
 	List<String> getBuildCauses();
+
+	/**
+	 * Sets an environment variable for this build request
+	 * @param name The name of the environment variable
+	 * @param value The value of the environment variable
+	 */
+	void setEnvironmentVariable(String name, String value);
 
 }

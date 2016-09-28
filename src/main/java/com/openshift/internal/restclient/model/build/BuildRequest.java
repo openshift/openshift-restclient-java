@@ -10,15 +10,14 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.build;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.jboss.dmr.ModelNode;
-
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.build.IBuildRequest;
+import org.jboss.dmr.ModelNode;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -26,7 +25,7 @@ import com.openshift.restclient.model.build.IBuildRequest;
  *
  */
 public class BuildRequest extends KubernetesResource implements IBuildRequest{
-	
+
 	private static final String COMMIT = "commit";
 	private static final String GIT = "git";
 	private static final String BIGGIT = "Git";
@@ -36,7 +35,8 @@ public class BuildRequest extends KubernetesResource implements IBuildRequest{
 	private static final String REVISION_TYPE = REVISION + "." + TYPE;
 	private static final String TRIGGERED_BY = "triggeredBy";
 	private static final String MESSAGE = "message";
-	
+	private static final String ENV = "env";
+
 
 	public BuildRequest(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
 		super(node, client, propertyKeys);
@@ -71,6 +71,14 @@ public class BuildRequest extends KubernetesResource implements IBuildRequest{
 			ret.add(cause.asString());
 		}
 		return ret;
+	}
+
+	@Override
+	public void setEnvironmentVariable(String name, String value) {
+		ModelNode envs = get(ENV);
+		ModelNode entry = envs.add();
+		entry.get(NAME).set(name);
+		entry.get(VALUE).set(value);
 	}
 
 }

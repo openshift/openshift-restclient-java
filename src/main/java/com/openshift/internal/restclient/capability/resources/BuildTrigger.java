@@ -11,6 +11,7 @@
 package com.openshift.internal.restclient.capability.resources;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +38,7 @@ public class BuildTrigger implements IBuildTriggerable {
 	private final String subresource;
 	private String commitId;
 	private List<String> causes;
+	private HashMap<String,String> envVars = new HashMap<String,String>();
 
 	public BuildTrigger(IBuildConfig buildConfig, IClient client) {
 		this.resource = buildConfig;
@@ -68,6 +70,7 @@ public class BuildTrigger implements IBuildTriggerable {
 		if(StringUtils.isNotEmpty(commitId))
 			request.setCommitId(commitId);
 		causes.forEach(c->request.addBuildCause(c));
+		envVars.forEach((name, value)->request.setEnvironmentVariable(name, value));
 		return client.create(resource.getKind(), resource.getNamespace(), resource.getName(), subresource, request);
 	}
 
@@ -97,7 +100,11 @@ public class BuildTrigger implements IBuildTriggerable {
 	public List<String> getBuildCauses() {
 		return new ArrayList<>(causes);
 	}
-	
-	
+
+	@Override
+	public void setEnvironmentVariable(String name, String value) {
+		envVars.put(name, value);
+	}
+
 
 }
