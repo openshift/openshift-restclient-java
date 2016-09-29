@@ -180,9 +180,15 @@ public class DefaultClient implements IClient, IHttpConstants{
 	private <T extends IResource> T execute(HttpMethod method, String kind, String namespace, String name, String subresource, IResource payload) {
 		return execute(method.toString(), kind, namespace, name, subresource, payload);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload) {
+
+		return execute(method, kind, namespace, name, subresource, payload, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload, String subContext) {
 		if(ResourceKind.LIST.equals(kind)) 
 			throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
@@ -190,6 +196,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 				.name(name)
 				.namespace(namespace)
 				.subresource(subresource)
+				.subContext(subContext)
 				.build();
 			
 		try {

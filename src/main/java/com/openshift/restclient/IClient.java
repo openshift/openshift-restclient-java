@@ -139,6 +139,20 @@ public interface IClient extends ICapable, Cloneable {
 	<T extends IResource> T execute(String httpMethod, String kind, String namespace, String name, String subresource, IResource payload);
 
 	/**
+	 * Raw execution of a request
+	 * @param httpMethod  HttpMethod (e.g. POST)
+	 * @param kind
+	 * @param namespace
+	 * @param name
+	 * @param subresource  subresource or capability
+	 * @param payload      the payload to sumit.  only valid on non-get operations
+	 * @param subcontext   additional subContext
+	 * @return
+	 */
+	<T extends IResource> T execute(String httpMethod, String kind, String namespace, String name, String subresource, IResource payload, String subcontext);
+
+
+	/**
 	 * 
 	 * @return the base URL of this endpoint
 	 */
