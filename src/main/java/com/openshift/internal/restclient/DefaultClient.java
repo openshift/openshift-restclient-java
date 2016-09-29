@@ -253,10 +253,14 @@ public class DefaultClient implements IClient, IHttpConstants{
 	}
 
 	public Request.Builder newRequestBuilderTo(String endpoint){
+		return newRequestBuilderTo(endpoint, MEDIATYPE_APPLICATION_JSON);
+	}
+
+	public Request.Builder newRequestBuilderTo(String endpoint,String acceptMediaType){
 		Request.Builder builder = new Request.Builder()
-			.url(endpoint.toString())
-			.header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON);
-		
+				.url(endpoint.toString())
+				.header(PROPERTY_ACCEPT, acceptMediaType);
+
 		String token =  null;
 		if(this.authContext != null &&  StringUtils.isNotBlank(this.authContext.getToken())){
 			token = this.authContext.getToken();
@@ -264,7 +268,8 @@ public class DefaultClient implements IClient, IHttpConstants{
 		builder.header(IHttpConstants.PROPERTY_AUTHORIZATION, String.format("%s %s", IHttpConstants.AUTHORIZATION_BEARER, token));
 		return builder;
 	}
-	
+
+
 	@Override
 	public <T extends IResource> T update(T resource) {
 		return execute(HttpMethod.PUT, resource.getKind(), resource.getNamespace(), resource.getName(), null, resource);
