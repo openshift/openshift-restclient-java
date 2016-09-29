@@ -48,6 +48,7 @@ public class URLBuilder {
 	private String apiVersion;
 	private String namespace;
 	private String subResource;
+	private String subContext;
 
 
 	/**
@@ -114,6 +115,11 @@ public class URLBuilder {
 		return this;
 	}
 
+	public URLBuilder subContext(String value) {
+		this.subContext = value;
+		return this;
+	}
+
 	/**
 	 * Builds a URL based on the information provided. Either  a resource or
 	 * a resource kind must be provided
@@ -159,6 +165,9 @@ public class URLBuilder {
 		}
 		if(StringUtils.isNotBlank(subResource)) {
 			url.append("/").append(subResource);
+		}
+		if (StringUtils.isNotBlank(subContext)){
+			url.append("/").append(subContext);
 		}
 		url = appendParameters(url);
 	}
