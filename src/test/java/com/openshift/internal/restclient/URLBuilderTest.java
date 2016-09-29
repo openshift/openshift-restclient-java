@@ -85,7 +85,19 @@ public class URLBuilderTest extends TypeMapperFixture{
 			.build().toString();
 		assertEquals(String.format("%s/api/v1/namespaces/foo/replicationcontrollers/bar/status", BASE_URL),url.toString());
 	}
-	
+
+	@Test
+	public void testAddingASubContext() {
+		IResource resource = givenAResource(ResourceKind.POD, KubernetesAPIVersion.v1, "https:demo-app-8-3gehi:8778");
+		String url = builder.
+				resource(resource)
+				.name("bar")
+				.subresource("proxy")
+				.subContext("jolokia/exec/java.util.logging:type=Logging/getLoggerLevel/abc")
+				.build().toString();
+		assertEquals(String.format("%s/api/v1/namespaces/https:demo-app-8-3gehi:8778/pods/bar/proxy/jolokia/exec/java.util.logging:type=Logging/getLoggerLevel/abc", BASE_URL),url.toString());
+	}
+
 	private String whenBuildingTheURLFor(IResource resource, String namespace) {
 		return builder.
 			resource(resource)
