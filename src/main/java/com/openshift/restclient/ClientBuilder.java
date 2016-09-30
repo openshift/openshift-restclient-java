@@ -33,6 +33,7 @@ import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.utils.SSLUtils;
 
+import okhttp3.Authenticator;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 
@@ -61,6 +62,7 @@ public class ClientBuilder {
 	private TimeUnit connectTimeoutUnit = TimeUnit.MILLISECONDS;
 	private int writeTimeout = IHttpConstants.DEFAULT_READ_TIMEOUT;
 	private TimeUnit writeTimeoutUnit = TimeUnit.MILLISECONDS;
+	private IProxyAuthenticatorFactory proxyAuthFactory;
 
 	public ClientBuilder() {
 		this(null);
@@ -85,6 +87,7 @@ public class ClientBuilder {
 		this.resourceFactory = factory;
 		return this;
 	}
+	
 
 	public ClientBuilder toCluster(String baseUrl) {
 		this.baseUrl = baseUrl;
@@ -155,6 +158,11 @@ public class ClientBuilder {
 	    return this;
 	}
 	
+	public ClientBuilder proxyAuthenticatorFactory(IProxyAuthenticatorFactory factory) {
+		this.proxyAuthFactory = factory;
+		return this;
+	}
+	
 	/**
 	 * Build a client  
 	 * 
@@ -175,7 +183,7 @@ public class ClientBuilder {
 			//if we need to really expose them.
 			dispatcher.setMaxRequests(maxRequests);
 			dispatcher.setMaxRequestsPerHost(maxRequestsPerHost);
-
+			
 			OkHttpClient.Builder builder = new OkHttpClient.Builder()
 				.addInterceptor(responseCodeInterceptor)
 				.authenticator(authenticator)
@@ -185,6 +193,12 @@ public class ClientBuilder {
 				.connectTimeout(connectTimeout, connectTimeoutUnit)
 				.hostnameVerifier(this.sslCertificateCallback)
 				.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+			if(this.proxyAuthFactory != null) {
+				Authenticator proxyAuthenticator = this.proxyAuthFactory.create(Authenticator.class);
+				if(proxyAuthenticator != null) {
+					builder.proxyAuthenticator(proxyAuthenticator);
+				}
+			}
 			OkHttpClient okClient = builder.build();
 			
 			IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
@@ -237,6 +251,21 @@ public class ClientBuilder {
 				trustManagerFactory.init((KeyStore)null);
 			}
 			return trustManagerFactory;
+	}
+	
+	/**
+	 * Factory class for producing authenticators
+	 * @author jeff.cantrill
+	 *
+	 */
+	public static interface IProxyAuthenticatorFactory {
+		
+		/**
+		 * Create an instance of an authenticator
+		 * @param klass
+		 * @return and instance of type klass if supported or null
+		 */
+		<T> T create(Class<T>klass);
 	}
 	
 	private static class CallbackTrustManager implements X509TrustManager {
