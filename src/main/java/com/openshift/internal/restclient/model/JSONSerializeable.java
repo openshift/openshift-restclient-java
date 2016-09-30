@@ -10,7 +10,25 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
+/**
+ * Something that can be serialized to JSON
+ * @author jeff.cantrill
+ *
+ */
 public interface JSONSerializeable {
 	
+	/**
+	 * The JSON representation
+	 * @return
+	 */
 	String toJson();
+	
+	/**
+	 * The JSON representation
+	 * @param compact true if it should be compact; false otherwise
+	 * @return
+	 */
+	default String toJson(boolean compact) {
+		return toJson();
+	}
 }

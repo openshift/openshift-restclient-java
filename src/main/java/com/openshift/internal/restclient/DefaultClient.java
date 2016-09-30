@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
+import com.openshift.internal.restclient.model.JSONSerializeable;
 import com.openshift.internal.restclient.okhttp.WatchClient;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
@@ -34,6 +35,7 @@ import com.openshift.restclient.IWatcher;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedOperationException;
+import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
@@ -182,13 +184,21 @@ public class DefaultClient implements IClient, IHttpConstants{
 	}
 
 	@SuppressWarnings("unchecked")
+	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload, String subContext) {
+		return (T) execute(this.factory, method, kind, namespace, name, subresource, subContext, payload);
+	}	
+	
+	@Override
+	@SuppressWarnings("unchecked")
 	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload) {
-
-		return execute(method, kind, namespace, name, subresource, payload, null);
+		return (T) execute(this.factory, method, kind, namespace, name, subresource, null, payload);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload, String subContext) {
+	public <T> T execute(ITypeFactory factory, String method, String kind, String namespace, String name, String subresource, String subContext, JSONSerializeable payload) {
+		if(factory == null) {
+			throw new OpenShiftException("ITypeFactory is null while trying to call IClient#execute");
+		}
 		if(ResourceKind.LIST.equals(kind)) 
 			throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
@@ -207,14 +217,14 @@ public class DefaultClient implements IClient, IHttpConstants{
 			try(Response result = client.newCall(request).execute()){
 				String response =  result.body().string();
 				LOGGER.debug("Response: {}", response);
-				return (T) factory.create(response);
+				return (T) factory.createInstanceFrom(response);
 			}
 		} catch (IOException e){
 			throw new OpenShiftException(e, "Unable to execute request to %s", endpoint);
 		}
 	}
 	
-	private RequestBody getPayload(String method, IResource payload) {
+	private RequestBody getPayload(String method, JSONSerializeable payload) {
 		switch(method.toUpperCase()){
 			case "GET":
 			case "DELETE":

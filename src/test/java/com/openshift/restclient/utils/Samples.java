@@ -25,6 +25,9 @@ public enum Samples {
 	GROUP_ENDPONT_APIS("openshift3/apis_endpoint.json"),
 	GROUP_ENDPONT_APIS_EXTENSIONS("openshift3/apis_endpoint_extensions.json"),
 	
+	// api/extensions
+	V1BETA1_API_EXT_SCALE("openshift3/api/extensions/v1beta1_scale.json"),
+	
 	//v1
 	V1_KUBE_CONFIG("openshift3/v1_kubeconfig.yaml"),
 
