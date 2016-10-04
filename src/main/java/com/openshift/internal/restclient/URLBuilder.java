@@ -8,19 +8,6 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
 import com.openshift.restclient.OpenShiftException;
@@ -28,6 +15,18 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedEndpointException;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IResource;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Helper class to build the URL connection string in the proper
@@ -42,7 +41,7 @@ public class URLBuilder {
 	private String baseUrl;
 	private String kind;
 	private String name;
-	private Map<String, String> params = new HashMap<String, String>();
+	private ArrayList<AbstractMap.SimpleEntry<String,String>> params = new ArrayList<>();
 	private final IApiTypeMapper typeMappings;
 
 	private String apiVersion;
@@ -105,7 +104,7 @@ public class URLBuilder {
 	}
 
 	public URLBuilder addParmeter(String key, String value) {
-		params.put(key, value);
+		params.add(new AbstractMap.SimpleEntry<>( key, value ));
 		return this;
 	}
 	
@@ -175,10 +174,8 @@ public class URLBuilder {
 	private StringBuilder appendParameters(StringBuilder url) {
 		if (!params.isEmpty()) {
 			url.append(IHttpConstants.QUESTION_MARK);
-			for (Iterator<Entry<String, String>> iterator = params.entrySet()
-					.iterator(); iterator.hasNext();) {
-				Entry<String, String> entry = (Entry<String, String>) iterator
-						.next();
+			for ( Iterator<AbstractMap.SimpleEntry<String,String>> iterator = params.iterator(); iterator.hasNext(); ) {
+				AbstractMap.SimpleEntry<String,String> entry = iterator.next();
 				try {
 					if(StringUtils.isNotBlank(entry.getValue())) {
 						url.append(entry.getKey())
