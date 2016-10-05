@@ -10,14 +10,14 @@
  ******************************************************************************/
 package com.openshift.restclient.capability.resources;
 
+import com.openshift.restclient.capability.ICapability;
+import com.openshift.restclient.capability.IStoppable;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.openshift.restclient.capability.ICapability;
-import com.openshift.restclient.capability.IStoppable;
 
 /**
  * Retrieve logs in an async call
@@ -67,6 +67,14 @@ public interface IPodLogRetrievalAsync extends ICapability{
 		 * @param reason     a reason for termination, may be null
 		 */
 		void onClose(int code, String reason);
+
+		/**
+		 * Callback received when the web socket connection
+		 * fails
+		 * @param e the exception which occurred
+		 */
+		void onFailure(IOException e);
+
 	}
 	
 	/**
