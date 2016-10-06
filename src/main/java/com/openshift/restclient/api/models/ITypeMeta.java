@@ -10,7 +10,7 @@
  ******************************************************************************/
 package com.openshift.restclient.api.models;
 
-import com.openshift.internal.restclient.model.JSONSerializeable;
+import com.openshift.restclient.model.JSONSerializeable;
 
 /**
  * Marker interface to kubernetes TypeMeta

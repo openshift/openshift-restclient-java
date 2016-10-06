@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
-import com.openshift.internal.restclient.model.JSONSerializeable;
 import com.openshift.internal.restclient.okhttp.WatchClient;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
@@ -42,6 +41,7 @@ import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.JSONSerializeable;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
