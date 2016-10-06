@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.internal.restclient.model;
+package com.openshift.restclient.model;
 
 /**
  * Something that can be serialized to JSON

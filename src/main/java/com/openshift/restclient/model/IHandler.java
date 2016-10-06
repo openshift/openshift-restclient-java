@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
-import com.openshift.internal.restclient.model.JSONSerializeable;
-
 /**
  * @author Ulf Lilleengen
  */

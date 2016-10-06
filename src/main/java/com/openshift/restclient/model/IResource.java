@@ -11,7 +11,6 @@ package com.openshift.restclient.model;
 import java.util.Map;
 import java.util.Set;
 
-import com.openshift.internal.restclient.model.JSONSerializeable;
 import com.openshift.restclient.api.models.IAnnotatable;
 import com.openshift.restclient.api.models.ITypeMeta;
 import com.openshift.restclient.capability.ICapability;

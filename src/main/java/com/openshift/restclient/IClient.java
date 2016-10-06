@@ -13,12 +13,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.openshift.internal.restclient.model.JSONSerializeable;
 import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.capability.ICapable;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.JSONSerializeable;
 
 /**
  * Client is the the simplest interface for interacting with the OpenShift
