@@ -177,6 +177,43 @@ public class JBossDmrExtentions {
 		return set;
 	}
 	
+	/**
+     * <T>  Returns an ordered List for items that need to be ordered
+     * such as command Args for containers.  
+     *  
+     * @param root
+     * @param propertyKeys
+     * @param key
+     * @param type
+     * @return
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static List asList(ModelNode root, Map<String, String []> propertyKeys, String key, ModelType type){
+        List list = new ArrayList(); 
+        String [] path = getPath(propertyKeys, key);
+        if(root.has(path)){
+            ModelNode node = root.get(path);
+            if( !node.isDefined())
+                return list;
+            for (ModelNode entry : node.asList()) {
+                Object instance = null;
+                switch(type) {
+                case STRING:
+                    instance = entry.asString();
+                    break;
+                case BOOLEAN:
+                    instance = entry.asBoolean();
+                    break;
+                case INT:
+                    instance = entry.asInt();
+                default:
+                }
+                list.add(instance);
+            }
+        }
+        return list;
+    }
+	
 	 public static void set(ModelNode root, Map<String, String []> propertyKeys, String key, Set<String> values) {
 		String [] path = getPath(propertyKeys, key);
 		ModelNode node = root.get(path);

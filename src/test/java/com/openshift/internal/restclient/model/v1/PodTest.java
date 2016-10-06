@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -93,4 +94,16 @@ public class PodTest {
 		Optional<IContainer> container = containers.stream().filter(c->"foo".equals(c.getName()) && "cmd1".equals(((IExecAction)c.getLifecycle().getPreStop().get()).getCommand().get(0))).findFirst();
 		assertTrue("Exp. the container to be added", container.isPresent());
 	}
+
+	@Test
+	public void getContainerCommands() {
+	    Collection<IContainer> containers = pod.getContainers();
+	    IContainer container = containers.iterator().next();
+	    List<String> cmd = container.getCommand();
+	    List<String> cmdArgs = container.getCommandArgs();
+	    assertEquals(cmd.get(0),"/bin/sh");
+	    assertEquals(cmdArgs.get(0), "-c");
+	    assertEquals(cmdArgs.get(1), "echo 'hello'");
+	}
+	    
 }
