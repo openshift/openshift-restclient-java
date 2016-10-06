@@ -15,18 +15,20 @@ import static com.openshift.internal.util.JBossDmrExtentions.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.openshift.restclient.model.ILifecycle;
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.internal.restclient.model.volume.EmptyDirVolume;
 import com.openshift.internal.restclient.model.volume.VolumeMount;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IContainer;
+import com.openshift.restclient.model.ILifecycle;
 import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.model.volume.IVolume;
 import com.openshift.restclient.model.volume.IVolumeMount;
@@ -36,6 +38,8 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 	private static final String IMAGE = "image";
 	private static final String ENV = "env";
 	private static final String IMAGE_PULL_POLICY = "imagePullPolicy";
+	private static final String COMMAND = "command";
+	private static final String COMMANDARGS = "args";
 	private static final String LIFECYCLE = "lifecycle";
 	private static final String VOLUMEMOUNTS = "volumeMounts";
 
@@ -136,11 +140,31 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 	public void setImagePullPolicy(String policy) {
 		set(node, propertyKeys, IMAGE_PULL_POLICY, policy);
 	}
-
+	
 	@Override
 	public String getImagePullPolicy() {
 		return asString(node, propertyKeys, IMAGE_PULL_POLICY);
 	}
+	
+	@Override
+    public void setCommand(List<String> command) {
+        set(node, propertyKeys, COMMAND, command.toArray(new String[0]));
+    }
+	
+	@Override
+    public List<String> getCommand() {
+        return asList(node, propertyKeys, COMMAND, ModelType.STRING);
+    }
+	
+	@Override
+    public void setCommandArgs(List<String> args) {
+        set(node, propertyKeys, COMMANDARGS, args.toArray(new String[0]));
+    }
+	
+	@Override
+    public List<String> getCommandArgs() {
+        return asList(node, propertyKeys, COMMANDARGS, ModelType.STRING);
+    }
 
 	@Override
 	public void setLifecycle(ILifecycle lifecycle) {

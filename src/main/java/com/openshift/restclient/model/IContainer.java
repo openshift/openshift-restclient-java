@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,6 +56,12 @@ public interface IContainer {
 	
 	void setLifecycle(ILifecycle lifecycle);
 	ILifecycle getLifecycle();
+	
+    void setCommand(List<String> command);
+    List<String> getCommand();
+
+    void setCommandArgs(List<String> args);
+    List<String> getCommandArgs();
 	
 	@Deprecated
 	void setVolumes(Set<IVolume> volumes);
