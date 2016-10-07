@@ -10,12 +10,11 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import java.util.Map;
-
-import org.jboss.dmr.ModelNode;
-
 import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.model.JSONSerializeable;
+import org.jboss.dmr.ModelNode;
+
+import java.util.Map;
 
 /**
  * Adapter class between what we want 

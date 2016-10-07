@@ -9,8 +9,6 @@
 package com.openshift.internal.restclient.model.v1;
 
 import static com.openshift.internal.util.JBossDmrExtentions.getPath;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,16 +17,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import com.openshift.internal.restclient.model.volume.EmptyDirVolumeSource;
+import com.openshift.internal.restclient.model.volume.SecretVolumeSource;
+import com.openshift.restclient.model.volume.ISecretVolumeSource;
 import org.jboss.dmr.ModelNode;
 import org.json.JSONException;
 import org.junit.Before;
@@ -38,8 +31,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import com.openshift.internal.restclient.model.ModelNodeBuilder;
 import com.openshift.internal.restclient.model.ReplicationController;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
-import com.openshift.internal.restclient.model.volume.EmptyDirVolumeSource;
-import com.openshift.internal.restclient.model.volume.SecretVolumeSource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
@@ -298,16 +289,6 @@ public class ReplicationControllerTest {
 				.build();
 		
 		JSONAssert.assertEquals(exp.toJSONString(false), container.toJSONString(), true);
-	}
-	
-	@Test
-	public void shouldReturnTemplateLabels() {
-		Map<String, String> labels = rc.getTemplateLabels();
-		assertThat(labels)
-				.hasSize(3)
-				.includes(entry("deployment", "database-1"))
-				.includes(entry("deploymentconfig", "database"))
-				.includes(entry("name", "database"));
 	}
 
 	@Test

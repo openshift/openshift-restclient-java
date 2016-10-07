@@ -25,9 +25,6 @@ public enum Samples {
 	GROUP_ENDPONT_APIS("openshift3/apis_endpoint.json"),
 	GROUP_ENDPONT_APIS_EXTENSIONS("openshift3/apis_endpoint_extensions.json"),
 	
-	// api/extensions
-	V1BETA1_API_EXT_SCALE("openshift3/api/extensions/v1beta1_scale.json"),
-	
 	//v1
 	V1_KUBE_CONFIG("openshift3/v1_kubeconfig.yaml"),
 
@@ -48,8 +45,6 @@ public enum Samples {
 	V1_ROLE_BINDING("openshift3/v1_role_binding.json"), 
 	V1_ROUTE("openshift3/v1_route.json"),
 	V1_ROUTE_WO_TLS("openshift3/v1_route_wo_tls.json"),
-	V1_ROUTE_PORT_NUMERIC("openshift3/v1_route_port_numeric.json"),
-	V1_ROUTE_PORT_NAME("openshift3/v1_route_port_name.json"),
 	V1_SERVICE("openshift3/v1_service.json"),
 	V1_SERVICE_ACCOUNT("openshift3/v1_service_account.json"),
 	V1_Status("openshift3/v1_status.json"),
@@ -62,7 +57,7 @@ public enum Samples {
 	V1_EMPTYDIR_VOLUME_SOURCE("openshift3/v1_empty_dir_volume_source.json"),
 	V1_SECRET_VOLUME_SOURCE("openshift3/v1_secret_volume_source.json"),
 	V1_PVC_VOLUME_SOURCE("openshift3/v1_pvc_volume_source.json"),
-    V1_LIFECYCLE("openshift3/v1_lifecycle.json"),
+
 	V1_DOCKER_IMAGE_MANIFEST("dockerregistry/v1_image_manifest.json");
 
 	private static final String SAMPLES_FOLDER = "/samples/";

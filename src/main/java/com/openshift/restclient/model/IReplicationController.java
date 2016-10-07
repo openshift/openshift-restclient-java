@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.volume.IVolume;
 import com.openshift.restclient.model.volume.IVolumeSource;
 
 /**
@@ -161,12 +162,6 @@ public interface IReplicationController  extends IResource{
 	 */
 	Collection<IContainer> getContainers();
 	
-	/**
-	 * Returns the labels for the template in this replication controller
-	 * @return
-	 */
-	Map<String, String> getTemplateLabels();
-
 	/**
 	 * Add or update a label to the template spec;
 	 * @param key

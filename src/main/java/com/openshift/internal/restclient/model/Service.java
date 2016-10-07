@@ -16,7 +16,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -50,16 +49,11 @@ public class Service extends KubernetesResource implements IService {
 	}
 	
 	public IServicePort addPort(int port, int targetPort) {
-		return addPort(port, targetPort, null);
+		ServicePort servicePort = new ServicePort(get(SERVICE_PORT).add());
+		if(port > 0) servicePort.setPort(port);
+		if(targetPort >0) servicePort.setTargetPort(targetPort);
+		return servicePort;
 	}
-	
-	public IServicePort addPort(int port, int targetPort, String name) {
-        ServicePort servicePort = new ServicePort(get(SERVICE_PORT).add());
-        if(port > 0) servicePort.setPort(port);
-        if(targetPort >0) servicePort.setTargetPort(targetPort);
-        if(StringUtils.isNotEmpty(name)) servicePort.setName(name);
-        return servicePort;
-    }
 	
 	@Override
 	public int getPort(){

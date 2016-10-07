@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,14 +53,8 @@ public interface IContainer {
 	void setImagePullPolicy(String policy);
 	String getImagePullPolicy();
 	
-	void setLifecycle(ILifecycle lifecycle);
-	ILifecycle getLifecycle();
-	
-    void setCommand(List<String> command);
-    List<String> getCommand();
-
-    void setCommandArgs(List<String> args);
-    List<String> getCommandArgs();
+	void setLifecycle(String lifecycle);
+	String getLifecycle();
 	
 	@Deprecated
 	void setVolumes(Set<IVolume> volumes);

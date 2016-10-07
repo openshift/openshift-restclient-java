@@ -70,7 +70,7 @@ public class BuildConfigBuilderTest {
 			.fromImageStreamTag("builder:latest")
 			.inNamespace("other")
 		.end()
-		.toImageStreamTag("foo/target:latest")
+		.toImageStreamTag("target:latest")
 		.build();
 		
 		List<String> triggerTypes = Arrays.asList(BuildTriggerType.CONFIG_CHANGE, 
@@ -96,7 +96,6 @@ public class BuildConfigBuilderTest {
 		IObjectReference out = bc.getBuildOutputReference();
 		assertEquals(ResourceKind.IMAGE_STREAM_TAG, out.getKind());
 		assertEquals("target:latest", out.getName());
-		assertEquals("foo", out.getNamespace());
 	}
 
 }

@@ -10,9 +10,16 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.URLBuilder;
-import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.internal.restclient.okhttp.WebSocketAdapter;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
@@ -21,19 +28,13 @@ import com.openshift.restclient.capability.IStoppable;
 import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IPod;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.ws.WebSocket;
 import okhttp3.ws.WebSocketCall;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Impl of Pod log retrieval using websocket
@@ -90,8 +91,7 @@ public class PodLogRetrievalAsync implements IPodLogRetrievalAsync{
 				.addParameters(parameters)
 				.websocket();
 		Request request = client.newRequestBuilderTo(endpoint)
-				.tag( new ResponseCodeInterceptor.Ignore(){} )
-				.build();
+				.build();	
 		WebSocketCall call = WebSocketCall.create(okClient, request);
 		call.enqueue(adapter);
 		
@@ -139,11 +139,6 @@ public class PodLogRetrievalAsync implements IPodLogRetrievalAsync{
 		@Override
 		public void onMessage(ResponseBody message) throws IOException {
 			listener.onMessage(message.string());
-		}
-
-		@Override
-		public void onFailure(IOException e, Response response) {
-			listener.onFailure(e);
 		}
 		
 	}

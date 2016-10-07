@@ -41,9 +41,10 @@ public class List extends KubernetesResource implements IList{
 	@Override
 	public Collection<IResource> getItems(){
 		if(items == null) {
-			ModelNode listNode = get(ITEMS);
+			String key = getNode().has(OBJECTS) ? OBJECTS : ITEMS;
+			ModelNode listNode = get(key);
 			if (listNode.isDefined()) {
-				Collection<ModelNode> nodes = listNode.asList();
+				Collection<ModelNode> nodes = get(key).asList();
 				items = new ArrayList<>(nodes.size());
 				IResourceFactory factory = getClient().getResourceFactory();
 				if (factory != null) {
@@ -70,7 +71,7 @@ public class List extends KubernetesResource implements IList{
 		if(this.items == null) {
 			this.items = new ArrayList<>();
 		}
-		ModelNode itemNode = get(ITEMS);
+		ModelNode itemNode = get(OBJECTS);
 		for (IResource resource : items) {
 			itemNode.add(ModelNode.fromJSONString(resource.toString()));
 			this.items.add(resource);

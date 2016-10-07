@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -140,17 +139,22 @@ public class ResourceFactory implements IResourceFactory{
 	private List<IResource> buildList(final String version, List<ModelNode> items, String kind) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		List<IResource> resources = new ArrayList<IResource>(items.size());
 		for (ModelNode item : items) {
-			resources.add(create(item, version, kind));
+			resources.add(create(item, version, kind, false));
 		}
 		return resources;
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public IResource create(InputStream input) {
+	public <T extends IResource> T create(InputStream input) {
+		return (T) create(input, false);
+	}
+
+	@Override
+	public IResource create(InputStream input, boolean strict) {
 		try {
 			String resource = IOUtils.toString(input, "UTF-8");
-			return create(resource);
+			return create(resource, strict);
 		} catch (IOException e) {
 			throw new ResourceFactoryException(e, "There was an exception creating the resource from the InputStream");
 		}
@@ -158,18 +162,18 @@ public class ResourceFactory implements IResourceFactory{
 	
 	
 	@Override
-	public Object createInstanceFrom(String response) {
-		return create(response);
+	@SuppressWarnings("unchecked")
+	public <T extends IResource> T create(String response) {
+		return (T) create(response, false);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T extends IResource> T create(String response) {
+	public IResource create(String response, boolean strict) {
 		try {
 			ModelNode node = ModelNode.fromJSONString(response);
 			String version = node.get(APIVERSION).asString();
 			String kind = node.get(KIND).asString();
-			return (T) create(node, version, kind);
+			return create(node, version, kind, strict);
 		} catch (UnsupportedVersionException e) {
 			throw e;
 		}catch(Exception e) {
@@ -181,10 +185,15 @@ public class ResourceFactory implements IResourceFactory{
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends IResource> T create(String version, String kind) {
-		return (T) create(new ModelNode(), version, kind);
+		return (T) create(version, kind, false);
 	}
 
-	private IResource create(ModelNode node, String version, String kind) {
+	@Override
+	public IResource create(String version, String kind, boolean strict) {
+		return create(new ModelNode(), version, kind, strict);
+	}
+
+	private IResource create(ModelNode node, String version, String kind, boolean strict) {
 		try {
 			node.get(APIVERSION).set(version);
 			node.get(KIND).set(kind.toString());
@@ -209,18 +218,13 @@ public class ResourceFactory implements IResourceFactory{
 	public <T extends IResource> T stub(String kind, String name, String namespace) {
 		//TODO get k8e or os
 		String version = client.getOpenShiftAPIVersion();
-		KubernetesResource resource = (KubernetesResource) create(version, kind);
+		KubernetesResource resource = (KubernetesResource) create(version, kind, true);
 		resource.setName(name);
 		resource.setNamespace(namespace);
 		if(StringUtils.isNotEmpty(namespace)) {
 			resource.setNamespace(namespace);
 		}
 		return (T) resource;
-	}
-
-	@Override
-	public Object stubKind(String kind, Optional<String> name, Optional<String> namespace) {
-		return stub(kind, name.get(), namespace.get());
 	}
 
 	@Override
@@ -232,5 +236,7 @@ public class ResourceFactory implements IResourceFactory{
 	public void setClient(IClient client) {
 		this.client = client;
 	}
+
+	
 	
 }

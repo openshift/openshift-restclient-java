@@ -16,19 +16,19 @@ package com.openshift.restclient.model;
  *
  */
 public interface JSONSerializeable {
-	
-	/**
-	 * The JSON representation
-	 * @return
-	 */
-	String toJson();
-	
-	/**
-	 * The JSON representation
-	 * @param compact true if it should be compact; false otherwise
-	 * @return
-	 */
-	default String toJson(boolean compact) {
-		return toJson();
-	}
+
+    /**
+     * The JSON representation
+     * @return
+     */
+    String toJson();
+
+    /**
+     * The JSON representation
+     * @param compact true if it should be compact; false otherwise
+     * @return
+     */
+    default String toJson(boolean compact) {
+        return toJson();
+    }
 }

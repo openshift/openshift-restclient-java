@@ -11,8 +11,6 @@ package com.openshift.restclient.model;
 import java.util.Map;
 import java.util.Set;
 
-import com.openshift.restclient.api.models.IAnnotatable;
-import com.openshift.restclient.api.models.ITypeMeta;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.ICapable;
 
@@ -21,7 +19,7 @@ import com.openshift.restclient.capability.ICapable;
  * 
  * @author Jeff Cantrill
  */
-public interface IResource extends ICapable, Annotatable, IAnnotatable, JSONSerializeable, ITypeMeta {
+public interface IResource extends ICapable, Annotatable {
 	
 	Map<String, String> getMetadata();
 
@@ -30,6 +28,16 @@ public interface IResource extends ICapable, Annotatable, IAnnotatable, JSONSeri
 	 */
 	Set<Class<? extends ICapability>>  getCapabilities();
 	
+	/**
+	 * @return the resource kind
+	 */
+	String getKind();
+	
+	/**
+	 * @return the version of this resource
+	 */
+	String getApiVersion();
+
 	/**
 	 * Returns the timestamp of when this resource
 	 * was created
@@ -104,5 +112,17 @@ public interface IResource extends ICapable, Annotatable, IAnnotatable, JSONSeri
 	Map<String, String> getAnnotations();
 
 	String getResourceVersion();
-
+	
+	/**
+	 * 
+	 * @return the json string representing the resource
+	 */
+	String toJson();
+	
+	/**
+	 * 
+	 * @param compact true if the string should be compact; default: false
+	 * @return the json string representing the resource
+	 */
+	String toJson(boolean compact);
 }

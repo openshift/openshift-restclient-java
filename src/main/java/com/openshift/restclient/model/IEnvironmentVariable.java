@@ -20,7 +20,7 @@ package com.openshift.restclient.model;
  * @author jeff.cantrill
  *
  */
-public interface IEnvironmentVariable extends JSONSerializeable{
+public interface IEnvironmentVariable extends JSONSerializeable {
 	
 	/**
 	 * The name of the env var
