@@ -10,11 +10,11 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import java.util.Map;
-
+import com.openshift.internal.util.JBossDmrExtentions;
+import com.openshift.restclient.model.JSONSerializable;
 import org.jboss.dmr.ModelNode;
 
-import com.openshift.internal.util.JBossDmrExtentions;
+import java.util.Map;
 
 /**
  * Adapter class between what we want 
@@ -22,7 +22,7 @@ import com.openshift.internal.util.JBossDmrExtentions;
  * @author Jeff Cantrill
  *
  */
-public class ModelNodeAdapter implements JSONSerializeable {
+public class ModelNodeAdapter implements JSONSerializable {
 	
 	private ModelNode node;
 	private Map<String, String []> propertyKeys;
