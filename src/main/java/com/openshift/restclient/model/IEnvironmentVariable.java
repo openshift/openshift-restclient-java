@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
+import com.openshift.internal.restclient.model.JSONSerializeable;
+
 /**
  * Environment variable representation to
  * allow more complex values then

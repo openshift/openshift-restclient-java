@@ -12,7 +12,7 @@ package com.openshift.restclient.capability;
 
 /**
  * Handle to something that can be
- * explicitly stopped or terminated
+ * explicitily stopped or terminated
  * 
  * @author jeff.cantrill
  *

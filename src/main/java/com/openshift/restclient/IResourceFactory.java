@@ -11,7 +11,6 @@ package com.openshift.restclient;
 import java.io.InputStream;
 import java.util.List;
 
-import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.model.IResource;
 
 /**
@@ -20,7 +19,7 @@ import com.openshift.restclient.model.IResource;
  * 
  * @author Jeff Cantrill
  */
-public interface IResourceFactory extends ITypeFactory{
+public interface IResourceFactory {
 	
 	/**
 	 * Create a list of resources of the given kind
@@ -40,6 +39,9 @@ public interface IResourceFactory extends ITypeFactory{
 	 */
 	<T extends IResource> T create(String response) ;
 
+	@Deprecated
+	IResource create(String response, boolean strict) ;
+
 	/**
 	 * Create a resource from a response string
 	 * @param input Read the given input stream which assumes the input
@@ -49,6 +51,9 @@ public interface IResourceFactory extends ITypeFactory{
 	 */
 	<T extends IResource> T create(InputStream input) ;
 
+	@Deprecated
+	IResource create(InputStream input, boolean strict) ;
+
 	/**
 	 * Create(or stub) a resource for a given version and kind
 	 * @param version
@@ -56,6 +61,9 @@ public interface IResourceFactory extends ITypeFactory{
 	 * @return
 	 */
 	<T extends IResource> T create(String version, String kind);
+
+	@Deprecated
+	IResource create(String version, String kind, boolean strict);
 
 	/**
 	 * Stub out the given resource kind using a version determined by the factory

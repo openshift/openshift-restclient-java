@@ -62,5 +62,4 @@ public interface IHttpConstants {
     public static final int DEFAULT_READ_TIMEOUT = 2 * 60 * 1000;
 	public static final int NO_TIMEOUT = -1;
 
-	static final String PUT = "PUT"; 
 }

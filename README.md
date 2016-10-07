@@ -11,15 +11,6 @@ Download
 --------
 You may either build from source using maven (mvn clean package) which, using the master branch, will generate a snapshot build of the lastest updates.  You may also retrieve final released jars from [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.openshift%22%20AND%20a%3A%22openshift-restclient-java%22).
 
-Compatibility
----------
-Versions of this client known to be compatible with OpenShift
-
-| Client Version           | OpenShift Origin Server |
-|--------------------------|-------------------------|
-| 5.0.0-SNAPSHOT           | latest, v1.3.0-alpha.2  |
-|                          |         v1.3.0-alpha.3  |
-
 
 Usage
 -----
@@ -73,13 +64,3 @@ The client as well as resources supported by OpenShift may have certain capabili
 			}
 		}, null);
  	
-Various examples of using the capabilities may be found in the integration tests.
-
-Testing
--------
-
-To run the integration tests:
-
-1.  Define a user with cluster admin privilege
-1.  Download the oc binary
-1.  Run the tests: `mvn integration-test -Pintegration-tests -DserverURL=https://localhost:8443 -Ddefault.cluster.admin=foo -Ddefault.cluster.password=bar -Ddefault.openshift.location=/tmp/oc`

@@ -10,21 +10,20 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
-import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.model.IResource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.model.IResource;
 
 /**
  * @author Jeff Cantrill
@@ -55,20 +54,7 @@ public class URLBuilderTest extends TypeMapperFixture{
 				.build().toString();
 		assertEquals(String.format("%s/api/v1/namespaces/foo/services?watch=true&resourceVersion=123&foo=bar", BASE_URL),url.toString());
 	}
-
-	@Test
-	public void testDuplicateParameters() throws Exception {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1,"foo");
-		String url = builder.
-				resource(resource)
-				.watch()
-				.addParmeter("resourceVersion", "123")
-				.addParmeter("x", "1")
-				.addParmeter("x", "2")
-				.build().toString();
-		assertEquals(String.format("%s/api/v1/namespaces/foo/services?watch=true&resourceVersion=123&x=1&x=2", BASE_URL),url.toString());
-	}
-
+	
 	@Test
 	public void testBuildingURLForAProjectUsingResource() throws Exception {
 		IResource resource = givenAResource(ResourceKind.PROJECT, KubernetesAPIVersion.v1,"foo");

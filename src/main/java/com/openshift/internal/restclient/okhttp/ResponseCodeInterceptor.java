@@ -10,6 +10,11 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.okhttp;
 
+import java.io.IOException;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.authorization.AuthorizationDetails;
 import com.openshift.internal.restclient.model.Status;
@@ -21,12 +26,9 @@ import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.authorization.ResourceForbiddenException;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IStatus;
+
 import okhttp3.Interceptor;
 import okhttp3.Response;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import java.io.IOException;
 
 /**
  * Interpret response codes and handle accordingly
@@ -41,14 +43,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
 	private static final Logger LOGGER = Logger.getLogger(ResponseCodeInterceptor.class);
 	
 	private IClient client;
-
-	/**
-	 * If a request tag() implements this interface, HTTP errors
-	 * will not throw OpenShift exceptions.
-	 */
-	public interface Ignore{}
-
-
+	
 	@Override
 	public Response intercept(Chain chain) throws IOException {
 		Response response = chain.proceed(chain.request());
@@ -61,9 +56,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
 				response = makeSuccessIfAuthorized(response);
 				break;
 			default:
-				if ( response.request().tag() instanceof Ignore == false ) {
-					throw createOpenShiftException(client, response, null);
-				}
+				throw createOpenShiftException(client, response, null);
 			}
 		}
 		return response;

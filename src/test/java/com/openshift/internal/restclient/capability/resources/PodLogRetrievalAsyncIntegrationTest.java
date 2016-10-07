@@ -10,6 +10,16 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.restclient.ResourceKind;
@@ -20,17 +30,6 @@ import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync.IPodL
 import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync.Options;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IResource;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 /**
  * 
@@ -77,13 +76,6 @@ public class PodLogRetrievalAsyncIntegrationTest {
 						LOG.debug("onClose code:{} reason:{}", code, reason);
 						latch.countDown();
 					}
-
-					@Override
-					public void onFailure(IOException e) {
-						LOG.error( "Unexpected websocket failure", e );
-						fail( "Unexpected websocket failure" );
-					}
-
 				}, new Options()
 						.follow()
 						.container(container));

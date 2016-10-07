@@ -15,7 +15,6 @@ import java.util.Map;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.util.JBossDmrExtentions;
-import com.openshift.restclient.model.JSONSerializeable;
 
 /**
  * Adapter class between what we want 

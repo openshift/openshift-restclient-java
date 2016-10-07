@@ -109,18 +109,6 @@ public class BuildCapabilitiesIntegrationTest {
 		}, null);
 		assertNotNull("Exp. to be able to trigger a build from a build", build);
 		LOG.debug("Triggered build {}", build);
-		
-		//add a build cause
-		LOG.debug("Triggering build with build cause...");
-		build = build.accept(new CapabilityVisitor<IBuildTriggerable, IBuild>() {
-			@Override
-			public IBuild visit(IBuildTriggerable capability) {
-				capability.addBuildCause("test cause");
-				return capability.trigger();
-			}
-		}, null);
-		assertNotNull("Exp. to be able to add a build cause for a build", build);
-		LOG.debug("Triggered build {}", build);
 	}
 	
 	@After

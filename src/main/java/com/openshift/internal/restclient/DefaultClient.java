@@ -34,14 +34,12 @@ import com.openshift.restclient.IWatcher;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedOperationException;
-import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
-import com.openshift.restclient.model.JSONSerializeable;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -184,21 +182,13 @@ public class DefaultClient implements IClient, IHttpConstants{
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload, String subContext) {
-		return (T) execute(this.factory, method, kind, namespace, name, subresource, subContext, payload);
-	}	
-	
-	@Override
-	@SuppressWarnings("unchecked")
 	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload) {
-		return (T) execute(this.factory, method, kind, namespace, name, subresource, null, payload);
+
+		return execute(method, kind, namespace, name, subresource, payload, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T execute(ITypeFactory factory, String method, String kind, String namespace, String name, String subresource, String subContext, JSONSerializeable payload) {
-		if(factory == null) {
-			throw new OpenShiftException("ITypeFactory is null while trying to call IClient#execute");
-		}
+	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload, String subContext) {
 		if(ResourceKind.LIST.equals(kind)) 
 			throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
@@ -217,14 +207,14 @@ public class DefaultClient implements IClient, IHttpConstants{
 			try(Response result = client.newCall(request).execute()){
 				String response =  result.body().string();
 				LOGGER.debug("Response: {}", response);
-				return (T) factory.createInstanceFrom(response);
+				return (T) factory.create(response);
 			}
 		} catch (IOException e){
 			throw new OpenShiftException(e, "Unable to execute request to %s", endpoint);
 		}
 	}
 	
-	private RequestBody getPayload(String method, JSONSerializeable payload) {
+	private RequestBody getPayload(String method, IResource payload) {
 		switch(method.toUpperCase()){
 			case "GET":
 			case "DELETE":
@@ -253,14 +243,10 @@ public class DefaultClient implements IClient, IHttpConstants{
 	}
 
 	public Request.Builder newRequestBuilderTo(String endpoint){
-		return newRequestBuilderTo(endpoint, MEDIATYPE_APPLICATION_JSON);
-	}
-
-	public Request.Builder newRequestBuilderTo(String endpoint,String acceptMediaType){
 		Request.Builder builder = new Request.Builder()
-				.url(endpoint.toString())
-				.header(PROPERTY_ACCEPT, acceptMediaType);
-
+			.url(endpoint.toString())
+			.header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON);
+		
 		String token =  null;
 		if(this.authContext != null &&  StringUtils.isNotBlank(this.authContext.getToken())){
 			token = this.authContext.getToken();
@@ -268,8 +254,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		builder.header(IHttpConstants.PROPERTY_AUTHORIZATION, String.format("%s %s", IHttpConstants.AUTHORIZATION_BEARER, token));
 		return builder;
 	}
-
-
+	
 	@Override
 	public <T extends IResource> T update(T resource) {
 		return execute(HttpMethod.PUT, resource.getKind(), resource.getNamespace(), resource.getName(), null, resource);
@@ -349,7 +334,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((baseUrl == null) ? 0 : baseUrl.toString().hashCode());
+		result = prime * result + ((baseUrl == null) ? 0 : baseUrl.hashCode());
 		result = prime * result + ((kubernetesVersion == null) ? 0 : kubernetesVersion.hashCode());
 		result = prime * result + ((openShiftVersion == null) ? 0 : openShiftVersion.hashCode());
 		result = prime * result + ((authContext == null || authContext.getToken() == null) ? 0 : authContext.getToken().hashCode());
@@ -368,7 +353,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		if (baseUrl == null) {
 			if (other.baseUrl != null)
 				return false;
-		} else if (!baseUrl.toString().equals(other.baseUrl.toString()))
+		} else if (!baseUrl.equals(other.baseUrl))
 			return false;
 		if (kubernetesVersion == null) {
 			if (other.kubernetesVersion != null)

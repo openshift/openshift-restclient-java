@@ -10,8 +10,6 @@ package com.openshift.internal.restclient.capability;
 
 import java.util.Map;
 
-import com.openshift.internal.restclient.api.capabilities.ScaleCapability;
-import com.openshift.internal.restclient.apis.TypeMetaFactory;
 import com.openshift.internal.restclient.capability.resources.BuildCanceller;
 import com.openshift.internal.restclient.capability.resources.BuildTrigger;
 import com.openshift.internal.restclient.capability.resources.ClientCapability;
@@ -22,7 +20,6 @@ import com.openshift.internal.restclient.capability.resources.ImageStreamImportC
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPodLogRetrieval;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPortForwarding;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryRSync;
-import com.openshift.internal.restclient.api.capabilities.PodExec;
 import com.openshift.internal.restclient.capability.resources.PodLogRetrievalAsync;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateListCapability;
 import com.openshift.internal.restclient.capability.resources.ProjectTemplateProcessing;
@@ -34,7 +31,6 @@ import com.openshift.internal.restclient.capability.server.ServerTemplateProcess
 import com.openshift.internal.restclient.model.Service;
 import com.openshift.internal.restclient.model.build.BuildConfigBuilder;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.api.capabilities.IScalable;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.resources.IBuildCancelable;
 import com.openshift.restclient.capability.resources.IBuildTriggerable;
@@ -43,7 +39,6 @@ import com.openshift.restclient.capability.resources.IDeployCapability;
 import com.openshift.restclient.capability.resources.IDeploymentConfigTraceability;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
 import com.openshift.restclient.capability.resources.IImageStreamImportCapability;
-import com.openshift.restclient.api.capabilities.IPodExec;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync;
 import com.openshift.restclient.capability.resources.IPortForwardable;
@@ -60,7 +55,6 @@ import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IProject;
-import com.openshift.restclient.model.IReplicationController;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.build.IBuildConfigBuilder;
 
@@ -112,7 +106,6 @@ public class CapabilityInitializer {
 		initializeCapability(capabilities, IPortForwardable.class, new OpenShiftBinaryPortForwarding(pod, client));
 		initializeCapability(capabilities, IPodLogRetrieval.class, new OpenShiftBinaryPodLogRetrieval(pod, client));
 		initializeCapability(capabilities, IPodLogRetrievalAsync.class, new PodLogRetrievalAsync(pod, client));
-		initializeCapability(capabilities, IPodExec.class, new PodExec(pod, client));
 		initializeCapability(capabilities, IRSyncable.class, new OpenShiftBinaryRSync(client));
 	}
 
@@ -132,10 +125,6 @@ public class CapabilityInitializer {
 	
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IDeploymentConfig config, IClient client){
 		initializeCapability(capabilities, IDeployCapability.class, new DeployCapability(config, client));
-	}
-
-	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IReplicationController rc, IClient client){
-		initializeCapability(capabilities, IScalable.class, new ScaleCapability(rc, client, new TypeMetaFactory()));
 	}
 
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IResource resource, IClient client){

@@ -12,7 +12,6 @@ import static org.junit.Assert.*;
 import static com.openshift.internal.util.JBossDmrExtentions.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
@@ -25,13 +24,12 @@ import org.junit.Test;
  */
 public class JBossDmrExtentionsTest {
 
-	private ModelNode node = ModelNode.fromJSONString("{\"foo\":\"bar\", \"int\":\"3\", \"bool\":\"true\", \"list\": [\"1\", \"2\", \"3\"]}");
+	private ModelNode node = ModelNode.fromJSONString("{\"foo\":\"bar\", \"int\":\"3\", \"bool\":\"true\"}");
 	private Map<String, String []> paths = new HashMap<String, String[]>();
 	private static final String KEY_FOO = "foo";
 	private static final String KEY_XYZ = "xyz";
 	private static final String KEY_BOOL = "bool";
 	private static final String KEY_INT = "int";
-	private static final String KEY_LIST = "list";
 
 	@Before
 	public void setup() {
@@ -39,7 +37,6 @@ public class JBossDmrExtentionsTest {
 		paths.put(KEY_XYZ, new String[] {"xyz"});
 		paths.put(KEY_BOOL, new String[] {"bool"});
 		paths.put(KEY_INT, new String[] {"int"});
-		paths.put(KEY_LIST, new String[] {"list"});
 	}
 
 	@Test
@@ -74,9 +71,6 @@ public class JBossDmrExtentionsTest {
 
 		asBoolean(node, paths, "openshift.bool");
 		assertFalse(node.has("openshift","bool"));
-		
-		asList(node, paths, "openshift.list", ModelType.STRING);
-		assertFalse(node.has("openshift","set"));
 	}
 	
 	@Test
@@ -112,13 +106,5 @@ public class JBossDmrExtentionsTest {
 	public void asStringForAValueShouldReturnTheValue() {
 		assertEquals("bar", asString(node, paths, KEY_FOO));
 	}
-	
-	@Test
-    public void asListForStringReturnsOrderedValues() {
-	    List<String> l = asList(node, paths, KEY_LIST, ModelType.STRING);
-		assertEquals("1", l.get(0));
-		assertEquals("2", l.get(1));
-		assertEquals("3", l.get(2));
-    }
 
 }

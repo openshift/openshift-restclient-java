@@ -22,7 +22,7 @@ public interface IBuildConfig extends IResource{
 	/**
 	 * To defines an optional location to push the output of this build to.
 	 * Kind must be one of 'ImageStreamTag' or 'DockerImage'.
-	 * @return a mutable object reference
+	 * @return
 	 */
 	IObjectReference getBuildOutputReference();
 	

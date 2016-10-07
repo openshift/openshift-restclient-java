@@ -9,9 +9,7 @@
 package com.openshift.internal.restclient;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.Random;
 
@@ -19,29 +17,23 @@ import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.internal.restclient.model.DeploymentConfig;
 import com.openshift.internal.restclient.model.ModelNodeBuilder;
 import com.openshift.internal.restclient.model.Pod;
-import com.openshift.internal.restclient.model.ReplicationController;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.ClientBuilder;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.NotFoundException;
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.images.DockerImageURI;
-import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IProject;
-import com.openshift.restclient.model.IReplicationController;
 import com.openshift.restclient.model.IResource;
-import com.openshift.restclient.model.deploy.DeploymentTriggerType;
 
 import static org.junit.Assert.fail;
 
 /**
  * @author Jeff Cantrill
  */
-public class IntegrationTestHelper implements ResourcePropertyKeys {
+public class IntegrationTestHelper {
 
 	public static final long MILLISECONDS_PER_SECOND = 1000;
 	public static final long MILLISECONDS_PER_MIN = MILLISECONDS_PER_SECOND * 60;
@@ -110,27 +102,6 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
 				)
 				.build();
 		return new Pod(builder, client, new HashMap<>());
-	}
-	
-	public static IDeploymentConfig stubDeploymentConfig(IClient client, IProject project) {
-		IDeploymentConfig dc = new ResourceFactory(client).create("v1", ResourceKind.DEPLOYMENT_CONFIG);
-		((DeploymentConfig)dc).setName("hello-openshift");
-		((DeploymentConfig)dc).setNamespace(project.getName());
-		dc.setReplicas(1);
-		dc.setReplicaSelector("foo","bar");
-		dc.addContainer(dc.getName(), new DockerImageURI("openshift/hello-openshift"), new HashSet<>(), Collections.emptyMap(), Collections.emptyList());
-		dc.addTrigger(DeploymentTriggerType.CONFIG_CHANGE);
-		return dc;
-	}
-	
-	public static IReplicationController stubReplicationController(IClient client, IProject project) {
-		IReplicationController rc = new ResourceFactory(client).create("v1", ResourceKind.REPLICATION_CONTROLLER);
-		((ReplicationController)rc).setName("hello-openshift-rc");
-		((ReplicationController)rc).setNamespace(project.getName());
-		rc.setReplicas(1);
-		rc.setReplicaSelector("foo","bar");
-		rc.addContainer(rc.getName(), new DockerImageURI("openshift/hello-openshift"), new HashSet<>(), Collections.emptyMap(), Collections.emptyList());
-		return rc;
 	}
 
 	/**

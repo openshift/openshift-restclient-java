@@ -71,15 +71,7 @@
                     }
                 ],
                 "terminationMessagePath": "/dev/termination-log",
-                "imagePullPolicy": "IfNotPresent",
-                "command" : [
-                            "/bin/sh"
-                        ],
-                "args" : [
-                            "-c",
-                            "echo 'hello'"
-                        ]
-
+                "imagePullPolicy": "IfNotPresent"
             }
         ],
         "restartPolicy": "Never",

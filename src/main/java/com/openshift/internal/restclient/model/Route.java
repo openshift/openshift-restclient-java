@@ -16,7 +16,6 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.route.IRoute;
 import com.openshift.restclient.model.route.ITLSConfig;
-import com.openshift.restclient.model.route.ITargetPort;
 
 /**
  * @author Jeff Cantrill
@@ -33,8 +32,6 @@ public class Route extends KubernetesResource implements IRoute {
 	private static final String ROUTE_TLS_KEY = "spec.tls.key";
 	private static final String ROUTE_TLS_CACERT = "spec.tls.caCertificate";
 	private static final String ROUTE_TLS_DESTINATION_CACERT = "spec.tls.destinationCACertificate";
-	private static final String ROUTE_PORT = "spec.port";
-	private static final String ROUTE_PORT_TARGETPORT = "spec.port.targetPort";
 
 	public Route(ModelNode node, IClient client,
 			Map<String, String[]> propertyKeys) {
@@ -89,26 +86,8 @@ public class Route extends KubernetesResource implements IRoute {
 		}
 		return config;
 	}
-	
-    @Override
-    public ITargetPort getPort() {
-        if (get(ROUTE_PORT).isDefined()) {
-            return new TargetPort();
-        }
-        return null;
-    }
 
-    @Override
-    public ITargetPort createPort() {
-        ITargetPort targetPort = getPort();
-        if (targetPort == null) {
-            get(ROUTE_PORT).set(new ModelNode());
-            targetPort = new TargetPort();
-        }
-        return targetPort;
-    }
-
-    @Override
+	@Override
 	public String getURL() {
 		String scheme = getTLSConfig() == null ? "http" : "https";
 		String path = getPath();
@@ -172,31 +151,5 @@ public class Route extends KubernetesResource implements IRoute {
 			get(ROUTE_TLS_DESTINATION_CACERT).set(destinationCertificate);
 		}
 
-	}
-	
-	private class TargetPort implements ITargetPort {
-        @Override
-        public String getTargetPortName() {
-            return asString(ROUTE_PORT_TARGETPORT);
-        }
-
-        @Override
-        public void setTargetPortName(String portName) {
-            get(ROUTE_PORT_TARGETPORT).set(portName);
-        }
-
-        @Override
-        public Integer getTargetPort() {
-            if (has(ROUTE_PORT_TARGETPORT)) {
-                return asInt(ROUTE_PORT_TARGETPORT);
-            } else {
-                return -1;
-            }
-        }
-
-        @Override
-        public void setTargetPort(Integer port) {
-            get(ROUTE_PORT_TARGETPORT).set(port);
-        }
 	}
 }

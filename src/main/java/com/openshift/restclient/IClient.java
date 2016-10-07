@@ -13,12 +13,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.capability.ICapable;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
-import com.openshift.restclient.model.JSONSerializeable;
 
 /**
  * Client is the the simplest interface for interacting with the OpenShift
@@ -137,7 +135,6 @@ public interface IClient extends ICapable, Cloneable {
 	 * @param subresource  subresource or capability
 	 * @param payload      the payload to sumit.  only valid on non-get operations
 	 * @return
-	 * 
 	 */
 	<T extends IResource> T execute(String httpMethod, String kind, String namespace, String name, String subresource, IResource payload);
 
@@ -148,24 +145,12 @@ public interface IClient extends ICapable, Cloneable {
 	 * @param namespace
 	 * @param name
 	 * @param subresource  subresource or capability
-	 * @param subcontext   additional subContext  (e.g. jolokia endpoint)
-	 * Raw execution of a request that requires consumers to handle the response
+	 * @param payload      the payload to sumit.  only valid on non-get operations
+	 * @param subcontext   additional subContext
 	 * @return
 	 */
 	<T extends IResource> T execute(String httpMethod, String kind, String namespace, String name, String subresource, IResource payload, String subcontext);
-	
-	/**
-	 * @param factory     The factory to use for interpreting the response
-	 * @param httpMethod  HttpMethod (e.g. POST)
-	 * @param kind        
-	 * @param namespace
-	 * @param name
-	 * @param subresource  subresource or capability
-	 * @param payload      the payload to sumit.  only valid on non-get operations
-	 * @param subcontext   additional subContext
-	 * @return the raw payload string
-	 */
-	<T extends Object> T execute(ITypeFactory factory, String httpMethod, String kind, String namespace, String name, String subresource, String subContext, JSONSerializeable payload);
+
 
 	/**
 	 * 

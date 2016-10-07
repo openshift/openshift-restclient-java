@@ -13,19 +13,21 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.openshift.internal.restclient.model.*;
-import com.openshift.restclient.model.*;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.internal.restclient.model.Pod;
+import com.openshift.internal.restclient.model.Port;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.model.IContainer;
+import com.openshift.restclient.model.IPod;
+import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -79,31 +81,11 @@ public class PodTest {
 	public void testAddContainer() {
 		Collection<IContainer> initial = pod.getContainers();
 		IContainer foo = pod.addContainer("foo");
-
-
-		foo.setLifecycle(new Lifecycle.Builder()
-				.preStop(new ExecAction.Builder()
-						.command("cmd1")
-						.command("cmd2")
-						.build())
-				.build());
-
+		foo.setLifecycle("bar");
 		Collection<IContainer> containers = pod.getContainers();
 		assertEquals(initial.size() + 1, containers.size());
 		
-		Optional<IContainer> container = containers.stream().filter(c->"foo".equals(c.getName()) && "cmd1".equals(((IExecAction)c.getLifecycle().getPreStop().get()).getCommand().get(0))).findFirst();
+		Optional<IContainer> container = containers.stream().filter(c->"foo".equals(c.getName()) && "bar".equals(c.getLifecycle())).findFirst();
 		assertTrue("Exp. the container to be added", container.isPresent());
 	}
-
-	@Test
-	public void getContainerCommands() {
-	    Collection<IContainer> containers = pod.getContainers();
-	    IContainer container = containers.iterator().next();
-	    List<String> cmd = container.getCommand();
-	    List<String> cmdArgs = container.getCommandArgs();
-	    assertEquals(cmd.get(0),"/bin/sh");
-	    assertEquals(cmdArgs.get(0), "-c");
-	    assertEquals(cmdArgs.get(1), "echo 'hello'");
-	}
-	    
 }
