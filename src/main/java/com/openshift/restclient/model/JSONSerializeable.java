@@ -15,7 +15,7 @@ package com.openshift.restclient.model;
  * @author jeff.cantrill
  *
  */
-public interface JSONSerializable {
+public interface JSONSerializeable {
 
     /**
      * The JSON representation

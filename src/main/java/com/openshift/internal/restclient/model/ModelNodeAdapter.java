@@ -11,7 +11,7 @@
 package com.openshift.internal.restclient.model;
 
 import com.openshift.internal.util.JBossDmrExtentions;
-import com.openshift.restclient.model.JSONSerializable;
+import com.openshift.restclient.model.JSONSerializeable;
 import org.jboss.dmr.ModelNode;
 
 import java.util.Map;
@@ -22,7 +22,7 @@ import java.util.Map;
  * @author Jeff Cantrill
  *
  */
-public class ModelNodeAdapter implements JSONSerializable {
+public class ModelNodeAdapter implements JSONSerializeable {
 	
 	private ModelNode node;
 	private Map<String, String []> propertyKeys;
