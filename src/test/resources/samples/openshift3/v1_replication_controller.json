@@ -77,7 +77,8 @@
                     }
                 ],
                 "restartPolicy": "Always",
-                "dnsPolicy": "ClusterFirst"
+                "dnsPolicy": "ClusterFirst",
+                "serviceAccountName": "dbServiceAccountName",
             }
         }
     },

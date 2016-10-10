@@ -51,6 +51,7 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	protected static final String SPEC_REPLICAS = "spec.replicas";
 	protected static final String SPEC_SELECTOR = "spec.selector";
 	protected static final String STATUS_REPLICA = "status.replicas";
+	protected static final String SERVICEACCOUNTNAME = "spec.template.spec.serviceAccountName";
 
 	protected static final String IMAGE = "image";
 	protected static final String ENV = "env";
@@ -364,4 +365,14 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		}
 		volList.add(ModelNode.fromJSONString(volumeSource.toJSONString()));
 	}
+
+    @Override
+    public void setServiceAccountName(String serviceAccountName) {
+        set(SERVICEACCOUNTNAME, serviceAccountName);
+    }
+
+    @Override
+    public String getServiceAccountName() {
+        return asString(SERVICEACCOUNTNAME);
+    }
 }

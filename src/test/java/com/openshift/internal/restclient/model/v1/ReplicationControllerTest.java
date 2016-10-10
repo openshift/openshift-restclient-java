@@ -177,6 +177,17 @@ public class ReplicationControllerTest {
 	}
 	
 	@Test
+    public void getServiceAccountName() {
+        assertEquals("dbServiceAccountName", rc.getServiceAccountName());
+    }
+	
+	@Test
+    public void setServiceAccountName() {
+	    rc.setServiceAccountName("newDBServiceAccountName");
+        assertEquals("newDBServiceAccountName", rc.getServiceAccountName());
+    }
+	
+	@Test
 	public void getDesiredReplicaCount(){
 		assertEquals(1, rc.getDesiredReplicaCount());
 	}
