@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.NotFoundException;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.capability.resources.IDeployCapability;
 import com.openshift.restclient.http.IHttpConstants;
@@ -121,7 +122,7 @@ public class DeployCapabilityTest {
 	private void givenTheLatestDeploymentIsNotFound() {
 		IStatus status = mock(IStatus.class);
 		when(status.getCode()).thenReturn(IHttpConstants.STATUS_NOT_FOUND);
-		OpenShiftException e = new OpenShiftException(new RuntimeException(), status, "");
+		NotFoundException e = new NotFoundException(null, status, "Not Found");
 		when(client.get(anyString(),anyString(),anyString())).thenThrow(e);
 	}
 }

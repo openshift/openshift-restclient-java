@@ -62,8 +62,8 @@ public class DeployCapability implements IDeployCapability{
 				LOG.debug("Skipping deployment because deployment status %s for %s is not in %s", new Object [] {status, deploymentName, COMPLETED_STATES});
 				return;
 			}
-		}catch(OpenShiftException e) {
-			if(e.getStatus() == null || e.getStatus().getCode() != IHttpConstants.STATUS_NOT_FOUND) {
+		} catch(OpenShiftException e) {
+			if (e.getStatus() == null || e.getStatus().getCode() != IHttpConstants.STATUS_NOT_FOUND) {
 			//swallow exception like cli
 				throw e;
 			}
@@ -82,7 +82,7 @@ public class DeployCapability implements IDeployCapability{
 	}
 
 	private String getStatusFor(IReplicationController rc) {
-		if(rc.isAnnotatedWith(IReplicationController.DEPLOYMENT_PHASE)) {
+		if (rc.isAnnotatedWith(IReplicationController.DEPLOYMENT_PHASE)) {
 			return rc.getAnnotation(IReplicationController.DEPLOYMENT_PHASE);
 		}
 		return "";
