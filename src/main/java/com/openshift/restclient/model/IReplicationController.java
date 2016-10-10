@@ -195,4 +195,17 @@ public interface IReplicationController  extends IResource{
 	void setVolumes(Set<IVolumeSource> volumes);
 
 	void setContainers(Collection<IContainer> containers);
+	
+	/**
+     * Sets the service account to run this replication controller under. 
+     *
+     * @param volumes The service account to assign to the spec.
+     */
+	void setServiceAccountName(String serviceAccount);
+    
+    /**
+     * Retrieves the service account used by the controller
+     * @return
+     */
+    String getServiceAccountName();
 }
