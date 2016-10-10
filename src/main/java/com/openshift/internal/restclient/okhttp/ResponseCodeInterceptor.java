@@ -109,7 +109,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
 			AuthorizationDetails details = new AuthorizationDetails(response.headers(), link);
 			return new com.openshift.restclient.authorization.UnauthorizedException(details, status);
 		case IHttpConstants.STATUS_NOT_FOUND:
-			return new NotFoundException(status == null ? "Not Found" : status.getMessage());
+			return new NotFoundException(e, status, status == null ? "Not Found" : status.getMessage());
 		default:
 			return new OpenShiftException(e, status, "Exception trying to %s %s response code: %s", response.request().method(), response.request().url().toString(), responseCode);
 		}

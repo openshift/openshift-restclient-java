@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package com.openshift.restclient;
 
+import com.openshift.restclient.model.IStatus;
+
 /**
  * @author jeff.cantrill
  */
@@ -27,5 +29,9 @@ public class NotFoundException extends OpenShiftException {
 
 	public NotFoundException(Throwable cause) {
 		super(cause, "");
+	}
+	
+	public NotFoundException(Throwable cause, IStatus status, String message, Object... arguments) {
+		super(cause, status, message, arguments);
 	}
 }
