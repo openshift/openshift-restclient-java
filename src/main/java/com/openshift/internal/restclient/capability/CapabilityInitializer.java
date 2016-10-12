@@ -18,6 +18,7 @@ import com.openshift.internal.restclient.capability.resources.ClientCapability;
 import com.openshift.internal.restclient.capability.resources.DeployCapability;
 import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
 import com.openshift.internal.restclient.capability.resources.DeploymentTraceability;
+import com.openshift.internal.restclient.capability.resources.DeploymentTrigger;
 import com.openshift.internal.restclient.capability.resources.ImageStreamImportCapability;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPodLogRetrieval;
 import com.openshift.internal.restclient.capability.resources.OpenShiftBinaryPortForwarding;
@@ -44,6 +45,7 @@ import com.openshift.restclient.capability.resources.IDeploymentConfigTraceabili
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
 import com.openshift.restclient.capability.resources.IImageStreamImportCapability;
 import com.openshift.restclient.api.capabilities.IPodExec;
+import com.openshift.restclient.capability.resources.IDeploymentTriggerable;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync;
 import com.openshift.restclient.capability.resources.IPortForwardable;
@@ -132,6 +134,7 @@ public class CapabilityInitializer {
 	
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IDeploymentConfig config, IClient client){
 		initializeCapability(capabilities, IDeployCapability.class, new DeployCapability(config, client));
+		initializeCapability(capabilities, IDeploymentTriggerable.class, new DeploymentTrigger(config, client));
 	}
 
 	public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities, IReplicationController rc, IClient client){
