@@ -60,6 +60,7 @@ public final class ResourceKind {
 	 * RESTful operations
 	 */
 	public static final String BUILD_REQUEST = "BuildRequest";
+
 	@Deprecated
 	public static final String CONFIG = "Config";//not rest resource;
 	public static final String LIST = "List";

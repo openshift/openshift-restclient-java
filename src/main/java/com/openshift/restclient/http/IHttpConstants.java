@@ -63,4 +63,5 @@ public interface IHttpConstants {
 	public static final int NO_TIMEOUT = -1;
 
 	static final String PUT = "PUT"; 
+	static final String POST = "POST"; 
 }

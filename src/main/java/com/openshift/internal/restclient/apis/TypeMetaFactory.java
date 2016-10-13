@@ -20,6 +20,7 @@ import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.api.models.TypeMeta;
 import com.openshift.internal.restclient.apis.autoscaling.models.Scale;
+import com.openshift.internal.restclient.model.deploy.DeploymentRequest;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.internal.util.JBossDmrExtentions;
@@ -38,6 +39,8 @@ public class TypeMetaFactory implements ITypeFactory, ResourcePropertyKeys {
 
 	static {
 		IMPL_MAP.put("Scale", Scale.class);
+		//its own factory?
+		IMPL_MAP.put("DeploymentRequest", DeploymentRequest.class);
 	}
 	
 	@Override
