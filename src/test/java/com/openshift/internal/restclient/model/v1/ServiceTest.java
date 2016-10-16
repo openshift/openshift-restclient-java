@@ -127,14 +127,19 @@ public class ServiceTest{
 		assertEquals(1, service.getPorts().size());
 		assertEquals(port, ports[0]);
 	}
-	
+
 	@Test
-    public void testAddPorts() {
-        IServicePort port = service.addPort(8299, 9299, "testport");
-        service.setPorts(Arrays.asList(port));
-        IServicePort [] ports = service.getPorts().toArray(new IServicePort[] {});
-        assertEquals(1, service.getPorts().size());
-        assertEquals(port, ports[0]);
-    }
-	
+	public void testAddPorts() {
+		IServicePort port = service.addPort(8299, 9299, "testport");
+		service.setPorts(Arrays.asList(port));
+		IServicePort [] ports = service.getPorts().toArray(new IServicePort[] {});
+		assertEquals(1, service.getPorts().size());
+		assertEquals(port, ports[0]);
+	}
+
+	@Test
+	public void testSetType() {
+		service.setType("NodePort");
+		assertEquals("NodePort", service.getType());
+	}
 }

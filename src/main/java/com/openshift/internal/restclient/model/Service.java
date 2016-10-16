@@ -146,4 +146,10 @@ public class Service extends KubernetesResource implements IService {
 		if(getClient() == null) return new ArrayList<IPod>();
 		return getClient().list(ResourceKind.POD, getNamespace(), getSelector());
 	}
+
+	@Override
+	public String getType() { return asString("spec.type"); }
+
+	@Override
+	public void setType(String type) { set("spec.type", type); }
 }
