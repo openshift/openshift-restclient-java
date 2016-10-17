@@ -94,4 +94,14 @@ public interface IService extends IResource{
 	 */
 	void setPorts(List<IServicePort> ports);
 
+	/**
+	 * Returns the type of the service.
+	 * @return
+	 */
+	String getType();
+
+	/**
+	 * Sets the type of the service.
+	 */
+	void setType(String type);
 }
