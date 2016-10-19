@@ -29,11 +29,18 @@ import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.authorization.UnauthorizedException;
+import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
+import com.openshift.restclient.model.IContainer;
+import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.build.IBuildConfigBuilder;
+import com.openshift.restclient.model.deploy.DeploymentTriggerType;
 import com.openshift.restclient.model.project.IProjectRequest;
 import com.openshift.restclient.model.template.ITemplate;
+import com.openshift.restclient.model.volume.IHostPathVolumeSource;
+import com.openshift.restclient.model.volume.IVolumeMount;
+import com.openshift.restclient.model.volume.VolumeType;
 
 /**
  * @author Jeff Cantrill

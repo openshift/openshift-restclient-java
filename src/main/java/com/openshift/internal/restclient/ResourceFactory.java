@@ -184,6 +184,14 @@ public class ResourceFactory implements IResourceFactory{
 		return (T) create(new ModelNode(), version, kind);
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends IResource> T create(String version, String kind, String name) {
+		T resource = (T) create(new ModelNode(), version, kind);
+		((KubernetesResource)resource).setName(name);
+		return resource;
+	}
+
 	private IResource create(ModelNode node, String version, String kind) {
 		try {
 			node.get(APIVERSION).set(version);

@@ -365,8 +365,21 @@ public class ReplicationController extends KubernetesResource implements IReplic
 		}
 		volList.add(ModelNode.fromJSONString(volumeSource.toJSONString()));
 	}
+	
+	
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
+	public <T extends IVolumeSource> T addVolume(String volumetype, String name) {
+            ModelNode volList = get(VOLUMES);
+            ModelNode node = volList.add();
+            node.get(volumetype).set(new ModelNode());
+            IVolumeSource source = VolumeSource.create(node);
+            source.setName(name);
+            return (T) source;
+	}
+
+	@Override
     public void setServiceAccountName(String serviceAccountName) {
         set(SERVICEACCOUNTNAME, serviceAccountName);
     }

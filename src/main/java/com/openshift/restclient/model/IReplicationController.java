@@ -186,6 +186,16 @@ public interface IReplicationController  extends IResource{
 	 * @param volumeSource The volume to add to the pod spec
      */
 	void addVolume(IVolumeSource volumeSource);
+	
+	/**
+	 * Add a volume source of the given type with the given name.  Unimplemented types
+	 * will return a generic volumesource impl
+	 * 
+	 * @param volumetype
+	 * @param name
+	 * @return
+	 */
+	<T extends IVolumeSource> T addVolume(String volumetype, String name);
 
 	/**
 	 * Sets the volumes associated with the pod spec. Existing volumes will be overwritten.
