@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.v1;
 
+import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.ConfigMap;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
@@ -30,14 +31,18 @@ public class ConfigMapTest {
 
 	private static final String VERSION = "v1";
 	private IConfigMap configMap;
+	private IClient client;
 	
 	@Before
 	public void setUp(){
-		IClient client = mock(IClient.class);
+		client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_CONFIG_MAP.getContentAsString());
 		configMap = new ConfigMap(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.CONFIG_MAP));
 	}
-	
+	@Test
+	public void testIsRegisteredWithFactory() {
+		configMap = new ResourceFactory(client).create(Samples.V1_CONFIG_MAP.getContentAsString());
+	}
 	@Test
 	public void testGetData() {
 		assertEquals(Collections.singletonMap("key1", "config1"), configMap.getData());
