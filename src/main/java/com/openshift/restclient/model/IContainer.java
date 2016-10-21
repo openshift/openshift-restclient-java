@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.openshift.restclient.api.models.INameSetable;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.volume.IVolume;
 import com.openshift.restclient.model.volume.IVolumeMount;
 
-public interface IContainer {
+public interface IContainer extends INameSetable{
 
-	void setName(String name);
 	String getName();
 	
 	void setImage(DockerImageURI tag);
@@ -70,6 +70,14 @@ public interface IContainer {
 
 	void setVolumeMounts(Set<IVolumeMount> volumes);
 	Set<IVolumeMount> getVolumeMounts();
+	
+	/**
+	 * Add a volumemount with the given name
+	 * @param name
+	 * @return IVolumeMount
+	 */
+	IVolumeMount addVolumeMount(String name);
+	
 	
 	String toJSONString();
 }

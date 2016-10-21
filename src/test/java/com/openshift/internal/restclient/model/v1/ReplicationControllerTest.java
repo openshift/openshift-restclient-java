@@ -294,6 +294,9 @@ public class ReplicationControllerTest {
 		container.setPorts(ports);
 		container.setVolumeMounts(mounts);
 		
+		IVolumeMount fooVolumeMount = container.addVolumeMount("foobar");
+		fooVolumeMount.setMountPath("/tmp2");
+		
 		ModelNode exp = new ModelNodeBuilder()
 				.set("name", uri.getName())
 				.set("image",uri.toString())
@@ -306,6 +309,10 @@ public class ReplicationControllerTest {
 					.set("mountPath", "/tmp")
 					.set("readOnly", false)
 				)
+				.add("volumeMounts", new ModelNodeBuilder()
+						.set("name", "foobar")
+						.set("mountPath", "/tmp2")
+						)
 				.build();
 		
 		JSONAssert.assertEquals(exp.toJSONString(false), container.toJSONString(), true);

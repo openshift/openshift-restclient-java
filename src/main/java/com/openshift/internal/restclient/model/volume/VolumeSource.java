@@ -60,6 +60,8 @@ public abstract class VolumeSource
             return new SecretVolumeSource(node);
         } else if (node.has(VolumeType.PERSISTENT_VOLUME_CLAIM)) {
             return new PersistentVolumeClaimVolumeSource(node);
+        } else if (node.has(VolumeType.HOST_PATH)) {
+        	return new HostPathVolumeSource(node);
         } else {
             return new VolumeSource(node) {};
         }

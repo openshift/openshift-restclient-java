@@ -58,6 +58,16 @@ public interface IResourceFactory extends ITypeFactory{
 	<T extends IResource> T create(String version, String kind);
 
 	/**
+	 * Create(or stub) a resource for a given version and kind and name
+	 * @param version
+	 * @param kind
+	 * @param name
+	 * 
+	 * @return
+	 */
+	<T extends IResource> T create(String version, String kind, String name);
+
+	/**
 	 * Stub out the given resource kind using a version determined by the factory
 	 * @param kind
 	 * @param name

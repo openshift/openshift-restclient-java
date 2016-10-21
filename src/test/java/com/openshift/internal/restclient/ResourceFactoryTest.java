@@ -61,4 +61,10 @@ public class ResourceFactoryTest {
 		assertEquals("bar", service.getNamespace());
 	}
 
+	@Test
+	public void testCreateWithKindAndName() {
+		IService service = factory.create("v1", ResourceKind.SERVICE, "foo");
+		assertEquals("foo", service.getName());
+	}
+
 }

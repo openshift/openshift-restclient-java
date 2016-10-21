@@ -59,6 +59,7 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 		this.node = node;
 		this.propertyKeys = propertyKeys;
 	}
+	
 	@Override
 	public void setName(String name) {
 		set(node, propertyKeys, NAME, name);
@@ -220,6 +221,15 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 			}
 		}
 		return volumes;
+	}
+	
+
+	@Override
+	public IVolumeMount addVolumeMount(String name) {
+		ModelNode mounts = get(node, propertyKeys, VOLUMEMOUNTS);
+		VolumeMount volume = new VolumeMount(mounts.add());
+		volume.setName(name);
+		return volume;
 	}
 	
 	@Override
