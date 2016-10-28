@@ -86,7 +86,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
 	}
 	
 	public static IStatus getStatus(String response) {
-		if(response.startsWith("{")) {
+		if(response != null && response.startsWith("{")) {
 			return new Status(response);
 		}
 		return null;
