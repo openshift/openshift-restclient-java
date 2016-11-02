@@ -19,9 +19,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
+import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IPod;
@@ -82,7 +84,7 @@ public class Pod extends KubernetesResource implements IPod {
 
 	@Override
 	public String getStatus() {
-		if (get(POD_DELETION_TIMESTAMP).isDefined()) {
+		if (has(POD_DELETION_TIMESTAMP)) {
 			return "Terminating";
 		}
 		ModelNode node = get(POD_STATUS_CONTAINER_STATUSES);
@@ -101,11 +103,8 @@ public class Pod extends KubernetesResource implements IPod {
 	}
 	
 	private String getContainerStatusIfDefined(ModelNode containerStatus, String path, String statusPrefix) {
-		ModelNode node = containerStatus.get(getPath(path));
-		if (node.isDefined()) {
-			return statusPrefix + node.asString();
-		}
-		return null;
+		String statusPostfix = JBossDmrExtentions.asString(containerStatus, null, path);
+		return StringUtils.isEmpty(statusPostfix) ? null : statusPrefix + statusPostfix; 
 	}
 
 	@Override
