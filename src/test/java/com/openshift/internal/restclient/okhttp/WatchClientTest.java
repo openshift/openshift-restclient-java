@@ -13,17 +13,26 @@ package com.openshift.internal.restclient.okhttp;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 
 import org.junit.Test;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.okhttp.WatchClient.WatchEndpoint;
 import com.openshift.restclient.IOpenShiftWatchListener;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.IOpenShiftWatchListener.ChangeType;
+import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.http.IHttpConstants;
+
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * @author Andre Dietisheim
@@ -39,6 +48,20 @@ public class WatchClientTest {
 		WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
 		endpoint.onFailure(new IOException(), null);
 		verify(listener).error(any(Throwable.class));
+	}
+	
+	@Test
+	public void shouldIgnoreUnsupportedFeatureResponseOnFailure() {
+		DefaultClient client = mock(DefaultClient.class);
+		IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
+		
+		WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
+		Response.Builder responseBuilder = new Response.Builder();
+		responseBuilder.code(IHttpConstants.STATUS_OK)
+						.protocol(Protocol.HTTP_2)
+						.request(new Request.Builder().url("http://localhost").build());
+		endpoint.onFailure(new ProtocolException(), responseBuilder.build());
+		verify(listener, never()).error(any());
 	}
 
 	@Test

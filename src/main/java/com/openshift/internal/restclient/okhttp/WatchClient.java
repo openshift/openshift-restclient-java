@@ -11,6 +11,7 @@
 package com.openshift.internal.restclient.okhttp;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,9 +32,9 @@ import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
+import com.openshift.restclient.IOpenShiftWatchListener.ChangeType;
 import com.openshift.restclient.IWatcher;
 import com.openshift.restclient.OpenShiftException;
-import com.openshift.restclient.IOpenShiftWatchListener.ChangeType;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
@@ -175,10 +176,16 @@ public class WatchClient implements IWatcher, IHttpConstants {
 		public void onFailure(IOException err, Response response) {
 			LOGGER.debug("WatchSocket Error for kind {}: {}", kind, err);
 			try {
-				if(response == null) {
+				if (response == null) {
 					listener.error(ResponseCodeInterceptor.createOpenShiftException(client, 0, "", "", err));
-				}else {
-					listener.error(ResponseCodeInterceptor.createOpenShiftException(client, response.code(), response.body().string(), response.request().url().toString(), err));
+				} else if (response.code() == IHttpConstants.STATUS_OK && err instanceof ProtocolException) {
+					// Just swallow it. Means the feature isn't supported in this OS server version yet.
+					// WebSocket creates error "Expected HTTP 101 response but was '200 OK'"
+					// This is described in the web socket specification.
+					LOGGER.debug("The feature isn't supported", err);
+				} else {
+					listener.error(ResponseCodeInterceptor.createOpenShiftException(client, response.code(),
+							response.body().string(), response.request().url().toString(), err));
 				}
 			} catch (IOException e) {
 				LOGGER.error("IOException trying to notify listener of specific OpenShiftException", err);
