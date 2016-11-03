@@ -90,21 +90,23 @@ public class Pod extends KubernetesResource implements IPod {
 		ModelNode node = get(POD_STATUS_CONTAINER_STATUSES);
 		if (node.getType() == ModelType.LIST) {
 			for (ModelNode containerStatus : node.asList()) {
-				for (String containerReason: POD_STATUS_CONTAINER_STATES.keySet()) {
-					String status = getContainerStatusIfDefined(
-							containerStatus, containerReason, POD_STATUS_CONTAINER_STATES.get(containerReason));
-					if (status != null) {
-						return status;
-					}
+				String status = getContainerStatusStringIfExist(containerStatus);
+				if (status != null) {
+					return status;
 				}
 			}
 		}
-		return get(POD_STATUS_REASON).isDefined() ? asString(POD_STATUS_REASON) : asString(POD_STATUS_PHASE);
+		return has(POD_STATUS_REASON) ? asString(POD_STATUS_REASON) : asString(POD_STATUS_PHASE);
 	}
 	
-	private String getContainerStatusIfDefined(ModelNode containerStatus, String path, String statusPrefix) {
-		String statusPostfix = JBossDmrExtentions.asString(containerStatus, null, path);
-		return StringUtils.isEmpty(statusPostfix) ? null : statusPrefix + statusPostfix; 
+	private String getContainerStatusStringIfExist(ModelNode containerStatus) {
+		for (String path: POD_STATUS_CONTAINER_STATES.keySet()) {
+			String statusPostfix = JBossDmrExtentions.asString(containerStatus, null, path);
+			if (StringUtils.isNotEmpty(statusPostfix)) {
+				return POD_STATUS_CONTAINER_STATES.get(path) + statusPostfix; 
+			}	
+		}
+		return null;
 	}
 
 	@Override
