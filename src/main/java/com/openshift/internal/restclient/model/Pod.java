@@ -13,14 +13,17 @@ import static com.openshift.internal.restclient.capability.CapabilityInitializer
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
+import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IPod;
@@ -33,8 +36,20 @@ public class Pod extends KubernetesResource implements IPod {
 
 	private static final String POD_IP = "status.podIP";
 	private static final String POD_HOST = "status.hostIP";
-	private static final String POD_STATUS = "status.phase";
 	private static final String POD_CONTAINERS = "spec.containers";
+	private static final String POD_DELETION_TIMESTAMP = "metadata.deletionTimestamp";
+	
+	private static final String POD_STATUS_PHASE = "status.phase";
+	private static final String POD_STATUS_REASON = "status.reason";
+	private static final String POD_STATUS_CONTAINER_STATUSES = "status.containerStatuses";
+	
+	// container reasons fields and corresponding status prefixes
+	private static final Map<String, String> POD_STATUS_CONTAINER_STATES = new HashMap<String, String>() {{
+		put("state.waiting.reason", "");
+		put("state.terminated.reason", "");
+		put("state.terminated.signal", "Signal: ");
+		put("state.terminated.exitCode", "Exit Code: ");		
+	}};
 
 	public Pod(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
 		super(node, client, propertyKeys);
@@ -61,10 +76,37 @@ public class Pod extends KubernetesResource implements IPod {
 		}
 		return images;
 	}
+	
+	/**
+	 * The logic of the method is a copied from 'podStatus' function of
+	 * [app/scripts/filters/resources.js] of [openshift/origin-web-console]
+	 */
 
 	@Override
 	public String getStatus() {
-		return asString(POD_STATUS);
+		if (has(POD_DELETION_TIMESTAMP)) {
+			return "Terminating";
+		}
+		ModelNode node = get(POD_STATUS_CONTAINER_STATUSES);
+		if (node.getType() == ModelType.LIST) {
+			for (ModelNode containerStatus : node.asList()) {
+				String status = getContainerStatusStringIfExist(containerStatus);
+				if (status != null) {
+					return status;
+				}
+			}
+		}
+		return has(POD_STATUS_REASON) ? asString(POD_STATUS_REASON) : asString(POD_STATUS_PHASE);
+	}
+	
+	private String getContainerStatusStringIfExist(ModelNode containerStatus) {
+		for (String path: POD_STATUS_CONTAINER_STATES.keySet()) {
+			String statusPostfix = JBossDmrExtentions.asString(containerStatus, null, path);
+			if (StringUtils.isNotEmpty(statusPostfix)) {
+				return POD_STATUS_CONTAINER_STATES.get(path) + statusPostfix; 
+			}	
+		}
+		return null;
 	}
 
 	@Override

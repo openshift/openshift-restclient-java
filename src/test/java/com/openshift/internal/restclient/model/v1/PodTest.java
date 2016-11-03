@@ -8,7 +8,9 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.v1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
@@ -17,15 +19,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.openshift.internal.restclient.model.*;
-import com.openshift.restclient.model.*;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.internal.restclient.model.ExecAction;
+import com.openshift.internal.restclient.model.Lifecycle;
+import com.openshift.internal.restclient.model.Pod;
+import com.openshift.internal.restclient.model.Port;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.model.IContainer;
+import com.openshift.restclient.model.IExecAction;
+import com.openshift.restclient.model.IPod;
+import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -37,24 +45,58 @@ public class PodTest {
 	private IPod pod;
 	
 	@Before
-	public void setup(){
+	public void setup() {
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_POD.getContentAsString());
 		pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.POD));
 	}
 	
 	@Test
-	public void testGetHost(){
+	public void testGetHost() {
 		assertEquals("127.0.0.1", pod.getHost());
 	}
 	
 	@Test
-	public void testGetStatus(){
+	public void testGetStatusPhase() {
 		assertEquals("Running", pod.getStatus());
 	}
 	
 	@Test
-	public void testGetImages(){
+	public void testGetStatusDeletion() {
+		((Pod)pod).getNode().get("metadata", "deletionTimestamp").set("2016-11-02T16:31:55Z");
+		assertEquals(pod.getStatus(), "Terminating");
+	}
+	
+	@Test
+	public void testGetStatusWaitingReason() {
+		((Pod)pod).getNode().get("status", "containerStatuses").asList().get(0).get("state")
+			.set("waiting", new ModelNode().set("reason", "ReasonNotToWork"));
+		assertEquals(pod.getStatus(), "ReasonNotToWork");
+	}
+	
+	@Test
+	public void testGetStatusTerminateReason() {
+		((Pod)pod).getNode().get("status", "containerStatuses").asList().get(0).get("state")
+			.set("terminated", new ModelNode().set("reason", "ReasonToTerminate"));
+		assertEquals(pod.getStatus(), "ReasonToTerminate");
+	}
+	
+	@Test
+	public void testGetStatusTerminatedSignal() {
+		((Pod)pod).getNode().get("status", "containerStatuses").asList().get(0).get("state")
+			.set("terminated", new ModelNode().set("signal", "Alarm! Terminate!"));
+		assertEquals(pod.getStatus(), "Signal: Alarm! Terminate!");
+	}
+	
+	@Test
+	public void testGetStatusTerminatedExit() {
+		((Pod)pod).getNode().get("status", "containerStatuses").asList().get(0).get("state")
+			.set("terminated", new ModelNode().set("exitCode", "Let's go! Time to exit!"));
+		assertEquals(pod.getStatus(), "Exit Code: Let's go! Time to exit!");
+	}
+	
+	@Test
+	public void testGetImages() {
 		String [] exp = new String []{"openshift/origin-deployer:v0.6"};
 		assertArrayEquals(exp, pod.getImages().toArray());
 	}
