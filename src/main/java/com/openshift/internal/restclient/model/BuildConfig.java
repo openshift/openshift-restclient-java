@@ -78,31 +78,33 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	@Override
 	public List<IBuildTrigger> getBuildTriggers() {
 		List<IBuildTrigger> triggers = new ArrayList<IBuildTrigger>();
-		List<ModelNode> list = get(BUILDCONFIG_TRIGGERS).asList();
-		final String url = getClient() != null ? getClient().getResourceURI(this) : "";
-		for (ModelNode node : list) {
-			String type = node.get(TYPE).asString();
-			switch(type){
-				case BuildTriggerType.GENERIC:
-					triggers.add(new WebhookTrigger(BuildTriggerType.GENERIC,
-									asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), url));
-					break;
-				case BuildTriggerType.GITHUB:
-					triggers.add(new WebhookTrigger(BuildTriggerType.GITHUB, asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), url));
-					break;
-				case BuildTriggerType.IMAGE_CHANGE:
-					triggers.add(new ImageChangeTrigger(BuildTriggerType.IMAGE_CHANGE,
-							asString(node, BUILD_CONFIG_IMAGECHANGE_IMAGE),
-							asString(node, BUILD_CONFIG_IMAGECHANGE_NAME),
-							asString(node, BUILD_CONFIG_IMAGECHANGE_TAG))
-					);
-					break;
-				case BuildTriggerType.CONFIG_CHANGE:
-					triggers.add(new ImageChangeTrigger(BuildTriggerType.CONFIG_CHANGE, null, null));
-				default:
-			}
-		}
-		return triggers;
+		if (has(BUILDCONFIG_TRIGGERS)) {
+            List<ModelNode> list = get(BUILDCONFIG_TRIGGERS).asList();
+            final String url = getClient() != null && StringUtils.isNotEmpty(getNamespace()) ? getClient().getResourceURI(this) : "";
+            for (ModelNode node : list) {
+                String type = node.get(TYPE).asString();
+                switch (type) {
+                case BuildTriggerType.GENERIC:
+                    triggers.add(new WebhookTrigger(BuildTriggerType.GENERIC,
+                            asString(node, BUILD_CONFIG_WEBHOOK_GENERIC_SECRET), url));
+                    break;
+                case BuildTriggerType.GITHUB:
+                    triggers.add(new WebhookTrigger(BuildTriggerType.GITHUB,
+                            asString(node, BUILD_CONFIG_WEBHOOK_GITHUB_SECRET), url));
+                    break;
+                case BuildTriggerType.IMAGE_CHANGE:
+                    triggers.add(new ImageChangeTrigger(BuildTriggerType.IMAGE_CHANGE,
+                            asString(node, BUILD_CONFIG_IMAGECHANGE_IMAGE),
+                            asString(node, BUILD_CONFIG_IMAGECHANGE_NAME),
+                            asString(node, BUILD_CONFIG_IMAGECHANGE_TAG)));
+                    break;
+                case BuildTriggerType.CONFIG_CHANGE:
+                    triggers.add(new ImageChangeTrigger(BuildTriggerType.CONFIG_CHANGE, null, null));
+                default:
+                }
+            } 
+        }
+        return triggers;
 	}
 
 	@Override
