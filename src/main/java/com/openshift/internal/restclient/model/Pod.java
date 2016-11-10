@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,11 +45,11 @@ public class Pod extends KubernetesResource implements IPod {
 	private static final String POD_STATUS_CONTAINER_STATUSES = "status.containerStatuses";
 	
 	// container reasons fields and corresponding status prefixes
-	private static final Map<String, String> POD_STATUS_CONTAINER_STATES = new HashMap<String, String>() {{
-		put("state.waiting.reason", "");
-		put("state.terminated.reason", "");
-		put("state.terminated.signal", "Signal: ");
-		put("state.terminated.exitCode", "Exit Code: ");		
+	private static final List<String[]> POD_STATUS_CONTAINER_STATES = new ArrayList<String[]>() {{
+		add(new String[]{"state.waiting.reason", ""});
+		add(new String[]{"state.terminated.reason", ""});
+		add(new String[]{"state.terminated.signal", "Signal: "});
+		add(new String[]{"state.terminated.exitCode", "Exit Code: "});
 	}};
 
 	public Pod(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
@@ -100,10 +101,12 @@ public class Pod extends KubernetesResource implements IPod {
 	}
 	
 	private String getContainerStatusStringIfExist(ModelNode containerStatus) {
-		for (String path: POD_STATUS_CONTAINER_STATES.keySet()) {
+		for (String[] pathAndLabel: POD_STATUS_CONTAINER_STATES) {
+			String path = pathAndLabel[0];
 			String statusPostfix = JBossDmrExtentions.asString(containerStatus, null, path);
 			if (StringUtils.isNotEmpty(statusPostfix)) {
-				return POD_STATUS_CONTAINER_STATES.get(path) + statusPostfix; 
+				String label = pathAndLabel[1];
+				return label + statusPostfix;
 			}	
 		}
 		return null;

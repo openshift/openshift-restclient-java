@@ -81,6 +81,19 @@ public class PodTest {
 		assertEquals(pod.getStatus(), "ReasonToTerminate");
 	}
 	
+	/**
+	 * Check that if both reason and exit code are set, status returns the reason.
+	 */
+	@Test
+	public void testGetStatusTerminateReasonAndExit() {
+		ModelNode node = new ModelNode();
+		node.get("reason").set("ReasonToTerminate");
+		node.get("exitCode").set("Let's go! Time to exit!");
+		((Pod)pod).getNode().get("status", "containerStatuses").asList().get(0).get("state")
+			.set("terminated", node);
+		assertEquals(pod.getStatus(), "ReasonToTerminate");
+	}
+
 	@Test
 	public void testGetStatusTerminatedSignal() {
 		((Pod)pod).getNode().get("status", "containerStatuses").asList().get(0).get("state")
@@ -88,6 +101,19 @@ public class PodTest {
 		assertEquals(pod.getStatus(), "Signal: Alarm! Terminate!");
 	}
 	
+	/**
+	 * Check that if both signal and exit code are set, status returns the signal.
+	 */
+	@Test
+	public void testGetStatusTerminatedSignalAndExit() {
+		ModelNode node = new ModelNode();
+		node.get("signal").set("Alarm! Terminate!");
+		node.get("exitCode").set("Let's go! Time to exit!");
+		((Pod)pod).getNode().get("status", "containerStatuses").asList().get(0).get("state")
+			.set("terminated", node);
+		assertEquals(pod.getStatus(), "Signal: Alarm! Terminate!");
+	}
+
 	@Test
 	public void testGetStatusTerminatedExit() {
 		((Pod)pod).getNode().get("status", "containerStatuses").asList().get(0).get("state")
