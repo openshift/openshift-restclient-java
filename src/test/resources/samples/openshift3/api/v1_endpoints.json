@@ -1,0 +1,56 @@
+{
+    "kind": "Endpoints",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "router",
+        "namespace": "default",
+        "selfLink": "/api/v1/namespaces/default/endpoints/router",
+        "uid": "0cfabcdf-c16b-11e6-80f6-525400320112",
+        "resourceVersion": "603",
+        "creationTimestamp": "2016-12-13T19:33:40Z",
+        "labels": {
+            "router": "router"
+        }
+    },
+    "subsets": [
+        {
+            "addresses": [
+                {
+                    "ip": "192.168.121.62",
+                    "targetRef": {
+                        "kind": "Pod",
+                        "namespace": "default",
+                        "name": "router-1-sk2p5",
+                        "uid": "1a1f7dad-c16b-11e6-80f6-525400320112",
+                        "resourceVersion": "601"
+                    }
+                }
+            ],
+            "notreadyaddresses": [
+                {
+                    "name": "notready",
+                    "ip": "192.168.121.68",
+                    "hostname": "foo.bar",
+                    "nodeName": "xyz.abc"
+                }
+            ],
+            "ports": [
+                {
+                    "name": "443-tcp",
+                    "port": 443,
+                    "protocol": "TCP"
+                },
+                {
+                    "name": "1936-tcp",
+                    "port": 1936,
+                    "protocol": "TCP"
+                },
+                {
+                    "name": "80-tcp",
+                    "port": 80,
+                    "protocol": "TCP"
+                }
+            ]
+        }
+    ]
+}

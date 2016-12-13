@@ -44,6 +44,7 @@ public final class ResourceKind {
 	public static final String USER = "User";
 	
 	//Kubernetes Kinds
+	public static final String ENDPOINTS = "Endpoints";
 	public static final String EVENT = "Event";
 	public static final String LIMIT_RANGE = "LimitRange";
 	public static final String POD = "Pod";
