@@ -17,6 +17,7 @@ Versions of this client known to be compatible with OpenShift
 
 | Client Version           | OpenShift Origin Server |
 |--------------------------|-------------------------|
+| 5.4.0-SNAPSHOT           |         v1.3.0          |
 | 5.0.0-SNAPSHOT           | latest, v1.3.0-alpha.2  |
 |                          |         v1.3.0-alpha.3  |
 
