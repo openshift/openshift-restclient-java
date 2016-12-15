@@ -43,7 +43,8 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 	private final IClient client;
 	private String name;
 	private String namespace;
-	
+	private Map<String, String> labels;
+
 	public BuildConfigBuilder(IClient client) {
 		this.client = client;
 	}
@@ -71,6 +72,12 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 	}
 
 	@Override
+	public IBuildConfigBuilder withLabels(Map<String, String> labels) {
+		this.labels = labels;
+		return this;
+	}
+
+	@Override
 	public IBuildConfig build() {
 		BuildConfig bc = client.getResourceFactory().stub(ResourceKind.BUILD_CONFIG, this.name, this.namespace);
 		
@@ -79,6 +86,12 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 		}
 		if(gitSourceBuilder != null) {
 			bc.setBuildSource(gitSourceBuilder.build());
+		}
+
+		if (labels != null && !labels.isEmpty()) {
+			for (Map.Entry<String, String> label : labels.entrySet()) {
+				bc.addLabel(label.getKey(), label.getValue());
+			}
 		}
 
 		DockerImageURI uri = new DockerImageURI(imageStreamTagOutput);

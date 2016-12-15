@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -94,47 +95,7 @@ public class DefaultClientTest extends TypeMapperFixture{
 		DefaultClient client = new DefaultClient(baseUrl, null, null, null, new AuthorizationContext(token,user,null));
 		return client;
 	}
-	
-	@SuppressWarnings("serial")
-	@Test
-	public void testListResourceFilteringWithExactMatch() throws Exception {
-		Map<String, String> labels = new HashMap<String, String>(){{
-			put("name","backend");
-			put("env","production");
-		}};
-		List<IPod> pods = client.list(ResourceKind.POD, "aNamespace", labels);
-		assertEquals("Expected 1 pod to be returned", 1, pods.size());
-		assertEquals("Expected the frontend pod", podBackEnd, pods.get(0));
-	}
 
-	@Test
-	public void testListResourceFilteringNoMatch() throws Exception {
-		Map<String, String> labels = new HashMap<String, String>();
-		labels.put("foo", "bar");
-		List<IPod> pods = client.list(ResourceKind.POD, "aNamespace", labels);
-		assertEquals("Expected no pod to be returned", 0, pods.size());
-	}
-
-	@SuppressWarnings("serial")
-	@Test
-	public void testListResourceFilteringWithPartialMatch() throws Exception {
-		Map<String, String> labels = new HashMap<String, String>(){{
-			put("name","frontend");
-		}};
-		List<IPod> pods = client.list(ResourceKind.POD, "aNamespace", labels);
-		assertEquals("Expected 1 pod to be returned", 1, pods.size());
-		assertEquals("Expected the backend pod", podFrontEnd, pods.get(0));
-	}
-
-	@SuppressWarnings("serial")
-	@Test
-	public void testListResourceFilteringSingleLabel() throws Exception {
-		Map<String, String> labels = new HashMap<String, String>(){{
-			put("env","production");
-		}};
-		List<IPod> pods = client.list(ResourceKind.POD, "aNamespace", labels);
-		assertEquals("Expected all pods to be returned", 3, pods.size());
-	}
 
 	@Test
 	public void clientShouldEqualClientWithSameUrl() throws Exception {

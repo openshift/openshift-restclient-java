@@ -37,7 +37,6 @@ public interface IClient extends ICapable, Cloneable {
 	 * @return
 	 */
 	<T extends IResource> List<T> list(String kind);
-
 	
 	/**
 	 * Lists the given given resource kind scoping it to a specific namespace
@@ -50,7 +49,7 @@ public interface IClient extends ICapable, Cloneable {
 	
 	/**
 	 * Lists the given given resource kind scoping it to a specific namespace
-	 * 
+	 *
 	 * @param kind
 	 * @param namespace    The namespace to scope the possible results of this list
 	 * @param labels             The label used to filter the resource
@@ -59,9 +58,20 @@ public interface IClient extends ICapable, Cloneable {
 	<T extends IResource> List<T> list(String kind, String namespace, Map<String, String> labels);
 
 	/**
+	 * Lists the given given resource kind scoping it to a specific namespace
+	 *
+	 * @param kind
+	 * @param namespace    The namespace to scope the possible results of this list
+	 * @param labelQuery             The label used to filter the resource
+	 * @return
+	 */
+	<T extends IResource> List<T> list(String kind, String namespace, String labelQuery);
+
+	/**
 	 * 
-	 * @param service
+	 * @param kind
 	 * @param name
+	 * @param namespace
 	 * @return
 	 * @throws OpenShiftException if operation not supported for resource type
 	 */
@@ -143,6 +153,20 @@ public interface IClient extends ICapable, Cloneable {
 
 	/**
 	 * Raw execution of a request
+	* @param httpMethod  HttpMethod (e.g. POST)
+	 * @param kind
+	 * @param namespace
+	 * @param name
+	 * @param subresource  subresource or capability
+	 * @param payload      the payload to sumit.  only valid on non-get operations
+	 * @param params       map of query parameters
+	 * @return
+	 *
+	 */
+	<T extends IResource> T execute(String httpMethod, String kind, String namespace, String name, String subresource, IResource payload, Map<String, String> params);
+
+	/**
+	 * Raw execution of a request
 	 * @param httpMethod  HttpMethod (e.g. POST)
 	 * @param kind
 	 * @param namespace
@@ -157,15 +181,18 @@ public interface IClient extends ICapable, Cloneable {
 	/**
 	 * @param factory     The factory to use for interpreting the response
 	 * @param httpMethod  HttpMethod (e.g. POST)
-	 * @param kind        
+	 * @param kind
 	 * @param namespace
 	 * @param name
 	 * @param subresource  subresource or capability
 	 * @param payload      the payload to sumit.  only valid on non-get operations
-	 * @param subcontext   additional subContext
+	 * @param subContext   additional subContext
+	 * @param params
 	 * @return the raw payload string
 	 */
-	<T extends Object> T execute(ITypeFactory factory, String httpMethod, String kind, String namespace, String name, String subresource, String subContext, JSONSerializeable payload);
+	<T extends Object> T execute(ITypeFactory factory, String httpMethod, String kind, String namespace, String name,
+								 String subresource, String subContext, JSONSerializeable payload,
+								 Map<String, String> params);
 
 	/**
 	 * 
