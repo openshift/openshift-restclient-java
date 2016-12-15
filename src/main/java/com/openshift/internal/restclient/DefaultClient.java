@@ -109,18 +109,29 @@ public class DefaultClient implements IClient, IHttpConstants{
 	}
 
 	@Override
+	public IWatcher watch(IOpenShiftWatchListener listener, String...kinds) {
+		return this.watch("", listener, kinds);
+	}
+
+	@Override
 	public String getResourceURI(IResource resource) {
 		return new URLBuilder(getBaseURL(), typeMapper, resource).build().toString();
 	}
 
 	@Override
 	public <T extends IResource> List<T> list(String kind) {
-		return list(kind,""); //assumes namespace=default
+		return list(kind,"");
 	}
-	
+
+	@Override
+	public <T extends IResource> List<T> list(String kind,  Map<String, String> labels) {
+		return list(kind,"", labels);
+	}
+
+
 	@Override
 	public <T extends IResource> List<T> list(String kind, String namespace) {
-		return list(kind, namespace, new HashMap<String, String>());
+		return list(kind, namespace, new HashMap<>());
 	}
 	
 	@SuppressWarnings("unchecked")
