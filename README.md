@@ -7,6 +7,8 @@ This is the Java REST client for the version 3 architecture of [OpenShift](https
 a work in progress to provide similiar functionality and features of the command-line interface and is used by JBoss Tools for OpenShift.  For compatibility with
 OpenShift 2.x see https://github.com/openshift/openshift-java-client/.
 
+For questions or feedback, reach us on IRC on #openshift-client on Freenode or post to our [mailing list](https://lists.openshift.redhat.com/openshiftmm/listinfo/dev)
+
 Download
 --------
 You may either build from source using maven (mvn clean package) which, using the master branch, will generate a snapshot build of the lastest updates.  You may also retrieve final released jars from [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.openshift%22%20AND%20a%3A%22openshift-restclient-java%22).
