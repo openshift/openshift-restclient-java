@@ -48,10 +48,6 @@ import okhttp3.Response;
  */
 public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 	
-	private static final String FWD_SLASH = "/";
-	private static final String KUBE_API = "api";
-	private static final String OS_API = "oapi";
-	private static final String API_GROUPS_API = "apis";
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApiTypeMapper.class);
 	private final String baseUrl;
 	private final OkHttpClient client;
@@ -356,7 +352,10 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 		
 		@Override
 		public String toString() {
-			return String.format("%s/%s/%s/%s/%s", prefix, apiGroupName, version, name, version,kind);
+		    if(apiGroupName == null) {
+		        return String.format("%s/%s/%s", prefix, version, name);
+		    }
+			return String.format("%s/%s/%s/%s/%s", prefix, apiGroupName, version, name);
 		}
 
 		@Override

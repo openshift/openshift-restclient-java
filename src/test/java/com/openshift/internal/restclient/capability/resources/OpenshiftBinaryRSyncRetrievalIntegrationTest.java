@@ -34,6 +34,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
+import com.openshift.restclient.capability.IBinaryCapability.OpenShiftBinaryOption;
 import com.openshift.restclient.capability.resources.IRSyncable;
 import com.openshift.restclient.capability.resources.IRSyncable.LocalPeer;
 import com.openshift.restclient.capability.resources.IRSyncable.PodPeer;
@@ -85,15 +86,15 @@ public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
 			public List<String> visit(IRSyncable cap) {
 				try {
 					final BufferedReader reader = new BufferedReader(new InputStreamReader(
-							cap.sync(new LocalPeer(localTempDir.getAbsolutePath()), new PodPeer(targetDir, pod))));
+							cap.sync(new LocalPeer(localTempDir.getAbsolutePath()), new PodPeer(targetDir, pod), OpenShiftBinaryOption.SKIP_TLS_VERIFY)));
 					List<String> logs = IOUtils.readLines(reader);
 					// wait until end of 'rsync'
 					cap.await();
 					return logs;
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOG.error("Exception rsycing to pod:",e);
 				}
-				return null;
+				return new ArrayList<>();
 			}
 
 		}, new ArrayList<>());

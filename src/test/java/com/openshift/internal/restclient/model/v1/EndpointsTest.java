@@ -20,8 +20,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.openshift.internal.restclient.ResourceFactory;
-import com.openshift.restclient.IClient;
+import com.openshift.internal.restclient.TypeMapperFixture;
+import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.api.models.IEndpoints;
 import com.openshift.restclient.api.models.IEndpoints.IEndpointAddress;
 import com.openshift.restclient.api.models.IEndpoints.IEndpointPort;
@@ -29,17 +29,17 @@ import com.openshift.restclient.api.models.IEndpoints.IEndpointSubset;
 import com.openshift.restclient.utils.Samples;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EndpointsTest {
+public class EndpointsTest extends TypeMapperFixture{
 
 	private static String JSON = Samples.V1_ENDPOINTS.getContentAsString();
 	
 	@Mock
-	private IClient client;
 	private IEndpoints endpoint;
 
 	@Before
 	public void setUp() throws Exception {
-	    ResourceFactory factory = new ResourceFactory(client);
+	    super.setUp();
+	    IResourceFactory factory = getIClient().getResourceFactory();
 		endpoint = factory.create(JSON);
 	}
 

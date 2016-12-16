@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.URLBuilder;
-import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
@@ -197,8 +196,7 @@ public class WatchClient implements IWatcher, IHttpConstants {
 		public void onMessage(ResponseBody body) throws IOException {
 			String message = body.string();
 			LOGGER.debug(message);
-			KubernetesResource payload = client.getResourceFactory().create(message);
-			ModelNode node = payload.getNode();
+			ModelNode node = ModelNode.fromJSONString(message);
 			IOpenShiftWatchListener.ChangeType event = new ChangeType(node.get("type").asString());
 			IResource resource = client.getResourceFactory().create(node.get("object").toJSONString(true));
 			if(StringUtils.isEmpty(resource.getKind())) {

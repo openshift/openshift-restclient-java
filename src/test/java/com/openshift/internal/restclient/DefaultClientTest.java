@@ -13,7 +13,6 @@ package com.openshift.internal.restclient;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -54,12 +53,13 @@ public class DefaultClientTest extends TypeMapperFixture{
 		this.baseUrl = new URL("http://myopenshift");
 		givenAClient();
 		givenAPodList();
-		getHttpClient().whenRequestTo("http://myopenshift/api/v1/namespaces/aNamespace/pods").thenReturn(responseOf(response.toJSONString(false)));
+		getHttpClient().whenRequestTo(TypeMapperFixture.base + "/api/v1/namespaces/aNamespace/pods").thenReturn(responseOf(response.toJSONString(false)));
 	}
 
-	private void givenAClient() throws MalformedURLException{
+	private void givenAClient() throws Exception{
 		factory = new ResourceFactory(null);
-		client = new DefaultClient(baseUrl, getHttpClient(), factory, getApiTypeMapper(), new AuthorizationContext(null));
+		client = (DefaultClient) getIClient();//new DefaultClient(baseUrl, getHttpClient(), factory, getApiTypeMapper(), new AuthorizationContext(null));
+		factory = client.getResourceFactory();
 	}
 
 	private void givenAPodList(){

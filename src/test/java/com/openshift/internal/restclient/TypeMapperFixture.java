@@ -14,12 +14,14 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.net.URL;
 
 import org.junit.Before;
 import org.mockito.ArgumentMatcher;
 import org.mockito.stubbing.OngoingStubbing;
 
 import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IClient;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.utils.Samples;
 
@@ -45,6 +47,10 @@ public class TypeMapperFixture {
 	
 	protected TestOkHttpClient getHttpClient() {
 		return client;
+	}
+	
+	protected IClient getIClient() throws Exception {
+	    return new DefaultClient(new URL(base), client, new ResourceFactory(null), mapper, null);
 	}
 	
 	@Before
