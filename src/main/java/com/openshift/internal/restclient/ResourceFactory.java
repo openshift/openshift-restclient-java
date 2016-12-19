@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.restclient.api.models.Endpoints;
 import com.openshift.internal.restclient.model.Build;
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.internal.restclient.model.ConfigMap;
@@ -97,6 +98,7 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.USER, OpenShiftUser.class);
 		
 		//Kubernetes Kinds
+		IMPL_MAP.put(ResourceKind.ENDPOINTS, Endpoints.class);
 		IMPL_MAP.put(ResourceKind.EVENT, KubernetesEvent.class);
 		IMPL_MAP.put(ResourceKind.LIMIT_RANGE, LimitRange.class);
 		IMPL_MAP.put(ResourceKind.POD, Pod.class);
