@@ -23,7 +23,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
-import com.openshift.internal.restclient.api.models.Endpoints;
 import com.openshift.internal.restclient.model.Build;
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.internal.restclient.model.ConfigMap;
@@ -57,6 +56,8 @@ import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegi
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.internal.restclient.model.user.OpenShiftUser;
 import com.openshift.internal.restclient.model.volume.PersistentVolumeClaim;
+import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceFactoryException;
@@ -98,7 +99,6 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.USER, OpenShiftUser.class);
 		
 		//Kubernetes Kinds
-		IMPL_MAP.put(ResourceKind.ENDPOINTS, Endpoints.class);
 		IMPL_MAP.put(ResourceKind.EVENT, KubernetesEvent.class);
 		IMPL_MAP.put(ResourceKind.LIMIT_RANGE, LimitRange.class);
 		IMPL_MAP.put(ResourceKind.POD, Pod.class);
@@ -201,12 +201,13 @@ public class ResourceFactory implements IResourceFactory{
 			node.get(APIVERSION).set(version);
 			node.get(KIND).set(kind.toString());
 			Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind);
-			if(IMPL_MAP.containsKey(kind)) {
-				Constructor<? extends IResource> constructor =  IMPL_MAP.get(kind).getConstructor(ModelNode.class, IClient.class, Map.class);
-				return constructor.newInstance(node, client, properyKeyMap);
-			}
 			if(kind.endsWith("List")) {
-				return new com.openshift.internal.restclient.model.List(node, client, properyKeyMap);
+			    return new com.openshift.internal.restclient.model.List(node, client, properyKeyMap);
+			}
+			Class<? extends IResource> klass = getResourceClass(version, kind);
+			if(klass != null) {
+				Constructor<? extends IResource> constructor =  klass.getConstructor(ModelNode.class, IClient.class, Map.class);
+				return constructor.newInstance(node, client, properyKeyMap);
 			}
 			return new KubernetesResource(node, client, properyKeyMap);
 		} catch (UnsupportedVersionException e) {
@@ -214,6 +215,34 @@ public class ResourceFactory implements IResourceFactory{
 		} catch (Exception e) {
 			throw new ResourceFactoryException(e,"Unable to create %s resource kind %s from %s", version, kind, node);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+    private Class<? extends IResource> getResourceClass(String version, String kind){
+       if(IMPL_MAP.containsKey(kind)) {
+            return IMPL_MAP.get(kind);
+        }
+	    IApiTypeMapper mapper = this.client.adapt(IApiTypeMapper.class);
+	    if(mapper != null) {
+    	    IVersionedApiResource endpoint = mapper.getEndpointFor(version, kind);
+    	    String extension = "";
+    	    switch(endpoint.getPrefix()) {
+    	    case IApiTypeMapper.KUBE_API:
+    	    case IApiTypeMapper.OS_API:
+    	        break;
+            default:
+                String extPlusVersion = endpoint.getApiGroupName();
+                extension = StringUtils.split(extPlusVersion, IApiTypeMapper.FWD_SLASH)[0];
+    	    }
+    	    try {
+    	        String classname = String.format("com.openshift.internal.restclient.%s%s.models.%s", endpoint.getPrefix(), extension, endpoint.getKind());
+    	        return (Class<? extends IResource>)Class.forName(classname); 
+    	    }catch(ClassNotFoundException e) {
+    	        //class doesnt exist in the exp location.
+    	        //fallback to an explicit registration
+    	    }
+	    }
+	    return null;
 	}
 
 	@SuppressWarnings("unchecked")

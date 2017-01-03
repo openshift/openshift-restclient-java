@@ -17,12 +17,15 @@ import java.io.BufferedInputStream;
 import java.util.List;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
+import com.openshift.restclient.capability.IBinaryCapability.OpenShiftBinaryOption;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IResource;
@@ -33,7 +36,7 @@ import com.openshift.restclient.model.IResource;
  *
  */
 public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
-
+    private static final Logger LOG = LoggerFactory.getLogger(OpenshiftBinaryPodLogRetrievalIntegrationTest.class);
 	private IntegrationTestHelper helper = new IntegrationTestHelper();
 	private Exception ex;
 
@@ -49,15 +52,18 @@ public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
 
 			@Override
 			public Exception visit(IPodLogRetrieval cap) {
+			    StringBuilder builder = new StringBuilder();
 				try {
-					BufferedInputStream os = new BufferedInputStream(cap.getLogs(false, ""));//HELLO_OPENSHIFT));
+					BufferedInputStream os = new BufferedInputStream(cap.getLogs(false, OpenShiftBinaryOption.SKIP_TLS_VERIFY));
 					int c;
 					while((c = os.read()) != -1) {
-						System.out.print((char)c);
+					    builder.append((char)c);
 					}
 				} catch (Exception e) {
+				    LOG.error("There was an error:", e);
 					return e;
 				}finally {
+				    LOG.info(builder.toString());
 					cap.stop();
 				}
 				return null;

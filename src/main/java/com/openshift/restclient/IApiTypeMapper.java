@@ -21,6 +21,13 @@ import com.openshift.restclient.model.IResource;
  *
  */
 public interface IApiTypeMapper {
+    
+    static final String KUBE_API = "api";
+    static final String OS_API = "oapi";
+    static final String API_GROUPS_API = "apis";
+    static final String FWD_SLASH = "/";
+
+
 	
 	String getPreferedVersionFor(String endpoint);
 	
