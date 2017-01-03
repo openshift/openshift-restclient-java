@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.restclient.model;
 
+import java.util.Map;
+
 /**
  * A builder for building up resources
  * @author jeff.cantrill
@@ -21,7 +23,9 @@ public interface IResourceBuilder<T extends IResource, B extends IResourceBuilde
 	
 	 B named(String name);
 	 B inNamespace(String name);
-	
+
+	B withLabels(Map<String, String> labels);
+
 	T build();
 	
 	interface Endable{

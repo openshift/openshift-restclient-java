@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.api.capabilities;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -60,7 +61,8 @@ public class ScaleCapability extends AbstractCapability implements IScalable {
 		replicas = replicas >= MIN_VALUE ? replicas : MIN_VALUE; 
 		IScale arg = (IScale) factory.stubKind(ARG_KINDS.get(rc.getKind()), Optional.of(rc.getName()), Optional.of(rc.getNamespace()));
 		arg.setSpecReplicas(replicas);
-		return (IScale) client.execute(factory, IHttpConstants.PUT, rc.getKind(), rc.getNamespace(), rc.getName(), CAPABILITY, null, arg);
+		return (IScale) client.execute(factory, IHttpConstants.PUT, rc.getKind(), rc.getNamespace(), rc.getName(), CAPABILITY, null, arg,
+            Collections.emptyMap());
 	}
 
 }

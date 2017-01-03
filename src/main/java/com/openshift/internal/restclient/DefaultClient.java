@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
+import static java.util.stream.Collectors.joining;
+
 import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeClientCapabilities;
 
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,21 +126,31 @@ public class DefaultClient implements IClient, IHttpConstants{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends IResource> List<T> list(String kind, String namespace, Map<String, String> labels) {
-		IList list = get(kind, namespace);
-		ArrayList<T> items = new ArrayList<T>((Collection<T>)list.getItems());
-		return filterItems(items, labels); //client filter until we can figure out how to restrict with a server call
-	}
-	
-	private <T extends IResource> List<T> filterItems(List<T> items, Map<String, String> labels){
-		if(labels.isEmpty()) return items;
-		List<T> filtered = new ArrayList<T>();
-		for (T item : items) {
-			if( item.getLabels().entrySet().containsAll(labels.entrySet())){
-				filtered.add(item);
-			}
+
+		String labelQuery="";
+		if(labels != null && !labels.isEmpty()){
+			 labelQuery = labels.entrySet().stream()
+					.map(e -> e.getKey() + "=" + e.getValue())
+					.collect(joining(","));
 		}
-		return filtered;
+		return list(kind, namespace, labelQuery);
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends IResource> List<T> list(String kind, String namespace, String labelQuery) {
+
+		Map<String, String> params = new HashMap<>();
+		if(labelQuery != null && !labelQuery.isEmpty()){
+			params.put("labelSelector", labelQuery);
+		}
+
+		IList resources = execute(HttpMethod.GET.toString(), kind, namespace, null, null, null, params);
+		List<T> items = new ArrayList<>();
+		items.addAll((Collection<? extends T>) resources.getItems());
+		return items;
+	}
+
 	
 	@Override
 	public Collection<IResource> create(IList list, String namespace){
@@ -185,20 +198,33 @@ public class DefaultClient implements IClient, IHttpConstants{
 
 	@SuppressWarnings("unchecked")
 	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload, String subContext) {
-		return (T) execute(this.factory, method, kind, namespace, name, subresource, subContext, payload);
+		return (T) execute(this.factory, method, kind, namespace, name, subresource, subContext, payload,
+				Collections.emptyMap());
 	}	
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload) {
-		return (T) execute(this.factory, method, kind, namespace, name, subresource, null, payload);
+		return (T) execute(this.factory, method, kind, namespace, name, subresource, null, payload,
+				Collections.emptyMap());
 	}
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends IResource> T execute(String method, String kind, String namespace, String name, String subresource, IResource payload, Map<String, String> params) {
+		return (T) execute(this.factory, method, kind, namespace, name, subresource, null, payload,params);
+    }
 	@SuppressWarnings("unchecked")
-	public <T> T execute(ITypeFactory factory, String method, String kind, String namespace, String name, String subresource, String subContext, JSONSerializeable payload) {
+	public <T> T execute(ITypeFactory factory, String method, String kind, String namespace, String name,
+        String subresource, String subContext, JSONSerializeable payload, Map<String, String> params) {
 		if(factory == null) {
 			throw new OpenShiftException("ITypeFactory is null while trying to call IClient#execute");
 		}
+
+		if(params == null){
+			params = Collections.emptyMap();
+		}
+
 		if(ResourceKind.LIST.equals(kind)) 
 			throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
 		final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
@@ -207,6 +233,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 				.namespace(namespace)
 				.subresource(subresource)
 				.subContext(subContext)
+ 				.addParameters(params)
 				.build();
 			
 		try {
@@ -285,6 +312,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 	public IList get(String kind, String namespace) {
 		return execute(HttpMethod.GET, kind, namespace, null, null, null);
 	}
+
 
 	@Override
 	public <T extends IResource> T get(String kind, String name, String namespace) {
