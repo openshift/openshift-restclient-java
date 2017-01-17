@@ -33,7 +33,7 @@
         "selector": {
             "name": "database"
         },
-        "portalIP": "172.30.57.114",
+        "clusterIP": "172.30.57.114",
         "type": "ClusterIP",
         "sessionAffinity": "None"
     },

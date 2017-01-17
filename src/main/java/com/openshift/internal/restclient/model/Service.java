@@ -18,7 +18,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
 
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
@@ -136,9 +135,18 @@ public class Service extends KubernetesResource implements IService {
 		return port != null ? port.getTargetPort() : "0";
 	}
 
-	@Override
+	@Override @Deprecated
 	public String getPortalIP() {
-		return asString("spec.portalIP");
+		String tmp = asString("spec.portalIP");
+		if (StringUtils.isBlank(tmp)) {
+		    tmp = getClusterIP();
+		}
+		return tmp;
+	}
+	
+	@Override
+	public String getClusterIP() {
+	    return asString("spec.clusterIP");
 	}
 
 	@Override
