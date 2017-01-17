@@ -75,7 +75,14 @@ public interface IService extends IResource{
 	 * Returns the IP of the service.
 	 * @return
 	 */
+	@Deprecated
 	String getPortalIP();
+	
+	/**
+	 * Returns the IP of the service.
+	 * @return
+	 */
+	String getClusterIP();
 	
 	/**
 	 * Retrieves the pods for this service

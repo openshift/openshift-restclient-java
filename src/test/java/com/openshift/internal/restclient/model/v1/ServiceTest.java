@@ -49,6 +49,11 @@ public class ServiceTest{
 		assertEquals("172.30.57.114", service.getPortalIP());
 	}
 
+    @Test
+    public void testGetClusterIP() {
+        assertEquals("172.30.57.114", service.getClusterIP());
+    }
+
 	@Test
 	public void testGetTargetPort() {
 		assertEquals("3306", service.getTargetPort());
