@@ -28,16 +28,44 @@ import com.openshift.restclient.model.JSONSerializeable;
  *
  */
 public interface IClient extends ICapable, Cloneable {
-	
+
+	/*
+	 * Watch for changes
+	 *
+	 * @param namespace The namespace to watch for changes in
+	 * @param listener  The listener to be notified on events
+	 * @param kids      The kinds to watch for
+
+	 */
 	IWatcher watch(String namespace, IOpenShiftWatchListener listener, String...kinds);
-	
+
+	/*
+ 	* Watch for changes
+ 	*
+ 	* @param namespace The namespace to watch for changes in
+ 	* @param listener  The listener to be notified on events
+ 	* @param kids      The kinds to watch for
+ 	*/
+	IWatcher watch(IOpenShiftWatchListener listener, String...kinds);
+
+
 	/**
 	 * Lists all possible resources of the given kind in the default namespace
 	 * @param kind
 	 * @return
 	 */
 	<T extends IResource> List<T> list(String kind);
-	
+
+	/**
+	 * Lists the given given resource kind scoping it to a specific namespace
+	 *
+	 * @param kind
+	 * @param labels             The label used to filter the resource
+	 * @return
+	 */
+	<T extends IResource> List<T> list(String kind, Map<String, String> labels);
+
+
 	/**
 	 * Lists the given given resource kind scoping it to a specific namespace
 	 * 
@@ -68,7 +96,7 @@ public interface IClient extends ICapable, Cloneable {
 	<T extends IResource> List<T> list(String kind, String namespace, String labelQuery);
 
 	/**
-	 * 
+	 *
 	 * @param kind
 	 * @param name
 	 * @param namespace
