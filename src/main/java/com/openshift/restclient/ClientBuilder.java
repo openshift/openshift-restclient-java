@@ -46,6 +46,7 @@ public class ClientBuilder {
 	
 	private String baseUrl;
 	private ISSLCertificateCallback sslCertificateCallback = new NoopSSLCertificateCallback();
+	private boolean sslCertCallbackWithDefaultHostnameVerifier = false;
 	private X509Certificate certificate;
 	private String certificateAlias;
 	private IResourceFactory resourceFactory;
@@ -75,6 +76,11 @@ public class ClientBuilder {
 	public ClientBuilder sslCertificateCallback(ISSLCertificateCallback callback) {
 		this.sslCertificateCallback = callback == null ? new NoopSSLCertificateCallback() : callback;
 		return this;
+	}
+	
+	public ClientBuilder sslCertCallbackWithDefaultHostnameVerifier(boolean b) {
+	    this.sslCertCallbackWithDefaultHostnameVerifier = b;
+	    return this;
 	}
 	
 	public ClientBuilder sslCertificate(String alias, X509Certificate cert) {
@@ -190,9 +196,11 @@ public class ClientBuilder {
 				.readTimeout(readTimeout, readTimeoutUnit)
 				.writeTimeout(writeTimeout, writeTimeoutUnit)
 				.connectTimeout(connectTimeout, connectTimeoutUnit)
-				.hostnameVerifier(this.sslCertificateCallback)
 				.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
 
+			if (!this.sslCertCallbackWithDefaultHostnameVerifier)
+			    builder.hostnameVerifier(sslCertificateCallback);
+			
 			if (proxyAuthenticator != null) {
 				builder.proxyAuthenticator(proxyAuthenticator);
 			}
