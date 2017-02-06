@@ -217,6 +217,17 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 					String.format("The OpenShift 'oc' binary location was not specified. Set the property %s", 
 							OPENSHIFT_BINARY_LOCATION));
 		}
+		
+		location = addQuotesIfRequired(location);
 		return location;
 	}
+	
+	private String addQuotesIfRequired(String location) {
+		if (!StringUtils.isEmpty(location)
+				&& location.contains(" ")) {
+			location = "\"" + location + "\"";
+		}
+		return location;
+	}
+
 }
