@@ -77,7 +77,7 @@ public class URLBuilderTest extends TypeMapperFixture{
 				resource(resource)
 				.name("foo")
 				.build().toString();
-		assertEquals(String.format("%s/oapi/v1/namespaces/foo/projects/foo", BASE_URL),url.toString());
+		assertEquals(String.format("%s/oapi/v1/projects/foo", BASE_URL),url.toString());
 	}
 
 	@Test
