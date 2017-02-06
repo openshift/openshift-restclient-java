@@ -10,9 +10,9 @@ package com.openshift.internal.restclient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static com.openshift.internal.restclient.IntegrationTestHelper.*;
 
-import java.net.MalformedURLException;
 import java.util.List;
 
 import org.junit.Before;
@@ -26,21 +26,13 @@ import com.openshift.internal.restclient.model.project.OpenshiftProjectRequest;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
-import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.authorization.UnauthorizedException;
-import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
-import com.openshift.restclient.model.IContainer;
-import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.build.IBuildConfigBuilder;
-import com.openshift.restclient.model.deploy.DeploymentTriggerType;
 import com.openshift.restclient.model.project.IProjectRequest;
 import com.openshift.restclient.model.template.ITemplate;
-import com.openshift.restclient.model.volume.IHostPathVolumeSource;
-import com.openshift.restclient.model.volume.IVolumeMount;
-import com.openshift.restclient.model.volume.VolumeType;
 
 /**
  * @author Jeff Cantrill
@@ -74,6 +66,10 @@ public class DefaultClientIntegrationTest {
 		client = helper.createClient();
 		client.getAuthorizationContext().setUserName(helper.getDefaultClusterAdminUser());
 		client.getAuthorizationContext().isAuthorized();
+	}
+	
+	public void testListprojects() {
+	    assertTrue(client.list(ResourceKind.PROJECT, "default").size() > 0);
 	}
 	
 	@Test

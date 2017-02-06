@@ -151,7 +151,7 @@ public class URLBuilder {
 		if(namespace == null && apiResource.isNamespaced()) {
 			LOG.debug("The api endpoint for kind '{}' requires a namespace but none was provided. Will only work for priviledged user.", kind);
 		}
-		if(namespace != null) {
+		if(!ResourceKind.PROJECT.equals(kind) && namespace != null) {
 			url.append("/namespaces/")
 				.append(namespace);
 		}
