@@ -142,7 +142,7 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 	@Override
 	protected String buildArgs(final List<OpenShiftBinaryOption> options) {
 		final StringBuilder argsBuilder = new StringBuilder("rsync ");
-		argsBuilder.append(getUserFlag()).append(getTokenFlag()).append(getServerFlag());
+		argsBuilder.append(getTokenFlag()).append(getServerFlag());
 		if(options.contains(OpenShiftBinaryOption.SKIP_TLS_VERIFY)) {
 			argsBuilder.append(getSkipTlsVerifyFlag());
 		}
