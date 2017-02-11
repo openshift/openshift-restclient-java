@@ -61,18 +61,18 @@ public class DefaultClient implements IClient, IHttpConstants{
 	public static final String SYSTEM_PROP_OPENSHIFT_API_VERSION = "osjc.openshift.apiversion"; 
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
-	private URL baseUrl;
-	private OkHttpClient client;
-	private IResourceFactory factory;
-	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
+	URL baseUrl;
+	protected OkHttpClient client;
+	protected IResourceFactory factory;
+	protected Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
 	private boolean capabilitiesInitialized = false;
-	
+
 	private static final String OS_API_ENDPOINT = "oapi";
-	
+
 	private String openShiftVersion;
 	private String kubernetesVersion;
 	private AuthorizationContext authContext;
-	private IApiTypeMapper typeMapper;
+	IApiTypeMapper typeMapper;
 	
 	public DefaultClient(URL baseUrl,  OkHttpClient client, IResourceFactory factory, IApiTypeMapper typeMapper, AuthorizationContext authContext){
 		this.baseUrl = baseUrl;
@@ -262,7 +262,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		}
 	}
 	
-	private RequestBody getPayload(String method, JSONSerializeable payload) {
+	RequestBody getPayload(String method, JSONSerializeable payload) {
 		switch(method.toUpperCase()){
 			case "GET":
 			case "DELETE":
@@ -274,7 +274,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 		}
 	}
 	
-	
+
 	@Override
 	public String getServerReadyStatus() {
 		try {
@@ -317,8 +317,8 @@ public class DefaultClient implements IClient, IHttpConstants{
 	public <T extends IResource> void delete(T resource) {
 		execute(HttpMethod.DELETE, resource.getKind(), resource.getNamespace(), resource.getName(), null, resource);
 	}
-	
-	
+
+
 	@Override
 	public IList get(String kind, String namespace) {
 		return execute(HttpMethod.GET, kind, namespace, null, null, null);

@@ -210,6 +210,9 @@ public class URLBuilder {
 	}
 
 	public URLBuilder addParameters(Map<String, String> params) {
+		if(params ==null) {
+			return this;
+		}
 		params.forEach((k,v)->addParmeter(k, v));
 		return this;
 	}
