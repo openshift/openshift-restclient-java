@@ -1,0 +1,44 @@
+{
+  "apiVersion": "v1",
+  "kind": "BuildConfig",
+  "metadata": {
+    "labels": {
+      "build": "mapsapp-pipeline"
+    },
+    "name": "mapsapp-pipeline"
+  },
+  "spec": {
+    "runPolicy": "Serial",
+    "source": {
+    },
+    "strategy": {
+      "type": "JenkinsPipeline",
+      "jenkinsPipelineStrategy": {
+        "jenkinsfile": "def project = \"\"\nnode {\n  project = \"${env.PROJECT_NAME}\"\n\n  stage('Create NationalParks back-end') {\n    def nationalParksURL = \"${NATIONALPARKS_GIT_URI}\"\n    def nationalParksBranch = \"${NATIONALPARKS_GIT_REF}\"\n    checkout([$class: \"GitSCM\", branches: [[name: \"*/${nationalParksBranch}\"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: \"RelativeTargetDirectory\", relativeTargetDir: \"nationalparks\"]], submoduleCfg: [], userRemoteConfigs: [[url: \"${nationalParksURL}\"]]])\n    sh \"oc new-app -f nationalparks/ose3/pipeline-buildconfig-template.json -p GIT_URI=${nationalParksURL} -p GIT_REF=${nationalParksBranch} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}\"\n  }\n\n  stage('Create MLBParks back-end') {\n    def mlbParksURL = \"${MLBPARKS_GIT_URI}\"\n    def mlbParksBranch = \"${MLBPARKS_GIT_REF}\"\n    checkout([$class: \"GitSCM\", branches: [[name: \"*/${mlbParksBranch}\"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: \"RelativeTargetDirectory\", relativeTargetDir: \"mlbparks\"]], submoduleCfg: [], userRemoteConfigs: [[url: \"${mlbParksURL}\"]]])\n    sh \"oc new-app -f mlbparks/ose3/pipeline-buildconfig-template.json -p GIT_URI=${mlbParksURL} -p GIT_REF=${mlbParksBranch} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}\"\n  }\n\n  stage('Create ParksMap front-end') {\n    def parksMapURL = \"${PARKSMAP_GIT_URI}\"\n    def parksMapBranch = \"${PARKSMAP_GIT_REF}\"\n    checkout([$class: \"GitSCM\", branches: [[name: \"*/${parksMapBranch}\"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: \"RelativeTargetDirectory\", relativeTargetDir: \"parksmap\"]], submoduleCfg: [], userRemoteConfigs: [[url: \"${parksMapURL}\"]]])\n    sh \"oc new-app -f parksmap/ose3/pipeline-buildconfig-template.json -p GIT_URI=${parksMapURL} -p GIT_REF=${parksMapBranch} -n ${project} --dry-run -o yaml | oc apply -f - -n ${project}\"\n  }\n}\n\nstage('Build Back-ends') {\n  parallel (\n    \"nationalparks\": {\n      node {\n        openshiftBuild buildConfig: \"nationalparks-pipeline\", namespace: project\n      }\n    },\n    \"mlbparks\": {\n      node {\n        openshiftBuild buildConfig: \"mlbparks-pipeline\", namespace: project\n      }\n    }\n  )\n}\n\nnode {\n  stage('Build Front-end') {\n    openshiftBuild buildConfig: \"parksmap-pipeline\", namespace: project\n  }\n}",
+		"jenkinsfilePath": "some/repo/dir/filename",
+      	"env": [{
+					"name" : "foo",
+					"value" : "bar"
+				},
+				{
+					"name" : "kung",
+					"value" : "foo"
+				}]
+			}
+    },
+    "triggers": [
+      {
+        "github": {
+          "secret": "${GITHUB_TRIGGER_SECRET}"
+        },
+        "type": "GitHub"
+      },
+      {
+        "generic": {
+          "secret": "${GENERIC_TRIGGER_SECRET}"
+        },
+        "type": "Generic"
+      }
+    ]
+  }
+}

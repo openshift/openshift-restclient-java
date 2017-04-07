@@ -36,6 +36,7 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 	
 	private SourceStrategyBuilder sourceStrategyBuilder;
 	private GitSourceBuilder gitSourceBuilder;
+	private JenkinsPipelineStrategyBuilder jenkinsPipelineStrategyBuilder;
 	private String imageStreamTagOutput;
 	private boolean buildOnConfigChange;
 	private boolean buildOnImageChange;
@@ -80,10 +81,13 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 	@Override
 	public IBuildConfig build() {
 		BuildConfig bc = client.getResourceFactory().stub(ResourceKind.BUILD_CONFIG, this.name, this.namespace);
-		
+
 		if(sourceStrategyBuilder != null) {
 			bc.setBuildStrategy(sourceStrategyBuilder.build(bc.getPropertyKeys()));
+		} else if (jenkinsPipelineStrategyBuilder != null) {
+			bc.setBuildStrategy(jenkinsPipelineStrategyBuilder.build(bc.getPropertyKeys()));
 		}
+		
 		if(gitSourceBuilder != null) {
 			bc.setBuildSource(gitSourceBuilder.build());
 		}
@@ -152,6 +156,12 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 		return gitSourceBuilder;
 	}
 
+	@Override
+	public IJenkinsPipelineStrategyBuilder usingJenkinsPipelineStrategy() {
+		jenkinsPipelineStrategyBuilder = new JenkinsPipelineStrategyBuilder(this);
+		return jenkinsPipelineStrategyBuilder; 
+	}
+	
 	class GitSourceBuilder implements IGitSourceBuilder {
 		
 		private IBuildConfigBuilder builder;
@@ -245,9 +255,42 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 			this.fromKind = "DockerImage";
 			return this;
 		}
-		
-		
-
 	}
 
+	class JenkinsPipelineStrategyBuilder implements IJenkinsPipelineStrategyBuilder {
+		
+		private IBuildConfigBuilder builder;
+		private String jenkinsFilePath;
+		private String jenkinsFile;
+		
+		JenkinsPipelineStrategyBuilder(IBuildConfigBuilder builder){
+			this.builder = builder;
+		}
+
+		@Override
+		public IJenkinsPipelineStrategyBuilder usingJenkinsfile(String file) {
+			this.jenkinsFile = file;
+			return this;
+		}
+
+		@Override
+		public IJenkinsPipelineStrategyBuilder usingJenkinsfilePath(String filePath) {
+			this.jenkinsFilePath = filePath;
+			return this;
+		}
+		
+		private JenkinsPipelineStrategy build(Map<String, String[]> overrides) {
+			JenkinsPipelineStrategy strategy = new JenkinsPipelineStrategy(new ModelNode(), overrides);
+			strategy.setJenkinsfilePath(jenkinsFilePath);
+			strategy.setJenkinsfile(jenkinsFile);
+			return strategy;
+		}
+		
+		@Override
+		public IBuildConfigBuilder end() {
+			return builder;
+		}
+
+	}
+	
 }

@@ -20,6 +20,7 @@ import com.openshift.restclient.model.IResourceBuilder;
 public interface IBuildConfigBuilder extends IResourceBuilder<IBuildConfig, IBuildConfigBuilder>, ICapability {
 
 	ISourceStrategyBuilder usingSourceStrategy();
+	IJenkinsPipelineStrategyBuilder usingJenkinsPipelineStrategy();
 	IGitSourceBuilder fromGitSource();
 	IBuildConfigBuilder toImageStreamTag(String tag);
 	IBuildConfigBuilder buildOnSourceChange(boolean onSourceChange);
@@ -33,7 +34,7 @@ public interface IBuildConfigBuilder extends IResourceBuilder<IBuildConfig, IBui
 		IGitSourceBuilder fromGitUrl(String url);
 		IGitSourceBuilder usingGitReference(String ref);
 		IGitSourceBuilder inContextDir(String contextDir);
-		
+
 	}
 	
 	interface ISourceStrategyBuilder extends Endable{
@@ -59,4 +60,12 @@ public interface IBuildConfigBuilder extends IResourceBuilder<IBuildConfig, IBui
 		
 	}
 	
+	interface IJenkinsPipelineStrategyBuilder extends Endable {
+
+		IBuildConfigBuilder end();
+
+		IJenkinsPipelineStrategyBuilder usingJenkinsfile(String file);
+		IJenkinsPipelineStrategyBuilder usingJenkinsfilePath(String filePath);
+	}
+
 }

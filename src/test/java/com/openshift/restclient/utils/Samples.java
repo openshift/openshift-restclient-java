@@ -64,7 +64,8 @@ public enum Samples {
 	V1_SECRET_VOLUME_SOURCE("openshift3/v1_secret_volume_source.json"),
 	V1_PVC_VOLUME_SOURCE("openshift3/v1_pvc_volume_source.json"),
     V1_LIFECYCLE("openshift3/v1_lifecycle.json"),
-	V1_DOCKER_IMAGE_MANIFEST("dockerregistry/v1_image_manifest.json");
+	V1_DOCKER_IMAGE_MANIFEST("dockerregistry/v1_image_manifest.json"),
+	V1_BUILDCONFIG_PIPELINE("openshift3/v1_buildconfig_pipeline.json");
 
 	private static final String SAMPLES_FOLDER = "/samples/";
 
