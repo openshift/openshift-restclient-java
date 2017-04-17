@@ -59,13 +59,12 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 	public static final String BUILDCONFIG_DOCKER_BASEIMAGE = "spec.strategy.dockerStrategy.baseImage";
 	private static final String BUILDCONFIG_OUTPUT_REPO =  "spec.output.to.name";
 	private static final String BUILDCONFIG_TRIGGERS = "spec.triggers";
+	private static final String BUILDCONFIG_STRATEGY =  "spec.strategy";
 	private static final String BUILD_CONFIG_WEBHOOK_GITHUB_SECRET = "github.secret";
 	private static final String BUILD_CONFIG_WEBHOOK_GENERIC_SECRET = "generic.secret";
 	private static final String BUILD_CONFIG_IMAGECHANGE_IMAGE = "imageChange.image";
 	private static final String BUILD_CONFIG_IMAGECHANGE_NAME = "imageChange.from.name";
 	private static final String BUILD_CONFIG_IMAGECHANGE_TAG = "imageChange.tag";
-	private static final String BUILD_STRATEGY =  "spec.strategy";
-
 
 	public BuildConfig(ModelNode node, IClient client, Map<String, String []> overrideProperties) {
 		super(node, client, null);
@@ -201,7 +200,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 			break;
 		case BuildStrategyType.SOURCE:
 			ISourceBuildStrategy source = (ISourceBuildStrategy) strategy;
-			get(BUILD_STRATEGY).set(ModelNode.fromJSONString(source.toString()));
+			get(BUILDCONFIG_STRATEGY).set(ModelNode.fromJSONString(source.toString()));
 			break;
 		case BuildStrategyType.DOCKER:
 			if ( !(strategy instanceof IDockerBuildStrategy)) {
@@ -221,7 +220,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement IJenkinsPipelineStrategy");
 			}
 			IJenkinsPipelineStrategy jenkins = (IJenkinsPipelineStrategy)strategy;
-			get(BUILD_STRATEGY).set(ModelNode.fromJSONString(jenkins.toString()));
+			get(BUILDCONFIG_STRATEGY).set(ModelNode.fromJSONString(jenkins.toString()));
 			break;
 		}
 
@@ -240,7 +239,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 						getEnvMap(BUILDCONFIG_CUSTOM_ENV)
 					);
 		case BuildStrategyType.SOURCE:
-			return (T) new SourceBuildStrategy(get(BUILD_STRATEGY), getPropertyKeys());
+			return (T) new SourceBuildStrategy(get(BUILDCONFIG_STRATEGY), getPropertyKeys());
 
 		case BuildStrategyType.DOCKER:
 			return (T) new DockerBuildStrategy(
@@ -250,7 +249,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 					);
 
 		case BuildStrategyType.JENKINS_PIPELINE:
-			return (T) new JenkinsPipelineStrategy(get(BUILD_STRATEGY), getPropertyKeys());
+			return (T) new JenkinsPipelineStrategy(get(BUILDCONFIG_STRATEGY), getPropertyKeys());
 
 		default:
 		}

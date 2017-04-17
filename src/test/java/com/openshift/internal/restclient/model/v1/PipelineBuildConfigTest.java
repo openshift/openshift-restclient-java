@@ -187,8 +187,8 @@ public class PipelineBuildConfigTest {
 		// when
 		IBuildConfig bc = builder
 				.usingJenkinsPipelineStrategy()
-					.usingJenkinsfile("node('aNode') {}")
-					.usingJenkinsfilePath("some/path/to/some/location")
+					.usingFile("node('aNode') {}")
+					.usingFilePath("some/path/to/some/location")
 					.end()
 				.build();
 		// then

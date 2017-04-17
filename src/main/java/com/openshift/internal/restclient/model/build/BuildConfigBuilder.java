@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Red Hat, Inc.
+ * Copyright (c) 2016-2017 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -268,13 +268,13 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 		}
 
 		@Override
-		public IJenkinsPipelineStrategyBuilder usingJenkinsfile(String file) {
+		public IJenkinsPipelineStrategyBuilder usingFile(String file) {
 			this.jenkinsFile = file;
 			return this;
 		}
 
 		@Override
-		public IJenkinsPipelineStrategyBuilder usingJenkinsfilePath(String filePath) {
+		public IJenkinsPipelineStrategyBuilder usingFilePath(String filePath) {
 			this.jenkinsFilePath = filePath;
 			return this;
 		}

@@ -64,8 +64,8 @@ public interface IBuildConfigBuilder extends IResourceBuilder<IBuildConfig, IBui
 
 		IBuildConfigBuilder end();
 
-		IJenkinsPipelineStrategyBuilder usingJenkinsfile(String file);
-		IJenkinsPipelineStrategyBuilder usingJenkinsfilePath(String filePath);
+		IJenkinsPipelineStrategyBuilder usingFile(String file);
+		IJenkinsPipelineStrategyBuilder usingFilePath(String filePath);
 	}
 
 }
