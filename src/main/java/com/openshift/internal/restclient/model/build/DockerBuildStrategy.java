@@ -40,7 +40,6 @@ public class DockerBuildStrategy implements IDockerBuildStrategy {
 
 	@Override
 	public boolean isNoCache() {
-		// TODO Auto-generated method stub
 		return noCache;
 	}
 

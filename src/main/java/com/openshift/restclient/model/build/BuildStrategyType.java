@@ -22,5 +22,6 @@ public interface BuildStrategyType {
 	
 	static final String SOURCE = "Source";
 	static final String CUSTOM = "Custom";
+	static final String JENKINS_PIPELINE = "JenkinsPipeline";
 
 }

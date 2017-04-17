@@ -17,6 +17,7 @@ import com.openshift.internal.restclient.model.build.BuildStatus;
 import com.openshift.internal.restclient.model.build.CustomBuildStrategy;
 import com.openshift.internal.restclient.model.build.DockerBuildStrategy;
 import com.openshift.internal.restclient.model.build.GitBuildSource;
+import com.openshift.internal.restclient.model.build.JenkinsPipelineStrategy;
 import com.openshift.internal.restclient.model.build.SourceBuildStrategy;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
@@ -100,6 +101,7 @@ public class Build extends KubernetesResource implements IBuild{
 	@SuppressWarnings("unchecked")
 	public  <T extends IBuildStrategy> T getBuildStrategy() {
 		switch(asString("spec.strategy.type")){
+		
 		case BuildStrategyType.CUSTOM:
 			return (T) new CustomBuildStrategy(
 						asString("spec.strategy.customStrategy.image"),
@@ -110,12 +112,15 @@ public class Build extends KubernetesResource implements IBuild{
 			return (T) new SourceBuildStrategy(get("spec.strategy"), getPropertyKeys());
 
 		case BuildStrategyType.DOCKER:
-
 			return (T) new DockerBuildStrategy(
 					asString("spec.strategy.dockerStrategy.contextDir"),
 					asBoolean("spec.strategy.dockerStrategy.noCache"),
 					asString("spec.strategy.dockerStrategy.baseImage")
 					);
+
+		case BuildStrategyType.JENKINS_PIPELINE:
+			return (T) new JenkinsPipelineStrategy(get("spec.strategy"), getPropertyKeys());
+
 		default:
 		}
 		return null;
@@ -130,7 +135,5 @@ public class Build extends KubernetesResource implements IBuild{
 	public IBuildStatus getBuildStatus() {
 		return new BuildStatus(get("status"), this.propertyKeys);
 	}
-
-	
 	
 }

@@ -10,7 +10,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import static com.openshift.internal.util.JBossDmrExtentions.*;
+import static com.openshift.internal.util.JBossDmrExtentions.asString;
 
 import java.util.Map;
 
@@ -84,4 +84,44 @@ public class EnvironmentVariable extends ModelNodeAdapter implements IEnvironmen
 		return null;
 	}
 	
+	
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof IEnvironmentVariable)) {
+			return false;
+		}
+
+		IEnvironmentVariable otherVar = (IEnvironmentVariable) object;
+		String thisName = getName();
+		String otherName = otherVar.getName();
+		if (thisName == null) {
+			if (otherName != null) {
+				return false;
+			}
+		} else {
+			if (!thisName.equals(otherName)) {
+				return false;
+			}
+		}
+
+		String thisValue = getValue();
+		String otherValue = otherVar.getValue();
+		if (thisValue == null) {
+			if (otherValue != null) {
+				return false;
+			}
+		} else {
+			if (!thisValue.equals(otherValue)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		String name = getName();
+		String value = getValue();
+		return 37 * (name == null? 0 : name.hashCode()) + (value == null? 0 : value.hashCode());
+	}
 }
