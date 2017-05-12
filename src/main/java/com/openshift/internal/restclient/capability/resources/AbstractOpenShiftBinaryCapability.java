@@ -10,7 +10,9 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -152,9 +154,11 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	}
 	
 	private void startProcess(final String location, final OpenShiftBinaryOption... options) {
-		String cmdLine = new StringBuilder(location).append(' ').append(buildArgs(Arrays.asList(options))).toString();
-		String[] args = StringUtils.split(cmdLine, " ");
+		List<String> args = new ArrayList<String>();
+		args.add("oc");
+		Arrays.stream(buildArgs(Arrays.asList(options)).split(" ")).forEach(s -> args.add(s));
 		ProcessBuilder builder = new ProcessBuilder(args);
+		builder.directory(new File(location).getParentFile());
 		builder.environment().remove("KUBECONFIG");
 		LOG.debug("OpenShift binary args: {}", builder.command());
 		try {
@@ -216,16 +220,6 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 			throw new LocationNotFoundException(
 					String.format("The OpenShift 'oc' binary location was not specified. Set the property %s", 
 							OPENSHIFT_BINARY_LOCATION));
-		}
-		
-		location = addQuotesIfRequired(location);
-		return location;
-	}
-	
-	private String addQuotesIfRequired(String location) {
-		if (!StringUtils.isEmpty(location)
-				&& location.contains(" ")) {
-			location = "\"" + location + "\"";
 		}
 		return location;
 	}
