@@ -36,6 +36,10 @@ import com.openshift.restclient.capability.resources.LocationNotFoundException;
 public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapability {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractOpenShiftBinaryCapability.class);
+	
+	
+	private static final boolean IS_MAC = StringUtils.isNotEmpty(System.getProperty("os.name"))
+			&& System.getProperty("os.name").toLowerCase().contains("mac");
 
 	private Process process;
 
@@ -155,10 +159,21 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	
 	private void startProcess(final String location, final OpenShiftBinaryOption... options) {
 		List<String> args = new ArrayList<String>();
-		args.add("oc");
-		Arrays.stream(buildArgs(Arrays.asList(options)).split(" ")).forEach(s -> args.add(s));
-		ProcessBuilder builder = new ProcessBuilder(args);
-		builder.directory(new File(location).getParentFile());
+		ProcessBuilder builder = null;
+		// the condition is made in order to solve mac problem 
+		// with launching binaries containing spaces in its path
+		// https://issues.jboss.org/browse/JBIDE-23862 - see the latest comments
+		if (IS_MAC) {
+			args.add(location);
+			Arrays.stream(buildArgs(Arrays.asList(options)).split(" ")).forEach(s -> args.add(s));
+			builder = new ProcessBuilder(args);
+		} else {
+			File oc = new File(location);
+			args.add(oc.getName());
+			Arrays.stream(buildArgs(Arrays.asList(options)).split(" ")).forEach(s -> args.add(s));
+			builder = new ProcessBuilder(args);
+			builder.directory(oc.getParentFile());
+		}		
 		builder.environment().remove("KUBECONFIG");
 		LOG.debug("OpenShift binary args: {}", builder.command());
 		try {
