@@ -10,7 +10,9 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,6 +36,10 @@ import com.openshift.restclient.capability.resources.LocationNotFoundException;
 public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapability {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractOpenShiftBinaryCapability.class);
+	
+	
+	private static final boolean IS_MAC = StringUtils.isNotEmpty(System.getProperty("os.name"))
+			&& System.getProperty("os.name").toLowerCase().contains("mac");
 
 	private Process process;
 
@@ -148,15 +154,11 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 		if(!validate()) {
 			return;
 		}
-		startProcess(location, options);
+		ProcessBuilder processBuilder = initProcessBuilder(location, options);
+		startProcess(processBuilder);
 	}
 	
-	private void startProcess(final String location, final OpenShiftBinaryOption... options) {
-		String cmdLine = new StringBuilder(location).append(' ').append(buildArgs(Arrays.asList(options))).toString();
-		String[] args = StringUtils.split(cmdLine, " ");
-		ProcessBuilder builder = new ProcessBuilder(args);
-		builder.environment().remove("KUBECONFIG");
-		LOG.debug("OpenShift binary args: {}", builder.command());
+	private void startProcess(ProcessBuilder builder) {
 		try {
 			process = builder.start();
 			checkProcessIsAlive();
@@ -165,6 +167,28 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 			throw new OpenShiftException(e, "Does your OpenShift binary location exist? Error starting process: %s", 
 					e.getMessage());
 		}
+	}
+	
+	private ProcessBuilder initProcessBuilder(String location, final OpenShiftBinaryOption... options) {
+		List<String> args = new ArrayList<String>();
+		ProcessBuilder builder = null;
+		// the condition is made in order to solve mac problem 
+		// with launching binaries containing spaces in its path
+		// https://issues.jboss.org/browse/JBIDE-23862 - see the latest comments
+		if (IS_MAC) {
+			args.add(location);
+			Arrays.stream(StringUtils.split(buildArgs(Arrays.asList(options)))).forEach(s -> args.add(s));
+			builder = new ProcessBuilder(args);
+		} else {
+			File oc = new File(location);
+			args.add(oc.getName());
+			Arrays.stream(StringUtils.split(buildArgs(Arrays.asList(options)))).forEach(s -> args.add(s));
+			builder = new ProcessBuilder(args);
+			builder.directory(oc.getParentFile());
+		}		
+		builder.environment().remove("KUBECONFIG");
+		LOG.debug("OpenShift binary args: {}", builder.command());
+		return builder;
 	}
 	
 	private void checkProcessIsAlive() throws IOException {
@@ -216,16 +240,6 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 			throw new LocationNotFoundException(
 					String.format("The OpenShift 'oc' binary location was not specified. Set the property %s", 
 							OPENSHIFT_BINARY_LOCATION));
-		}
-		
-		location = addQuotesIfRequired(location);
-		return location;
-	}
-	
-	private String addQuotesIfRequired(String location) {
-		if (!StringUtils.isEmpty(location)
-				&& location.contains(" ")) {
-			location = "\"" + location + "\"";
 		}
 		return location;
 	}
