@@ -42,7 +42,6 @@ public interface IClient extends ICapable, Cloneable {
 	/*
  	* Watch for changes
  	*
- 	* @param namespace The namespace to watch for changes in
  	* @param listener  The listener to be notified on events
  	* @param kids      The kinds to watch for
  	*/

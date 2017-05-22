@@ -25,6 +25,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import com.openshift.internal.restclient.AsyncClient;
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
@@ -43,7 +44,7 @@ import okhttp3.OkHttpClient;
  *
  */
 public class ClientBuilder {
-	
+
 	private String baseUrl;
 	private ISSLCertificateCallback sslCertificateCallback = new NoopSSLCertificateCallback();
 	private boolean sslCertCallbackWithDefaultHostnameVerifier = false;
@@ -54,16 +55,17 @@ public class ClientBuilder {
 	private String token;
 	private String password;
 	private Authenticator proxyAuthenticator;
-	
+
 	private int maxRequests = 64;
 	private int maxRequestsPerHost = 10;
-	
+
 	private int readTimeout = IHttpConstants.DEFAULT_READ_TIMEOUT;
 	private TimeUnit readTimeoutUnit = TimeUnit.MILLISECONDS;
 	private int connectTimeout = IHttpConstants.DEFAULT_READ_TIMEOUT;
 	private TimeUnit connectTimeoutUnit = TimeUnit.MILLISECONDS;
 	private int writeTimeout = IHttpConstants.DEFAULT_READ_TIMEOUT;
 	private TimeUnit writeTimeoutUnit = TimeUnit.MILLISECONDS;
+	private boolean async;
 
 	public ClientBuilder() {
 		this(null);
@@ -72,23 +74,27 @@ public class ClientBuilder {
 	public ClientBuilder(String baseUrl) {
 		this.baseUrl = baseUrl;
 	}
-	
+
+	public ClientBuilder async() {
+		this.async = true;
+		return this;
+	}
 	public ClientBuilder sslCertificateCallback(ISSLCertificateCallback callback) {
 		this.sslCertificateCallback = callback == null ? new NoopSSLCertificateCallback() : callback;
 		return this;
 	}
-	
+
 	public ClientBuilder sslCertCallbackWithDefaultHostnameVerifier(boolean b) {
 	    this.sslCertCallbackWithDefaultHostnameVerifier = b;
 	    return this;
 	}
-	
+
 	public ClientBuilder sslCertificate(String alias, X509Certificate cert) {
 		this.certificateAlias = alias;
 		this.certificate = cert;
 		return this;
 	}
-	
+
 	public ClientBuilder resourceFactory(IResourceFactory factory) {
 		this.resourceFactory = factory;
 		return this;
@@ -108,7 +114,7 @@ public class ClientBuilder {
 		this.password = password;
 		return this;
 	}
-	
+
 	public ClientBuilder usingToken(String token) {
 		this.token = token;
 		return this;
@@ -134,7 +140,7 @@ public class ClientBuilder {
 		this.proxyAuthenticator = proxyAuthenticator;
 		return this;
 	}
-	
+
 	/**
 	 * The connect timeout parameter used for establishing
 	 * the connection to a remote server
@@ -145,10 +151,10 @@ public class ClientBuilder {
 		this.connectTimeout = connectInMillis;
 		return this;
 	}
-	
+
 	/**
 	 * The maximum concurrent requests for this client.
-	 * 
+	 *
 	 * @param maxRequests the maximum number of concurrent requests
 	 * @return the client builder
 	 */
@@ -156,10 +162,10 @@ public class ClientBuilder {
 	    this.maxRequests = maxRequests;
 	    return this;
 	}
-	
+
     /**
      * The maximum concurrent request for this client for a single host.
-     * 
+     *
      * @param maxRequestsPerHost the maximum number of concurrent requests for a single host
      * @return the client builder
      */
@@ -167,12 +173,12 @@ public class ClientBuilder {
 	    this.maxRequestsPerHost = maxRequestsPerHost;
 	    return this;
 	}
-	
+
 	/**
-	 * Build a client  
-	 * 
+	 * Build a client
+	 *
 	 * @return
-	 * @throws KeyManagementException 
+	 * @throws KeyManagementException
 	 */
 	public IClient build() {
 		try {
@@ -183,7 +189,7 @@ public class ClientBuilder {
 			ResponseCodeInterceptor responseCodeInterceptor = new ResponseCodeInterceptor();
 			OpenShiftAuthenticator authenticator = new OpenShiftAuthenticator();
 			Dispatcher dispatcher = new Dispatcher();
-			
+
 			//hiding these for now to since not certain
 			//if we need to really expose them.
 			dispatcher.setMaxRequests(maxRequests);
@@ -200,34 +206,39 @@ public class ClientBuilder {
 
 			if (!this.sslCertCallbackWithDefaultHostnameVerifier)
 			    builder.hostnameVerifier(sslCertificateCallback);
-			
+
 			if (proxyAuthenticator != null) {
 				builder.proxyAuthenticator(proxyAuthenticator);
 			}
 
 			OkHttpClient okClient = builder.build();
-			
+
 			IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
 			AuthorizationContext authContext = new AuthorizationContext(token, userName, password);
-			DefaultClient client = new DefaultClient(new URL(this.baseUrl), okClient, factory, null, authContext);
-			
+			DefaultClient client;
+			if(async) {
+				client = new AsyncClient(new URL(this.baseUrl), okClient, factory, null, authContext);
+			}else {
+				client = new DefaultClient(new URL(this.baseUrl), okClient, factory, null, authContext);
+			}
+
 			authContext.setClient(client);
 			responseCodeInterceptor.setClient(client);
 			authenticator.setClient(client);
 			authenticator.setOkClient(okClient);
-			
+
 			return client;
 		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException e) {
 			throw new OpenShiftException(e, "Unable to initialize client");
 		}
 	}
-	
+
 	private <T> T defaultIfNull(T value, T aDefault) {
 		if(value != null)
 			return value;
 		return aDefault;
 	}
-	
+
 	private X509TrustManager getCurrentTrustManager(TrustManagerFactory trustManagerFactory) throws NoSuchAlgorithmException, KeyStoreException {
 		for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
 			if (trustManager instanceof X509TrustManager) {
@@ -236,9 +247,9 @@ public class ClientBuilder {
 			}
 		}
 		return null;
-		
+
 	}
-	
+
 	private TrustManagerFactory initTrustManagerFactory(String alias, X509Certificate cert) throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 			if (alias != null && cert != null) {
@@ -248,7 +259,7 @@ public class ClientBuilder {
 				cert.checkValidity();
 				ks.setCertificateEntry(alias, cert);
 				// testing has proven that you can only call init() once for a TrustManagerFactory wrt loading certs
-				// from the KeyStore ... subsequent KeyStore.setCertificateEntry / TrustManagerFactory.init calls are 
+				// from the KeyStore ... subsequent KeyStore.setCertificateEntry / TrustManagerFactory.init calls are
 				// ignored.
 				// So if a specific cert is required to validate this connection's communication with the server, add it up front
 				// in the ctor.
@@ -258,18 +269,18 @@ public class ClientBuilder {
 			}
 			return trustManagerFactory;
 	}
-	
+
 	private static class CallbackTrustManager implements X509TrustManager {
 
 		private X509TrustManager trustManager;
 		private ISSLCertificateCallback callback;
 
-		private CallbackTrustManager(X509TrustManager currentTrustManager, ISSLCertificateCallback callback) 
+		private CallbackTrustManager(X509TrustManager currentTrustManager, ISSLCertificateCallback callback)
 				throws NoSuchAlgorithmException, KeyStoreException {
-			this.trustManager = currentTrustManager; 
+			this.trustManager = currentTrustManager;
 			this.callback = callback;
 		}
-		
+
 		public X509Certificate[] getAcceptedIssuers() {
 			return trustManager.getAcceptedIssuers();
 		}

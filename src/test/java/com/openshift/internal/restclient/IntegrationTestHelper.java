@@ -66,6 +66,16 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
 		return new ClientBuilder(prop.getProperty(KEY_SERVER_URL)).build();
 	}
 
+	public AsyncClient createAsyncClientForBasicAuth() {
+		AsyncClient client = (AsyncClient) new ClientBuilder(prop.getProperty(KEY_SERVER_URL))
+				.withUserName(getDefaultClusterAdminUser())
+				.withPassword(getDefaultClusterAdminPassword())
+				.async()
+				.build();
+		return client;
+	}
+
+
 	public IClient createClientForBasicAuth() {
 		IClient client = new ClientBuilder(prop.getProperty(KEY_SERVER_URL))
 				.withUserName(getDefaultClusterAdminUser())
