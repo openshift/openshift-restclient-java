@@ -154,28 +154,11 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 		if(!validate()) {
 			return;
 		}
-		startProcess(location, options);
+		ProcessBuilder processBuilder = initProcessBuilder(location, options);
+		startProcess(processBuilder);
 	}
 	
-	private void startProcess(final String location, final OpenShiftBinaryOption... options) {
-		List<String> args = new ArrayList<String>();
-		ProcessBuilder builder = null;
-		// the condition is made in order to solve mac problem 
-		// with launching binaries containing spaces in its path
-		// https://issues.jboss.org/browse/JBIDE-23862 - see the latest comments
-		if (IS_MAC) {
-			args.add(location);
-			Arrays.stream(buildArgs(Arrays.asList(options)).split(" ")).forEach(s -> args.add(s));
-			builder = new ProcessBuilder(args);
-		} else {
-			File oc = new File(location);
-			args.add(oc.getName());
-			Arrays.stream(buildArgs(Arrays.asList(options)).split(" ")).forEach(s -> args.add(s));
-			builder = new ProcessBuilder(args);
-			builder.directory(oc.getParentFile());
-		}		
-		builder.environment().remove("KUBECONFIG");
-		LOG.debug("OpenShift binary args: {}", builder.command());
+	private void startProcess(ProcessBuilder builder) {
 		try {
 			process = builder.start();
 			checkProcessIsAlive();
@@ -184,6 +167,28 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 			throw new OpenShiftException(e, "Does your OpenShift binary location exist? Error starting process: %s", 
 					e.getMessage());
 		}
+	}
+	
+	private ProcessBuilder initProcessBuilder(String location, final OpenShiftBinaryOption... options) {
+		List<String> args = new ArrayList<String>();
+		ProcessBuilder builder = null;
+		// the condition is made in order to solve mac problem 
+		// with launching binaries containing spaces in its path
+		// https://issues.jboss.org/browse/JBIDE-23862 - see the latest comments
+		if (IS_MAC) {
+			args.add(location);
+			Arrays.stream(StringUtils.split(buildArgs(Arrays.asList(options)))).forEach(s -> args.add(s));
+			builder = new ProcessBuilder(args);
+		} else {
+			File oc = new File(location);
+			args.add(oc.getName());
+			Arrays.stream(StringUtils.split(buildArgs(Arrays.asList(options)))).forEach(s -> args.add(s));
+			builder = new ProcessBuilder(args);
+			builder.directory(oc.getParentFile());
+		}		
+		builder.environment().remove("KUBECONFIG");
+		LOG.debug("OpenShift binary args: {}", builder.command());
+		return builder;
 	}
 	
 	private void checkProcessIsAlive() throws IOException {
