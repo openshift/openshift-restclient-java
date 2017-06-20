@@ -18,6 +18,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -48,6 +49,7 @@ public class ClientBuilder {
 	private ISSLCertificateCallback sslCertificateCallback = new NoopSSLCertificateCallback();
 	private boolean sslCertCallbackWithDefaultHostnameVerifier = false;
 	private X509Certificate certificate;
+	private Collection<X509Certificate> certificateCollection;
 	private String certificateAlias;
 	private IResourceFactory resourceFactory;
 	private String userName;
@@ -87,6 +89,12 @@ public class ClientBuilder {
 		this.certificateAlias = alias;
 		this.certificate = cert;
 		return this;
+	}
+	
+	public ClientBuilder sslCertificateCollection(String alias, Collection<X509Certificate> certs) {
+	    this.certificateAlias = alias;
+	    this.certificateCollection = certs;
+	    return this;
 	}
 	
 	public ClientBuilder resourceFactory(IResourceFactory factory) {
@@ -176,7 +184,7 @@ public class ClientBuilder {
 	 */
 	public IClient build() {
 		try {
-			TrustManagerFactory trustManagerFactory = initTrustManagerFactory(certificateAlias, certificate);
+			TrustManagerFactory trustManagerFactory = initTrustManagerFactory(certificateAlias, certificate, certificateCollection);
 			X509TrustManager trustManager  = getCurrentTrustManager(trustManagerFactory);
 			SSLContext sslContext = SSLUtils.getSSLContext(trustManager);
 
@@ -239,14 +247,26 @@ public class ClientBuilder {
 		
 	}
 	
-	private TrustManagerFactory initTrustManagerFactory(String alias, X509Certificate cert) throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
+	private TrustManagerFactory initTrustManagerFactory(String alias, X509Certificate cert, Collection<X509Certificate> certs) throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			if (alias != null && cert != null) {
+			if (alias != null && (cert != null || certs != null)) {
 				KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
 				// need this load to initialize the key store, and allow for the subsequent set certificate entry
 				ks.load(null, null);
-				cert.checkValidity();
-				ks.setCertificateEntry(alias, cert);
+				if (cert != null) {
+				    cert.checkValidity();
+				    ks.setCertificateEntry(alias, cert);
+				}
+				if (certs != null) {
+				    int i = 0;
+				    for (X509Certificate x509 : certs) {
+				        x509.checkValidity();
+				        ks.setCertificateEntry(alias + i, x509);
+				        i++;
+				    }
+				}
+				
+				
 				// testing has proven that you can only call init() once for a TrustManagerFactory wrt loading certs
 				// from the KeyStore ... subsequent KeyStore.setCertificateEntry / TrustManagerFactory.init calls are 
 				// ignored.
