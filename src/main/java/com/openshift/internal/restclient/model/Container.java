@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -42,6 +43,10 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 	private static final String COMMANDARGS = "args";
 	private static final String LIFECYCLE = "lifecycle";
 	private static final String VOLUMEMOUNTS = "volumeMounts";
+	private static final String PROPERTY_REQUESTS_MEMORY = "resources.requests.memory";
+	private static final String PROPERTY_REQUESTS_CPU = "resources.requests.cpu";
+	private static final String PROPERTY_LIMITS_MEMORY = "resources.limits.memory";
+	private static final String PROPERTY_LIMITS_CPU = "resources.limits.cpu";
 
 	private ModelNode node;
 	private Map<String, String[]> propertyKeys;
@@ -233,8 +238,66 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 	}
 	
 	@Override
+	public String getRequestsMemory() {
+		return asString(node, propertyKeys, PROPERTY_REQUESTS_MEMORY);
+	}
+	
+	@Override
+	public void setRequestsMemory(String requestsMemory) {
+		ModelNode child = get(getNode(), propertyKeys, PROPERTY_REQUESTS_MEMORY);
+		if (StringUtils.isBlank(requestsMemory)) {
+			child.clear();
+		} else {
+			child.set(requestsMemory);
+		}
+	}
+	
+	@Override
+	public String getRequestsCPU() {
+		return asString(node, propertyKeys, PROPERTY_REQUESTS_CPU);
+	}
+	
+	@Override
+	public void setRequestsCPU(String requestsCPU) {
+		ModelNode child = get(getNode(), propertyKeys, PROPERTY_REQUESTS_CPU);
+		if (StringUtils.isBlank(requestsCPU)) {
+			child.clear();
+		} else {
+			child.set(requestsCPU);
+		}
+	}
+	
+	@Override
+	public String getLimitsMemory() {
+		return asString(node, propertyKeys, PROPERTY_LIMITS_MEMORY);
+	}
+
+	@Override
+	public void setLimitsMemory(String limitsMemory) {
+		ModelNode child = get(getNode(), propertyKeys, PROPERTY_LIMITS_MEMORY);
+		if (StringUtils.isBlank(limitsMemory)) {
+			child.clear();
+		} else {
+			child.set(limitsMemory);
+		}
+	}
+
+	@Override
+	public String getLimitsCPU() {
+		return asString(node, propertyKeys, PROPERTY_LIMITS_CPU);
+	}
+	
+	@Override
+	public void setLimitsCPU(String limitsCPU) {
+		ModelNode child = get(getNode(), propertyKeys, PROPERTY_LIMITS_CPU);
+		if (StringUtils.isBlank(limitsCPU)) {
+			child.clear();
+		} else {
+			child.set(limitsCPU);
+		}
+	}
+	@Override
 	public String toJSONString() {
 		return super.toJson(false);
 	}
-	
 }

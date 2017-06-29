@@ -78,6 +78,17 @@ public interface IContainer extends INameSetable{
 	 */
 	IVolumeMount addVolumeMount(String name);
 	
+	String getRequestsCPU();
+	void setRequestsCPU(String requestsCPU);
 	
+	String getRequestsMemory();
+	void setRequestsMemory(String requestsMemory);
+	
+	String getLimitsCPU();
+	void setLimitsCPU(String limitsCPU);
+	
+	String getLimitsMemory();
+	void setLimitsMemory(String limitsMemory);
+
 	String toJSONString();
 }

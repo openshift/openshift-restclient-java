@@ -10,6 +10,7 @@ package com.openshift.internal.restclient.model.v1;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -173,5 +174,28 @@ public class PodTest {
 	    assertEquals(cmdArgs.get(0), "-c");
 	    assertEquals(cmdArgs.get(1), "echo 'hello'");
 	}
-	    
+	
+	@Test
+	public void getContainerResourceRequirements() {
+        Collection<IContainer> containers = pod.getContainers();
+        IContainer container = containers.iterator().next();
+        assertEquals("1", container.getRequestsCPU());
+        assertEquals("128Mi", container.getRequestsMemory());
+        assertEquals("4", container.getLimitsCPU());
+        assertEquals("1Gi", container.getLimitsMemory());
+	}
+
+	@Test
+	public void resetContainerResourceRequirements() {
+        Collection<IContainer> containers = pod.getContainers();
+        IContainer container = containers.iterator().next();
+        container.setRequestsMemory(null);
+        container.setRequestsCPU(null);
+        container.setLimitsMemory(null);
+        container.setLimitsCPU(null);
+        assertEquals("", container.getRequestsCPU());
+        assertEquals("", container.getRequestsMemory());
+        assertEquals("", container.getLimitsCPU());
+        assertEquals("", container.getLimitsMemory());
+	}
 }
