@@ -8,9 +8,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
-import static java.util.stream.Collectors.joining;
-
 import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeClientCapabilities;
+import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,8 +81,8 @@ public class DefaultClient implements IClient, IHttpConstants{
 		if(this.factory != null) {
 			this.factory.setClient(this);
 		}
-		openShiftVersion = System.getProperty(SYSTEM_PROP_OPENSHIFT_API_VERSION, null);
-		kubernetesVersion = System.getProperty(SYSTEM_PROP_K8E_API_VERSION, null);
+		openShiftVersion = getMasterVersion("version/openshift");
+		kubernetesVersion = getMasterVersion("version");
 		this.typeMapper = typeMapper != null ? typeMapper :  new ApiTypeMapper(baseUrl.toString(), client);
 		this.authContext = authContext;
 	}
@@ -364,6 +364,29 @@ public class DefaultClient implements IClient, IHttpConstants{
 	@Override
 	public String getOpenShiftAPIVersion() {
 		return typeMapper.getPreferedVersionFor(OS_API_ENDPOINT);
+	}
+	
+	private String getMasterVersion(String versionInfoType) {
+		try {
+			Request request = new Request.Builder()
+					.url(new URL(this.baseUrl, versionInfoType))
+					.header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON)
+					.build();
+			try(Response response = client.newCall(request).execute()) {
+				return ModelNode.fromJSONString(response.body().string()).get("gitVersion").asString();
+			}
+		} catch (IOException e) {
+			LOGGER.warn("Exception while trying to determine master version of openshift and kubernetes", e);
+			return "";
+		}
+	}
+	
+	public String getOpenshiftMasterVersion() {
+		return StringUtils.isEmpty(openShiftVersion) ? getMasterVersion("version/openshift") : openShiftVersion;
+	}
+	
+	public String getKubernetesMasterVersion() {
+		return StringUtils.isEmpty(kubernetesVersion) ? getMasterVersion("version") : kubernetesVersion;
 	}
 	
 	@Override
