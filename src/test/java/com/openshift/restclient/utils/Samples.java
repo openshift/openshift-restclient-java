@@ -19,6 +19,9 @@ import org.apache.commons.io.IOUtils;
  * @author Jeff Cantrill
  */
 public enum Samples {
+	
+	OPENSHIFT_VERSION("openshift3/api_openshift_version.json"),
+	KUBERNETES_VERSION("openshift3/api_kubernetes_version.json"),
 
 	GROUP_ENDPONT_API_V1("openshift3/api_v1_endpoint.json"),
 	GROUP_ENDPONT_OAPI_V1("openshift3/oapi_v1_endpoint.json"),
