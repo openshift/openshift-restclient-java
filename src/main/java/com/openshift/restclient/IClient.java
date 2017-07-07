@@ -272,6 +272,18 @@ public interface IClient extends ICapable, Cloneable {
 	 * @throws OpenShiftException
 	 */
 	String getServerReadyStatus();
+	
+	/**
+	 * Query the server to determine the Openshift version
+	 * @return
+	 */
+	String getOpenshiftMasterVersion();
+	
+	/**
+	 * Query the server to determine the Kubernetes version
+	 * @return
+	 */
+	String getKubernetesMasterVersion();
 
 	IClient clone();
 }

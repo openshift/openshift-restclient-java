@@ -8,9 +8,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
-import static java.util.stream.Collectors.joining;
-
 import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeClientCapabilities;
+import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,9 +20,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,8 @@ import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.JSONSerializeable;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -81,8 +84,8 @@ public class DefaultClient implements IClient, IHttpConstants{
 		if(this.factory != null) {
 			this.factory.setClient(this);
 		}
-		openShiftVersion = System.getProperty(SYSTEM_PROP_OPENSHIFT_API_VERSION, null);
-		kubernetesVersion = System.getProperty(SYSTEM_PROP_K8E_API_VERSION, null);
+		initMasterVersion("version/openshift", new VersionCallback(version -> this.openShiftVersion = version));
+		initMasterVersion("version", new VersionCallback(version -> this.kubernetesVersion = version));
 		this.typeMapper = typeMapper != null ? typeMapper :  new ApiTypeMapper(baseUrl.toString(), client);
 		this.authContext = authContext;
 	}
@@ -364,6 +367,49 @@ public class DefaultClient implements IClient, IHttpConstants{
 	@Override
 	public String getOpenShiftAPIVersion() {
 		return typeMapper.getPreferedVersionFor(OS_API_ENDPOINT);
+	}
+	
+	private void initMasterVersion(String versionInfoType, Callback callback) {
+		try {
+			Request request = new Request.Builder()
+					.url(new URL(this.baseUrl, versionInfoType))
+					.header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON)
+					.build();
+			client.newCall(request).enqueue(callback);
+		} catch (IOException e) {
+			LOGGER.warn("Exception while trying to determine master version of openshift and kubernetes", e);
+		}
+	}
+	
+	private class VersionCallback implements Callback {
+		Consumer<String> versionSetter;
+		public VersionCallback(Consumer<String> versionSetter) {
+			this.versionSetter = versionSetter;
+		}
+		@Override
+		public void onFailure(Call call, IOException e) {
+			versionSetter.accept("");
+			LOGGER.warn("Exception while trying to determine master version of openshift and kubernetes", e);
+		}
+
+		@Override
+		public void onResponse(Call call, Response response) throws IOException {
+			try {
+				versionSetter.accept(ModelNode.fromJSONString(response.body().string()).get("gitVersion").asString());
+			} finally {
+				response.close();
+			}
+		}
+	}
+	
+	@Override
+	public String getOpenshiftMasterVersion() {	
+		return this.openShiftVersion;
+	}
+	
+	@Override
+	public String getKubernetesMasterVersion() {
+		return this.kubernetesVersion;
 	}
 	
 	@Override
