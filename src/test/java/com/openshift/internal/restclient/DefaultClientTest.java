@@ -92,7 +92,7 @@ public class DefaultClientTest extends TypeMapperFixture{
 
 	
 	private DefaultClient givenClient(URL baseUrl, String token, String user) {
-		DefaultClient client = new DefaultClient(baseUrl, null, null, null, new AuthorizationContext(token,user,null));
+		DefaultClient client = new DefaultClient(baseUrl, getHttpClient(), null, null, new AuthorizationContext(token,user,null));
 		return client;
 	}
 

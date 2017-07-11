@@ -62,6 +62,8 @@ public class TypeMapperFixture {
 		client.whenRequestTo(base + "/api/v1").thenReturn(responseOf(Samples.GROUP_ENDPONT_API_V1.getContentAsString()));
 		client.whenRequestTo(base + "/oapi/v1").thenReturn(responseOf(Samples.GROUP_ENDPONT_OAPI_V1.getContentAsString()));
 		client.whenRequestTo(base + "/apis/extensions/v1beta1").thenReturn(responseOf(Samples.GROUP_ENDPONT_APIS_EXTENSIONS.getContentAsString()));
+		client.whenRequestTo(base + "/version").thenReturn(responseOf(Samples.KUBERNETES_VERSION.getContentAsString()));
+		client.whenRequestTo(base + "/version/openshift").thenReturn(responseOf(Samples.OPENSHIFT_VERSION.getContentAsString()));
 		mapper = new ApiTypeMapper(base, client);
 	}
 	
