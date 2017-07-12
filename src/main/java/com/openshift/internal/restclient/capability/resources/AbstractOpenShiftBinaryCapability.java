@@ -181,7 +181,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 			builder = new ProcessBuilder(args);
 		} else {
 			File oc = new File(location);
-			args.add(oc.getName());
+			args.add(location);
 			Arrays.stream(StringUtils.split(buildArgs(Arrays.asList(options)))).forEach(s -> args.add(s));
 			builder = new ProcessBuilder(args);
 			builder.directory(oc.getParentFile());
