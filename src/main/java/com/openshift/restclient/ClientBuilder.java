@@ -26,6 +26,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
@@ -36,7 +38,11 @@ import com.openshift.restclient.utils.SSLUtils;
 
 import okhttp3.Authenticator;
 import okhttp3.Dispatcher;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.internal.Version;
 
 /**
  * Builder to create IClient instances.
@@ -55,6 +61,7 @@ public class ClientBuilder {
 	private String userName;
 	private String token;
 	private String password;
+	private String userAgentPrefix;
 	private Authenticator proxyAuthenticator;
 	
 	private int maxRequests = 64;
@@ -120,6 +127,11 @@ public class ClientBuilder {
 	public ClientBuilder usingToken(String token) {
 		this.token = token;
 		return this;
+	}
+	
+	public ClientBuilder usingUserAgentPrefix(String prefix) {
+	    this.userAgentPrefix = prefix;
+	    return this;
 	}
 
 	public ClientBuilder withConnectTimeout(int timeout, TimeUnit unit) {
@@ -196,9 +208,18 @@ public class ClientBuilder {
 			//if we need to really expose them.
 			dispatcher.setMaxRequests(maxRequests);
 			dispatcher.setMaxRequestsPerHost(maxRequestsPerHost);
+			String[] pieces = {this.userAgentPrefix, "openshift-restclient-java", Version.userAgent()};
+			String userAgent = StringUtils.join(pieces, "/");
 
 			OkHttpClient.Builder builder = new OkHttpClient.Builder()
 				.addInterceptor(responseCodeInterceptor)
+				.addNetworkInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Request agent = chain.request().newBuilder().header("User-Agent", userAgent).build();
+                        return chain.proceed(agent);
+                    }
+                })
 				.authenticator(authenticator)
 				.dispatcher(dispatcher)
 				.readTimeout(readTimeout, readTimeoutUnit)
