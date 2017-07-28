@@ -71,6 +71,13 @@ public class PodExec extends AbstractCapability implements IPodExec {
 		if ( options == null ) {
 			options = new Options();
 		}
+		
+		/*
+         with 3.7 per https://github.com/openshift/origin/issues/15330, 3.6 was evidently broke in allowing stdErr/stdOut to not be set; need to set stdout/stderr to true
+		 */
+		options.stdErr(true);
+		options.stdOut(true);
+		
 
 		Map<String,String> parameters = options.getMap();
 
