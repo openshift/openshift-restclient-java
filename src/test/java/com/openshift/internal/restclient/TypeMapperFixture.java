@@ -86,6 +86,7 @@ public class TypeMapperFixture {
 				.request(new Request.Builder().url("https://someurlfortesting").build())
 				.protocol(Protocol.HTTP_1_1)
 				.code(IHttpConstants.STATUS_OK)
+				.message("foo")
 				.body(ResponseBody.create(null, response))
 				.build();
 	}
