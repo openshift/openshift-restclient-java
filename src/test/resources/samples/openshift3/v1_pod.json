@@ -62,7 +62,16 @@
                         "value": "test"
                     }
                 ],
-                "resources": {},
+                "resources": {
+                    "requests": {
+                        "cpu": "1",
+                        "memory": "128Mi"
+                     },
+                     "limits": {
+                        "cpu": "4",
+                        "memory": "1Gi"
+                     }
+                },
                 "volumeMounts": [
                     {
                         "name": "deployer-token-22jov",
