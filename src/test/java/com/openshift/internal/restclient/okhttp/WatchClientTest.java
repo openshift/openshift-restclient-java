@@ -59,7 +59,6 @@ public class WatchClientTest {
 		Response.Builder responseBuilder = new Response.Builder();
 		responseBuilder.code(IHttpConstants.STATUS_OK)
 						.protocol(Protocol.HTTP_2)
-						.message("foo")
 						.request(new Request.Builder().url("http://localhost").build());
 		endpoint.onFailure(new ProtocolException(), responseBuilder.build());
 		verify(listener, never()).error(any());
