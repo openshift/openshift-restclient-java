@@ -98,4 +98,19 @@ public interface ITLSConfig {
 	 *            contents of CA certificate of the final destination
 	 */
 	void setDestinationCertificate(String destinationCertificate);
+
+	/**
+	 * Retrieves InsecureEdgeTerminationPolicy
+	 *
+	 * @return InsecureEdgeTerminationPolicy
+	 */
+	String getInsecureEdgeTerminationPolicy();
+
+	/**
+	 * Sets insecureEdgeTerminationPolicy
+	 *
+	 * @param insecureEdgeTerminationPolicy
+	 *            insecureEdgeTerminationPolicy
+	 */
+	void setInsecureEdgeTerminationPolicy(String insecureEdgeTerminationPolicy);
 }

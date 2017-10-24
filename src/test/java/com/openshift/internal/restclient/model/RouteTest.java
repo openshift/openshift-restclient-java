@@ -53,4 +53,14 @@ public class RouteTest {
 		assertEquals("http://www.host.com/abc", route.getURL());
 	}
 
+	@Test
+	public void getAndSetInsecureEdgeTerminationPolicy() {
+		ModelNode modelNode = new ModelNode();
+		Route edgeTLSRoute = spy(new Route(modelNode, null, null));
+		edgeTLSRoute.createTLSConfig().setTerminationType("edge");
+
+		edgeTLSRoute.getTLSConfig().setInsecureEdgeTerminationPolicy("Allow");
+		assertEquals("Allow", edgeTLSRoute.getTLSConfig().getInsecureEdgeTerminationPolicy());
+	}
+
 }
