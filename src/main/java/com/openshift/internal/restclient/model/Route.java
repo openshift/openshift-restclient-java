@@ -33,6 +33,7 @@ public class Route extends KubernetesResource implements IRoute {
 	private static final String ROUTE_TLS_KEY = "spec.tls.key";
 	private static final String ROUTE_TLS_CACERT = "spec.tls.caCertificate";
 	private static final String ROUTE_TLS_DESTINATION_CACERT = "spec.tls.destinationCACertificate";
+	private static final String ROUTE_TLS_INSECURE_EDGE_TERMINATION_POLICY = "spec.tls.insecureEdgeTerminationPolicy";
 	private static final String ROUTE_PORT = "spec.port";
 	private static final String ROUTE_PORT_TARGETPORT = "spec.port.targetPort";
 
@@ -172,6 +173,15 @@ public class Route extends KubernetesResource implements IRoute {
 			get(ROUTE_TLS_DESTINATION_CACERT).set(destinationCertificate);
 		}
 
+		@Override
+		public String getInsecureEdgeTerminationPolicy() {
+			return asString(ROUTE_TLS_INSECURE_EDGE_TERMINATION_POLICY);
+		}
+
+		@Override
+		public void setInsecureEdgeTerminationPolicy(String insecureEdgeTerminationPolicy) {
+			get(ROUTE_TLS_INSECURE_EDGE_TERMINATION_POLICY).set(insecureEdgeTerminationPolicy);
+		}
 	}
 	
 	private class TargetPort implements ITargetPort {
