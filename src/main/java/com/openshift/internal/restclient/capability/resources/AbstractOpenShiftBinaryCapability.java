@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -170,25 +172,34 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	}
 	
 	private ProcessBuilder initProcessBuilder(String location, final OpenShiftBinaryOption... options) {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		ProcessBuilder builder = null;
 		// the condition is made in order to solve mac problem 
 		// with launching binaries containing spaces in its path
 		// https://issues.jboss.org/browse/JBIDE-23862 - see the latest comments
 		if (IS_MAC) {
 			args.add(location);
-			Arrays.stream(StringUtils.split(buildArgs(Arrays.asList(options)))).forEach(s -> args.add(s));
+			args.addAll(splitTakingCareOfSpaceInsideQuotes(buildArgs(Arrays.asList(options))));
 			builder = new ProcessBuilder(args);
 		} else {
 			File oc = new File(location);
 			args.add(location);
-			Arrays.stream(StringUtils.split(buildArgs(Arrays.asList(options)))).forEach(s -> args.add(s));
+			args.addAll(splitTakingCareOfSpaceInsideQuotes(buildArgs(Arrays.asList(options))));
 			builder = new ProcessBuilder(args);
 			builder.directory(oc.getParentFile());
 		}		
 		builder.environment().remove("KUBECONFIG");
 		LOG.debug("OpenShift binary args: {}", builder.command());
 		return builder;
+	}
+	
+	private List<String> splitTakingCareOfSpaceInsideQuotes(String str){
+		List<String> res = new ArrayList<>();
+		Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(str);
+		while (m.find()) {
+		    res.add(m.group(1)); 
+		}
+		return res;
 	}
 	
 	private void checkProcessIsAlive() throws IOException {

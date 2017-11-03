@@ -53,7 +53,9 @@ public interface IRSyncable extends IBinaryCapability {
 			return new StringBuilder()
 					.append(pod.getName())
 					.append(POD_PATH_SEPARATOR)
+					.append("\"")
 					.append(super.getParameter())
+					.append("\"")
 					.append(" -n ")
 					.append(pod.getNamespace())
 					.toString();
@@ -66,7 +68,9 @@ public interface IRSyncable extends IBinaryCapability {
 					.append(NAMESPACE_POD_SEPARATOR)
 					.append(pod.getName())
 					.append(POD_PATH_SEPARATOR)
+					.append("\"")
 					.append(super.getParameter())
+					.append("\"")
 					.toString();
 		}
 
@@ -84,6 +88,11 @@ public interface IRSyncable extends IBinaryCapability {
 
 		public boolean isPod() {
 			return false;
+		}
+		
+		@Override
+		public String getParameter() {
+			return "\"" + super.getParameter() + "\"";
 		}
 	}
 
