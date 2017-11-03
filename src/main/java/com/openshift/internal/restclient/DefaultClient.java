@@ -137,7 +137,6 @@ public class DefaultClient implements IClient, IHttpConstants{
 		return list(kind, namespace, new HashMap<>());
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends IResource> List<T> list(String kind, String namespace, Map<String, String> labels) {
 

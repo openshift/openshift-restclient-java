@@ -48,7 +48,6 @@ public class EnvironmentVariableTest {
 		assertThat(var1).isNotEqualTo(var2);
 	}
 
-	@SuppressWarnings("serial")
 	@Test
 	public void shouldReturnEmptyMapGivenEmptyEnvVars() {
 		// given
