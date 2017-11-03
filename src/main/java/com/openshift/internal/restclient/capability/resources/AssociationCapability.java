@@ -9,7 +9,6 @@
 package com.openshift.internal.restclient.capability.resources;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IResource;
 
 /**

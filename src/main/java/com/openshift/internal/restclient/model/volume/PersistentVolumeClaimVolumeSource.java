@@ -11,7 +11,6 @@
 package com.openshift.internal.restclient.model.volume;
 
 import com.openshift.restclient.model.volume.IPersistentVolumeClaimVolumeSource;
-import com.openshift.restclient.model.volume.IVolumeSource;
 import com.openshift.restclient.model.volume.VolumeType;
 import org.jboss.dmr.ModelNode;
 

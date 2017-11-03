@@ -12,7 +12,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,6 @@ import org.junit.Test;
 
 import com.openshift.internal.restclient.model.ImageStream;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
-import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
