@@ -350,7 +350,7 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys{
 		    if(apiGroupName == null) {
 		        return String.format("%s/%s/%s", prefix, version, name);
 		    }
-			return String.format("%s/%s/%s/%s/%s", prefix, apiGroupName, version, name);
+			return String.format("%s/%s/%s/%s", prefix, apiGroupName, version, name);
 		}
 
 		@Override
