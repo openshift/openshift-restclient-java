@@ -11,7 +11,6 @@
 package com.openshift.internal.restclient.model.v1;
 
 import com.openshift.internal.restclient.model.volume.EmptyDirVolumeSource;
-import com.openshift.internal.restclient.model.volume.PersistentVolumeClaimVolumeSource;
 import com.openshift.restclient.model.volume.IEmptyDirVolumeSource;
 import com.openshift.restclient.utils.Samples;
 import org.jboss.dmr.ModelNode;

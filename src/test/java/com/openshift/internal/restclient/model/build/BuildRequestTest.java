@@ -8,21 +8,13 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.build;
 
-import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.images.DockerImageURI;
-import com.openshift.restclient.model.build.BuildStrategyType;
-import com.openshift.restclient.model.build.IBuildStrategy;
-import com.openshift.restclient.model.build.ICustomBuildStrategy;
-import com.openshift.restclient.model.build.IDockerBuildStrategy;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static com.openshift.internal.util.JBossDmrExtentions.getPath;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class BuildRequestTest {

@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 import com.openshift.internal.restclient.model.volume.EmptyDirVolumeSource;
 import com.openshift.restclient.model.volume.IEmptyDirVolumeSource;
-import com.openshift.restclient.model.volume.IVolume;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;

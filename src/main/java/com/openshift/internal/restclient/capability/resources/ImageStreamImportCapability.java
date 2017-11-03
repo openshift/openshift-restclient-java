@@ -14,13 +14,11 @@ package com.openshift.internal.restclient.capability.resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.internal.restclient.model.Status;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedEndpointException;
 import com.openshift.restclient.authorization.ResourceForbiddenException;
 import com.openshift.restclient.capability.resources.IImageStreamImportCapability;
-import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IStatus;

@@ -12,7 +12,6 @@ package com.openshift.internal.restclient;
 
 import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.APIModelVersion.VersionComparitor;

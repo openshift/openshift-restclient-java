@@ -11,16 +11,9 @@
 package com.openshift.internal.restclient;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -29,7 +22,6 @@ import com.openshift.internal.restclient.authorization.AuthorizationContext;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.model.IPod;
 
 /**
  * @author Jeff Cantrill

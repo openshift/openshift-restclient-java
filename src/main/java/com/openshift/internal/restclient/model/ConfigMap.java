@@ -6,8 +6,6 @@ import org.jboss.dmr.ModelNode;
 
 import java.util.Map;
 
-import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
-
 /**
  * @author Ulf Lilleengen
  */

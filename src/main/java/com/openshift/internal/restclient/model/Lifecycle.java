@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import com.openshift.restclient.UnsupportedOperationException;
 import com.openshift.restclient.model.IHandler;
 import com.openshift.restclient.model.ILifecycle;
 import org.jboss.dmr.ModelNode;
