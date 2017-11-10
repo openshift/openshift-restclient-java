@@ -37,10 +37,9 @@ import static org.junit.Assert.*;
 public class PodExecIntegrationTest {
 
 	private IntegrationTestHelper helper = new IntegrationTestHelper();
-	private Exception ex;
 	private IPod pod;
 
-	private static class TestExecListener implements IPodExec.IPodExecOutputListener {
+	public static class TestExecListener implements IPodExec.IPodExecOutputListener {
 
 		private static final Logger LOG = LoggerFactory.getLogger(PodExecIntegrationTest.class);
 

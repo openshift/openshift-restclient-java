@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,7 +64,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	 * Callback for building args to be sent to the {@code oc} command.
 	 * @return the String representation of all the arguments to use when running the {@code oc} command. 
 	 */
-	protected abstract String buildArgs(final List<OpenShiftBinaryOption> options);
+	protected abstract List<String> buildArgs(final List<OpenShiftBinaryOption> options);
 
 	protected IClient getClient() {
 		return client;
@@ -92,7 +90,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	
 	protected String getUserFlag() {
 		final StringBuilder argBuilder = new StringBuilder();
-		argBuilder.append("--user=").append(client.getAuthorizationContext().getUserName()).append(" ");
+		argBuilder.append("--user=").append(client.getAuthorizationContext().getUserName());
 		return argBuilder.toString();
 	}
 
@@ -101,7 +99,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	 */
 	protected String getServerFlag() {
 		final StringBuilder argBuilder = new StringBuilder();
-		argBuilder.append("--server=").append(client.getBaseURL()).append(" ");
+		argBuilder.append("--server=").append(client.getBaseURL());
 		return argBuilder.toString();
 	}
 
@@ -111,15 +109,14 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	 */
 	protected String getTokenFlag() {
 		return new StringBuilder("--token=")
-			.append(client.getAuthorizationContext().getToken())
-			.append(" ").toString();
+			.append(client.getAuthorizationContext().getToken()).toString();
 	}
 	
 	/**
 	 * @return the command-line flag to use insecure connection (skip TLS verification)
 	 */
 	protected String getSkipTlsVerifyFlag() {
-		return "--insecure-skip-tls-verify=true ";
+		return "--insecure-skip-tls-verify=true";
 	}
 	
 	/**
@@ -130,21 +127,21 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	protected String getGitFolderExclusionFlag() {
 		// no support for multiple exclusion, so excluding '.git' only for now
 		// see https://github.com/openshift/origin/issues/8223
-		return "--exclude='.git' ";
+		return "--exclude='.git'";
 	}
 	
 	/**
 	 * @return the command-line flag to avoid transferring permissions.
 	 */
 	protected String getNoPermsFlags() {
-		return "--no-perms=true ";
+		return "--no-perms=true";
 	}
 	
 	/**
 	 * @return the command-line flag to delete extraneous file from destination directories.
 	 */
 	protected String getDeleteFlags() {
-		return "--delete ";
+		return "--delete";
 	}
 
 	/**
@@ -173,33 +170,19 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	
 	private ProcessBuilder initProcessBuilder(String location, final OpenShiftBinaryOption... options) {
 		List<String> args = new ArrayList<>();
-		ProcessBuilder builder = null;
+		args.add(location);
+		args.addAll(buildArgs(Arrays.asList(options)));
+		ProcessBuilder builder = new ProcessBuilder(args);
 		// the condition is made in order to solve mac problem 
 		// with launching binaries containing spaces in its path
 		// https://issues.jboss.org/browse/JBIDE-23862 - see the latest comments
-		if (IS_MAC) {
-			args.add(location);
-			args.addAll(splitTakingCareOfSpaceInsideQuotes(buildArgs(Arrays.asList(options))));
-			builder = new ProcessBuilder(args);
-		} else {
+		if (!IS_MAC) {
 			File oc = new File(location);
-			args.add(location);
-			args.addAll(splitTakingCareOfSpaceInsideQuotes(buildArgs(Arrays.asList(options))));
-			builder = new ProcessBuilder(args);
 			builder.directory(oc.getParentFile());
-		}		
+		}	
 		builder.environment().remove("KUBECONFIG");
 		LOG.debug("OpenShift binary args: {}", builder.command());
 		return builder;
-	}
-	
-	private List<String> splitTakingCareOfSpaceInsideQuotes(String str){
-		List<String> res = new ArrayList<>();
-		Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(str);
-		while (m.find()) {
-		    res.add(m.group(1)); 
-		}
-		return res;
 	}
 	
 	private void checkProcessIsAlive() throws IOException {

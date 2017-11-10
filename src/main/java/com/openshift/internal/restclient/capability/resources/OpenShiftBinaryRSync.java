@@ -12,6 +12,7 @@ package com.openshift.internal.restclient.capability.resources;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -140,24 +141,27 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 	}
 	
 	@Override
-	protected String buildArgs(final List<OpenShiftBinaryOption> options) {
-		final StringBuilder argsBuilder = new StringBuilder("rsync ");
-		argsBuilder.append(getTokenFlag()).append(getServerFlag());
+	protected List<String> buildArgs(final List<OpenShiftBinaryOption> options) {
+		List<String> args = new ArrayList<>();
+		args.add("rsync");
+		args.add(getTokenFlag());
+		args.add(getServerFlag());
+		
 		if(options.contains(OpenShiftBinaryOption.SKIP_TLS_VERIFY)) {
-			argsBuilder.append(getSkipTlsVerifyFlag());
+			args.add(getSkipTlsVerifyFlag());
 		}
 		if(options.contains(OpenShiftBinaryOption.EXCLUDE_GIT_FOLDER)) {
-			argsBuilder.append(getGitFolderExclusionFlag());
+			args.add(getGitFolderExclusionFlag());
 		}
 		if(options.contains(OpenShiftBinaryOption.NO_PERMS)) {
-			argsBuilder.append(getNoPermsFlags());
+			args.add(getNoPermsFlags());
 		}
 		if(options.contains(OpenShiftBinaryOption.DELETE)) {
-			argsBuilder.append(getDeleteFlags());
+			args.add(getDeleteFlags());
 		}
-		argsBuilder.append(source.getParameter()).append(" ")
-				.append(destination.getParameter());
-		return argsBuilder.toString();
+		args.addAll(source.getParameter());
+		args.addAll(destination.getParameter());
+		return args;
 	}
 	
 }

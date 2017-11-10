@@ -76,18 +76,22 @@ public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapabi
 	}
 
 	@Override
-	protected String buildArgs(final List<OpenShiftBinaryOption> options) {
-		final StringBuilder argBuilder = new StringBuilder();
-		argBuilder.append("port-forward ");
+	protected List<String> buildArgs(final List<OpenShiftBinaryOption> options) {
+		List<String> args = new ArrayList<>();
+		args.add("port-forward");
 		if(options.contains(OpenShiftBinaryOption.SKIP_TLS_VERIFY)) {
-			argBuilder.append(getSkipTlsVerifyFlag());
+			args.add(getSkipTlsVerifyFlag());
 		}
-		argBuilder.append(getServerFlag()).append(getTokenFlag()).append("-n ").append(pod.getNamespace()).append(" ")
-				.append("-p ").append(pod.getName()).append(" ");
+		args.add(getServerFlag());
+		args.add(getTokenFlag());
+		args.add("-n");
+		args.add(pod.getNamespace());
+		args.add("-p");
+		args.add(pod.getName());
 		for (PortPair pair : pairs) {
-			argBuilder.append(pair.getLocalPort()).append(":").append(pair.getRemotePort()).append(" ");
+			args.add(pair.getLocalPort() +":" +pair.getRemotePort());
 		}
-		return argBuilder.toString();
+		return args;
 	}
 	
 }
