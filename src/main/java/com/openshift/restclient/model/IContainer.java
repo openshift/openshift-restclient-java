@@ -16,6 +16,7 @@ import java.util.Set;
 
 import com.openshift.restclient.api.models.INameSetable;
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.probe.IProbe;
 import com.openshift.restclient.model.volume.IVolume;
 import com.openshift.restclient.model.volume.IVolumeMount;
 
@@ -90,5 +91,8 @@ public interface IContainer extends INameSetable{
 	String getLimitsMemory();
 	void setLimitsMemory(String limitsMemory);
 
+    IProbe getReadinessProbe();
+    IProbe getLivenessProbe();
+	
 	String toJSONString();
 }

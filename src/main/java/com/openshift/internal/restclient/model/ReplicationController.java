@@ -51,7 +51,7 @@ public class ReplicationController extends KubernetesResource implements IReplic
 	protected static final String SPEC_SELECTOR = "spec.selector";
 	protected static final String STATUS_REPLICA = "status.replicas";
 	protected static final String SERVICEACCOUNTNAME = "spec.template.spec.serviceAccountName";
-
+	
 	protected static final String IMAGE = "image";
 	protected static final String ENV = "env";
 	private Map<String, String[]> propertyKeys;

@@ -10,7 +10,10 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model;
 
-import static com.openshift.internal.util.JBossDmrExtentions.*;
+import static com.openshift.internal.util.JBossDmrExtentions.asList;
+import static com.openshift.internal.util.JBossDmrExtentions.asString;
+import static com.openshift.internal.util.JBossDmrExtentions.get;
+import static com.openshift.internal.util.JBossDmrExtentions.set;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
+import com.openshift.internal.restclient.model.probe.Probe;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.internal.restclient.model.volume.EmptyDirVolume;
 import com.openshift.internal.restclient.model.volume.VolumeMount;
@@ -31,6 +35,7 @@ import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.ILifecycle;
 import com.openshift.restclient.model.IPort;
+import com.openshift.restclient.model.probe.IProbe;
 import com.openshift.restclient.model.volume.IVolume;
 import com.openshift.restclient.model.volume.IVolumeMount;
 
@@ -47,7 +52,9 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 	private static final String PROPERTY_REQUESTS_CPU = "resources.requests.cpu";
 	private static final String PROPERTY_LIMITS_MEMORY = "resources.limits.memory";
 	private static final String PROPERTY_LIMITS_CPU = "resources.limits.cpu";
-
+	private static final String LIVENESSPROBE = "livenessProbe";
+	private static final String READINESSPROBE = "readinessProbe";
+	
 	private ModelNode node;
 	private Map<String, String[]> propertyKeys;
 
@@ -296,6 +303,19 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 			child.set(limitsCPU);
 		}
 	}
+
+	@Override
+	public IProbe getReadinessProbe() {
+		ModelNode readynessProbeNode = get(getNode(), propertyKeys, READINESSPROBE);
+		return new Probe(readynessProbeNode);
+	}
+
+	@Override
+	public IProbe getLivenessProbe() {
+		ModelNode lifenessProbeNode = get(getNode(), propertyKeys, LIVENESSPROBE);
+		return new Probe(lifenessProbeNode);
+	}
+
 	@Override
 	public String toJSONString() {
 		return super.toJson(false);

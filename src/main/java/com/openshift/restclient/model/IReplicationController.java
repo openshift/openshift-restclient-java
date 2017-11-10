@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.probe.IProbe;
 import com.openshift.restclient.model.volume.IVolumeSource;
 
 /**
@@ -218,4 +219,5 @@ public interface IReplicationController  extends IResource{
      * @return
      */
     String getServiceAccountName();
+
 }

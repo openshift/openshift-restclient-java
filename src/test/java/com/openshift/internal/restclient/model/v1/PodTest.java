@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.v1;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -34,6 +35,7 @@ import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IExecAction;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IPort;
+import com.openshift.restclient.model.probe.IProbe;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -43,12 +45,14 @@ public class PodTest {
 
 	private static final String VERSION = "v1";
 	private IPod pod;
+	private IContainer container1;
 	
 	@Before
 	public void setup() {
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_POD.getContentAsString());
-		pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.POD));
+		this.pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.POD));
+		this.container1 = pod.getContainers().stream().findFirst().orElse(null);
 	}
 	
 	@Test
@@ -165,10 +169,8 @@ public class PodTest {
 
 	@Test
 	public void getContainerCommands() {
-	    Collection<IContainer> containers = pod.getContainers();
-	    IContainer container = containers.iterator().next();
-	    List<String> cmd = container.getCommand();
-	    List<String> cmdArgs = container.getCommandArgs();
+	    List<String> cmd = container1.getCommand();
+	    List<String> cmdArgs = container1.getCommandArgs();
 	    assertEquals(cmd.get(0),"/bin/sh");
 	    assertEquals(cmdArgs.get(0), "-c");
 	    assertEquals(cmdArgs.get(1), "echo 'hello'");
@@ -176,25 +178,92 @@ public class PodTest {
 	
 	@Test
 	public void getContainerResourceRequirements() {
-        Collection<IContainer> containers = pod.getContainers();
-        IContainer container = containers.iterator().next();
-        assertEquals("1", container.getRequestsCPU());
-        assertEquals("128Mi", container.getRequestsMemory());
-        assertEquals("4", container.getLimitsCPU());
-        assertEquals("1Gi", container.getLimitsMemory());
+        assertEquals("1", container1.getRequestsCPU());
+        assertEquals("128Mi", container1.getRequestsMemory());
+        assertEquals("4", container1.getLimitsCPU());
+        assertEquals("1Gi", container1.getLimitsMemory());
 	}
 
 	@Test
 	public void resetContainerResourceRequirements() {
-        Collection<IContainer> containers = pod.getContainers();
-        IContainer container = containers.iterator().next();
-        container.setRequestsMemory(null);
-        container.setRequestsCPU(null);
-        container.setLimitsMemory(null);
-        container.setLimitsCPU(null);
-        assertEquals("", container.getRequestsCPU());
-        assertEquals("", container.getRequestsMemory());
-        assertEquals("", container.getLimitsCPU());
-        assertEquals("", container.getLimitsMemory());
+        container1.setRequestsMemory(null);
+        container1.setRequestsCPU(null);
+        container1.setLimitsMemory(null);
+        container1.setLimitsCPU(null);
+        assertEquals("", container1.getRequestsCPU());
+        assertEquals("", container1.getRequestsMemory());
+        assertEquals("", container1.getLimitsCPU());
+        assertEquals("", container1.getLimitsMemory());
 	}
+
+	@Test
+	public void shouldReturnLivenessProbe() {
+		// given
+        // when
+        IProbe probe = container1.getLivenessProbe();
+
+        // then
+        assertThat(probe).isNotNull();
+        assertThat(probe.getInitialDelaySeconds()).isEqualTo(11);
+        assertThat(probe.getTimeoutSeconds()).isEqualTo(12);
+        assertThat(probe.getPeriodSeconds()).isEqualTo(13);
+        assertThat(probe.getSuccessThreshold()).isEqualTo(14);
+        assertThat(probe.getFailureThreshold()).isEqualTo(15);
+	}
+
+	@Test
+	public void shouldAlterLivenessProbe() {
+		// given
+        // when
+        IProbe probe = container1.getLivenessProbe();
+        probe.setInitialDelaySeconds(100);
+        probe.setTimeoutSeconds(101);
+        probe.setPeriodSeconds(102);
+        probe.setSuccessThreshold(103);
+        probe.setFailureThreshold(104);
+
+        // then
+        assertThat(probe).isNotNull();
+        assertThat(probe.getInitialDelaySeconds()).isEqualTo(100);
+        assertThat(probe.getTimeoutSeconds()).isEqualTo(101);
+        assertThat(probe.getPeriodSeconds()).isEqualTo(102);
+        assertThat(probe.getSuccessThreshold()).isEqualTo(103);
+        assertThat(probe.getFailureThreshold()).isEqualTo(104);
+	}
+
+	@Test
+	public void shouldReturnReadynessProbe() {
+		// given
+        // when
+        IProbe probe = container1.getReadinessProbe();
+
+        // then
+        assertThat(probe).isNotNull();
+        assertThat(probe.getInitialDelaySeconds()).isEqualTo(3);
+        assertThat(probe.getTimeoutSeconds()).isEqualTo(4);
+        assertThat(probe.getPeriodSeconds()).isEqualTo(5);
+        assertThat(probe.getSuccessThreshold()).isEqualTo(6);
+        assertThat(probe.getFailureThreshold()).isEqualTo(7);
+	}
+
+	@Test
+	public void shouldAlterReadinessProbe() {
+		// given
+        // when
+        IProbe probe = container1.getReadinessProbe();
+        probe.setInitialDelaySeconds(200);
+        probe.setTimeoutSeconds(201);
+        probe.setPeriodSeconds(202);
+        probe.setSuccessThreshold(203);
+        probe.setFailureThreshold(204);
+
+        // then
+        assertThat(probe).isNotNull();
+        assertThat(probe.getInitialDelaySeconds()).isEqualTo(200);
+        assertThat(probe.getTimeoutSeconds()).isEqualTo(201);
+        assertThat(probe.getPeriodSeconds()).isEqualTo(202);
+        assertThat(probe.getSuccessThreshold()).isEqualTo(203);
+        assertThat(probe.getFailureThreshold()).isEqualTo(204);
+	}
+
 }
