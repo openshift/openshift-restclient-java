@@ -113,10 +113,49 @@
                             "capabilities": {},
                             "privileged": false
                         }
-                    }
-                ],
-                "restartPolicy": "Always",
-                "dnsPolicy": "ClusterFirst"
+                    },
+                    {
+		                "name": "deployment",
+		                "image": "openshift/origin-deployer:v0.6",
+		                "ports": [
+		                  {
+		                    "name" : "http",
+		                    "containerPort": 8080,
+		                    "protocol": "TCP"
+		                  }
+		                ],
+		                "env": [
+                                  {
+                                      "name": "OPENSHIFT_DEPLOYMENT_NAME",
+                                      "value": "database-1"
+                                  }
+		                ],
+			           "livenessProbe" : {
+		                    "httpGet" : {
+		                        "path" : "/pagecount",
+		                        "port" : 8080,
+		                        "scheme" : "HTTP"
+		                    },
+		                    "initialDelaySeconds" : 11,
+		                    "timeoutSeconds" : 12,
+		                    "periodSeconds" : 13,
+		                    "successThreshold" : 14,
+		                    "failureThreshold" : 15
+		                },
+		                "readinessProbe" : {
+		                    "httpGet" : {
+		                        "path" : "/pagecount",
+		                        "port" : 8080,
+		                        "scheme" : "HTTP"
+		                    },
+		                    "initialDelaySeconds" : 3,
+		                    "timeoutSeconds" : 4,
+		                    "periodSeconds" : 5,
+		                    "successThreshold" : 6,
+		                    "failureThreshold" : 7
+		                }
+		            }
+                ]
             }
         }
     },

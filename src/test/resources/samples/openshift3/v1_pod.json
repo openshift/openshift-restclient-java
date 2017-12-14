@@ -79,30 +79,6 @@
                         "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount"
                     }
                 ],
-	           "livenessProbe" : {
-                    "httpGet" : {
-                        "path" : "/pagecount",
-                        "port" : 8080,
-                        "scheme" : "HTTP"
-                    },
-                    "initialDelaySeconds" : 11,
-                    "timeoutSeconds" : 12,
-                    "periodSeconds" : 13,
-                    "successThreshold" : 14,
-                    "failureThreshold" : 15
-                },
-                "readinessProbe" : {
-                    "httpGet" : {
-                        "path" : "/pagecount",
-                        "port" : 8080,
-                        "scheme" : "HTTP"
-                    },
-                    "initialDelaySeconds" : 3,
-                    "timeoutSeconds" : 4,
-                    "periodSeconds" : 5,
-                    "successThreshold" : 6,
-                    "failureThreshold" : 7
-                },
                 "terminationMessagePath": "/dev/termination-log",
                 "imagePullPolicy": "IfNotPresent",
                 "command" : [

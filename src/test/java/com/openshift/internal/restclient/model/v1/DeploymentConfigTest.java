@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.model.v1;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,11 +29,14 @@ import com.openshift.internal.restclient.model.DeploymentConfig;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.capability.resources.IDeployCapability;
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IPort;
 import com.openshift.restclient.model.deploy.IDeploymentConfigChangeTrigger;
 import com.openshift.restclient.model.deploy.IDeploymentImageChangeTrigger;
 import com.openshift.restclient.model.deploy.IDeploymentTrigger;
+import com.openshift.restclient.model.probe.IProbe;
 import com.openshift.restclient.utils.Samples;
 
 /**
@@ -40,11 +44,15 @@ import com.openshift.restclient.utils.Samples;
  */
 public class DeploymentConfigTest {
 	
+	private static final String CONTAINER2_NAME = "deployment";
+	private static final String CONTAINER1_NAME = "ruby-helloworld-database";
 	private static final String VERSION = "v1";
 	private DeploymentConfig config;
 	private IClient client;
 	private ModelNode node;
 	private Map<String, String[]> propertyKeys;
+	private IContainer container1;
+	private IContainer container2;
 	
 	@Before
 	public void setup(){
@@ -52,8 +60,15 @@ public class DeploymentConfigTest {
 		node = ModelNode.fromJSONString(Samples.V1_DEPLOYMENT_CONIFIG.getContentAsString());
 		propertyKeys = ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.DEPLOYMENT_CONFIG);
 		config = new DeploymentConfig(node, client, propertyKeys);
+		container1 = config.getContainer(CONTAINER1_NAME);
+		container2 = config.getContainer(CONTAINER2_NAME);
 	}
-	
+
+	@Test
+	public void testIsDeployCapable() {
+		assertThat(config.supports(IDeployCapability.class)).isTrue();
+	}
+
 	@Test 
 	public void getLabels() {
 		assertArrayEquals(new String[] {"template"},config.getLabels().keySet().toArray(new String[] {}));
@@ -144,6 +159,88 @@ public class DeploymentConfigTest {
 		exp.get("ports").add(portNode);
 		
 		assertEquals(exp.toJSONString(false), containers.get(0).toJSONString(false));
+	}
+	
+	@Test
+	public void shouldNotReturnLivenessProbe() {
+		IProbe livenessProbe = container1.getLivenessProbe();
+		assertThat(livenessProbe).isNull();
+	}
+	
+	@Test
+	public void shouldNotReturnReadinessProbe() {
+		IProbe readinessProbe = container1.getReadinessProbe();
+		assertThat(readinessProbe).isNull();
+	}
+	
+	@Test
+	public void shouldReturnLivenessProbe() {
+		// given
+        // when
+        IProbe probe = container2.getLivenessProbe();
+
+        // then
+        assertThat(probe).isNotNull();
+        assertThat(probe.getInitialDelaySeconds()).isEqualTo(11);
+        assertThat(probe.getTimeoutSeconds()).isEqualTo(12);
+        assertThat(probe.getPeriodSeconds()).isEqualTo(13);
+        assertThat(probe.getSuccessThreshold()).isEqualTo(14);
+        assertThat(probe.getFailureThreshold()).isEqualTo(15);
+	}
+
+	@Test
+	public void shouldAlterLivenessProbe() {
+		// given
+        // when
+        IProbe probe = container2.getLivenessProbe();
+        probe.setInitialDelaySeconds(100);
+        probe.setTimeoutSeconds(101);
+        probe.setPeriodSeconds(102);
+        probe.setSuccessThreshold(103);
+        probe.setFailureThreshold(104);
+
+        // then
+        assertThat(probe).isNotNull();
+        assertThat(probe.getInitialDelaySeconds()).isEqualTo(100);
+        assertThat(probe.getTimeoutSeconds()).isEqualTo(101);
+        assertThat(probe.getPeriodSeconds()).isEqualTo(102);
+        assertThat(probe.getSuccessThreshold()).isEqualTo(103);
+        assertThat(probe.getFailureThreshold()).isEqualTo(104);
+	}
+
+	@Test
+	public void shouldReturnReadynessProbe() {
+		// given
+        // when
+        IProbe probe = container2.getReadinessProbe();
+
+        // then
+        assertThat(probe).isNotNull();
+        assertThat(probe.getInitialDelaySeconds()).isEqualTo(3);
+        assertThat(probe.getTimeoutSeconds()).isEqualTo(4);
+        assertThat(probe.getPeriodSeconds()).isEqualTo(5);
+        assertThat(probe.getSuccessThreshold()).isEqualTo(6);
+        assertThat(probe.getFailureThreshold()).isEqualTo(7);
+	}
+
+	@Test
+	public void shouldAlterReadinessProbe() {
+		// given
+        // when
+        IProbe probe = container2.getReadinessProbe();
+        probe.setInitialDelaySeconds(200);
+        probe.setTimeoutSeconds(201);
+        probe.setPeriodSeconds(202);
+        probe.setSuccessThreshold(203);
+        probe.setFailureThreshold(204);
+
+        // then
+        assertThat(probe).isNotNull();
+        assertThat(probe.getInitialDelaySeconds()).isEqualTo(200);
+        assertThat(probe.getTimeoutSeconds()).isEqualTo(201);
+        assertThat(probe.getPeriodSeconds()).isEqualTo(202);
+        assertThat(probe.getSuccessThreshold()).isEqualTo(203);
+        assertThat(probe.getFailureThreshold()).isEqualTo(204);
 	}
 	
 
