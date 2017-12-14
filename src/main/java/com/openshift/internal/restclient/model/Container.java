@@ -306,13 +306,19 @@ public class Container extends ModelNodeAdapter implements IContainer, ResourceP
 
 	@Override
 	public IProbe getReadinessProbe() {
-		ModelNode readynessProbeNode = get(getNode(), propertyKeys, READINESSPROBE);
-		return new Probe(readynessProbeNode);
+		ModelNode readinessProbeNode = get(getNode(), propertyKeys, READINESSPROBE);
+		if (!readinessProbeNode.isDefined()) {
+			return null;
+		}
+		return new Probe(readinessProbeNode);
 	}
 
 	@Override
 	public IProbe getLivenessProbe() {
 		ModelNode lifenessProbeNode = get(getNode(), propertyKeys, LIVENESSPROBE);
+		if (!lifenessProbeNode.isDefined()) {
+			return null;
+		}
 		return new Probe(lifenessProbeNode);
 	}
 
