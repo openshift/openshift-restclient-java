@@ -142,22 +142,25 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 		}
 
 		@Override
-		protected String buildArgs(final List<OpenShiftBinaryOption> options) {
-			final StringBuilder argsBuilder = new StringBuilder();
-			argsBuilder.append("logs ");
+		protected List<String> buildArgs(final List<OpenShiftBinaryOption> options) {
+			List<String> args = new ArrayList<>();
+			args.add("logs");
 			if(options.contains(OpenShiftBinaryOption.SKIP_TLS_VERIFY)) {
-				argsBuilder.append(getSkipTlsVerifyFlag());
+				args.add(getSkipTlsVerifyFlag());
 			}
-			argsBuilder.append(getServerFlag()).append(" ")
-					.append(pod.getName()).append(" ").append("-n ").append(pod.getNamespace()).append(" ")
-					.append(getTokenFlag());
+			args.add(getServerFlag());
+			args.add(pod.getName());
+			args.add("-n");
+			args.add(pod.getNamespace());
+			args.add(getTokenFlag());
 			if(follow) {
-				argsBuilder.append(" -f ");
+				args.add("-f");
 			}
 			if(StringUtils.isNotBlank(container)) {
-				argsBuilder.append( " -c ").append(container);
+				args.add("-c");
+				args.add(container);
 			}
-			return argsBuilder.toString();
+			return args;
 		}
 	}
 	

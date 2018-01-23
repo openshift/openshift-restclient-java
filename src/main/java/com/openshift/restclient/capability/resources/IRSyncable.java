@@ -11,6 +11,9 @@
 package com.openshift.restclient.capability.resources;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.model.IPod;
@@ -49,14 +52,12 @@ public interface IRSyncable extends IBinaryCapability {
 		}
 
 		@Override
-		public String getParameter() {
-			return new StringBuilder()
-					.append(pod.getName())
-					.append(POD_PATH_SEPARATOR)
-					.append(super.getParameter())
-					.append(" -n ")
-					.append(pod.getNamespace())
-					.toString();
+		public List<String> getParameter() {
+			List<String> res = new ArrayList<>();
+			res.add(pod.getName() + POD_PATH_SEPARATOR + "\"" + super.getLocation() + "\"");
+			res.add("-n");
+			res.add(pod.getNamespace());
+			return res;
 		}
 		
 		@Override
@@ -66,7 +67,9 @@ public interface IRSyncable extends IBinaryCapability {
 					.append(NAMESPACE_POD_SEPARATOR)
 					.append(pod.getName())
 					.append(POD_PATH_SEPARATOR)
-					.append(super.getParameter())
+					.append("\"")
+					.append(super.getLocation())
+					.append("\"")
 					.toString();
 		}
 
@@ -85,6 +88,11 @@ public interface IRSyncable extends IBinaryCapability {
 		public boolean isPod() {
 			return false;
 		}
+		
+		@Override
+		public List<String> getParameter() {
+			return Arrays.asList("\"" + getLocation().replaceAll("\\\\", "/") + "\"");
+		}
 	}
 
 	public abstract class Peer {
@@ -95,12 +103,12 @@ public interface IRSyncable extends IBinaryCapability {
 			this.location = location;
 		}
 
-		public String getParameter() {
-			return location;
+		public List<String> getParameter() {
+			return Arrays.asList(getLocation());
 		}
 
 		public String getLocation() {
-			return getParameter();
+			return location;
 		}
 		
 		public abstract boolean isPod();
