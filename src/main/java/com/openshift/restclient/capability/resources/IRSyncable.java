@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -51,9 +51,11 @@ public interface IRSyncable extends IBinaryCapability {
 		@Override
 		public String getParameter() {
 			return new StringBuilder()
+					.append('"')
 					.append(pod.getName())
 					.append(POD_PATH_SEPARATOR)
 					.append(super.getParameter())
+					.append('"')
 					.append(" -n ")
 					.append(pod.getNamespace())
 					.toString();
@@ -84,6 +86,15 @@ public interface IRSyncable extends IBinaryCapability {
 
 		public boolean isPod() {
 			return false;
+		}
+
+		@Override
+		public String getParameter() {
+			return new StringBuilder()
+					.append('"')
+					.append(super.getParameter())
+					.append('"')
+					.toString();
 		}
 	}
 
