@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.jboss</groupId>
 		<artifactId>jboss-parent</artifactId>
-		<version>6-beta-2</version>
+		<version>25</version>
 		<relativePath />
 	</parent>
 
@@ -305,7 +305,7 @@
 							<includes>
 								<include>**/*IntegrationTest.java</include>
 							</includes>
-							<forkMode>none</forkMode>
+							<!--<forkMode>none</forkMode>-->
 						</configuration>
 						<executions>
 							<execution>
@@ -325,6 +325,22 @@
 								</configuration>
 							</execution>
 						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>jdk9</id>
+			<activation>
+				<jdk>9</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<argLine>-Dfile.encoding=UTF-8 --add-modules=ALL-SYSTEM</argLine>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
