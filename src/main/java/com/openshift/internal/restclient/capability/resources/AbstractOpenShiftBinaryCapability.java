@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.openshift.internal.util.StringSplitter;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.OpenShiftContext;
 import com.openshift.restclient.OpenShiftException;
@@ -177,12 +178,12 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 		// https://issues.jboss.org/browse/JBIDE-23862 - see the latest comments
 		if (IS_MAC) {
 			args.add(location);
-			Arrays.stream(StringUtils.split(buildArgs(Arrays.asList(options)))).forEach(s -> args.add(s));
+			StringSplitter.split(buildArgs(Arrays.asList(options)), args);
 			builder = new ProcessBuilder(args);
 		} else {
 			File oc = new File(location);
 			args.add(location);
-			Arrays.stream(StringUtils.split(buildArgs(Arrays.asList(options)))).forEach(s -> args.add(s));
+			StringSplitter.split(buildArgs(Arrays.asList(options)), args);
 			builder = new ProcessBuilder(args);
 			builder.directory(oc.getParentFile());
 		}		
