@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -29,11 +29,50 @@ import com.openshift.restclient.model.IPod;
 
 public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 	
+	static class PodName implements OpenShiftBinaryOption {
+
+		private IPod pod;
+
+		public PodName(IPod pod) {
+			this.pod = pod;
+		}
+
+		@Override
+		public void append(StringBuilder commandLine) {
+			if (pod == null) {
+				return;
+			}
+			commandLine.append(" ").append(pod.getName());
+		}
+	}
+
+	static class ContainerName implements OpenShiftBinaryOption {
+
+		private String name;
+
+		public ContainerName(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public void append(StringBuilder commandLine) {
+			commandLine.append( " -c ").append(name);
+		}
+	}
+
+	static class Follow implements OpenShiftBinaryOption {
+
+		@Override
+		public void append(StringBuilder commandLine) {
+			commandLine.append(" -f");
+		}
+	}
+
 	private static final Logger LOG = LoggerFactory.getLogger(IPodLogRetrieval.class);
 	private IPod pod;
 	private IClient client;
 	private Map<String, PodLogs> cache = new HashMap<>();
-
+	
 	public OpenShiftBinaryPodLogRetrieval(IPod pod, IClient client) {
 		this.pod = pod;
 		this.client = client;
@@ -58,17 +97,15 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 	public InputStream getLogs(final boolean follow, final String container, final OpenShiftBinaryOption... options) {
 		final String normalizedContainer = StringUtils.defaultIfBlank(container, "");
 		synchronized (cache) {
-			if(cache.containsKey(normalizedContainer)) {
+			if (cache.containsKey(normalizedContainer)) {
 				return cache.get(normalizedContainer).getLogs();
 			}
 			PodLogs logs = null;
 			try {
 				logs = new PodLogs(client, follow, normalizedContainer, options);
 				return logs.getLogs();
-			}catch(Exception e) {
-				throw e;
-			}finally {
-				if(logs != null) {
+			} finally {
+				if (logs != null) {
 					cache.put(normalizedContainer, logs);
 				}
 			}
@@ -77,7 +114,7 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 	
 	@Override
 	public void stop() {
-		new ArrayList<>(cache.keySet()).forEach(c->stop(c));
+		new ArrayList<>(cache.keySet()).forEach(container -> stop(container));
 	}
 
 	@Override
@@ -92,14 +129,16 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 	}
 
 
-	private class PodLogs extends AbstractOpenShiftBinaryCapability{
+	protected class PodLogs extends AbstractOpenShiftBinaryCapability{
 		
+		public static final String LOGS_COMMAND = "logs";
+
 		private String container;
 		private boolean follow;
 		private SequenceInputStream is;
 		private OpenShiftBinaryOption[] options;
 
-		PodLogs(IClient client, boolean follow, String container, OpenShiftBinaryOption... options){
+		protected PodLogs(IClient client, boolean follow, String container, OpenShiftBinaryOption... options){
 			super(client);
 			this.follow = follow;
 			this.container = container;
@@ -107,9 +146,11 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 		}
 
 		public synchronized InputStream getLogs() {
-			if(is == null) {
-				start(options);
-				is = new SequenceInputStream(getProcess().getInputStream(), getProcess().getErrorStream());
+			if (is == null) {
+				Process process = start(options);
+				if (process != null) {
+					is = new SequenceInputStream(process.getInputStream(), process.getErrorStream());
+				}
 			}
 			return is;
 		}
@@ -143,21 +184,19 @@ public class OpenShiftBinaryPodLogRetrieval implements IPodLogRetrieval {
 
 		@Override
 		protected String buildArgs(final List<OpenShiftBinaryOption> options) {
-			final StringBuilder argsBuilder = new StringBuilder();
-			argsBuilder.append("logs ");
-			if(options.contains(OpenShiftBinaryOption.SKIP_TLS_VERIFY)) {
-				argsBuilder.append(getSkipTlsVerifyFlag());
+			CommandLineBuilder builder = new CommandLineBuilder(LOGS_COMMAND)
+				.append(new Token(client))
+				.append(new Server(client))
+				.append(options)
+				.append(new PodName(pod))
+				.append(new Namespace(pod));
+			if (follow) {
+				builder.append(new Follow());
 			}
-			argsBuilder.append(getServerFlag()).append(" ")
-					.append(pod.getName()).append(" ").append("-n ").append(pod.getNamespace()).append(" ")
-					.append(getTokenFlag());
-			if(follow) {
-				argsBuilder.append(" -f ");
+			if (StringUtils.isNotBlank(container)) {
+				builder.append(new ContainerName(container));
 			}
-			if(StringUtils.isNotBlank(container)) {
-				argsBuilder.append( " -c ").append(container);
-			}
-			return argsBuilder.toString();
+			return builder.build();
 		}
 	}
 	

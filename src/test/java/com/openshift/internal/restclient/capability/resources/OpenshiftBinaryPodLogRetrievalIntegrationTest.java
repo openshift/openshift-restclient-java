@@ -25,7 +25,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
-import com.openshift.restclient.capability.IBinaryCapability.OpenShiftBinaryOption;
+import com.openshift.restclient.capability.IBinaryCapability.SkipTlsVerify;
 import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IResource;
@@ -54,7 +54,7 @@ public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
 			public Exception visit(IPodLogRetrieval cap) {
 			    StringBuilder builder = new StringBuilder();
 				try {
-					BufferedInputStream os = new BufferedInputStream(cap.getLogs(false, OpenShiftBinaryOption.SKIP_TLS_VERIFY));
+					BufferedInputStream os = new BufferedInputStream(cap.getLogs(false, new SkipTlsVerify()));
 					int c;
 					while((c = os.read()) != -1) {
 					    builder.append((char)c);

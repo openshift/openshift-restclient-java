@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -23,12 +23,55 @@ import com.openshift.restclient.model.IPod;
  * Port forwarding implementation that wraps the OpenShift binary
  * 
  * @author Jeff Cantrill
+ * @author Andre Dietisheim
  *
  */
 public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapability implements IPortForwardable {
 	
+	public static final String PORT_FORWARD_COMMAND = "port-forward";
 	private final IPod pod;
 	private final Collection<PortPair> pairs = new ArrayList<>();
+
+	static class PodName implements OpenShiftBinaryOption {
+
+		private IPod pod;
+
+		public PodName(IPod pod) {
+			this.pod = pod;
+		}
+
+		@Override
+		public void append(StringBuilder commandLine) {
+			commandLine.append(" -p ").append(pod.getName());
+		}
+	}
+
+	static class PortPairs implements OpenShiftBinaryOption {
+
+		private Collection<PortPair> pairs;
+
+		public PortPairs(Collection<PortPair> pairs) {
+			this.pairs = pairs;
+		}
+
+		@Override
+		public void append(StringBuilder commandLine) {
+			if (pairs == null) {
+				return;
+			}
+			for (PortPair pair : pairs) {
+				append(pair, commandLine);
+			}
+		}
+
+		protected void append(PortPair pair, StringBuilder commandLine) {
+			commandLine
+				.append(" ")
+				.append(pair.getLocalPort())
+				.append(":")
+				.append(pair.getRemotePort()).append(" ");
+		}
+	}
 
 	public OpenShiftBinaryPortForwarding(IPod pod, IClient client) {
 		super(client);
@@ -67,27 +110,24 @@ public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapabi
 
 	@Override
 	public synchronized void forwardPorts(final Collection<PortPair> ports, final OpenShiftBinaryOption... options) {
-		if (ports != null && !ports.isEmpty()) {
-			this.pairs.addAll(ports);
-		} else {
-			throw new OpenShiftException("Port-forwarding was invoked but not port was specified.");
+		if (ports == null || ports.isEmpty()) {
+			throw new OpenShiftException("Port-forwarding was invoked but no ports were specified.");
 		}
+
+		this.pairs.addAll(ports);
 		start(options);
 	}
 
 	@Override
 	protected String buildArgs(final List<OpenShiftBinaryOption> options) {
-		final StringBuilder argBuilder = new StringBuilder();
-		argBuilder.append("port-forward ");
-		if(options.contains(OpenShiftBinaryOption.SKIP_TLS_VERIFY)) {
-			argBuilder.append(getSkipTlsVerifyFlag());
-		}
-		argBuilder.append(getServerFlag()).append(getTokenFlag()).append("-n ").append(pod.getNamespace()).append(" ")
-				.append("-p ").append(pod.getName()).append(" ");
-		for (PortPair pair : pairs) {
-			argBuilder.append(pair.getLocalPort()).append(":").append(pair.getRemotePort()).append(" ");
-		}
-		return argBuilder.toString();
+		return new CommandLineBuilder(PORT_FORWARD_COMMAND)
+				.append(	new Token(getClient()))
+				.append(new Server(getClient()))
+				.append(options)
+				.append(new Namespace(pod))
+				.append(new PodName(pod))
+				.append(new PortPairs(pairs))
+				.build();
 	}
 	
 }

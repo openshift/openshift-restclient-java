@@ -12,8 +12,8 @@ package com.openshift.restclient.capability.resources;
 
 import java.io.InputStream;
 
-import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.capability.IBinaryCapability.OpenShiftBinaryOption;
+import com.openshift.restclient.capability.ICapability;
 
 /**
  * 

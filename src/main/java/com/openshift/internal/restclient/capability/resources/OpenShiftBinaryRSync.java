@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.capability.resources.IRSyncable;
+import com.openshift.restclient.model.IPod;
 
 /**
  * Port forwarding implementation that wraps the OpenShift binary
@@ -33,13 +34,14 @@ import com.openshift.restclient.capability.resources.IRSyncable;
  *
  */
 public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability implements IRSyncable {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(OpenShiftBinaryRSync.class);
-
+	public static final String RSYNC_COMMAND = "rsync";
 	private static final long WAIT_FOR_EXIT_TIMEOUT = 5; // mins
-
+	
 	private Peer source;
 	private Peer destination;
+	private IPod pod;
 
 	private final Executor executor = Executors.newCachedThreadPool(); 
 	
@@ -52,20 +54,41 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 	}
 
 	@Override
-	public InputStream sync(final Peer source, final Peer destination, final OpenShiftBinaryOption... options) throws OpenShiftException {
+	public InputStream sync(final Peer source, final Peer destination, final OpenShiftBinaryOption... options) 
+			throws OpenShiftException {
 		this.source = source;
 		this.destination = destination;
-		start(options);
-		// monitor the process completion in a separate thread
+		this.pod = getPod(source, destination);
+		Process process = start(options);
+		waitFor(process);
+		if (process == null) {
+			return null;
+		}
+		return process.getInputStream();
+	}
+
+	private IPod getPod(Peer source, Peer destination) {
+		if (source.isPod()) {
+			return source.getPod();
+		} else if (destination.isPod()) {
+			return destination.getPod();
+		} else {
+			return null;
+		}
+	}
+	
+	protected void waitFor(Process process) {
+		if (process == null) {
+			return;
+		}
+
 		this.executor.execute(() -> {
 			try {
-				this.getProcess().waitFor();
+				process.waitFor();
 			} catch (InterruptedException e) {
 				throw new OpenShiftException("Error occurred while waiting for rsync operation to complete", e);
 			}
-			
 		});
-		return getProcess().getInputStream();
 	}
 
 	@Override
@@ -138,52 +161,16 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 	public String getName() {
 		return OpenShiftBinaryRSync.class.getSimpleName();
 	}
-	
+
 	@Override
 	protected String buildArgs(final List<OpenShiftBinaryOption> options) {
-		final StringBuilder argsBuilder = new StringBuilder("rsync ");
-		argsBuilder.append(getTokenFlag()).append(getServerFlag());
-		if(options.contains(OpenShiftBinaryOption.SKIP_TLS_VERIFY)) {
-			argsBuilder.append(getSkipTlsVerifyFlag());
-		}
-		if(options.contains(OpenShiftBinaryOption.EXCLUDE_GIT_FOLDER)) {
-			argsBuilder.append(getGitFolderExclusionFlag());
-		}
-		if(options.contains(OpenShiftBinaryOption.NO_PERMS)) {
-			argsBuilder.append(getNoPermsFlags());
-		}
-		if(options.contains(OpenShiftBinaryOption.DELETE)) {
-			argsBuilder.append(getDeleteFlags());
-		}
-		argsBuilder.append(source.getParameter()).append(" ")
-				.append(destination.getParameter());
-		return argsBuilder.toString();
+		return new CommandLineBuilder(RSYNC_COMMAND)
+			.append(	new Token(getClient()))
+			.append(new Server(getClient()))
+			.append(	new Namespace(pod))
+			.append(options)
+			.append(source)
+			.append(destination)
+			.build();
 	}
-	
-	/**
-	 * @return the command-line flag to exclude some files/directories that do
-	 *         not need to be synchronized between the remote pod and the local
-	 *         deployment directory.
-	 */
-	protected String getGitFolderExclusionFlag() {
-		// no support for multiple exclusion, so excluding '.git' only for now
-		// see https://github.com/openshift/origin/issues/8223
-		return "--exclude=.git ";
-	}
-	
-	/**
-	 * @return the command-line flag to avoid transferring permissions.
-	 */
-	protected String getNoPermsFlags() {
-		return "--no-perms=true ";
-	}
-	
-	/**
-	 * @return the command-line flag to delete extraneous file from destination directories.
-	 */
-	protected String getDeleteFlags() {
-		return "--delete ";
-	}
-
-	
 }
