@@ -122,31 +122,6 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	}
 	
 	/**
-	 * @return the command-line flag to exclude some files/directories that do
-	 *         not need to be synchronized between the remote pod and the local
-	 *         deployment directory.
-	 */
-	protected String getGitFolderExclusionFlag() {
-		// no support for multiple exclusion, so excluding '.git' only for now
-		// see https://github.com/openshift/origin/issues/8223
-		return "--exclude='.git' ";
-	}
-	
-	/**
-	 * @return the command-line flag to avoid transferring permissions.
-	 */
-	protected String getNoPermsFlags() {
-		return "--no-perms=true ";
-	}
-	
-	/**
-	 * @return the command-line flag to delete extraneous file from destination directories.
-	 */
-	protected String getDeleteFlags() {
-		return "--delete ";
-	}
-
-	/**
 	 * Starts the {@link Process} to run the {@code oc} command.
 	 * @param options the command line options
 	 */
