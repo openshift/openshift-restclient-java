@@ -12,21 +12,24 @@ package com.openshift.restclient.capability;
  * @author Andre Dietisheim
  */
 public interface IBinaryCapability extends ICapability {
-	
+
+	static final OpenShiftBinaryOption SKIP_TLS_VERIFY = new SkipTlsVerify();
+
 	/**
-	 * Optional arguments to pass when running the {@code oc} command.
+	 * Skips the SSL/TLS Verification when using a binary capability
 	 */
-	public enum OpenShiftBinaryOption {
-		/** option to skip verifying the certificates during TLS connection establishment. */
-		SKIP_TLS_VERIFY,
-		/** option to exclude the {@code .git} folder in the list of files/folders to synchronize. */
-		EXCLUDE_GIT_FOLDER,
-		/** option to not transfer file permissions. */
-		NO_PERMS,
-		/** option to delete delete extraneous files from destination directories**/
-		DELETE
+	static class SkipTlsVerify implements OpenShiftBinaryOption {
+
+		@Override
+		public void append(StringBuilder commandLine) {
+			commandLine.append(" --insecure-skip-tls-verify=true");
+		}
 	}
 	
+	static interface OpenShiftBinaryOption {
+		void append(StringBuilder builder);
+	}
+
 	static final String OPENSHIFT_BINARY_LOCATION = "openshift.restclient.oc.location";
 
 }

@@ -10,6 +10,10 @@ package com.openshift.internal.restclient.capability.resources;
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -18,11 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.fest.assertions.Assertions.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -40,8 +39,8 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.api.capabilities.IPodExec;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
+import com.openshift.restclient.capability.IBinaryCapability.SkipTlsVerify;
 import com.openshift.restclient.capability.IStoppable;
-import com.openshift.restclient.capability.IBinaryCapability.OpenShiftBinaryOption;
 import com.openshift.restclient.capability.resources.IRSyncable;
 import com.openshift.restclient.capability.resources.IRSyncable.LocalPeer;
 import com.openshift.restclient.capability.resources.IRSyncable.Peer;
@@ -166,7 +165,7 @@ public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
 			public List<String> visit(IRSyncable cap) {
 				try {
 					final BufferedReader reader = new BufferedReader(new InputStreamReader(
-							cap.sync(source, destination, OpenShiftBinaryOption.SKIP_TLS_VERIFY)));
+							cap.sync(source, destination, new SkipTlsVerify())));
 					List<String> logs = IOUtils.readLines(reader);
 					// wait until end of 'rsync'
 					cap.await();

@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -27,25 +28,105 @@ import com.openshift.restclient.OpenShiftContext;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.resources.LocationNotFoundException;
+import com.openshift.restclient.model.IResource;
 
 /**
  * Capability that wraps the OpenShift binary
  * 
  * @author Jeff Cantrill
+ * @author Andre Dietisheim
  *
  */
 public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapability {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractOpenShiftBinaryCapability.class);
 	
-	
 	private static final boolean IS_MAC = StringUtils.isNotEmpty(System.getProperty("os.name"))
 			&& System.getProperty("os.name").toLowerCase().contains("mac");
+	
+	static class Server implements OpenShiftBinaryOption {
+
+		private IClient client;
+
+		public Server(IClient client) {
+			this.client = client;
+		}
+
+		@Override
+		public void append(StringBuilder commandLine) {
+			commandLine
+				.append(" --server=")
+				.append(client.getBaseURL()).append(" ");
+		}		
+	}
+	
+	static class Token implements OpenShiftBinaryOption {
+		
+		private IClient client;
+
+		Token(IClient client) {
+			this.client = client;
+		}
+		
+		@Override
+		public void append(StringBuilder commandLine) {
+			commandLine
+					.append(" --token=")
+					.append(client.getAuthorizationContext().getToken());
+		}
+	}
+
+	static class Namespace implements OpenShiftBinaryOption {
+
+		private IResource resource;
+
+		public Namespace(IResource resource) {
+			this.resource = resource;
+		}
+
+		@Override
+		public void append(StringBuilder commandLine) {
+			if (resource == null) {
+				return;
+			}
+			commandLine.append(" -n ").append(resource.getNamespace());
+		}
+	}
+
+	protected static class CommandLineBuilder {
+
+		private StringBuilder sb;
+
+		public CommandLineBuilder(String command) {
+			this.sb = new StringBuilder(command);
+		}
+
+		public CommandLineBuilder append(OpenShiftBinaryOption argument) {
+			if (argument != null) {
+				argument.append(sb);
+			}
+			return this;
+		}
+
+		public CommandLineBuilder append(Collection<OpenShiftBinaryOption> arguments) {
+			if (arguments == null) {
+				return this;
+			}
+
+			for (OpenShiftBinaryOption argument : arguments) {
+				append(argument);
+			}
+			return this;
+		}
+
+		public String build() {
+			return sb.toString();
+		}
+	}
 
 	private Process process;
-
 	private IClient client;
-	
+
 	protected AbstractOpenShiftBinaryCapability(IClient client) {
 		this.client = client;
 	}
@@ -80,64 +161,28 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	}
 	
 	private void addShutdownHook() {
-		Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				stop();
-			}
-		};
-		Runtime.getRuntime().addShutdownHook(new Thread(runnable));
-	}
-	
-	protected String getUserFlag() {
-		final StringBuilder argBuilder = new StringBuilder();
-		argBuilder.append("--user=").append(client.getAuthorizationContext().getUserName()).append(" ");
-		return argBuilder.toString();
-	}
-
-	/**
-	 * @return
-	 */
-	protected String getServerFlag() {
-		final StringBuilder argBuilder = new StringBuilder();
-		argBuilder.append("--server=").append(client.getBaseURL()).append(" ");
-		return argBuilder.toString();
-	}
-
-	/**
-	 * Adds the authentication token
-	 * @return the command-line argument to use the current token 
-	 */
-	protected String getTokenFlag() {
-		return new StringBuilder("--token=")
-			.append(client.getAuthorizationContext().getToken())
-			.append(" ").toString();
-	}
-	
-	/**
-	 * @return the command-line flag to use insecure connection (skip TLS verification)
-	 */
-	protected String getSkipTlsVerifyFlag() {
-		return "--insecure-skip-tls-verify=true ";
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
 	}
 	
 	/**
 	 * Starts the {@link Process} to run the {@code oc} command.
-	 * @param options the command line options
+	 * @param arguments the command line options
+	 * @return 
 	 */
-	public final void start(final OpenShiftBinaryOption... options) {
+	public final Process start(final OpenShiftBinaryOption... arguments) {
 		String location = getOpenShiftBinaryLocation();
 		if(!validate()) {
-			return;
+			return null;
 		}
-		ProcessBuilder processBuilder = initProcessBuilder(location, options);
-		startProcess(processBuilder);
+		ProcessBuilder processBuilder = initProcessBuilder(location, arguments);
+		return startProcess(processBuilder);
 	}
-	
-	private void startProcess(ProcessBuilder builder) {
+
+	protected Process startProcess(ProcessBuilder builder) {
 		try {
 			process = builder.start();
 			checkProcessIsAlive();
+			return process;
 		} catch (IOException e) {
 			LOG.error("Could not start process for {}.", new Object[]{ getName(), e });
 			throw new OpenShiftException(e, "Does your OpenShift binary location exist? Error starting process: %s", 
@@ -146,7 +191,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 	}
 	
 	private ProcessBuilder initProcessBuilder(String location, final OpenShiftBinaryOption... options) {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		ProcessBuilder builder = null;
 		// the condition is made in order to solve mac problem 
 		// with launching binaries containing spaces in its path

@@ -30,7 +30,7 @@ import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
-import com.openshift.restclient.capability.IBinaryCapability.OpenShiftBinaryOption;
+import com.openshift.restclient.capability.IBinaryCapability.SkipTlsVerify;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.capability.resources.IPortForwardable.PortPair;
 import com.openshift.restclient.model.IProject;
@@ -76,7 +76,7 @@ public class OpenshiftBinaryPortForwardingIntegrationTest implements ResourcePro
 
 			@Override
 			public Object visit(IPortForwardable capability) {
-				capability.forwardPorts(Arrays.asList(new PortPair(8181, port)), OpenShiftBinaryOption.SKIP_TLS_VERIFY);
+				capability.forwardPorts(Arrays.asList(new PortPair(8181, port)), new SkipTlsVerify());
 				try {
 					Thread.sleep(5 * IntegrationTestHelper.MILLISECONDS_PER_SECOND);
 					curl();
