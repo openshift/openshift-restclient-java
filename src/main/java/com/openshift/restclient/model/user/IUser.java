@@ -23,4 +23,9 @@ public interface IUser extends IResource {
 	 */
 	String getFullName();
 
+	/**
+	 * Returns the user uid as specified in the metadata
+	 * @return
+	 */
+	String getUID();
 }

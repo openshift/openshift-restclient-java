@@ -31,4 +31,9 @@ public class OpenShiftUser extends KubernetesResource implements IUser {
 		return asString(USER_FULLNAME);
 	}
 
+	@Override
+	public String getUID() {
+		return asString("metadata.uid");
+	}
+	
 }

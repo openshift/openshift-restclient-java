@@ -29,17 +29,23 @@ import com.openshift.restclient.utils.Samples;
 public class UserTest{
 
 	private static final String VERSION = "v1";
-	private IUser resource;
+	private IUser user;
 	
 	@Before
 	public void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_USER.getContentAsString());
-		resource = new OpenShiftUser(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.USER));
+		user = new OpenShiftUser(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.USER));
 	}
 	
 	@Test
 	public void testFullName() {
-		assertEquals("Foo Master", resource.getFullName());
+		assertEquals("Foo Master", user.getFullName());
 	}
+
+	@Test
+	public void testUid() {
+		assertEquals("94b42e96-0faa-11e5-9467-080027893417", user.getUID());
+	}
+
 }
