@@ -5,6 +5,7 @@ import com.openshift.restclient.model.INamespace;
 import com.openshift.restclient.model.IResource;
 import org.jboss.dmr.ModelNode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,8 @@ public class Namespace extends KubernetesResource implements INamespace {
 
     @Override
     public <T extends IResource> List<T> getResources(String kind) {
-        return null;
+        if(getClient() == null) return new ArrayList<>();
+        return getClient().list(kind, getName());
     }
 
     @Override
