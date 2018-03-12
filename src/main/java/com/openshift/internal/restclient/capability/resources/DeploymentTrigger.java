@@ -65,12 +65,12 @@ public class DeploymentTrigger extends AbstractCapability implements IDeployment
             request.setForce(force);
             request.setLatest(latest);
             request.setName(resourceName);
-            return (IDeploymentConfig) client.execute(client.getResourceFactory(), IHttpConstants.POST, config.getKind(), config.getNamespace(), config.getName(), DEPLOYMENT_ENDPOINT, null, request,
+            return (IDeploymentConfig) client.execute(client.getResourceFactory(), IHttpConstants.POST, config.getKind(), config.getNamespaceName(), config.getName(), DEPLOYMENT_ENDPOINT, null, request,
                 Collections.emptyMap());
         } else {
             IDeployCapability deployer = config.getCapability(IDeployCapability.class);
             deployer.deploy();
-            return client.get(ResourceKind.DEPLOYMENT_CONFIG, config.getName(), config.getNamespace());
+            return client.get(ResourceKind.DEPLOYMENT_CONFIG, config.getName(), config.getNamespaceName());
         }
     }
 

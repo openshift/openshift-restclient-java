@@ -35,17 +35,16 @@ public class Project extends KubernetesResource implements IProject{
 		initializeCapabilities(getModifiableCapabilities(), this, getClient());
 	}
 	
-	
 	@Override
 	public IProject getProject() {
 		return this;
 	}
 
 	@Override
-	public String getNamespace() {
-		if(StringUtils.isEmpty(super.getNamespace()))
+	public String getNamespaceName() {
+		if(StringUtils.isEmpty(super.getNamespaceName()))
 			return getName();
-		return super.getNamespace();
+		return super.getNamespaceName();
 	}
 
 

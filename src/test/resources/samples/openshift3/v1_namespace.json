@@ -1,0 +1,28 @@
+{
+  "kind": "Namespace",
+  "apiVersion": "v1",
+  "metadata": {
+    "annotations": {
+      "openshift.io/description": "This is an example namespace to demonstrate OpenShift v3",
+      "openshift.io/display-name": "OpenShift 3 Sample",
+      "openshift.io/requester": "admin",
+      "openshift.io/sa.scc.mcs": "s0:c8,c2",
+      "openshift.io/sa.scc.supplemental-groups": "1000060000/10000",
+      "openshift.io/sa.scc.uid-range": "1000060000/10000"
+    },
+    "creationTimestamp": "2018-03-09T21:19:53Z",
+    "name": "test",
+    "resourceVersion": "292005",
+    "selfLink": "/osapi/v1beta3/namespaces/test",
+    "uid": "9bf521ab-23df-11e8-ba22-e2a386cca5ea"
+  },
+  "spec": {
+    "finalizers": [
+      "openshift.io/origin",
+      "kubernetes"
+    ]
+  },
+  "status": {
+    "phase": "Active"
+  }
+}

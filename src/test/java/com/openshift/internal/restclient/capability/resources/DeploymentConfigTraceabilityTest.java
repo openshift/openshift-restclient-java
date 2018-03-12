@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.openshift.internal.restclient.capability.resources.DeploymentConfigTraceability;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IDeploymentConfig;
@@ -40,7 +39,7 @@ public class DeploymentConfigTraceabilityTest {
 	public void setUp(){
 		capability = new DeploymentConfigTraceability(resource, client);
 		
-		when(resource.getNamespace()).thenReturn("mynamespace");
+		when(resource.getNamespaceName()).thenReturn("mynamespace");
 		
 		when(client.get(eq(ResourceKind.DEPLOYMENT_CONFIG), eq("foobar"), eq("mynamespace")))
 			.thenReturn(config);

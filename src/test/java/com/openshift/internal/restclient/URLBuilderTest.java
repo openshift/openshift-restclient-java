@@ -124,7 +124,7 @@ public class URLBuilderTest extends TypeMapperFixture{
 		IResource resource = mock(IResource.class);
 		when(resource.getApiVersion()).thenReturn(version.toString());
 		when(resource.getKind()).thenReturn(kind);
-		when(resource.getNamespace()).thenReturn(namespace);
+		when(resource.getNamespaceName()).thenReturn(namespace);
 		return resource;
 	}
 }

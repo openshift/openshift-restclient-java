@@ -58,7 +58,7 @@ public class ResourceFactoryTest {
 	public void testStubWithNamespace() {
 		IService service = factory.stub(ResourceKind.SERVICE, "foo", "bar");
 		assertEquals("foo", service.getName());
-		assertEquals("bar", service.getNamespace());
+		assertEquals("bar", service.getNamespaceName());
 	}
 
 	@Test

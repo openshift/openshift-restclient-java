@@ -40,7 +40,7 @@ public class UnrecognizedResourceTest{
 
 	@Test
 	public void testGetNamespace() {
-		assertEquals("test", service.getNamespace());
+		assertEquals("test", service.getNamespaceName());
 	}
 
 	@Test

@@ -45,7 +45,7 @@ public class ProjectTemplateProcessingTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		when(project.getNamespace()).thenReturn(NAMESPACE);
+		when(project.getNamespaceName()).thenReturn(NAMESPACE);
 		when(client.supports(eq(ITemplateProcessing.class))).thenReturn(true);
 		when(client.getCapability(eq(ITemplateProcessing.class))).thenReturn(serverCapability);
 		

@@ -33,7 +33,7 @@ public class ProjectTemplateProcessing implements IProjectTemplateProcessing {
 		if(client != null && client.supports(ITemplateProcessing.class)) {
 			serverCapability = client.getCapability(ITemplateProcessing.class);
 			this.client = client;
-			this.namespace = project.getNamespace();
+			this.namespace = project.getNamespaceName();
 		}
 	}
 

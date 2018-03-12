@@ -44,7 +44,7 @@ public class DeployCapabilityTest {
 	@Before
 	public void setUp() throws Exception {
 		cap = new DeployCapability(config, client);
-		when(config.getNamespace()).thenReturn(NAMESPACE);
+		when(config.getNamespaceName()).thenReturn(NAMESPACE);
 		when(config.getName()).thenReturn(NAME);
 
 		givenDeployConfigIsVersion(config, VERSION);

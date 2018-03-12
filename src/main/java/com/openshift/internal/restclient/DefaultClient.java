@@ -184,7 +184,7 @@ public class DefaultClient implements IClient, IHttpConstants{
 
 	@Override
 	public <T extends IResource> T create(T resource) {
-		return create(resource, resource.getNamespace());
+		return create(resource, resource.getNamespaceName());
 	}
 	
 		
@@ -312,12 +312,12 @@ public class DefaultClient implements IClient, IHttpConstants{
 
 	@Override
 	public <T extends IResource> T update(T resource) {
-		return execute(HttpMethod.PUT, resource.getKind(), resource.getNamespace(), resource.getName(), null, resource);
+		return execute(HttpMethod.PUT, resource.getKind(), resource.getNamespaceName(), resource.getName(), null, resource);
 	}
 
 	@Override
 	public <T extends IResource> void delete(T resource) {
-		execute(HttpMethod.DELETE, resource.getKind(), resource.getNamespace(), resource.getName(), null, resource);
+		execute(HttpMethod.DELETE, resource.getKind(), resource.getNamespaceName(), resource.getName(), null, resource);
 	}
 	
 	

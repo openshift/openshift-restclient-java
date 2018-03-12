@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.openshift.restclient.model.INamespace;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -39,6 +40,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
 	private Map<String, String []> propertyKeys;
 	private IProject project;
+	private INamespace namespace;
 	
 	/**
 	 * 
@@ -96,10 +98,18 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	@Override
 	public IProject getProject() {
 		if(this.project == null) {
-			this.project = client.get(ResourceKind.PROJECT, getNamespace(), ""); 
+			this.project = client.get(ResourceKind.PROJECT, getNamespaceName(), "");
 		}
 		return this.project;
 	}
+
+	@Override
+    public INamespace getNamespace() {
+	    if (this.namespace == null) {
+	        this.namespace = client.get(ResourceKind.NAMESPACE, getNamespaceName(), "");
+        }
+        return this.namespace;
+    }
 
 	@Override
 	public Map<String, String> getAnnotations() {
@@ -148,7 +158,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	
 	public void refresh(){
 		//TODO find better way to bypass serialization/deserialization
-		this.node = ModelNode.fromJSONString(client.get(getKind(), getName(), getNamespace()).toString());
+		this.node = ModelNode.fromJSONString(client.get(getKind(), getName(), getNamespaceName()).toString());
 	}
 	
 	@Override
@@ -175,7 +185,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	}
 	
 	@Override
-	public String getNamespace(){
+	public String getNamespaceName(){
 		return asString(METADATA_NAMESPACE);
 	}
 	
@@ -310,7 +320,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 	
 	@Override
 	public int hashCode() {
-		String namespace = getNamespace();
+		String namespace = getNamespaceName();
 		String name = getName();
 		String kind = getKind();
 		final int prime = 31;
@@ -336,12 +346,12 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
 					return false;
 				}
 			}
-			if (getNamespace() != null) {
-				if(!getNamespace().equals(other.getNamespace())) {
+			if (getNamespaceName() != null) {
+				if(!getNamespaceName().equals(other.getNamespaceName())) {
 					return false;
 				}
 			} else {
-				if (other.getNamespace() != null) {
+				if (other.getNamespaceName() != null) {
 					return false;
 				}
 			}

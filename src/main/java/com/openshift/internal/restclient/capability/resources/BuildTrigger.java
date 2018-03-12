@@ -71,14 +71,14 @@ public class BuildTrigger implements IBuildTriggerable {
 			request.setCommitId(commitId);
 		causes.forEach(c->request.addBuildCause(c));
 		envVars.forEach((name, value)->request.setEnvironmentVariable(name, value));
-		return client.create(resource.getKind(), resource.getNamespace(), resource.getName(), subresource, request);
+		return client.create(resource.getKind(), resource.getNamespaceName(), resource.getName(), subresource, request);
 	}
 
 	@Override @Deprecated
 	public IBuild trigger(String commitId) {
 		IBuildRequest request = client.getResourceFactory().stub(ResourceKind.BUILD_REQUEST, resource.getName());
 		request.setCommitId(commitId);
-		return client.create(resource.getKind(), resource.getNamespace(), resource.getName(), subresource, request);
+		return client.create(resource.getKind(), resource.getNamespaceName(), resource.getName(), subresource, request);
 	}
 
 	@Override

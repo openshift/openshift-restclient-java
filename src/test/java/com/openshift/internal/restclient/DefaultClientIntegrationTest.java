@@ -88,7 +88,7 @@ public class DefaultClientIntegrationTest {
 			template = factory.stub(ResourceKind.TEMPLATE, "mytemplate");
 			
 			project = (IProject) client.create(projectRequest);
-			template = client.create(template, project.getNamespace());
+			template = client.create(template, project.getNamespaceName());
 			
 			assertNotNull("Exp. the template to be found but was not", waitForResource(client, ResourceKind.TEMPLATE, project.getName(), template.getName(), 5 * MILLISECONDS_PER_SECOND));
 			
@@ -153,12 +153,12 @@ public class DefaultClientIntegrationTest {
 			List<Project> projects = client.list(ResourceKind.PROJECT);
 			LOG.debug(String.format("Listed projects: %s", projects));
 			
-			LOG.debug(String.format("Listing services with namespace: %s", project.getNamespace()));
-			List<Service> services = client.list(ResourceKind.SERVICE, project.getNamespace());
+			LOG.debug(String.format("Listing services with namespace: %s", project.getNamespaceName()));
+			List<Service> services = client.list(ResourceKind.SERVICE, project.getNamespaceName());
 			LOG.debug(String.format("Listed services: %s", services));
 			
 			LOG.debug(String.format("Getting service: %s", otherService.getName()));
-			Service s = client.get(ResourceKind.SERVICE, otherService.getName(), otherService.getNamespace());
+			Service s = client.get(ResourceKind.SERVICE, otherService.getName(), otherService.getNamespaceName());
 			LOG.debug(String.format("Retrieved service: %s", s.getName()));
 			
 			assertEquals("Expected there to be only one service returned", 1, services.size());
@@ -175,7 +175,7 @@ public class DefaultClientIntegrationTest {
 				.end()
 				.toImageStreamTag("foo/bar:latest")
 				.build();
-			bc = client.create(bc, project.getNamespace());
+			bc = client.create(bc, project.getNamespaceName());
 			LOG.debug(String.format("Created bc: %s", bc.getName()));
 			LOG.debug(String.format("Trying to delete bc: %s", bc.getName()));
 			client.delete(bc);
