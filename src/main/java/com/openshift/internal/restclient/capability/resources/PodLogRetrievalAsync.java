@@ -84,7 +84,7 @@ public class PodLogRetrievalAsync implements IPodLogRetrievalAsync{
 		OkHttpClient okClient = client.adapt(OkHttpClient.class);
 		final String endpoint = new URLBuilder(client.getBaseURL(), mapper)
 				.kind(pod.getKind())
-				.namespace(pod.getNamespace())
+				.namespace(pod.getNamespaceName())
 				.name(pod.getName())
 				.subresource(CAPABILITY)
 				.addParameters(parameters)

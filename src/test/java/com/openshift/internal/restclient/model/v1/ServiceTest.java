@@ -104,7 +104,7 @@ public class ServiceTest{
 	
 	@Test
 	public void testGetNamespace() {
-		assertEquals("test", service.getNamespace());
+		assertEquals("test", service.getNamespaceName());
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class ServiceTest{
 		// operation
 		((Service) service).setNamespace("foo");
 		// verification
-		assertEquals("foo", service.getNamespace());
+		assertEquals("foo", service.getNamespaceName());
 	}
 	
 	@Test

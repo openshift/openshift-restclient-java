@@ -48,7 +48,7 @@ public class MocksFactory {
 	
 	public <T extends IResource> T mock(Class<T> klass, String namespace, String name) {
 		T mock = mock(klass);
-		when(mock.getNamespace()).thenReturn(namespace);
+		when(mock.getNamespaceName()).thenReturn(namespace);
 		when(mock.getName()).thenReturn(name);
 		return mock;
 	}
@@ -63,7 +63,7 @@ public class MocksFactory {
 		T mock = Mockito.mock(klass);
 		when(mock.getName()).thenReturn("a" + klass.getSimpleName());
 		when(mock.getApiVersion()).thenReturn(version);
-		when(mock.getNamespace()).thenReturn("aNamespace");
+		when(mock.getNamespaceName()).thenReturn("aNamespace");
 		when(mock.getKind()).thenReturn(klass.getSimpleName().substring(1));
 		return mock;
 	}

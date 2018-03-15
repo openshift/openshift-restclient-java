@@ -19,28 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.openshift.internal.restclient.model.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
-import com.openshift.internal.restclient.model.Build;
-import com.openshift.internal.restclient.model.BuildConfig;
-import com.openshift.internal.restclient.model.ConfigMap;
-import com.openshift.internal.restclient.model.DeploymentConfig;
-import com.openshift.internal.restclient.model.ImageStream;
-import com.openshift.internal.restclient.model.KubernetesEvent;
-import com.openshift.internal.restclient.model.KubernetesResource;
-import com.openshift.internal.restclient.model.LimitRange;
 import com.openshift.internal.restclient.model.volume.PersistentVolume;
-import com.openshift.internal.restclient.model.Pod;
-import com.openshift.internal.restclient.model.Project;
-import com.openshift.internal.restclient.model.ReplicationController;
-import com.openshift.internal.restclient.model.ResourceQuota;
-import com.openshift.internal.restclient.model.Route;
-import com.openshift.internal.restclient.model.Secret;
-import com.openshift.internal.restclient.model.Service;
-import com.openshift.internal.restclient.model.ServiceAccount;
-import com.openshift.internal.restclient.model.Status;
 import com.openshift.internal.restclient.model.authorization.OpenshiftPolicy;
 import com.openshift.internal.restclient.model.authorization.OpenshiftRole;
 import com.openshift.internal.restclient.model.authorization.PolicyBinding;
@@ -84,6 +68,7 @@ public class ResourceFactory implements IResourceFactory{
 		IMPL_MAP.put(ResourceKind.IMAGE_STREAM, ImageStream.class);
 		IMPL_MAP.put(ResourceKind.IMAGE_STREAM_IMPORT, ImageStreamImport.class);
 		IMPL_MAP.put(ResourceKind.LIST, com.openshift.internal.restclient.model.List.class);
+		IMPL_MAP.put(ResourceKind.NAMESPACE, Namespace.class);
 		IMPL_MAP.put(ResourceKind.OAUTH_ACCESS_TOKEN, OAuthAccessToken.class);
 		IMPL_MAP.put(ResourceKind.OAUTH_AUTHORIZE_TOKEN, OAuthAuthorizeToken.class);
 		IMPL_MAP.put(ResourceKind.OAUTH_CLIENT, OAuthClient.class);

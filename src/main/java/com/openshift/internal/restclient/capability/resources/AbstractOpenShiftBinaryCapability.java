@@ -89,7 +89,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
 			if (resource == null) {
 				return;
 			}
-			commandLine.append(" -n ").append(resource.getNamespace());
+			commandLine.append(" -n ").append(resource.getNamespaceName());
 		}
 	}
 

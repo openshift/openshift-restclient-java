@@ -48,7 +48,7 @@ public class BinaryCapabilityTestMocks {
 	public static IPod mockPod() {
 		IPod pod = mock(IPod.class);
 		doReturn(POD_NAME).when(pod).getName();
-		doReturn(POD_NAMESPACE).when(pod).getNamespace();
+		doReturn(POD_NAMESPACE).when(pod).getNamespaceName();
 		return pod;
 	}
 	

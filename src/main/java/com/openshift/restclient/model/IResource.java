@@ -47,14 +47,19 @@ public interface IResource extends ICapable, Annotatable, IAnnotatable, JSONSeri
 	 * Returns the scope of this resource
 	 * @return
 	 */
-	String getNamespace();
+	String getNamespaceName();
 	
 	/**
-	 * Return the project of the resource which
-	 * corresponds to the namespace
+	 * Return the project of the resource
 	 * @return
 	 */
 	IProject getProject();
+
+	/**
+	 * Return the namespace of the resource
+	 * @return
+	 */
+	INamespace getNamespace();
 	
 	/**
 	 * Retrieves the labels associated with the resource

@@ -40,7 +40,7 @@ public class ResourceTest {
 	
 	@Test
 	public void getNamespace(){
-		assertEquals("test", resource.getNamespace());
+		assertEquals("test", resource.getNamespaceName());
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class ResourceTest {
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_SERVICE.getContentAsString());
 		node.get("metadata").remove("namespace");
 		resource = new Build(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT));
-		assertEquals("", resource.getNamespace());
+		assertEquals("", resource.getNamespaceName());
 	}
 
 	

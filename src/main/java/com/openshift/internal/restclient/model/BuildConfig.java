@@ -81,7 +81,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 		List<IBuildTrigger> triggers = new ArrayList<IBuildTrigger>();
 		if (has(BUILDCONFIG_TRIGGERS)) {
             List<ModelNode> list = get(BUILDCONFIG_TRIGGERS).asList();
-            final String url = getClient() != null && StringUtils.isNotEmpty(getNamespace()) ? getClient().getResourceURI(this) : "";
+            final String url = getClient() != null && StringUtils.isNotEmpty(getNamespaceName()) ? getClient().getResourceURI(this) : "";
             for (ModelNode node : list) {
                 String type = node.get(TYPE).asString();
                 switch (type) {

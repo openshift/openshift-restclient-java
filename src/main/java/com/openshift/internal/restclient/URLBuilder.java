@@ -99,7 +99,7 @@ public class URLBuilder {
 		if (resource == null) return this;
 		this.name = resource.getName();
 		kind(resource.getKind());
-		namespace(resource.getNamespace());
+		namespace(resource.getNamespaceName());
 		return this;
 	}
 

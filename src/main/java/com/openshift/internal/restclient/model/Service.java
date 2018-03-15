@@ -152,7 +152,7 @@ public class Service extends KubernetesResource implements IService {
 	@Override
 	public List<IPod> getPods() {
 		if(getClient() == null) return new ArrayList<IPod>();
-		return getClient().list(ResourceKind.POD, getNamespace(), getSelector());
+		return getClient().list(ResourceKind.POD, getNamespaceName(), getSelector());
 	}
 
 	@Override

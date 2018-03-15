@@ -64,7 +64,7 @@ public class OpenshiftBinaryPortForwardingIntegrationTest implements ResourcePro
 		pod = (Pod) client.create(pod);
 		pod = (Pod) IntegrationTestHelper.waitForResource(client, 
 				pod.getKind(), 
-				pod.getNamespace(), 
+				pod.getNamespaceName(),
 				pod.getName(), 5 * IntegrationTestHelper.MILLISECONDS_PER_MIN, new PodStatusRunningConditional());
 		
 		assertNotNull("The test timed out before the pod was in a running state", pod);
