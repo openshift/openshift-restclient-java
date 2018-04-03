@@ -14,6 +14,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class ServiceTest {
 		client = mock(IClient.class);
 		when(client.getOpenShiftAPIVersion()).thenReturn(OpenShiftAPIVersion.v1.name());
 		IResourceFactory factory = new ResourceFactory(client){};
-		service = factory.stub(ResourceKind.SERVICE, OpenShiftAPIVersion.v1.name());
+		service = factory.stub(PredefinedResourceKind.SERVICE.getIdentifier(), OpenShiftAPIVersion.v1.name());
 	}
 	
 	@Test
@@ -70,7 +71,7 @@ public class ServiceTest {
 		service.getPods();
 		
 		//confirm called with selector and not something else
-		verify(client, times(1)).list(eq(ResourceKind.POD), anyString(), eq(service.getSelector()));
+		verify(client, times(1)).list(eq(PredefinedResourceKind.POD.getIdentifier()), anyString(), eq(service.getSelector()));
 	}
 
 }

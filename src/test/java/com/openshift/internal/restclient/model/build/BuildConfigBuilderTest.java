@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
@@ -49,7 +50,7 @@ public class BuildConfigBuilderTest {
 	public void setUp() throws Exception {
 		bcImpl = new BuildConfig(new ModelNode(), client, Collections.emptyMap());
 		when(client.getResourceFactory()).thenReturn(factory);
-		when(factory.stub(eq(ResourceKind.BUILD_CONFIG), anyString(), anyString())).thenReturn(bcImpl);
+		when(factory.stub(eq(PredefinedResourceKind.BUILD_CONFIG.getIdentifier()), anyString(), anyString())).thenReturn(bcImpl);
 		
 	}
 
@@ -94,7 +95,7 @@ public class BuildConfigBuilderTest {
 		assertEquals("other", strategy.getFromNamespace());
 		
 		IObjectReference out = bc.getBuildOutputReference();
-		assertEquals(ResourceKind.IMAGE_STREAM_TAG, out.getKind());
+		assertEquals(PredefinedResourceKind.IMAGE_STREAM_TAG.getIdentifier(), out.getKind());
 		assertEquals("target:latest", out.getName());
 		assertEquals("foo", out.getNamespace());
 	}

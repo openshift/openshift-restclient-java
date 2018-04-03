@@ -11,6 +11,7 @@ package com.openshift.internal.restclient.model.v1;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class BuildTest {
 	public static void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_BUILD.getContentAsString());
-		build = new Build(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.BUILD));
+		build = new Build(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.BUILD.getIdentifier()));
 	}
 	
 	@Test

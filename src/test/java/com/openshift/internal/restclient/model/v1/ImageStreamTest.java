@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class ImageStreamTest {
 	public void setup(){
 		client = mock(IClient.class);
 		node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM.getContentAsString());
-		stream = new ImageStream(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM));
+		stream = new ImageStream(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.IMAGE_STREAM.getIdentifier()));
 	}
 	
 	@Test
@@ -52,7 +53,7 @@ public class ImageStreamTest {
 	
 	@Test
 	public void testAddTag() {
-		ITagReference tag = stream.addTag("1234", ResourceKind.IMAGE_STREAM_TAG, "foo/bar");
+		ITagReference tag = stream.addTag("1234", PredefinedResourceKind.IMAGE_STREAM_TAG.getIdentifier(), "foo/bar");
 		Optional<ITagReference> actTag = stream.getTags().stream().filter(t->"1234".equals(t.getName())).findFirst();
 		assertTrue("Exp. the tag to have been added",actTag.isPresent());
 		assertEquals(tag.toJson(), actTag.get().toJson());
@@ -60,7 +61,7 @@ public class ImageStreamTest {
 	
 	@Test
 	public void testAddTagWithNamespace() {
-		ITagReference tag = stream.addTag("1234", ResourceKind.IMAGE_STREAM_TAG, "foo/bar", "fromNmspc");
+		ITagReference tag = stream.addTag("1234", PredefinedResourceKind.IMAGE_STREAM_TAG.getIdentifier(), "foo/bar", "fromNmspc");
 		Optional<ITagReference> actTag = stream.getTags().stream().filter(t->"1234".equals(t.getName())).findFirst();
 		assertTrue("Exp. the tag to have been added",actTag.isPresent());
 		assertEquals(tag.toJson(), actTag.get().toJson());

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient;
 
+import com.openshift.restclient.DefaultResourceKindRegistry;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IResource;
 import org.junit.Before;
@@ -31,22 +33,22 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class URLBuilderTest extends TypeMapperFixture{
-	
+
 	private static final String BASE_URL = "https://localhost:8443";
 	private URLBuilder builder;
-	
+
 	@Before
 	public void setup() throws MalformedURLException {
-		builder = new URLBuilder(new URL(BASE_URL), mapper);
+		builder = new URLBuilder(new URL(BASE_URL), mapper, new DefaultResourceKindRegistry());
 	}
-	
+
 	@Test
 	public void testBuildingURLForAWatchService() throws Exception {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1,"foo");
-		
+		IResource resource = givenAResource(PredefinedResourceKind.SERVICE.getIdentifier(), KubernetesAPIVersion.v1,"foo");
+
 		Map<String,String> params = new HashMap<>();
 		params.put("foo", "bar");
-		
+
 		String url = builder.
 				resource(resource)
 				.watch()
@@ -58,7 +60,7 @@ public class URLBuilderTest extends TypeMapperFixture{
 
 	@Test
 	public void testDuplicateParameters() throws Exception {
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1,"foo");
+		IResource resource = givenAResource(PredefinedResourceKind.SERVICE.getIdentifier(), KubernetesAPIVersion.v1,"foo");
 		String url = builder.
 				resource(resource)
 				.watch()
@@ -71,8 +73,8 @@ public class URLBuilderTest extends TypeMapperFixture{
 
 	@Test
 	public void testBuildingURLForAProjectUsingResource() throws Exception {
-		IResource resource = givenAResource(ResourceKind.PROJECT, KubernetesAPIVersion.v1,"foo");
-		
+		IResource resource = givenAResource(PredefinedResourceKind.PROJECT.getIdentifier(), KubernetesAPIVersion.v1,"foo");
+
 		String url = builder.
 				resource(resource)
 				.name("foo")
@@ -82,16 +84,16 @@ public class URLBuilderTest extends TypeMapperFixture{
 
 	@Test
 	public void testBaseURLWithTrailingSlash() throws Exception {
-		builder = new URLBuilder(new URL(BASE_URL + "///"), mapper);
-		IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1,"foo");
-		
+		builder = new URLBuilder(new URL(BASE_URL + "///"), mapper, new DefaultResourceKindRegistry());
+		IResource resource = givenAResource(PredefinedResourceKind.SERVICE.getIdentifier(), KubernetesAPIVersion.v1,"foo");
+
 		String url = whenBuildingTheURLFor(resource, "foo");
 		assertEquals(String.format("%s/api/v1/namespaces/foo/services/bar", BASE_URL),url.toString());
 	}
 
 	@Test
 	public void testAddingASubResource() {
-		IResource resource = givenAResource(ResourceKind.REPLICATION_CONTROLLER, KubernetesAPIVersion.v1, "foo");
+		IResource resource = givenAResource(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(), KubernetesAPIVersion.v1, "foo");
 		String url = builder.
 			resource(resource)
 			.name("bar")
@@ -102,7 +104,7 @@ public class URLBuilderTest extends TypeMapperFixture{
 
 	@Test
 	public void testAddingASubContext() {
-		IResource resource = givenAResource(ResourceKind.POD, KubernetesAPIVersion.v1, "https:demo-app-8-3gehi:8778");
+		IResource resource = givenAResource(PredefinedResourceKind.POD.getIdentifier(), KubernetesAPIVersion.v1, "https:demo-app-8-3gehi:8778");
 		String url = builder.
 				resource(resource)
 				.name("bar")
@@ -119,7 +121,7 @@ public class URLBuilderTest extends TypeMapperFixture{
 			.name("bar")
 			.build().toString();
 	}
-	
+
 	private IResource givenAResource(String kind, KubernetesAPIVersion version, String namespace) {
 		IResource resource = mock(IResource.class);
 		when(resource.getApiVersion()).thenReturn(version.toString());

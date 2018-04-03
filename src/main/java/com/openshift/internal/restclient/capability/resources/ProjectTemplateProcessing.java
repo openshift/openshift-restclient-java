@@ -8,10 +8,8 @@
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
 
-import java.util.Collection;
-
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.resources.IProjectTemplateProcessing;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IList;
@@ -19,44 +17,45 @@ import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
 
+import java.util.Collection;
+
 /**
  * Process and apply template implementation for a specific project
- *
  */
 public class ProjectTemplateProcessing implements IProjectTemplateProcessing {
-	
-	private String namespace;
-	private IClient client;
-	private ITemplateProcessing serverCapability;
 
-	public ProjectTemplateProcessing(IProject project, IClient client) {
-		if(client != null && client.supports(ITemplateProcessing.class)) {
-			serverCapability = client.getCapability(ITemplateProcessing.class);
-			this.client = client;
-			this.namespace = project.getNamespaceName();
-		}
-	}
+    private String namespace;
+    private IClient client;
+    private ITemplateProcessing serverCapability;
 
-	@Override
-	public boolean isSupported() {
-		return serverCapability != null;
-	}
+    public ProjectTemplateProcessing(IProject project, IClient client) {
+        if (client != null && client.supports(ITemplateProcessing.class)) {
+            serverCapability = client.getCapability(ITemplateProcessing.class);
+            this.client = client;
+            this.namespace = project.getNamespaceName();
+        }
+    }
 
-	@Override
-	public String getName() {
-		return ProjectTemplateProcessing.class.getSimpleName();
-	}
+    @Override
+    public boolean isSupported() {
+        return serverCapability != null;
+    }
 
-	@Override
-	public ITemplate process(ITemplate template) {
-		return serverCapability.process(template, namespace);
-	}
+    @Override
+    public String getName() {
+        return ProjectTemplateProcessing.class.getSimpleName();
+    }
 
-	@Override
-	public Collection<IResource> apply(ITemplate template) {
-		IList resources = client.getResourceFactory().create(template.getApiVersion(), ResourceKind.LIST);
-		resources.addAll(template.getObjects());
-		return client.create(resources, this.namespace);
-	}
+    @Override
+    public ITemplate process(ITemplate template) {
+        return serverCapability.process(template, namespace);
+    }
+
+    @Override
+    public Collection<IResource> apply(ITemplate template) {
+        IList resources = client.getResourceFactory().create(template.getApiVersion(), PredefinedResourceKind.LIST.getIdentifier());
+        resources.addAll(template.getObjects());
+        return client.create(resources, this.namespace);
+    }
 
 }

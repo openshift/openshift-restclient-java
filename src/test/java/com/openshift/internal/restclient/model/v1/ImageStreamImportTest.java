@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class ImageStreamImportTest {
 	public void setup(){
 		client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM_IMPORT.getContentAsString());
-		stream = new ImageStreamImport(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM_IMPORT));
+		stream = new ImageStreamImport(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.IMAGE_STREAM_IMPORT.getIdentifier()));
 	}
 	
 	@Test

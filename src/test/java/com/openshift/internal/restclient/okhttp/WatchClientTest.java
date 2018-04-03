@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.net.ProtocolException;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.DefaultClient;
@@ -45,7 +46,7 @@ public class WatchClientTest {
 		
 		IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
 		
-		WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
+		WatchEndpoint endpoint = new WatchEndpoint(client, listener, PredefinedResourceKind.BUILD.getIdentifier());
 		endpoint.onFailure(new IOException(), null);
 		verify(listener).error(any(Throwable.class));
 	}
@@ -55,7 +56,7 @@ public class WatchClientTest {
 		DefaultClient client = mock(DefaultClient.class);
 		IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
 		
-		WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
+		WatchEndpoint endpoint = new WatchEndpoint(client, listener, PredefinedResourceKind.BUILD.getIdentifier());
 		Response.Builder responseBuilder = new Response.Builder();
 		responseBuilder.code(IHttpConstants.STATUS_OK)
 						.protocol(Protocol.HTTP_2)

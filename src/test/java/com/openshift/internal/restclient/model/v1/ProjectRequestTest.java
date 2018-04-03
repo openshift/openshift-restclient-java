@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class ProjectRequestTest{
 	public void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_PROJECT_REQUEST.getContentAsString());
-		request = new OpenshiftProjectRequest(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT_REQUEST));
+		request = new OpenshiftProjectRequest(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.PROJECT_REQUEST.getIdentifier()));
 	}
 	
 	@Test

@@ -11,6 +11,7 @@ package com.openshift.internal.restclient.capability.resources;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +36,7 @@ public class TemplateTraceabilityTest {
 	public void setUp(){
 		capability = new TemplateTraceability(resource);
 		when(resource.getNamespaceName()).thenReturn("mynamespace");
-		when(resource.getKind()).thenReturn(ResourceKind.TEMPLATE);
+		when(resource.getKind()).thenReturn(PredefinedResourceKind.TEMPLATE.getIdentifier());
 	}
 	
 	@Test

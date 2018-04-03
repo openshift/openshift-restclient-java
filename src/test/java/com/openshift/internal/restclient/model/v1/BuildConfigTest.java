@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -70,7 +71,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void addBuildTriggers() {
-		BuildConfig writeConfig = new ResourceFactory(client){}.create(VERSION, ResourceKind.BUILD_CONFIG);
+		BuildConfig writeConfig = new ResourceFactory(client){}.create(VERSION, PredefinedResourceKind.BUILD_CONFIG.getIdentifier());
 
 		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GITHUB, "secret101", "https://localhost:8443"));
 		writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GENERIC, "secret101", "https://localhost:8443"));
@@ -97,7 +98,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void setGitBuildSource() {
-		BuildConfig writeConfig = new ResourceFactory(client){}.create(VERSION, ResourceKind.BUILD_CONFIG);
+		BuildConfig writeConfig = new ResourceFactory(client){}.create(VERSION, PredefinedResourceKind.BUILD_CONFIG.getIdentifier());
 
 		Map<String, String> env = new HashMap<String, String>();
 		env.put("foo", "bar");
@@ -114,7 +115,7 @@ public class BuildConfigTest {
 
 	@Test
 	public void setSourceBuildStrategy() {
-		BuildConfig writeConfig = new ResourceFactory(client){}.create(VERSION, ResourceKind.BUILD_CONFIG);
+		BuildConfig writeConfig = new ResourceFactory(client){}.create(VERSION, PredefinedResourceKind.BUILD_CONFIG.getIdentifier());
 
 		ModelNode node = new ModelNodeBuilder()
 			.set("type", BuildStrategyType.SOURCE)

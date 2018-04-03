@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +47,7 @@ public class PersistentVolumeTest {
 	public void setUp() {
 		client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(sample.getContentAsString());
-		pv = new PersistentVolume(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PERSISTENT_VOLUME));
+		pv = new PersistentVolume(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.PERSISTENT_VOLUME.getIdentifier()));
 	}
 
 	@Test

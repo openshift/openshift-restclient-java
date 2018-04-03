@@ -17,16 +17,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.openshift.restclient.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.PodStatusRunningConditional;
-import com.openshift.restclient.IClient;
-import com.openshift.restclient.IOpenShiftWatchListener;
-import com.openshift.restclient.IWatcher;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.api.capabilities.IScalable;
 import com.openshift.restclient.apis.autoscaling.models.IScale;
 import com.openshift.restclient.capability.CapabilityVisitor;
@@ -105,7 +102,7 @@ public class ScaleCapabilityIntegrationTest {
 				
 			}
 			
-		}, ResourceKind.POD);
+		}, PredefinedResourceKind.POD.getIdentifier());
 
 		if(initializationLatch.await(1, TimeUnit.MINUTES)){
 			scaleTo(REPLICAS);

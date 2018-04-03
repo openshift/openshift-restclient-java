@@ -11,6 +11,7 @@ package com.openshift.internal.restclient.model.v1;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class StatusTest{
 	public static void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_Status.getContentAsString());
-		status = new Status(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.STATUS));
+		status = new Status(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.STATUS.getIdentifier()));
 	}
 	
 	@Test

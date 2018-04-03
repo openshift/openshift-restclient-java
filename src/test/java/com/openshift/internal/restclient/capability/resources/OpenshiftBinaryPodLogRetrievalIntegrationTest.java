@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNull;
 import java.io.BufferedInputStream;
 import java.util.List;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
 	public void testLogRetrieval() {
 		System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
 		IClient client = helper.createClientForBasicAuth();
-		List<IResource> pods = client.list(ResourceKind.POD, "default");
+		List<IResource> pods = client.list(PredefinedResourceKind.POD.getIdentifier(), "default");
 		IPod pod = (IPod) pods.stream().filter(p->p.getName().startsWith("docker-registry")).findFirst().orElse(null);
 		assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
 

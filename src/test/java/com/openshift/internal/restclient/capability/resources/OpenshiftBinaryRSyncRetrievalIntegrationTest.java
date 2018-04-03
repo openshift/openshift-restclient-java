@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -78,7 +79,7 @@ public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
 		System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
 		client = helper.createClientForBasicAuth();
 
-		List<IResource> pods = client.list(ResourceKind.POD, "default");
+		List<IResource> pods = client.list(PredefinedResourceKind.POD.getIdentifier(), "default");
 		pod = (Pod) pods.stream().filter(p->p.getName().startsWith("docker-registry")).findFirst().orElse(null);
 		assertNotNull("Did not find the registry pod to which to rsync", pod);
 	}

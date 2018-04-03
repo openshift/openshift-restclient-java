@@ -3,7 +3,7 @@
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
 package com.openshift.internal.restclient.capability.resources;
@@ -11,6 +11,7 @@ package com.openshift.internal.restclient.capability.resources;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,20 +35,20 @@ public class UpdateableCapabilityTest {
 	@Mock private IClient client;
 	private IService service;
 	private IResourceFactory factory;
-	
+
 	@Before
 	public void setup(){
 		when(client.getOpenShiftAPIVersion()).thenReturn("v1");
 		factory = new ResourceFactory(client);
-		service = factory.stub(ResourceKind.SERVICE, "foo", "default");
+		service = factory.stub(PredefinedResourceKind.SERVICE.getIdentifier(), "foo", "default");
 		service.setAnnotation("foo", "bar");
 	}
-	
+
 	@Test
 	public void testUpdateCapability() {
-		IService target = factory.stub(ResourceKind.SERVICE, "foo", "default");
+		IService target = factory.stub(PredefinedResourceKind.SERVICE.getIdentifier(), "foo", "default");
 		target.setAnnotation("foo", "xyz");
-		
+
 		service.accept(new CapabilityVisitor<IUpdatable, IService>() {
 
 			@Override

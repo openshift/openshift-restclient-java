@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,7 +84,7 @@ public class PipelineBuildConfigTest {
 
 	private IResourceFactory createResourceFactoryFor(IBuildConfig bc) {
 		IResourceFactory factory = mock(IResourceFactory.class);
-		when(factory.stub(eq(ResourceKind.BUILD_CONFIG), anyString(), anyString())).thenReturn(bc);		
+		when(factory.stub(eq(PredefinedResourceKind.BUILD_CONFIG.getIdentifier()), anyString(), anyString())).thenReturn(bc);
 		return factory;
 	}
 

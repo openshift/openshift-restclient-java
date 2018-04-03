@@ -12,6 +12,7 @@
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class RouteTest {
 	@Before
 	public void setUp() throws Exception {
 		ModelNode root = new ModelNode();
-		JBossDmrExtentions.set(root, JBossDmrExtentions.getPath(ResourcePropertyKeys.KIND), ResourceKind.ROUTE);
+		JBossDmrExtentions.set(root, JBossDmrExtentions.getPath(ResourcePropertyKeys.KIND), PredefinedResourceKind.ROUTE.getIdentifier());
 		route = spy(new Route(root, null, null));
 		doReturn("www.host.com").when(route).getHost();
 		doReturn("/abc").when(route).getPath();

@@ -11,6 +11,7 @@ package com.openshift.internal.restclient.capability.resources;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +41,7 @@ public class DeploymentTraceabilityTest {
 		
 		when(resource.getNamespaceName()).thenReturn("mynamespace");
 		
-		when(client.get(eq(ResourceKind.REPLICATION_CONTROLLER), eq("foobar"), eq("mynamespace")))
+		when(client.get(eq(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier()), eq("foobar"), eq("mynamespace")))
 			.thenReturn(deployment);
 	}
 	
@@ -51,7 +52,7 @@ public class DeploymentTraceabilityTest {
 
 		assertEquals("Exp. to get the deployment", deployment, capability.getDeployment());
 		
-		verify(client).get(eq(ResourceKind.REPLICATION_CONTROLLER), eq("foobar"), eq("mynamespace"));
+		verify(client).get(eq(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier()), eq("foobar"), eq("mynamespace"));
 	}
 
 	@Test

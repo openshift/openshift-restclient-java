@@ -14,6 +14,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,18 +39,18 @@ public class ProjectTest {
 	
 	@Before
 	public void setup(){
-		project = new ResourceFactory(client){}.create(OpenShiftAPIVersion.v1.toString(), ResourceKind.PROJECT);
+		project = new ResourceFactory(client){}.create(OpenShiftAPIVersion.v1.toString(), PredefinedResourceKind.PROJECT.getIdentifier());
 		project.setName("aprojectname");
 	}
 	
 	@Test
 	public void getResourcesShouldUseProjectNameForNamespaceWhenGettingResources() {
 		ArrayList<IService> services = new ArrayList<IService>();
-		when(client.<IService>list(eq(ResourceKind.SERVICE), anyString())).thenReturn(services);
-		List<IService> resources = project.getResources(ResourceKind.SERVICE);
+		when(client.<IService>list(eq(PredefinedResourceKind.SERVICE.getIdentifier()), anyString())).thenReturn(services);
+		List<IService> resources = project.getResources(PredefinedResourceKind.SERVICE.getIdentifier());
 		
 		assertEquals("Exp. a list of services", services, resources);
-		verify(client).list(eq(ResourceKind.SERVICE), eq(project.getName()));
+		verify(client).list(eq(PredefinedResourceKind.SERVICE.getIdentifier()), eq(project.getName()));
 	}
 	
 

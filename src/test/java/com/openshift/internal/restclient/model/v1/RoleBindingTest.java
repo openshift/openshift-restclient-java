@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class RoleBindingTest {
 	public static void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_ROLE_BINDING.getContentAsString());
-		binding = new RoleBinding(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROLE_BINDING));
+		binding = new RoleBinding(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.ROLE_BINDING.getIdentifier()));
 	}
 	
 	@Test
