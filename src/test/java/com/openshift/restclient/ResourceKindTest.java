@@ -33,7 +33,7 @@ public class ResourceKindTest {
 
 	@Test
 	public void testPluralizeWhenEndsWithAnS() {
-		assertEquals("Status",ResourceKind.pluralize(ResourceKind.STATUS));
+		assertEquals("Status",ResourceKind.pluralize(PredefinedResourceKind.STATUS.getIdentifier()));
 	}
 
 	@Test
@@ -43,19 +43,19 @@ public class ResourceKindTest {
 
 	@Test
 	public void testPluralizeWhenEndsWithAnythingElse() {
-		assertEquals("Services",ResourceKind.pluralize(ResourceKind.SERVICE));
+		assertEquals("Services",ResourceKind.pluralize(PredefinedResourceKind.SERVICE.getIdentifier()));
 	}
 	@Test
 	public void testPluralizeCamelCaseKind() {
-		assertEquals("ReplicationControllers",ResourceKind.pluralize(ResourceKind.REPLICATION_CONTROLLER));
+		assertEquals("ReplicationControllers",ResourceKind.pluralize(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier()));
 	}
 	@Test
 	public void testPluralizeCamelCaseKindForceLower() {
-		assertEquals("replicationcontrollers",ResourceKind.pluralize(ResourceKind.REPLICATION_CONTROLLER, true, true));
+		assertEquals("replicationcontrollers",ResourceKind.pluralize(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(), true, true));
 	}
 	@Test
 	public void testPluralizeCamelCaseKindUncapitalize() {
-		assertEquals("replicationControllers",ResourceKind.pluralize(ResourceKind.REPLICATION_CONTROLLER, false, true));
+		assertEquals("replicationControllers",ResourceKind.pluralize(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(), false, true));
 	}
 
 }

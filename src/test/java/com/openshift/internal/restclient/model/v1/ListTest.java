@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import java.net.URL;
 import java.util.Collection;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class ListTest {
 		Collection<IResource> items = resource.getItems();
 		assertTrue("Expected to be entries in the list",items.size() >0 );
 		IResource bc = items.iterator().next();
-		assertEquals(ResourceKind.BUILD_CONFIG, bc.getKind());
+		assertEquals(PredefinedResourceKind.BUILD_CONFIG.getIdentifier(), bc.getKind());
 		assertEquals("v1", bc.getApiVersion());
 	}
 

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.ByteArrayInputStream;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
@@ -40,7 +41,7 @@ public class SecretTest{
 	public void setUp() {
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(sample.getContentAsString());
-		secret = new Secret(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.SECRET));
+		secret = new Secret(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.SECRET.getIdentifier()));
 	}
 	
 	@Test

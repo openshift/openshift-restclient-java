@@ -19,6 +19,7 @@ import static com.openshift.internal.util.JBossDmrExtentions.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class KubernetesResourceTest {
 
 	private ModelNode createModelNode() {
 		node = new ModelNode();
-		node.get(ResourcePropertyKeys.KIND).set(ResourceKind.LIST.toString());
+		node.get(ResourcePropertyKeys.KIND).set(PredefinedResourceKind.LIST.getIdentifier().toString());
 
 		ModelNode annotations = node.get(getPath(KubernetesResource.ANNOTATIONS));
 		annotations.get("foo").set("bar");
@@ -61,7 +62,7 @@ public class KubernetesResourceTest {
 	
 	private KubernetesResource createKubernetesResource(String modelVersion, ModelNode node) {
 		return new KubernetesResource(node, null,
-				ResourcePropertiesRegistry.getInstance().get(modelVersion, ResourceKind.SERVICE)) {};
+				ResourcePropertiesRegistry.getInstance().get(modelVersion, PredefinedResourceKind.SERVICE.getIdentifier())) {};
 	}
 	
 	@Test
@@ -154,7 +155,7 @@ public class KubernetesResourceTest {
 		int hashCodeBeforeChange = resource.hashCode();
 		
 		// operation
-		node.get(ResourcePropertyKeys.KIND).set(ResourceKind.EVENT.toString());
+		node.get(ResourcePropertyKeys.KIND).set(PredefinedResourceKind.EVENT.getIdentifier().toString());
 		
 		// verification
 		int hashCodeAfterChange = resource.hashCode();
@@ -220,7 +221,7 @@ public class KubernetesResourceTest {
 		assertEquals(resource, otherResource);
 
 		// operation
-		otherResource.set(ResourcePropertyKeys.KIND, ResourceKind.EVENT.toString());
+		otherResource.set(ResourcePropertyKeys.KIND, PredefinedResourceKind.EVENT.getIdentifier().toString());
 		
 		// verification
 		assertThat(resource).isNotEqualTo(otherResource);

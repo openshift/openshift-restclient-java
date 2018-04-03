@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class PodTest {
 	public void setup() {
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_POD.getContentAsString());
-		this.pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.POD));
+		this.pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.POD.getIdentifier()));
 		this.container1 = pod.getContainers().stream().findFirst().orElse(null);
 	}
 	

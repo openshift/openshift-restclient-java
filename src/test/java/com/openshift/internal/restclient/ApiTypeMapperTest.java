@@ -13,6 +13,7 @@ package com.openshift.internal.restclient;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -32,7 +33,7 @@ public class ApiTypeMapperTest extends TypeMapperFixture {
 	
 	@Test
 	public void testKubernetesResourceIsSupportedAfterInitiallyErrorIsThrown() throws Exception {
-		IService resource = factory.stub(ResourceKind.SERVICE);
+		IService resource = factory.stub(PredefinedResourceKind.SERVICE.getIdentifier());
 		try {
 			getHttpClient().whenRequestTo(TypeMapperFixture.base + "/api").thenThrow(new RuntimeException());
 			assertTrue("Exp. Kube support", mapper.isSupported(resource));
@@ -44,10 +45,10 @@ public class ApiTypeMapperTest extends TypeMapperFixture {
 	
 	@Test
 	public void testKubernetesResourceIsSupported() {
-		IService resource = factory.stub(ResourceKind.SERVICE);
+		IService resource = factory.stub(PredefinedResourceKind.SERVICE.getIdentifier());
 		assertTrue("Exp. Kube support", mapper.isSupported(resource));
 		
-		IVersionedApiResource endpoint = mapper.getEndpointFor("v1", ResourceKind.SERVICE);
+		IVersionedApiResource endpoint = mapper.getEndpointFor("v1", PredefinedResourceKind.SERVICE.getIdentifier());
 		assertTrue("Exp. services to be namespaces", endpoint.isNamespaced());
 	}
 	

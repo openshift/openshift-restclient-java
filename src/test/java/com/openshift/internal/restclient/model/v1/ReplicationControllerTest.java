@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.json.JSONException;
 import org.junit.Before;
@@ -70,7 +71,7 @@ public class ReplicationControllerTest {
 	public void setup(){
 		client = mock(IClient.class);
 		node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
-		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
+		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier()));
 	}
 	
 	public void testGetEnvironmentVariablesWithValueFrom() {

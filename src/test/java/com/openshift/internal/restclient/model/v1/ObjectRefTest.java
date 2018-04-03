@@ -10,6 +10,7 @@ package com.openshift.internal.restclient.model.v1;
 
 import static org.junit.Assert.*;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,8 +42,8 @@ public class ObjectRefTest {
 	
 	@Test
 	public void testSetKind() {
-		objRef.setKind(ResourceKind.BUILD);
-		assertEquals(ResourceKind.BUILD, new ObjectReference(node.clone()).getKind());
+		objRef.setKind(PredefinedResourceKind.BUILD.getIdentifier());
+		assertEquals(PredefinedResourceKind.BUILD.getIdentifier(), new ObjectReference(node.clone()).getKind());
 	}
 	
 	@Test

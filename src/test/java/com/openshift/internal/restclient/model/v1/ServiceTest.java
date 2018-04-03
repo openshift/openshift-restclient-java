@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class ServiceTest{
 	public void setUp(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_SERVICE.getContentAsString());
-		service = new Service(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.SERVICE));
+		service = new Service(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.SERVICE.getIdentifier()));
 	}
 	
 	@Test

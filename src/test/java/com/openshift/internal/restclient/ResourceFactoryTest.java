@@ -16,6 +16,7 @@ import static junit.framework.Assert.*;
 import java.util.Arrays;
 import java.util.List;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,27 +44,27 @@ public class ResourceFactoryTest {
 	@Test
 	public void testV1Beta3Implementations() {
 		List<String> v1beta3Exlusions = Arrays.asList(new String [] {
-				ResourceKind.CONFIG, 
-				ResourceKind.PROCESSED_TEMPLATES
+				PredefinedResourceKind.CONFIG.getIdentifier(),
+				PredefinedResourceKind.PROCESSED_TEMPLATES.getIdentifier()
 		});
 		final String version = OpenShiftAPIVersion.v1beta3.toString();
-		for (String kind : ResourceKind.values()) {
+		for (ResourceKind kind : PredefinedResourceKind.values()) {
 			if(!v1beta3Exlusions.contains(kind)) {
-				factory.create(version, kind);
+				factory.create(version, kind.getIdentifier());
 			}
 		}
 	}
 	
 	@Test
 	public void testStubWithNamespace() {
-		IService service = factory.stub(ResourceKind.SERVICE, "foo", "bar");
+		IService service = factory.stub(PredefinedResourceKind.SERVICE.getIdentifier(), "foo", "bar");
 		assertEquals("foo", service.getName());
 		assertEquals("bar", service.getNamespaceName());
 	}
 
 	@Test
 	public void testCreateWithKindAndName() {
-		IService service = factory.create("v1", ResourceKind.SERVICE, "foo");
+		IService service = factory.create("v1", PredefinedResourceKind.SERVICE.getIdentifier(), "foo");
 		assertEquals("foo", service.getName());
 	}
 

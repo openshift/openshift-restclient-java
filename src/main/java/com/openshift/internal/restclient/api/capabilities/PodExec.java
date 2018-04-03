@@ -17,8 +17,8 @@ import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.internal.restclient.okhttp.WebSocketAdapter;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.capability.IStoppable;
 import com.openshift.restclient.api.capabilities.IPodExec;
+import com.openshift.restclient.capability.IStoppable;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IPod;
 import okhttp3.OkHttpClient;
@@ -36,149 +36,150 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PodExec extends AbstractCapability implements IPodExec {
 
-	private static final Logger LOG = LoggerFactory.getLogger(IPodExec.class);
-	private static final String CAPABILITY = "exec";
+    private static final Logger LOG = LoggerFactory.getLogger(IPodExec.class);
+    private static final String CAPABILITY = "exec";
 
-	private static final String COMMAND = "command";
+    private static final String COMMAND = "command";
 
-	private static final String K8S_PROTOCOL_HEADER = "X-Stream-Protocol-Version";
+    private static final String K8S_PROTOCOL_HEADER = "X-Stream-Protocol-Version";
 
-	private static final String K8S_PROTOCOL = "channel.k8s.io";
+    private static final String K8S_PROTOCOL = "channel.k8s.io";
 
-	public static final int CHANNEL_STDOUT = 1;
-	public static final int CHANNEL_STDERR = 2;
-	public static final int CHANNEL_EXECERR = 3;
+    public static final int CHANNEL_STDOUT = 1;
+    public static final int CHANNEL_STDERR = 2;
+    public static final int CHANNEL_EXECERR = 3;
 
-	private final IPod pod;
-	private final DefaultClient client;
-	private final IApiTypeMapper mapper;
+    private final IPod pod;
+    private final DefaultClient client;
+    private final IApiTypeMapper mapper;
 
-	public PodExec(IPod pod, IClient client) {
-		super( pod, client, CAPABILITY );
-		this.pod = pod;
-		this.client = client.adapt(DefaultClient.class);
-		this.mapper = client.adapt(IApiTypeMapper.class);
-	}
-	
-	@Override
-	public String getName() {
-		return PodExec.class.getSimpleName();
-	}
+    public PodExec(IPod pod, IClient client) {
+        super(pod, client, CAPABILITY);
+        this.pod = pod;
+        this.client = client.adapt(DefaultClient.class);
+        this.mapper = client.adapt(IApiTypeMapper.class);
+    }
 
-	@Override
-	public IStoppable start( IPodExecOutputListener listener, Options options, String... commands ) {
+    @Override
+    public String getName() {
+        return PodExec.class.getSimpleName();
+    }
 
-		if ( options == null ) {
-			options = new Options();
-		}
+    @Override
+    public IStoppable start(IPodExecOutputListener listener, Options options, String... commands) {
+
+        if (options == null) {
+            options = new Options();
+        }
 		
 		/*
          with 3.7 per https://github.com/openshift/origin/issues/15330, 3.6 was evidently broke in allowing stdErr/stdOut to not be set; need to set stdout/stderr to true
 		 */
-		options.stdErr(true);
-		options.stdOut(true);
-		
+        options.stdErr(true);
+        options.stdOut(true);
 
-		Map<String,String> parameters = options.getMap();
 
-		OkHttpClient okClient = client.adapt(OkHttpClient.class);
+        Map<String, String> parameters = options.getMap();
 
-		URLBuilder urlBuilder = new URLBuilder(client.getBaseURL(), mapper)
-				.resource(pod)
-				.subresource(CAPABILITY)
-				.addParameters(parameters);
+        OkHttpClient okClient = client.adapt(OkHttpClient.class);
 
-		// The main command and all arguments are specified as 'command' parameters
-		for ( String command : commands ) {
-			urlBuilder.addParmeter( COMMAND, command );
-		}
+        URLBuilder urlBuilder = new URLBuilder(client.getBaseURL(), mapper, client.getResourceFactory().getResourceKindRegistry())
+                .resource(pod)
+                .subresource(CAPABILITY)
+                .addParameters(parameters);
 
-		final String endpoint = urlBuilder.websocket();
+        // The main command and all arguments are specified as 'command' parameters
+        for (String command : commands) {
+            urlBuilder.addParmeter(COMMAND, command);
+        }
 
-		Request request = client.newRequestBuilderTo(endpoint, IHttpConstants.MEDIATYPE_ANY)
-				.method( "GET", null )
-				.addHeader(K8S_PROTOCOL_HEADER, K8S_PROTOCOL )
-				// Unless we mark this as ignored, exceptions triggered by interceptor would be lost in dispatcher thread
-				.tag( new ResponseCodeInterceptor.Ignore() {} )
-				.build();
+        final String endpoint = urlBuilder.websocket();
 
-		WebSocketCall call = WebSocketCall.create(okClient, request);
-		ExecOutputListenerAdapter adapter = new ExecOutputListenerAdapter(call, listener);
-		call.enqueue(adapter);
-		return adapter;
-	}
+        Request request = client.newRequestBuilderTo(endpoint, IHttpConstants.MEDIATYPE_ANY)
+                .method("GET", null)
+                .addHeader(K8S_PROTOCOL_HEADER, K8S_PROTOCOL)
+                // Unless we mark this as ignored, exceptions triggered by interceptor would be lost in dispatcher thread
+                .tag(new ResponseCodeInterceptor.Ignore() {
+                })
+                .build();
 
-	static class ExecOutputListenerAdapter extends WebSocketAdapter implements IStoppable{
+        WebSocketCall call = WebSocketCall.create(okClient, request);
+        ExecOutputListenerAdapter adapter = new ExecOutputListenerAdapter(call, listener);
+        call.enqueue(adapter);
+        return adapter;
+    }
 
-		private final IPodExecOutputListener listener;
-		private final WebSocketCall call;
-		private AtomicBoolean open = new AtomicBoolean(false);
+    static class ExecOutputListenerAdapter extends WebSocketAdapter implements IStoppable {
 
-		public ExecOutputListenerAdapter(WebSocketCall call, IPodExecOutputListener listener) {
-			this.call = call;
-			this.listener = listener;
-		}
+        private final IPodExecOutputListener listener;
+        private final WebSocketCall call;
+        private AtomicBoolean open = new AtomicBoolean(false);
 
-		@Override
-		public void stop() {
-			call.cancel();
-		}
+        public ExecOutputListenerAdapter(WebSocketCall call, IPodExecOutputListener listener) {
+            this.call = call;
+            this.listener = listener;
+        }
 
-		@Override
-		public void onOpen(WebSocket webSocket, Response response) {
-			if(open.compareAndSet(false, true)) {
-				listener.onOpen();
-			}
-		}
+        @Override
+        public void stop() {
+            call.cancel();
+        }
 
-		@Override
-		public void onClose(int code, String reason) {
-			if( open.compareAndSet(true, false) ) {
-				listener.onClose(code, reason);
-			}
-		}
+        @Override
+        public void onOpen(WebSocket webSocket, Response response) {
+            if (open.compareAndSet(false, true)) {
+                listener.onOpen();
+            }
+        }
 
-		@Override
-		public void onFailure(IOException e, Response response) {
-			listener.onFailure(e);
-		}
+        @Override
+        public void onClose(int code, String reason) {
+            if (open.compareAndSet(true, false)) {
+                listener.onClose(code, reason);
+            }
+        }
 
-		public void deliver( int channel, String msg ) {
-			switch ( channel ) {
-				case CHANNEL_STDOUT:
-					listener.onStdOut(msg);
-					break;
-				case CHANNEL_STDERR:
-					listener.onStdErr(msg);
-					break;
-				case CHANNEL_EXECERR:
-					listener.onExecErr(msg);
-					break;
-				default:
-					LOG.warn("Unable to deliver exec message of type [%d]: %s", channel, msg );
-			}
-		}
+        @Override
+        public void onFailure(IOException e, Response response) {
+            listener.onFailure(e);
+        }
 
-		@Override
-		public void onMessage(ResponseBody message) throws IOException {
+        public void deliver(int channel, String msg) {
+            switch (channel) {
+                case CHANNEL_STDOUT:
+                    listener.onStdOut(msg);
+                    break;
+                case CHANNEL_STDERR:
+                    listener.onStdErr(msg);
+                    break;
+                case CHANNEL_EXECERR:
+                    listener.onExecErr(msg);
+                    break;
+                default:
+                    LOG.warn("Unable to deliver exec message of type [%d]: %s", channel, msg);
+            }
+        }
 
-			/**
-			 * https://godoc.org/k8s.io/kubernetes/pkg/util/wsstream
-			 * The Websocket subprotocol "channel.k8s.io" prepends each binary message
-			 * with a byte indicating the channel number (zero indexed) the message was
-			 * sent on. Messages in both directions should prefix their messages with
-			 * this channel byte. When used for remote execution, the channel numbers
-			 * are by convention defined to match the POSIX file-descriptors assigned
-			 * to STDIN, STDOUT, and STDERR (0, 1, and 2). No other conversion is
-			 * performed on the raw subprotocol - writes are sent as they are received
-			 * by the server.
-			 */
+        @Override
+        public void onMessage(ResponseBody message) throws IOException {
 
-			int channel = message.byteStream().read();
-			String msg = message.string();
-			deliver( channel, msg );
-		}
+            /**
+             * https://godoc.org/k8s.io/kubernetes/pkg/util/wsstream
+             * The Websocket subprotocol "channel.k8s.io" prepends each binary message
+             * with a byte indicating the channel number (zero indexed) the message was
+             * sent on. Messages in both directions should prefix their messages with
+             * this channel byte. When used for remote execution, the channel numbers
+             * are by convention defined to match the POSIX file-descriptors assigned
+             * to STDIN, STDOUT, and STDERR (0, 1, and 2). No other conversion is
+             * performed on the raw subprotocol - writes are sent as they are received
+             * by the server.
+             */
 
-	}
+            int channel = message.byteStream().read();
+            String msg = message.string();
+            deliver(channel, msg);
+        }
+
+    }
 
 }

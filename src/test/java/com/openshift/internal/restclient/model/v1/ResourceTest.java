@@ -11,6 +11,7 @@ package com.openshift.internal.restclient.model.v1;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class ResourceTest {
 	public void setup(){
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_SERVICE.getContentAsString());
-		resource = new KubernetesResource(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.SERVICE)) {};
+		resource = new KubernetesResource(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.SERVICE.getIdentifier())) {};
 	}
 	
 	@Test
@@ -48,7 +49,7 @@ public class ResourceTest {
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(Samples.V1_SERVICE.getContentAsString());
 		node.get("metadata").remove("namespace");
-		resource = new Build(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT));
+		resource = new Build(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.PROJECT.getIdentifier()));
 		assertEquals("", resource.getNamespaceName());
 	}
 

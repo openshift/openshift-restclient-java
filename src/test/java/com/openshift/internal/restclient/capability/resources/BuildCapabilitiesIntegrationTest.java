@@ -12,6 +12,7 @@ package com.openshift.internal.restclient.capability.resources;
 
 import static org.junit.Assert.*;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class BuildCapabilitiesIntegrationTest {
 		project = helper.generateProject(client);
 		
 		//an output imagestream
-		IImageStream is = client.getResourceFactory().stub(ResourceKind.IMAGE_STREAM, "ruby-hello-world", project.getName());
+		IImageStream is = client.getResourceFactory().stub(PredefinedResourceKind.IMAGE_STREAM.getIdentifier(), "ruby-hello-world", project.getName());
 		LOG.debug("Creating imagestream {}", is);
 		is = client.create(is);
 		LOG.debug("Generated imagestream {}", is);

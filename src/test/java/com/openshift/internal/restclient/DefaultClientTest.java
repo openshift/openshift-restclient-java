@@ -12,6 +12,8 @@ package com.openshift.internal.restclient;
 
 import static org.fest.assertions.Assertions.assertThat;
 import java.net.URL;
+
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,19 +58,19 @@ public class DefaultClientTest extends TypeMapperFixture{
 	}
 
 	private void givenAPodList(){
-		this.podFrontEnd = factory.create(VERSION, ResourceKind.POD);
+		this.podFrontEnd = factory.create(VERSION, PredefinedResourceKind.POD.getIdentifier());
 		podFrontEnd.setName("frontend");
 		podFrontEnd.setNamespace("aNamespace");
 		podFrontEnd.addLabel("name", "frontend");
 		podFrontEnd.addLabel("env", "production");
 
-		this.podBackEnd = factory.create(VERSION, ResourceKind.POD);
+		this.podBackEnd = factory.create(VERSION, PredefinedResourceKind.POD.getIdentifier());
 		podBackEnd.setName("backend");
 		podBackEnd.setNamespace("aNamespace");
 		podBackEnd.addLabel("name", "backend");
 		podBackEnd.addLabel("env", "production");
 
-		Pod otherPod = factory.create(VERSION, ResourceKind.POD);
+		Pod otherPod = factory.create(VERSION, PredefinedResourceKind.POD.getIdentifier());
 		otherPod.setName("other");
 		otherPod.setNamespace("aNamespace");
 		otherPod.addLabel("env", "production");

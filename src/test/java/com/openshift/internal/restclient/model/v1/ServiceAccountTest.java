@@ -11,6 +11,7 @@ package com.openshift.internal.restclient.model.v1;
 import com.openshift.internal.restclient.model.ServiceAccount;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.serviceaccount.IServiceAccount;
 import com.openshift.restclient.utils.Samples;
@@ -37,7 +38,7 @@ public class ServiceAccountTest {
 		IClient client = mock(IClient.class);
 		ModelNode node = ModelNode.fromJSONString(sample.getContentAsString());
 		serviceAccount = new ServiceAccount(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION,
-				ResourceKind.SERVICE_ACCOUNT));
+				PredefinedResourceKind.SERVICE_ACCOUNT.getIdentifier()));
 	}
 	
 	@Test

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.openshift.restclient.PredefinedResourceKind;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +59,7 @@ public class DeploymentConfigTest {
 	public void setup(){
 		client = mock(IClient.class);
 		node = ModelNode.fromJSONString(Samples.V1_DEPLOYMENT_CONIFIG.getContentAsString());
-		propertyKeys = ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.DEPLOYMENT_CONFIG);
+		propertyKeys = ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier());
 		config = new DeploymentConfig(node, client, propertyKeys);
 		container1 = config.getContainer(CONTAINER1_NAME);
 		container2 = config.getContainer(CONTAINER2_NAME);
@@ -107,7 +108,7 @@ public class DeploymentConfigTest {
 		Map<String, String> exp = new HashMap<String, String>();
 		exp.put("foo", "bar");
 		node = ModelNode.fromJSONString(Samples.V1_DEPLOYMENT_CONIFIG.getContentAsString());
-		DeploymentConfig config = new DeploymentConfig(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.DEPLOYMENT_CONFIG));
+		DeploymentConfig config = new DeploymentConfig(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier()));
 		config.setReplicaSelector(exp);
 		assertEquals(exp, config.getReplicaSelector());
 	}
