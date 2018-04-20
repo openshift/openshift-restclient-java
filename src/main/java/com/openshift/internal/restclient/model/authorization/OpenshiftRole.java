@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.authorization;
 
 import java.util.Map;
@@ -20,9 +21,8 @@ import com.openshift.restclient.model.authorization.IRole;
 
 public class OpenshiftRole extends KubernetesResource implements IRole {
 
-	public OpenshiftRole(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
-		super(node, client, propertyKeys);
-		// TODO Auto-generated constructor stub
-	}
+    public OpenshiftRole(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+    }
 
 }

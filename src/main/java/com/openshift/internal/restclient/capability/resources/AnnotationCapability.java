@@ -6,53 +6,51 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.IResource;
 
 /**
- * Determine if a resource has a capability if it 
- * has the given annotation
+ * Determine if a resource has a capability if it has the given annotation
  * 
- * @author Jeff Cantrill
  */
 public abstract class AnnotationCapability implements ICapability {
 
-	private final IResource resource;
-	private final String name;
+    private final IResource resource;
+    private final String name;
 
-	public AnnotationCapability(String name, IResource resource) {
-		this.resource = resource;
-		this.name = name;
-	}
-	
-	@Override
-	public boolean isSupported() {
-		return resource.isAnnotatedWith(getAnnotationKey());
-	}
-	
-	@Override
-	public String getName() {
-		return this.name;
-	}
+    public AnnotationCapability(String name, IResource resource) {
+        this.resource = resource;
+        this.name = name;
+    }
 
-	protected IResource getResource(){
-		return this.resource;
-	}
-	
+    @Override
+    public boolean isSupported() {
+        return resource.isAnnotatedWith(getAnnotationKey());
+    }
 
-	/**
-	 * The annotation key
-	 * @return
-	 */
-	protected abstract String getAnnotationKey();
-	
-	/**
-	 * The annotations value
-	 * @return
-	 */
-	public String getAnnotationValue(){
-		return getResource().getAnnotation(getAnnotationKey());
-	}
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    protected IResource getResource() {
+        return this.resource;
+    }
+
+    /**
+     * The annotation key
+     * 
+     */
+    protected abstract String getAnnotationKey();
+
+    /**
+     * The annotations value
+     * 
+     */
+    public String getAnnotationValue() {
+        return getResource().getAnnotation(getAnnotationKey());
+    }
 }

@@ -8,26 +8,23 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
 import org.jboss.dmr.ModelNode;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 public class PortFactory {
 
-	public static ServicePort createServicePort(String name, String proto, int port, int targetPort) {
-		return createServicePort(name, proto, port, String.valueOf(targetPort));
-	}
-	public static ServicePort createServicePort(String name, String proto, int port, String targetPort) {
-		ModelNode node = new ModelNode();
-		node.get("name").set(name);
-		node.get("protocol").set(proto);
-		node.get("port").set(port);
-		node.get("targetPort").set(targetPort);
-		return new ServicePort(node);
-	}
+    public static ServicePort createServicePort(String name, String proto, int port, int targetPort) {
+        return createServicePort(name, proto, port, String.valueOf(targetPort));
+    }
+
+    public static ServicePort createServicePort(String name, String proto, int port, String targetPort) {
+        ModelNode node = new ModelNode();
+        node.get("name").set(name);
+        node.get("protocol").set(proto);
+        node.get("port").set(port);
+        node.get("targetPort").set(targetPort);
+        return new ServicePort(node);
+    }
 }

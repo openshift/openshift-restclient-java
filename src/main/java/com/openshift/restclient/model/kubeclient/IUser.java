@@ -8,11 +8,12 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.kubeclient;
 
 public interface IUser {
-	
-	String getToken();
-	
-	String getName();
+
+    String getToken();
+
+    String getName();
 }

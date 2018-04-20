@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.restclient.api.models;
 
 import static com.openshift.internal.util.JBossDmrExtentions.asString;
@@ -22,25 +23,24 @@ import com.openshift.restclient.api.models.ITypeMeta;
 
 public class TypeMeta extends ModelNodeAdapter implements ITypeMeta, ResourcePropertyKeys {
 
-	/**
-	 * 
-	 * @param node
-	 * @param propertyKeys overrides based on version
-	 */
-	public TypeMeta(ModelNode node, Map<String, String[]> propertyKeys) {
-		super(node, propertyKeys);
-	}
-	
-	@Override
-	public String getApiVersion() {
-		return asString(getNode(), getPropertyKeys(), APIVERSION );
-	}
+    /**
+     * 
+     * @param node the node
+     * @param propertyKeys
+     *            overrides based on version
+     */
+    public TypeMeta(ModelNode node, Map<String, String[]> propertyKeys) {
+        super(node, propertyKeys);
+    }
 
-	@Override
-	public String getKind() {
-		return asString(getNode(), getPropertyKeys(), KIND);
-	}
+    @Override
+    public String getApiVersion() {
+        return asString(getNode(), getPropertyKeys(), APIVERSION);
+    }
 
-
+    @Override
+    public String getKind() {
+        return asString(getNode(), getPropertyKeys(), KIND);
+    }
 
 }

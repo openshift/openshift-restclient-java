@@ -8,7 +8,20 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.IntegrationTestHelper;
@@ -20,79 +33,60 @@ import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync.IPodL
 import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync.Options;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IResource;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 public class PodLogRetrievalAsyncIntegrationTest {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(PodLogRetrievalAsyncIntegrationTest.class);
-	
-	private IntegrationTestHelper helper = new IntegrationTestHelper();
-	private CountDownLatch latch;
 
+    private static final Logger LOG = LoggerFactory.getLogger(PodLogRetrievalAsyncIntegrationTest.class);
 
-	@Test
-	public void testAsyncLogRetrieval() throws Exception {
-		latch = new CountDownLatch(2);
-		DefaultClient client = (DefaultClient) helper.createClientForBasicAuth();
-		List<IResource> pods = client.list(ResourceKind.POD, "default");
-		IPod pod = (IPod) pods.stream().filter(p->p.getName().startsWith("docker-registry")).findFirst().orElse(null);
-		assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
-		
-		final String container = pod.getContainers().iterator().next().getName();
+    private IntegrationTestHelper helper = new IntegrationTestHelper();
+    private CountDownLatch latch;
 
-		IStoppable stop = pod.accept(new CapabilityVisitor<IPodLogRetrievalAsync, IStoppable>() {
+    @Test
+    public void testAsyncLogRetrieval() throws Exception {
+        latch = new CountDownLatch(2);
+        DefaultClient client = (DefaultClient) helper.createClientForBasicAuth();
+        List<IResource> pods = client.list(ResourceKind.POD, "default");
+        IPod pod = (IPod) pods.stream().filter(p -> p.getName().startsWith("docker-registry")).findFirst().orElse(null);
+        assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
 
-			@Override
-			public IStoppable visit(IPodLogRetrievalAsync capability) {
-				return capability.start(new IPodLogListener() {
-					
-					@Override
-					public void onOpen() {
-						LOG.debug("onOpen");
-						latch.countDown();
-					}
-					
-					@Override
-					public void onMessage(String message) {
-						LOG.debug(message);
-					}
-					
-					@Override
-					public void onClose(int code, String reason) {
-						LOG.debug("onClose code:{} reason:{}", code, reason);
-						latch.countDown();
-					}
+        final String container = pod.getContainers().iterator().next().getName();
 
-					@Override
-					public void onFailure(IOException e) {
-						LOG.error( "Unexpected websocket failure", e );
-						fail( "Unexpected websocket failure" );
-					}
+        IStoppable stop = pod.accept(new CapabilityVisitor<IPodLogRetrievalAsync, IStoppable>() {
 
-				}, new Options()
-						.follow()
-						.container(container));
-			}
-		}, null);
-		assertNotNull("Exp. to support the capability", stop);
-		latch.await(10, TimeUnit.SECONDS);
-		stop.stop();
-		latch.await(5, TimeUnit.SECONDS);
-	}
+            @Override
+            public IStoppable visit(IPodLogRetrievalAsync capability) {
+                return capability.start(new IPodLogListener() {
+
+                    @Override
+                    public void onOpen() {
+                        LOG.debug("onOpen");
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onMessage(String message) {
+                        LOG.debug(message);
+                    }
+
+                    @Override
+                    public void onClose(int code, String reason) {
+                        LOG.debug("onClose code:{} reason:{}", code, reason);
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onFailure(IOException e) {
+                        LOG.error("Unexpected websocket failure", e);
+                        fail("Unexpected websocket failure");
+                    }
+
+                }, new Options().follow().container(container));
+            }
+        }, null);
+        assertNotNull("Exp. to support the capability", stop);
+        latch.await(10, TimeUnit.SECONDS);
+        stop.stop();
+        latch.await(5, TimeUnit.SECONDS);
+    }
 
 }

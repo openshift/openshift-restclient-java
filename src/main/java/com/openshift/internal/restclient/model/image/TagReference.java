@@ -8,9 +8,13 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.image;
 
-import static com.openshift.internal.util.JBossDmrExtentions.*;
+import static com.openshift.internal.util.JBossDmrExtentions.asMap;
+import static com.openshift.internal.util.JBossDmrExtentions.asString;
+import static com.openshift.internal.util.JBossDmrExtentions.get;
+import static com.openshift.internal.util.JBossDmrExtentions.set;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,61 +29,63 @@ import com.openshift.restclient.model.image.ITagReference;
 
 public class TagReference extends ModelNodeAdapter implements ITagReference, ResourcePropertyKeys {
 
-	private static final String TAG_ANNOTATIONS = "annotations";
+    private static final String TAG_ANNOTATIONS = "annotations";
 
-	public TagReference(String name, String fromKind, String fromName) {
-		super(new ModelNode(), new HashMap<>());
-		setName(name);
-		ObjectReference from = (ObjectReference) getFrom();
-		from.setKind(fromKind);
-		from.setName(fromName);
-	}
-	
-	public TagReference(String name, String fromKind, String fromName, String fromNamespace) {
-		this(name, fromKind, fromName);
-		ObjectReference from = (ObjectReference) getFrom();
-		from.setNamespace(fromNamespace);
-	}
-	
-	public TagReference(ModelNode node, Map<String, String[]> propertyKeys) {
-		super(node, propertyKeys);
-	}
+    public TagReference(String name, String fromKind, String fromName) {
+        super(new ModelNode(), new HashMap<>());
+        setName(name);
+        ObjectReference from = (ObjectReference) getFrom();
+        from.setKind(fromKind);
+        from.setName(fromName);
+    }
 
-	@Override
-	public boolean isAnnotatedWith(String key) {
-		return getAnnotations().containsKey(key);
-	}
+    public TagReference(String name, String fromKind, String fromName, String fromNamespace) {
+        this(name, fromKind, fromName);
+        ObjectReference from = (ObjectReference) getFrom();
+        from.setNamespace(fromNamespace);
+    }
 
-	@Override
-	public String getAnnotation(String key) {
-		return getAnnotations().get(key);
-	}
+    public TagReference(ModelNode node, Map<String, String[]> propertyKeys) {
+        super(node, propertyKeys);
+    }
 
-	@Override
-	public void setAnnotation(String key, String value) {
-		if(value == null) return;
-		ModelNode annotations = get(getNode(), getPropertyKeys(), TAG_ANNOTATIONS);
-		annotations.get(key).set(value);
-	}
+    @Override
+    public boolean isAnnotatedWith(String key) {
+        return getAnnotations().containsKey(key);
+    }
 
-	@Override
-	public Map<String, String> getAnnotations() {
-		return asMap(getNode(), getPropertyKeys(), TAG_ANNOTATIONS);
-	}
+    @Override
+    public String getAnnotation(String key) {
+        return getAnnotations().get(key);
+    }
 
-	@Override
-	public String getName() {
-		return asString(getNode(),getPropertyKeys(), NAME);
-	}
+    @Override
+    public void setAnnotation(String key, String value) {
+        if (value == null) {
+            return;
+        }
+        ModelNode annotations = get(getNode(), getPropertyKeys(), TAG_ANNOTATIONS);
+        annotations.get(key).set(value);
+    }
 
-	public void setName(String  name) {
-		set(getNode(),getPropertyKeys(), NAME, name);
-	}
+    @Override
+    public Map<String, String> getAnnotations() {
+        return asMap(getNode(), getPropertyKeys(), TAG_ANNOTATIONS);
+    }
 
-	@Override
-	public IObjectReference getFrom() {
-		ModelNode from = get(getNode(), getPropertyKeys(), FROM);
-		return new ObjectReference(from);
-	}
-	
+    @Override
+    public String getName() {
+        return asString(getNode(), getPropertyKeys(), NAME);
+    }
+
+    public void setName(String name) {
+        set(getNode(), getPropertyKeys(), NAME, name);
+    }
+
+    @Override
+    public IObjectReference getFrom() {
+        ModelNode from = get(getNode(), getPropertyKeys(), FROM);
+        return new ObjectReference(from);
+    }
+
 }

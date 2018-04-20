@@ -6,31 +6,28 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
 import java.util.Map;
 
 import com.openshift.restclient.images.DockerImageURI;
 
-/**
- * @author Jeff Cantrill
- */
 @Deprecated
 public interface ISTIBuildStrategy extends IBuildStrategy {
-	
-	/**
-	 * Returns the Builder Image used to execute the build
-	 */
-	DockerImageURI getImage();
-	
-	String getScriptsLocation();
-	
-	Map<String, String> getEnvironmentVariables();
 
-	boolean incremental();
+    /**
+     * Returns the Builder Image used to execute the build
+     */
+    DockerImageURI getImage();
 
-	@Deprecated
-	boolean forceClean();
+    String getScriptsLocation();
 
-	
+    Map<String, String> getEnvironmentVariables();
+
+    boolean incremental();
+
+    @Deprecated
+    boolean forceClean();
+
 }

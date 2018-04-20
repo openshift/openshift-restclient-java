@@ -8,53 +8,51 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.volume;
 
 import java.util.Set;
 
 import com.openshift.restclient.model.IResource;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 public interface IPersistentVolumeClaim extends IResource {
 
-	/**
-	 * 
-	 * @return the {@link PVCAccessModes}
-	 */
-	Set<String> getAccessModes();
-
-	/**
-	 * Set the access modes for this claim.
-	 *
-	 * @param accessModes The access modes to set
+    /**
+     * 
+     * @return the {@link PVCAccessModes}
      */
-	void setAccessModes(Set<String> accessModes);
+    Set<String> getAccessModes();
 
-	/**
-	 * The requested storage
-	 * @return
-	 */
-	String getRequestedStorage();
-
-	/**
-	 * Set the requested storage of the claim
-	 *
-	 * @param requestedStorage The requested storage capacity
+    /**
+     * Set the access modes for this claim.
+     *
+     * @param accessModes
+     *            The access modes to set
      */
-	void setRequestedStorage(String requestedStorage);
+    void setAccessModes(Set<String> accessModes);
 
-	/**
-	 * The status of the claim
-	 * @return
-	 */
-	String getStatus();
-	
-	/**
-	 * The volume name
-	 */
-	String getVolumeName();
+    /**
+     * The requested storage
+     * 
+     */
+    String getRequestedStorage();
+
+    /**
+     * Set the requested storage of the claim
+     *
+     * @param requestedStorage
+     *            The requested storage capacity
+     */
+    void setRequestedStorage(String requestedStorage);
+
+    /**
+     * The status of the claim
+     * 
+     */
+    String getStatus();
+
+    /**
+     * The volume name
+     */
+    String getVolumeName();
 }

@@ -8,13 +8,12 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.authorization;
 
 import com.openshift.restclient.model.IResource;
 
-/**
- * @author Jeff Cantrill
- */
+
 public interface IPolicyBinding extends IResource {
 
 }

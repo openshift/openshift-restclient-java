@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
 import java.util.Collection;
@@ -16,41 +17,42 @@ import java.util.Map;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IEnvironmentVariable;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
-public interface ISourceBuildStrategy extends IBuildStrategy{
-	
-	/**
-	 * Returns the Builder Image used to execute the build
-	 */
-	DockerImageURI getImage();
-	void setImage(DockerImageURI image);
-	
-	String getFromKind();
-	void setFromKind(String kind);
+public interface ISourceBuildStrategy extends IBuildStrategy {
 
-	String getFromNamespace();
-	void setFromNamespace(String namespace);
-	
-	String getScriptsLocation();
-	void setScriptsLocation(String location);
-	
-	Map<String, String> getEnvironmentVariables();
-	void setEnvironmentVariables(Map<String, String> envVars);
-	
-	Collection<IEnvironmentVariable> getEnvVars();
-	
-	/**
-	 * Setting using a null collection will early return without
-	 * modification to the strategy
-	 * @param envVars
-	 */
-	void setEnvVars(Collection<IEnvironmentVariable> envVars);
+    /**
+     * Returns the Builder Image used to execute the build
+     */
+    DockerImageURI getImage();
 
-	boolean incremental();
-	void setIncremental(boolean isIncremental);
+    void setImage(DockerImageURI image);
+
+    String getFromKind();
+
+    void setFromKind(String kind);
+
+    String getFromNamespace();
+
+    void setFromNamespace(String namespace);
+
+    String getScriptsLocation();
+
+    void setScriptsLocation(String location);
+
+    Map<String, String> getEnvironmentVariables();
+
+    void setEnvironmentVariables(Map<String, String> envVars);
+
+    Collection<IEnvironmentVariable> getEnvVars();
+
+    /**
+     * Setting using a null collection will early return without modification to the
+     * strategy
+     * 
+     */
+    void setEnvVars(Collection<IEnvironmentVariable> envVars);
+
+    boolean incremental();
+
+    void setIncremental(boolean isIncremental);
 
 }

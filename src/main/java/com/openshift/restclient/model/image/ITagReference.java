@@ -8,25 +8,26 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.image;
 
 import com.openshift.restclient.model.Annotatable;
 import com.openshift.restclient.model.IObjectReference;
 
 public interface ITagReference extends Annotatable {
-	
-	/**
-	 * Returns the identifier for this reference
-	 * @return
-	 */
-	String getName();
-	
-	/**
-	 * if specified, a reference to another image that this tag should point to. 
-	 * Valid values are ImageStreamTag, ImageStreamImage, and DockerImage.
-	 * @return
-	 */
-	IObjectReference getFrom();
-	
-	String toJson();
+
+    /**
+     * Returns the identifier for this reference
+     * 
+     */
+    String getName();
+
+    /**
+     * if specified, a reference to another image that this tag should point to.
+     * Valid values are ImageStreamTag, ImageStreamImage, and DockerImage.
+     * 
+     */
+    IObjectReference getFrom();
+
+    String toJson();
 }

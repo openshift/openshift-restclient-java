@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
 import java.util.Collection;
@@ -16,17 +17,20 @@ import com.openshift.restclient.model.IEnvironmentVariable;
  * @author Andre Dietisheim
  */
 public interface IJenkinsPipelineStrategy extends IBuildStrategy {
-	
-	static final String JENKINS_FILE = "jenkinsPipelineStrategy.jenkinsfile";
-	static final String JENKINS_FILE_PATH = "jenkinsPipelineStrategy.jenkinsfilePath";
-	static final String ENV = "jenkinsPipelineStrategy.env";
 
-	void setJenkinsfilePath(String filePath);
-	String getJenkinsfilePath();
+    static final String JENKINS_FILE = "jenkinsPipelineStrategy.jenkinsfile";
+    static final String JENKINS_FILE_PATH = "jenkinsPipelineStrategy.jenkinsfilePath";
+    static final String ENV = "jenkinsPipelineStrategy.env";
 
-	void setJenkinsfile(String jenkinsFile);
-	String getJenkinsfile();
+    void setJenkinsfilePath(String filePath);
 
-	Collection<IEnvironmentVariable> getEnvVars();
-	void setEnvVars(Collection<IEnvironmentVariable> envVars);
+    String getJenkinsfilePath();
+
+    void setJenkinsfile(String jenkinsFile);
+
+    String getJenkinsfile();
+
+    Collection<IEnvironmentVariable> getEnvVars();
+
+    void setEnvVars(Collection<IEnvironmentVariable> envVars);
 }

@@ -8,21 +8,19 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.project;
 
 import com.openshift.restclient.model.IResource;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IProjectRequest extends IResource {
-	
-	void setDisplayName(String name);
-	
-	String getDisplayName();
 
-	void setDescription(String name);
-	
-	String getDescription();
+    void setDisplayName(String name);
+
+    String getDisplayName();
+
+    void setDescription(String name);
+
+    String getDescription();
 
 }

@@ -6,9 +6,11 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.server;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -31,56 +33,55 @@ import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.template.ITemplate;
 import com.openshift.restclient.utils.Samples;
 
-/**
- * @author Jeff Cantrill
- */
 public class ServerTemplateProcessingIntegrationTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ServerTemplateProcessingIntegrationTest.class);
-	
-	private IClient client;
-	private IntegrationTestHelper helper = new IntegrationTestHelper();
+    private static final Logger LOG = LoggerFactory.getLogger(ServerTemplateProcessingIntegrationTest.class);
 
-	private IProject project;
+    private IClient client;
+    private IntegrationTestHelper helper = new IntegrationTestHelper();
 
-	@Before
-	public void setup () throws MalformedURLException{
-		client = helper.createClientForBasicAuth();
-		String namespace = helper.generateNamespace();
-		client.create(client.getResourceFactory().stub(ResourceKind.PROJECT_REQUEST, namespace));
-		project = client.get(ResourceKind.PROJECT, namespace, "");
-	}
-	
-	@Test
-	public void testProcessAndApplyTemplate() throws Exception{
-		final Collection<IResource> results = new ArrayList<IResource>();
-		ModelNode node = ModelNode.fromJSONString(Samples.V1_TEMPLATE.getContentAsString());
-		final Template template = new Template(node, client, null);
-		template.setNamespace(null);
-		try {
-			client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {
-				
-				@Override
-				public Object visit(ITemplateProcessing capability) {
-					
-					LOG.debug("Processing template: {}", template.toJson());
-					assertFalse("Exp. the template to have items for this test be interesting", template.getObjects().isEmpty());
-					final int items = template.getObjects().size();
-					ITemplate processedTemplate = capability.process(template, project.getName());
-					
-					LOG.debug("Applying template: {}", processedTemplate.toJson());
-					LOG.debug("Applied template");
-					assertEquals("Exp. the pre and post item count to be the same", items, template.getObjects().size());
-					for (IResource resource : processedTemplate.getObjects()) {
-						LOG.debug("creating: {}", resource);
-						results.add(client.create(resource, project.getName()));
-						LOG.debug("created: {}", resource.toJson());
-					}
-					return null;
-				}
-			}, new Object());
-		} finally {
-			IntegrationTestHelper.cleanUpResource(client, project);
-		}
-	}
+    private IProject project;
+
+    @Before
+    public void setup() throws MalformedURLException {
+        client = helper.createClientForBasicAuth();
+        String namespace = helper.generateNamespace();
+        client.create(client.getResourceFactory().stub(ResourceKind.PROJECT_REQUEST, namespace));
+        project = client.get(ResourceKind.PROJECT, namespace, "");
+    }
+
+    @Test
+    public void testProcessAndApplyTemplate() throws Exception {
+        final Collection<IResource> results = new ArrayList<IResource>();
+        ModelNode node = ModelNode.fromJSONString(Samples.V1_TEMPLATE.getContentAsString());
+        final Template template = new Template(node, client, null);
+        template.setNamespace(null);
+        try {
+            client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {
+
+                @Override
+                public Object visit(ITemplateProcessing capability) {
+
+                    LOG.debug("Processing template: {}", template.toJson());
+                    assertFalse("Exp. the template to have items for this test be interesting",
+                            template.getObjects().isEmpty());
+                    final int items = template.getObjects().size();
+                    ITemplate processedTemplate = capability.process(template, project.getName());
+
+                    LOG.debug("Applying template: {}", processedTemplate.toJson());
+                    LOG.debug("Applied template");
+                    assertEquals("Exp. the pre and post item count to be the same", items,
+                            template.getObjects().size());
+                    for (IResource resource : processedTemplate.getObjects()) {
+                        LOG.debug("creating: {}", resource);
+                        results.add(client.create(resource, project.getName()));
+                        LOG.debug("created: {}", resource.toJson());
+                    }
+                    return null;
+                }
+            }, new Object());
+        } finally {
+            IntegrationTestHelper.cleanUpResource(client, project);
+        }
+    }
 }

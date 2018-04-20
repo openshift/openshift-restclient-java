@@ -6,13 +6,11 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
-/**
- * @author Jeff Cantrill
- */
 public interface BuildSourceType {
-	
-	static final String GIT = "Git";
-	
+
+    static final String GIT = "Git";
+
 }

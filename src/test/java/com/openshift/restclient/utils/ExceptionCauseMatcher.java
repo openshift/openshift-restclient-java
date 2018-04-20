@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.utils;
 
 import org.hamcrest.Description;
@@ -19,19 +20,18 @@ import org.junit.internal.matchers.TypeSafeMatcher;
  */
 public class ExceptionCauseMatcher extends TypeSafeMatcher<Throwable> {
 
-		private Matcher<?> causeMatcher;
+    private Matcher<?> causeMatcher;
 
-		public ExceptionCauseMatcher(Matcher<?> matcher) {
-			this.causeMatcher = matcher;
-		}
+    public ExceptionCauseMatcher(Matcher<?> matcher) {
+        this.causeMatcher = matcher;
+    }
 
-		public void describeTo(Description description) {
-			description.appendText("exception with cause ");
-		}
-	
-		@Override
-		public boolean matchesSafely(Throwable throwable) {
-			return causeMatcher.matches(throwable.getCause());
-		}
+    public void describeTo(Description description) {
+        description.appendText("exception with cause ");
+    }
+
+    @Override
+    public boolean matchesSafely(Throwable throwable) {
+        return causeMatcher.matches(throwable.getCause());
+    }
 }
-

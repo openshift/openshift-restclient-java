@@ -8,33 +8,33 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.kubeclient;
 
 import java.util.Collection;
 
 /**
- * Configuration type for connecting to a Kubernetes client config
- * ref: client/unversioned/clientcmd/api/types.go
+ * Configuration type for connecting to a Kubernetes client config ref:
+ * client/unversioned/clientcmd/api/types.go
  * 
- * @author jeff.cantrill
  *
  */
 public interface IKubeClientConfig {
-	
-	/**
-	 * A map of userinfo to cluster info where the key
-	 * is <namespace>/<url>/<username>
-	 * @return
-	 */
-	Collection<ICluster> getClusters();
 
-	Collection<IContext> getContexts();
-	
-	/**
-	 * The name of the current cluster context
-	 * @return
-	 */
-	String getCurrentContext();
-	
-	Collection<IUser> getUsers();
+    /**
+     * A map of userinfo to cluster info where the key is
+     * NAMESPACE/URL/USERNAME
+     * 
+     */
+    Collection<ICluster> getClusters();
+
+    Collection<IContext> getContexts();
+
+    /**
+     * The name of the current cluster context
+     * 
+     */
+    String getCurrentContext();
+
+    Collection<IUser> getUsers();
 }

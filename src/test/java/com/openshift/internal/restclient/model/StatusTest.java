@@ -6,10 +6,13 @@
  *
  * Contributors: Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
@@ -21,31 +24,30 @@ import com.openshift.restclient.ResourceKind;
 
 /**
  * Tests that have logic and not specific to a particular api version
- * @author Jeff Cantrill
  *
  */
 public class StatusTest {
 
-	private Status status;
-	
-	@Before
-	public void setup() {
-		ModelNode root = new ModelNode();
-		JBossDmrExtentions.set(root, JBossDmrExtentions.getPath(ResourcePropertyKeys.KIND), ResourceKind.STATUS);
-		status = spy(new Status(root,null,null));
-	}
-	
-	@Test
-	public void isFailureShouldReturnTrueWhenFailure() {
-		doReturn("Failure").when(status).getStatus();
-		
-		assertTrue(status.isFailure());
-	}
+    private Status status;
 
-	@Test
-	public void isFailureShouldReturnFalseWhenNotFailure() {
-		doReturn("Other").when(status).getStatus();
-		
-		assertFalse(status.isFailure());
-	}
+    @Before
+    public void setup() {
+        ModelNode root = new ModelNode();
+        JBossDmrExtentions.set(root, JBossDmrExtentions.getPath(ResourcePropertyKeys.KIND), ResourceKind.STATUS);
+        status = spy(new Status(root, null, null));
+    }
+
+    @Test
+    public void isFailureShouldReturnTrueWhenFailure() {
+        doReturn("Failure").when(status).getStatus();
+
+        assertTrue(status.isFailure());
+    }
+
+    @Test
+    public void isFailureShouldReturnFalseWhenNotFailure() {
+        doReturn("Other").when(status).getStatus();
+
+        assertFalse(status.isFailure());
+    }
 }

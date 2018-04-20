@@ -6,23 +6,25 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient;
 
 import java.util.Collection;
 
 import com.openshift.internal.restclient.KubernetesAPIVersion;
 
-/**
- * @author Jeff Cantrill
- */
 public class IncompatibleApiVersionsException extends OpenShiftException {
-	
-	private static final long serialVersionUID = 1L;
 
-	public IncompatibleApiVersionsException(Collection<KubernetesAPIVersion> clientVersions,Collection<KubernetesAPIVersion> serverVersions ){
-		super(String.format("The client %s and server %s do not have compatible API versions.", clientVersions, serverVersions));
-	}
-	public IncompatibleApiVersionsException(String clientVersions, String serverVersions ){
-		super(String.format("The client %s and server %s do not have compatible API versions.", clientVersions, serverVersions));
-	}
+    private static final long serialVersionUID = 1L;
+
+    public IncompatibleApiVersionsException(Collection<KubernetesAPIVersion> clientVersions,
+            Collection<KubernetesAPIVersion> serverVersions) {
+        super(String.format("The client %s and server %s do not have compatible API versions.", clientVersions,
+                serverVersions));
+    }
+
+    public IncompatibleApiVersionsException(String clientVersions, String serverVersions) {
+        super(String.format("The client %s and server %s do not have compatible API versions.", clientVersions,
+                serverVersions));
+    }
 }

@@ -8,20 +8,19 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.api.models;
 
 /**
- * A resource where the client can
- * define the name on the object
- * (e.g. ObjectRef)
- * @author jeff.cantrill
+ * A resource where the client can define the name on the object (e.g.
+ * ObjectRef)
  *
  */
 public interface INameSetable {
 
-	/**
-	 * The name of the resource
-	 * @param name
-	 */
-	void setName(String name);
+    /**
+     * The name of the resource
+     * 
+     */
+    void setName(String name);
 }

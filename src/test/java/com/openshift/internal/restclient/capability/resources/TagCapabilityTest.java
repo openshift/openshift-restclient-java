@@ -6,10 +6,11 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,27 +18,24 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.openshift.internal.restclient.capability.resources.TagCapability;
 import com.openshift.restclient.model.IResource;
 
-/**
- * @author Jeff Cantrill
- */
 @RunWith(MockitoJUnitRunner.class)
 public class TagCapabilityTest {
 
-	private TagCapability capability;
-	@Mock private IResource resource;
-	
-	@Before
-	public void setup(){
-		when(resource.getAnnotation("tags")).thenReturn("instant-app,ruby,mysql");
-		capability = new TagCapability(resource);
-	}
-	
-	@Test
-	public void testGetTags() {
-		assertArrayEquals(new String[]{"instant-app","ruby","mysql"},capability.getTags().toArray());
-	}
+    private TagCapability capability;
+    @Mock
+    private IResource resource;
+
+    @Before
+    public void setup() {
+        when(resource.getAnnotation("tags")).thenReturn("instant-app,ruby,mysql");
+        capability = new TagCapability(resource);
+    }
+
+    @Test
+    public void testGetTags() {
+        assertArrayEquals(new String[] { "instant-app", "ruby", "mysql" }, capability.getTags().toArray());
+    }
 
 }

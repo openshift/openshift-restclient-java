@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.utils;
 
 import java.util.List;
@@ -18,18 +19,21 @@ import org.apache.commons.lang.StringUtils;
 
 public class BeanUtils {
 
-	private BeanUtils() {
-	}
-	
-	/**
-	 * Convert a delimited string to camelcase (e.g. foo-bar -> fooBar) 
-	 * @param name      the string to convert
-	 * @param delimiter the delimiter to use
-	 * @return the delimited string camelcased
-	 */
-	public static String toCamelCase(String name, String delimiter) {
-		String[] parts = name.split("-");
-		List<String> capitalized = Stream.of(parts).map(p->StringUtils.capitalize(p)).collect(Collectors.toList());
-		return StringUtils.uncapitalize(StringUtils.join(capitalized, ""));
-	}
+    private BeanUtils() {
+    }
+
+    /**
+     * Convert a delimited string to camelcase (e.g. foo-bar -> fooBar)
+     * 
+     * @param name
+     *            the string to convert
+     * @param delimiter
+     *            the delimiter to use
+     * @return the delimited string camelcased
+     */
+    public static String toCamelCase(String name, String delimiter) {
+        String[] parts = name.split("-");
+        List<String> capitalized = Stream.of(parts).map(p -> StringUtils.capitalize(p)).collect(Collectors.toList());
+        return StringUtils.uncapitalize(StringUtils.join(capitalized, ""));
+    }
 }

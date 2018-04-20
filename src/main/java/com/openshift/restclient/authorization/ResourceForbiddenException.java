@@ -6,26 +6,22 @@
  *
  * Contributors: Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.authorization;
 
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.model.IStatus;
 
-/**
- * @author Jeff Cantrill
- */
 public class ResourceForbiddenException extends OpenShiftException {
 
-	private static final long serialVersionUID = 6998191096256199081L;
+    private static final long serialVersionUID = 6998191096256199081L;
 
-	public ResourceForbiddenException(String message, Throwable e) {
-		super(message, e);
-	}
+    public ResourceForbiddenException(String message, Throwable e) {
+        super(message, e);
+    }
 
-	public ResourceForbiddenException(String message, IStatus status, Throwable e) {
-		super(e, status, message);
-	}
-	
-	
+    public ResourceForbiddenException(String message, IStatus status, Throwable e) {
+        super(e, status, message);
+    }
 
 }

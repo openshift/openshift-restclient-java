@@ -6,27 +6,25 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient;
 
 /**
- * This list of supported OpenShift API Models
- * by this client
+ * This list of supported OpenShift API Models by this client
  * 
- * @author Jeff Cantrill
  */
-public enum OpenShiftAPIVersion implements APIModelVersion{
-	@Deprecated
-	v1beta3(2),
-	v1(3);
+public enum OpenShiftAPIVersion implements APIModelVersion {
+    @Deprecated
+    v1beta3(2), v1(3);
 
-	private int order;
+    private int order;
 
-	OpenShiftAPIVersion(int order){
-		this.order = order;
-	}
-	
-	@Override
-	public int getOrder(){
-		return order;
-	}
+    OpenShiftAPIVersion(int order) {
+        this.order = order;
+    }
+
+    @Override
+    public int getOrder() {
+        return order;
+    }
 }

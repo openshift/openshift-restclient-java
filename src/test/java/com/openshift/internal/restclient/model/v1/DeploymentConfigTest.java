@@ -6,13 +6,16 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
+import static com.openshift.internal.util.JBossDmrExtentions.getPath;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static com.openshift.internal.util.JBossDmrExtentions.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,143 +42,144 @@ import com.openshift.restclient.model.deploy.IDeploymentTrigger;
 import com.openshift.restclient.model.probe.IProbe;
 import com.openshift.restclient.utils.Samples;
 
-/**
- * @author Jeff Cantrill
- */
 public class DeploymentConfigTest {
-	
-	private static final String CONTAINER2_NAME = "deployment";
-	private static final String CONTAINER1_NAME = "ruby-helloworld-database";
-	private static final String VERSION = "v1";
-	private DeploymentConfig config;
-	private IClient client;
-	private ModelNode node;
-	private Map<String, String[]> propertyKeys;
-	private IContainer container1;
-	private IContainer container2;
-	
-	@Before
-	public void setup(){
-		client = mock(IClient.class);
-		node = ModelNode.fromJSONString(Samples.V1_DEPLOYMENT_CONIFIG.getContentAsString());
-		propertyKeys = ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.DEPLOYMENT_CONFIG);
-		config = new DeploymentConfig(node, client, propertyKeys);
-		container1 = config.getContainer(CONTAINER1_NAME);
-		container2 = config.getContainer(CONTAINER2_NAME);
-	}
 
-	@Test
-	public void testIsDeployCapable() {
-		assertThat(config.supports(IDeployCapability.class)).isTrue();
-	}
+    private static final String CONTAINER2_NAME = "deployment";
+    private static final String CONTAINER1_NAME = "ruby-helloworld-database";
+    private static final String VERSION = "v1";
+    private DeploymentConfig config;
+    private IClient client;
+    private ModelNode node;
+    private Map<String, String[]> propertyKeys;
+    private IContainer container1;
+    private IContainer container2;
 
-	@Test 
-	public void getLabels() {
-		assertArrayEquals(new String[] {"template"},config.getLabels().keySet().toArray(new String[] {}));
-	}
-	
-	@Test
-	public void getConfigChangeTrigger() {
-		List<IDeploymentTrigger> trigger = new ArrayList<>(config.getTriggers());
-		assertEquals("Exp. equal number of triggers",2,trigger.size());
-		assertTrue("Expected to find a config change trigger", IDeploymentConfigChangeTrigger.class.isAssignableFrom(trigger.get(0).getClass()));
-		assertTrue("Expected to find a config change trigger", IDeploymentImageChangeTrigger.class.isAssignableFrom(trigger.get(1).getClass()));
-		
-		IDeploymentImageChangeTrigger ict = (IDeploymentImageChangeTrigger) trigger.get(1);
-		assertEquals("foo", ict.getNamespace());
-	}
-	
-	@Test
-	public void getReplicas(){
-		assertEquals(1, config.getReplicas());
-	}
+    @Before
+    public void setup() {
+        client = mock(IClient.class);
+        node = ModelNode.fromJSONString(Samples.V1_DEPLOYMENT_CONIFIG.getContentAsString());
+        propertyKeys = ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.DEPLOYMENT_CONFIG);
+        config = new DeploymentConfig(node, client, propertyKeys);
+        container1 = config.getContainer(CONTAINER1_NAME);
+        container2 = config.getContainer(CONTAINER2_NAME);
+    }
 
-	@Test
-	public void setReplicas(){
-		config.setReplicas(3);
-		assertEquals(3, config.getReplicas());
-	}
-	
-	@Test
-	public void setLatestVersionNumber(){
-		config.setLatestVersionNumber(3);
-		assertEquals(3, config.getLatestVersionNumber());
-	}
-	
-	@Test
-	public void setReplicaSelector() {
-		Map<String, String> exp = new HashMap<String, String>();
-		exp.put("foo", "bar");
-		node = ModelNode.fromJSONString(Samples.V1_DEPLOYMENT_CONIFIG.getContentAsString());
-		DeploymentConfig config = new DeploymentConfig(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.DEPLOYMENT_CONFIG));
-		config.setReplicaSelector(exp);
-		assertEquals(exp, config.getReplicaSelector());
-	}
-	
-	@Test
-	public void getReplicaSelector() {
-		Map<String, String> exp = new HashMap<String, String>();
-		exp.put("name", "database");
-		assertEquals(exp, config.getReplicaSelector());
-	}
-	
-	@Test
-	public void getTriggerTypes() {
-		assertArrayEquals(new String[] {"ConfigChange", "ImageChange"}, config.getTriggerTypes().toArray(new String[] {}));
-	}
-	
-	@Test
-	public void testGetDeploymentStrategyTypes() {
-		assertEquals("Recreate", config.getDeploymentStrategyType());
-	}
-	
-	@Test
-	public void testAddContainer() {
-		//remove containers hack
-		String[] path = getPath(DeploymentConfig.DEPLOYMENTCONFIG_CONTAINERS);
-		node.get(path).clear();
-		
-		//setup
-		DockerImageURI uri = new DockerImageURI("aproject/an_image_name");
-		IPort port = mock(IPort.class);
-		when(port.getProtocol()).thenReturn("TCP");
-		when(port.getContainerPort()).thenReturn(8080);
-		Set<IPort> ports = new HashSet<>();
-		ports.add(port);
-		
-		config.addContainer(uri, ports, new HashMap<String, String>());
-		
-		List<ModelNode> containers = node.get(path).asList();
-		assertEquals(1, containers.size());
-		
-		//expectations
-		ModelNode portNode = new ModelNode();
-		portNode.get("protocol").set(port.getProtocol());
-		portNode.get("containerPort").set(port.getContainerPort());
-		
-		ModelNode exp = new ModelNode();
-		exp.get("name").set(uri.getName());
-		exp.get("image").set(uri.getUriWithoutHost());
-		exp.get("ports").add(portNode);
-		
-		assertEquals(exp.toJSONString(false), containers.get(0).toJSONString(false));
-	}
-	
-	@Test
-	public void shouldNotReturnLivenessProbe() {
-		IProbe livenessProbe = container1.getLivenessProbe();
-		assertThat(livenessProbe).isNull();
-	}
-	
-	@Test
-	public void shouldNotReturnReadinessProbe() {
-		IProbe readinessProbe = container1.getReadinessProbe();
-		assertThat(readinessProbe).isNull();
-	}
-	
-	@Test
-	public void shouldReturnLivenessProbe() {
-		// given
+    @Test
+    public void testIsDeployCapable() {
+        assertThat(config.supports(IDeployCapability.class)).isTrue();
+    }
+
+    @Test
+    public void getLabels() {
+        assertArrayEquals(new String[] { "template" }, config.getLabels().keySet().toArray(new String[] {}));
+    }
+
+    @Test
+    public void getConfigChangeTrigger() {
+        List<IDeploymentTrigger> trigger = new ArrayList<>(config.getTriggers());
+        assertEquals("Exp. equal number of triggers", 2, trigger.size());
+        assertTrue("Expected to find a config change trigger",
+                IDeploymentConfigChangeTrigger.class.isAssignableFrom(trigger.get(0).getClass()));
+        assertTrue("Expected to find a config change trigger",
+                IDeploymentImageChangeTrigger.class.isAssignableFrom(trigger.get(1).getClass()));
+
+        IDeploymentImageChangeTrigger ict = (IDeploymentImageChangeTrigger) trigger.get(1);
+        assertEquals("foo", ict.getNamespace());
+    }
+
+    @Test
+    public void getReplicas() {
+        assertEquals(1, config.getReplicas());
+    }
+
+    @Test
+    public void setReplicas() {
+        config.setReplicas(3);
+        assertEquals(3, config.getReplicas());
+    }
+
+    @Test
+    public void setLatestVersionNumber() {
+        config.setLatestVersionNumber(3);
+        assertEquals(3, config.getLatestVersionNumber());
+    }
+
+    @Test
+    public void setReplicaSelector() {
+        Map<String, String> exp = new HashMap<String, String>();
+        exp.put("foo", "bar");
+        node = ModelNode.fromJSONString(Samples.V1_DEPLOYMENT_CONIFIG.getContentAsString());
+        DeploymentConfig config = new DeploymentConfig(node, client,
+                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.DEPLOYMENT_CONFIG));
+        config.setReplicaSelector(exp);
+        assertEquals(exp, config.getReplicaSelector());
+    }
+
+    @Test
+    public void getReplicaSelector() {
+        Map<String, String> exp = new HashMap<String, String>();
+        exp.put("name", "database");
+        assertEquals(exp, config.getReplicaSelector());
+    }
+
+    @Test
+    public void getTriggerTypes() {
+        assertArrayEquals(new String[] { "ConfigChange", "ImageChange" },
+                config.getTriggerTypes().toArray(new String[] {}));
+    }
+
+    @Test
+    public void testGetDeploymentStrategyTypes() {
+        assertEquals("Recreate", config.getDeploymentStrategyType());
+    }
+
+    @Test
+    public void testAddContainer() {
+        // remove containers hack
+        String[] path = getPath(DeploymentConfig.DEPLOYMENTCONFIG_CONTAINERS);
+        node.get(path).clear();
+
+        // setup
+        IPort port = mock(IPort.class);
+        when(port.getProtocol()).thenReturn("TCP");
+        when(port.getContainerPort()).thenReturn(8080);
+        Set<IPort> ports = new HashSet<>();
+        ports.add(port);
+
+        DockerImageURI uri = new DockerImageURI("aproject/an_image_name");
+        config.addContainer(uri, ports, new HashMap<String, String>());
+
+        List<ModelNode> containers = node.get(path).asList();
+        assertEquals(1, containers.size());
+
+        // expectations
+        ModelNode portNode = new ModelNode();
+        portNode.get("protocol").set(port.getProtocol());
+        portNode.get("containerPort").set(port.getContainerPort());
+
+        ModelNode exp = new ModelNode();
+        exp.get("name").set(uri.getName());
+        exp.get("image").set(uri.getUriWithoutHost());
+        exp.get("ports").add(portNode);
+
+        assertEquals(exp.toJSONString(false), containers.get(0).toJSONString(false));
+    }
+
+    @Test
+    public void shouldNotReturnLivenessProbe() {
+        IProbe livenessProbe = container1.getLivenessProbe();
+        assertThat(livenessProbe).isNull();
+    }
+
+    @Test
+    public void shouldNotReturnReadinessProbe() {
+        IProbe readinessProbe = container1.getReadinessProbe();
+        assertThat(readinessProbe).isNull();
+    }
+
+    @Test
+    public void shouldReturnLivenessProbe() {
+        // given
         // when
         IProbe probe = container2.getLivenessProbe();
 
@@ -186,11 +190,11 @@ public class DeploymentConfigTest {
         assertThat(probe.getPeriodSeconds()).isEqualTo(13);
         assertThat(probe.getSuccessThreshold()).isEqualTo(14);
         assertThat(probe.getFailureThreshold()).isEqualTo(15);
-	}
+    }
 
-	@Test
-	public void shouldAlterLivenessProbe() {
-		// given
+    @Test
+    public void shouldAlterLivenessProbe() {
+        // given
         // when
         IProbe probe = container2.getLivenessProbe();
         probe.setInitialDelaySeconds(100);
@@ -206,11 +210,11 @@ public class DeploymentConfigTest {
         assertThat(probe.getPeriodSeconds()).isEqualTo(102);
         assertThat(probe.getSuccessThreshold()).isEqualTo(103);
         assertThat(probe.getFailureThreshold()).isEqualTo(104);
-	}
+    }
 
-	@Test
-	public void shouldReturnReadynessProbe() {
-		// given
+    @Test
+    public void shouldReturnReadynessProbe() {
+        // given
         // when
         IProbe probe = container2.getReadinessProbe();
 
@@ -221,11 +225,11 @@ public class DeploymentConfigTest {
         assertThat(probe.getPeriodSeconds()).isEqualTo(5);
         assertThat(probe.getSuccessThreshold()).isEqualTo(6);
         assertThat(probe.getFailureThreshold()).isEqualTo(7);
-	}
+    }
 
-	@Test
-	public void shouldAlterReadinessProbe() {
-		// given
+    @Test
+    public void shouldAlterReadinessProbe() {
+        // given
         // when
         IProbe probe = container2.getReadinessProbe();
         probe.setInitialDelaySeconds(200);
@@ -241,7 +245,6 @@ public class DeploymentConfigTest {
         assertThat(probe.getPeriodSeconds()).isEqualTo(202);
         assertThat(probe.getSuccessThreshold()).isEqualTo(203);
         assertThat(probe.getFailureThreshold()).isEqualTo(204);
-	}
-	
+    }
 
 }

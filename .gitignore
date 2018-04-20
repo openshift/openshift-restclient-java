@@ -8,3 +8,4 @@ bin
 *.iml
 **/integrationTest.properties
 /target/
+.checkstyle

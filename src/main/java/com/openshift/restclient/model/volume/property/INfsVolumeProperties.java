@@ -8,17 +8,21 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.restclient.model.volume.property;
 
+package com.openshift.restclient.model.volume.property;
 
 public interface INfsVolumeProperties extends IPersistentVolumeProperties {
 
-	String getPath();
-	String getServer();
-	boolean isReadOnly();
+    String getPath();
 
-	void setPath(String path);
-	void setServer(String path);
-	void setReadOnly(boolean isReadOnly);
+    String getServer();
+
+    boolean isReadOnly();
+
+    void setPath(String path);
+
+    void setServer(String path);
+
+    void setReadOnly(boolean isReadOnly);
 
 }

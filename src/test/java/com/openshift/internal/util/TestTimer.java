@@ -6,44 +6,45 @@
  *
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.util;
 
-import com.openshift.restclient.OpenShiftException;
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 
-import java.io.IOException;
+import com.openshift.restclient.OpenShiftException;
 
 /**
  * @author Corey Daley
  */
 public class TestTimer {
-	protected long startTime;
-	protected long endTime;
+    protected long startTime;
+    protected long endTime;
 
-	@Rule
-	public TestName name = new TestName();
+    @Rule
+    public TestName name = new TestName();
 
-	@Before
-	public void startTimer() throws OpenShiftException, IOException {
-		this.startTime = 0;
-		this.startTime = System.currentTimeMillis();
-	}
+    @Before
+    public void startTimer() throws OpenShiftException, IOException {
+        this.startTime = 0;
+        this.startTime = System.currentTimeMillis();
+    }
 
-	@After
-	public void endTimer() {
-		this.endTime = 0;
-		this.endTime = System.currentTimeMillis();
-		calcExecTime();
+    @After
+    public void endTimer() {
+        this.endTime = 0;
+        this.endTime = System.currentTimeMillis();
+        calcExecTime();
 
+    }
 
-	}
-
-	public void calcExecTime() {
-		if (System.getProperty("showTestTimes") != null) {
-			System.out.println(this.getClass() +"#"+name.getMethodName() + " : " + (this.endTime - this.startTime));
-		}
-	}
+    public void calcExecTime() {
+        if (System.getProperty("showTestTimes") != null) {
+            System.out.println(this.getClass() + "#" + name.getMethodName() + " : " + (this.endTime - this.startTime));
+        }
+    }
 }

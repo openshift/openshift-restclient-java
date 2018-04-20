@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.deploy;
 
 import com.openshift.restclient.api.models.INameSetable;
@@ -22,26 +23,22 @@ public interface IDeploymentRequest extends ITypeMeta, INameSetable {
     
     /**
      * If set the true latest will update the deployment config with the latest state from all triggers.
-     * @param latest
      */
     void setLatest(boolean latest);
     
     /**
      * Returns the current setting of the latest flag.
-     * @return
      */
     boolean isLatest();
     
     /**
      * If set to try force will try to force a new deployment to run. If the deployment config is paused, 
      * then setting this to true will return an Invalid error.
-     * @param force
      */
     void setForce(boolean force);
     
     /**
      * Returns the latest setting of the force flag.
-     * @return
      */
     boolean isForce();
     
@@ -54,7 +51,6 @@ public interface IDeploymentRequest extends ITypeMeta, INameSetable {
     
     /**
      * Returns the name of the deployment config seeded into the deployment request
-     * @return
      */
     String getName();
 

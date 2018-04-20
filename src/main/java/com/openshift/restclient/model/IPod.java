@@ -6,62 +6,54 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 import java.util.Collection;
 import java.util.Set;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IPod extends IResource {
 
-	/**
-	 * Gets the IP of the Pod
-	 * @return
-	 */
-	String getIP();
-	
-	/**
-	 * Gets the name of the host on which
-	 * the pod is running
-	 * @return
-	 */
-	String getHost();
-	
-	/**
-	 * Gets the collection of image names
-	 * for the pod containers
-	 * @return
-	 */
-	Collection<String> getImages();
-	
-	/**
-	 * Gets the status of the pod
-	 * @return
-	 */
-	String getStatus();
-	
-	/**
-	 * Retrieve the set of ports that the
-	 * containers are using
-	 */
-	Set<IPort> getContainerPorts();
-	
-	/**
-	 * Add a container with the given name.  This is 
-	 * useful if creating a pod directly without a 
-	 * resource controller
-	 * 
-	 * @param name
-	 * @return
-	 */
-	IContainer addContainer(String name);
-	
-	/**
-	 * Retrieve all the containers spec'd
-	 * for the pod
-	 * @return collection of containers
-	 */
-	Collection<IContainer> getContainers();
+    /**
+     * Gets the IP of the Pod
+     * 
+     */
+    String getIP();
+
+    /**
+     * Gets the name of the host on which the pod is running
+     * 
+     */
+    String getHost();
+
+    /**
+     * Gets the collection of image names for the pod containers
+     * 
+     */
+    Collection<String> getImages();
+
+    /**
+     * Gets the status of the pod
+     * 
+     */
+    String getStatus();
+
+    /**
+     * Retrieve the set of ports that the containers are using
+     */
+    Set<IPort> getContainerPorts();
+
+    /**
+     * Add a container with the given name. This is useful if creating a pod
+     * directly without a resource controller
+     * 
+     */
+    IContainer addContainer(String name);
+
+    /**
+     * Retrieve all the containers spec'd for the pod
+     * 
+     * @return collection of containers
+     */
+    Collection<IContainer> getContainers();
 }

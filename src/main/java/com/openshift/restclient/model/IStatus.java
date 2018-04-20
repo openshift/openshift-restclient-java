@@ -6,47 +6,47 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 /**
- * Status message resulting from trying to manipulate an
- * OpenShift resource and an error occurs
+ * Status message resulting from trying to manipulate an OpenShift resource and
+ * an error occurs
  * 
- * @author Jeff Cantrill
  */
 public interface IStatus extends IResource {
 
-	public static final String SUCCESS = "Success";
-	public static final String FAILURE = "Failure";
-	
-	/**
-	 * Returns the status message
-	 * @return
-	 */
-	String getMessage();
+    public static final String SUCCESS = "Success";
+    public static final String FAILURE = "Failure";
 
-	/**
-	 * The HTTP status code
-	 * @return an int
-	 */
-	int getCode();
-	
-	/**
-	 * The status info of the status
-	 * @return
-	 */
-	String getStatus();
-	
-	/**
-	 * Determine if this status is indicates
-	 * a failure
-	 * @return
-	 */
-	boolean isFailure();
+    /**
+     * Returns the status message
+     * 
+     */
+    String getMessage();
 
-	/**
-	 * Returns {@code true} if this status represent success}
-	 * @return
-	 */
-	boolean isSuccess();
+    /**
+     * The HTTP status code
+     * 
+     * @return an int
+     */
+    int getCode();
+
+    /**
+     * The status info of the status
+     * 
+     */
+    String getStatus();
+
+    /**
+     * Determine if this status is indicates a failure
+     * 
+     */
+    boolean isFailure();
+
+    /**
+     * Returns {@code true} if this status represent success}
+     * 
+     */
+    boolean isSuccess();
 }

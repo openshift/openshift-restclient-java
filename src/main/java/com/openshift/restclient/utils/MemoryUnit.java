@@ -8,10 +8,11 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.utils;
 
 public enum MemoryUnit {
 
-	Ki, Mi, Gi, Ti, Pi, Ei;
+    Ki, Mi, Gi, Ti, Pi, Ei;
 
 }

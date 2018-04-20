@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import com.openshift.restclient.IClient;
@@ -15,28 +16,25 @@ import com.openshift.restclient.model.IReplicationController;
 import com.openshift.restclient.model.IResource;
 
 /**
- * Determine which deployment caused a resource to
- * be deployed based on the information found in its
- * annotations
- * 
- * @author Jeff Cantrill
+ * Determine which deployment caused a resource to be deployed based on the
+ * information found in its annotations
  */
 public class DeploymentTraceability extends AssociationCapability implements IDeploymentTraceability {
-	
-	private static final String DEPLOYMENT_ANNOTATION = "deployment";
 
-	public DeploymentTraceability(IResource resource, IClient client) {
-		super(DeploymentTraceability.class.getSimpleName(), resource, client);
-	}
+    private static final String DEPLOYMENT_ANNOTATION = "deployment";
 
-	@Override
-	public IReplicationController getDeployment() {
-		return getAssociatedResource(ResourceKind.REPLICATION_CONTROLLER);
-	}
+    public DeploymentTraceability(IResource resource, IClient client) {
+        super(DeploymentTraceability.class.getSimpleName(), resource, client);
+    }
 
-	@Override
-	protected String getAnnotationKey() {
-		return DEPLOYMENT_ANNOTATION;
-	}
+    @Override
+    public IReplicationController getDeployment() {
+        return getAssociatedResource(ResourceKind.REPLICATION_CONTROLLER);
+    }
+
+    @Override
+    protected String getAnnotationKey() {
+        return DEPLOYMENT_ANNOTATION;
+    }
 
 }

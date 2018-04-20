@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.kubeclient;
 
 import java.util.ArrayList;
@@ -21,52 +22,54 @@ import com.openshift.restclient.model.kubeclient.IUser;
 /**
  * Kube Client config impl
  * 
- * @author jeff.cantrill
  *
  */
 public class KubeClientConfig implements IKubeClientConfig {
 
-	private Collection<ICluster> clusters = new ArrayList<>();
-	private Collection<IContext> contexts = new ArrayList<>();
-	private String currentContext = "";
-	private Collection<IUser> users = new ArrayList<>();
-	
-	public void setApiVersion(String apiVersion) {
-		
-	}
-	
-	@Override
-	public Collection< ICluster> getClusters() {
-		return clusters;
-	}
-	
-	public void setClusters(Collection<ICluster> clusters) {
-		this.clusters = clusters;
-	}
+    private Collection<ICluster> clusters = new ArrayList<>();
+    private Collection<IContext> contexts = new ArrayList<>();
+    private String currentContext = "";
+    private Collection<IUser> users = new ArrayList<>();
 
-	@Override
-	public Collection<IContext> getContexts() {
-		return contexts;
-	}
-	public void setContexts(Collection<IContext> contexts) {
-		this.contexts = contexts;
-	}
+    public void setApiVersion(String apiVersion) {
 
-	@Override
-	public String getCurrentContext() {
-		// TODO Auto-generated method stub
-		return currentContext;
-	}
-	public void setCurrentContext(String currentContext) {
-		this.currentContext = currentContext;
-	}
-	@Override
-	public Collection<IUser> getUsers() {
-		return users;
-	}
-	
-	public void setUsers(Collection<IUser> users) {
-		this.users = users;
-	}
+    }
+
+    @Override
+    public Collection<ICluster> getClusters() {
+        return clusters;
+    }
+
+    public void setClusters(Collection<ICluster> clusters) {
+        this.clusters = clusters;
+    }
+
+    @Override
+    public Collection<IContext> getContexts() {
+        return contexts;
+    }
+
+    public void setContexts(Collection<IContext> contexts) {
+        this.contexts = contexts;
+    }
+
+    @Override
+    public String getCurrentContext() {
+        // TODO Auto-generated method stub
+        return currentContext;
+    }
+
+    public void setCurrentContext(String currentContext) {
+        this.currentContext = currentContext;
+    }
+
+    @Override
+    public Collection<IUser> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Collection<IUser> users) {
+        this.users = users;
+    }
 
 }

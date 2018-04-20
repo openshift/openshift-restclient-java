@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.oauth;
 
 import java.util.Map;
@@ -18,16 +19,10 @@ import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.oauth.IOAuthAccessToken;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 public class OAuthAccessToken extends KubernetesResource implements IOAuthAccessToken {
 
-	public OAuthAccessToken(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
-		super(node, client, propertyKeys);
-		// TODO Auto-generated constructor stub
-	}
+    public OAuthAccessToken(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+    }
 
 }

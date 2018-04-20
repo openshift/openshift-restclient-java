@@ -6,6 +6,7 @@
  *
  * Contributors: Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import java.util.Collection;
@@ -17,30 +18,30 @@ import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.template.ITemplate;
 
 public class ProjectTemplateListCapability implements IProjectTemplateList {
-	
-	private static final String COMMON_NAMESPACE = "openshift"; //eventually configurable
-	private IProject project;
-	private IClient client;
 
-	public ProjectTemplateListCapability(IProject project, IClient client) {
-		this.project = project;
-		this.client = client;
-	}
+    private static final String COMMON_NAMESPACE = "openshift"; // eventually configurable
+    private IProject project;
+    private IClient client;
 
-	@Override
-	public boolean isSupported() {
-		return client != null && project != null;
-	}
+    public ProjectTemplateListCapability(IProject project, IClient client) {
+        this.project = project;
+        this.client = client;
+    }
 
-	@Override
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
+    @Override
+    public boolean isSupported() {
+        return client != null && project != null;
+    }
 
-	@Override
-	public Collection<ITemplate> getTemplates() {
-		return client.<ITemplate>list(ResourceKind.TEMPLATE, project.getNamespaceName());
-	}
+    @Override
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
+
+    @Override
+    public Collection<ITemplate> getTemplates() {
+        return client.<ITemplate>list(ResourceKind.TEMPLATE, project.getNamespaceName());
+    }
 
     @Override
     public Collection<ITemplate> getCommonTemplates() {
@@ -48,9 +49,9 @@ public class ProjectTemplateListCapability implements IProjectTemplateList {
     }
 
     @Override
-	public Collection<ITemplate> getCommonTemplates(String clusterNamespace) {
-		return client.<ITemplate>list(ResourceKind.TEMPLATE,clusterNamespace==null?COMMON_NAMESPACE:clusterNamespace);
-	}
-	
-	
+    public Collection<ITemplate> getCommonTemplates(String clusterNamespace) {
+        return client.<ITemplate>list(ResourceKind.TEMPLATE,
+                clusterNamespace == null ? COMMON_NAMESPACE : clusterNamespace);
+    }
+
 }

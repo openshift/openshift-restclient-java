@@ -8,22 +8,24 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import com.openshift.restclient.capability.ICapability;
 
 /**
- * Capability to trigger a new deployment of a deploymentconfig
- * (e.g. oc deploy foo)
- * @author jeff.cantrill
+ * Capability to trigger a new deployment of a deploymentconfig (e.g. oc deploy
+ * foo)
  *
  */
 public interface IDeployCapability extends ICapability {
 
-	/**
-	 * Deploy the latest deployment
-	 * @throws an OpenShiftException if there is an error (e.g. 404)
-	 */
-	void deploy();
-	
+    /**
+     * Deploy the latest deployment
+     * 
+     * @throws an
+     *             OpenShiftException if there is an error (e.g. 404)
+     */
+    void deploy();
+
 }

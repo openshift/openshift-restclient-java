@@ -8,9 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.volume;
 
-import static com.openshift.internal.util.JBossDmrExtentions.*;
+import static com.openshift.internal.util.JBossDmrExtentions.asString;
+import static com.openshift.internal.util.JBossDmrExtentions.set;
 
 import org.jboss.dmr.ModelNode;
 
@@ -18,25 +20,24 @@ import com.openshift.restclient.model.volume.IHostPathVolumeSource;
 
 /**
  * Implementation of a hostpath volume source
- * @author jeff.cantrill
  *
  */
-public class HostPathVolumeSource extends VolumeSource implements IHostPathVolumeSource{
+public class HostPathVolumeSource extends VolumeSource implements IHostPathVolumeSource {
 
-	private static final String PATH = "hostPath.path";
+    private static final String PATH = "hostPath.path";
 
-	public HostPathVolumeSource(ModelNode node) {
-		super(node);
-	}
+    public HostPathVolumeSource(ModelNode node) {
+        super(node);
+    }
 
-	@Override
-	public String getPath() {
-		return asString(getNode(), getPropertyKeys(), PATH);
-	}
+    @Override
+    public String getPath() {
+        return asString(getNode(), getPropertyKeys(), PATH);
+    }
 
-	@Override
-	public void setPath(String path) {
-		set(getNode(), getPropertyKeys(), PATH, path);
-	}
+    @Override
+    public void setPath(String path) {
+        set(getNode(), getPropertyKeys(), PATH, path);
+    }
 
 }

@@ -8,34 +8,34 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.kubeclient;
 
 public interface IContext {
-	
-	/**
-	 * The name of the cluster
-	 * @return
-	 */
-	String getCluster();
 
-	/**
-	 * Returns the user info in the form of:
-	 * <username>/<url>
-	 * @return the user info
-	 */
-	String getUser();
-	
-	/**
-	 * default namespace to use
-	 * on unspecified requests
-	 * @return
-	 */
-	String getNamespace();
+    /**
+     * The name of the cluster
+     * 
+     */
+    String getCluster();
 
-	/**
-	 * The name of the context
-	 * @return
-	 */
-	String getName();
-	
+    /**
+     * Returns the user info in the form of: USERNAME/URL
+     * 
+     * @return the user info
+     */
+    String getUser();
+
+    /**
+     * default namespace to use on unspecified requests
+     * 
+     */
+    String getNamespace();
+
+    /**
+     * The name of the context
+     * 
+     */
+    String getName();
+
 }

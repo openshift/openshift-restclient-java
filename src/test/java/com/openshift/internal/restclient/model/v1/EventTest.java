@@ -8,9 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 
@@ -31,60 +33,60 @@ import com.openshift.restclient.utils.Samples;
 @RunWith(MockitoJUnitRunner.class)
 public class EventTest {
 
-	private static String JSON = Samples.V1_EVENT.getContentAsString();
-	
-	@Mock
-	private IClient client;
-	private IEvent event;
+    private static String JSON = Samples.V1_EVENT.getContentAsString();
 
-	@Before
-	public void setUp() throws Exception {
-		ModelNode node = ModelNode.fromJSONString(JSON);
-		event = new KubernetesEvent(node, client, new HashMap<>());
-	}
+    @Mock
+    private IClient client;
+    private IEvent event;
 
-	@Test
-	public void testGetEventSource() {
-		IEventSource source = event.getEventSource();
-		assertNotNull(source);
-		assertEquals("deploymentconfig-controller", source.getComponent());
-		assertEquals("", source.getHost());
-	}
-	
-	@Test
-	public void testGetType() {
-		assertEquals("Normal", event.getType());
-	}
-	
-	@Test
-	public void testGetCount() {
-		assertEquals(1, event.getCount());
-	}
-	
-	@Test
-	public void testGetFirstSeen() {
-		assertEquals("2016-08-08T01:49:26Z", event.getFirstSeenTimestamp());
-	}
+    @Before
+    public void setUp() throws Exception {
+        ModelNode node = ModelNode.fromJSONString(JSON);
+        event = new KubernetesEvent(node, client, new HashMap<>());
+    }
 
-	@Test
-	public void testGetLastSeen() {
-		assertEquals("2016-08-08T01:49:26Z", event.getLastSeenTimestamp());
-	}
+    @Test
+    public void testGetEventSource() {
+        IEventSource source = event.getEventSource();
+        assertNotNull(source);
+        assertEquals("deploymentconfig-controller", source.getComponent());
+        assertEquals("", source.getHost());
+    }
 
-	@Test
-	public void testGetReason() {
-		assertEquals("DeploymentCreated", event.getReason());
-	}
+    @Test
+    public void testGetType() {
+        assertEquals("Normal", event.getType());
+    }
 
-	@Test
-	public void testGetInvolvedObject() {
-		IObjectReference ref = event.getInvolvedObject();
-		assertNotNull(ref);
-	}
+    @Test
+    public void testGetCount() {
+        assertEquals(1, event.getCount());
+    }
 
-	@Test
-	public void testGetMessage() {
-		assertEquals("Created new deployment \"nodejs-1\" for version 1", event.getMessage());
-	}
+    @Test
+    public void testGetFirstSeen() {
+        assertEquals("2016-08-08T01:49:26Z", event.getFirstSeenTimestamp());
+    }
+
+    @Test
+    public void testGetLastSeen() {
+        assertEquals("2016-08-08T01:49:26Z", event.getLastSeenTimestamp());
+    }
+
+    @Test
+    public void testGetReason() {
+        assertEquals("DeploymentCreated", event.getReason());
+    }
+
+    @Test
+    public void testGetInvolvedObject() {
+        IObjectReference ref = event.getInvolvedObject();
+        assertNotNull(ref);
+    }
+
+    @Test
+    public void testGetMessage() {
+        assertEquals("Created new deployment \"nodejs-1\" for version 1", event.getMessage());
+    }
 
 }

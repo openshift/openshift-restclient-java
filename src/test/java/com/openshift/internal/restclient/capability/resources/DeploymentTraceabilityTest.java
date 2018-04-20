@@ -6,10 +6,14 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,41 +26,41 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IReplicationController;
 
-/**
- * @author Jeff Cantrill
- */
 @RunWith(MockitoJUnitRunner.class)
 public class DeploymentTraceabilityTest {
 
-	private DeploymentTraceability capability;
+    private DeploymentTraceability capability;
 
-	@Mock private IReplicationController deployment;
-	@Mock private IPod resource;
-	@Mock private IClient client;
-	
-	@Before
-	public void setUp(){
-		capability = new DeploymentTraceability(resource, client);
-		
-		when(resource.getNamespaceName()).thenReturn("mynamespace");
-		
-		when(client.get(eq(ResourceKind.REPLICATION_CONTROLLER), eq("foobar"), eq("mynamespace")))
-			.thenReturn(deployment);
-	}
-	
-	@Test
-	public void supportedWhenAnnotationsHaveADeploymentKey(){
-		when(resource.isAnnotatedWith(eq("deployment"))).thenReturn(true);
-		when(resource.getAnnotation("deployment")).thenReturn("foobar");
+    @Mock
+    private IReplicationController deployment;
+    @Mock
+    private IPod resource;
+    @Mock
+    private IClient client;
 
-		assertEquals("Exp. to get the deployment", deployment, capability.getDeployment());
-		
-		verify(client).get(eq(ResourceKind.REPLICATION_CONTROLLER), eq("foobar"), eq("mynamespace"));
-	}
+    @Before
+    public void setUp() {
+        capability = new DeploymentTraceability(resource, client);
 
-	@Test
-	public void unsupportedWhenAnnotationsDoNotHaveADeploymentKey(){
-		assertNull("Exp. to get the deployment", capability.getDeployment());
-	}
-	
+        when(resource.getNamespaceName()).thenReturn("mynamespace");
+
+        when(client.get(eq(ResourceKind.REPLICATION_CONTROLLER), eq("foobar"), eq("mynamespace")))
+                .thenReturn(deployment);
+    }
+
+    @Test
+    public void supportedWhenAnnotationsHaveADeploymentKey() {
+        when(resource.isAnnotatedWith(eq("deployment"))).thenReturn(true);
+        when(resource.getAnnotation("deployment")).thenReturn("foobar");
+
+        assertEquals("Exp. to get the deployment", deployment, capability.getDeployment());
+
+        verify(client).get(eq(ResourceKind.REPLICATION_CONTROLLER), eq("foobar"), eq("mynamespace"));
+    }
+
+    @Test
+    public void unsupportedWhenAnnotationsDoNotHaveADeploymentKey() {
+        assertNull("Exp. to get the deployment", capability.getDeployment());
+    }
+
 }

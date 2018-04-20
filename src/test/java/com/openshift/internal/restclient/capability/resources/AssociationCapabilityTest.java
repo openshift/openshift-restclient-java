@@ -6,27 +6,23 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import com.openshift.internal.restclient.capability.resources.AssociationCapability;
-
-/**
- * @author Jeff Cantrill
- */
 public class AssociationCapabilityTest {
 
-	@Test
-	public void unsupportedWhenTheClientIsNull(){
-		AssociationCapability capability = new AssociationCapability("MyCapability", null, null) {
-				@Override
-				protected String getAnnotationKey() {
-					return "foobar";
-				}
-			};
-		assertFalse("Exp. the capability to be unsupported because the IClient is null", capability.isSupported());
-	}
+    @Test
+    public void unsupportedWhenTheClientIsNull() {
+        AssociationCapability capability = new AssociationCapability("MyCapability", null, null) {
+            @Override
+            protected String getAnnotationKey() {
+                return "foobar";
+            }
+        };
+        assertFalse("Exp. the capability to be unsupported because the IClient is null", capability.isSupported());
+    }
 }

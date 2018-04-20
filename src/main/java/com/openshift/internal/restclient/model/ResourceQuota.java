@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
 import java.util.Map;
@@ -19,9 +20,8 @@ import com.openshift.restclient.model.IResourceQuota;
 
 public class ResourceQuota extends KubernetesResource implements IResourceQuota {
 
-	public ResourceQuota(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
-		super(node, client, propertyKeys);
-		// TODO Auto-generated constructor stub
-	}
+    public ResourceQuota(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+    }
 
 }

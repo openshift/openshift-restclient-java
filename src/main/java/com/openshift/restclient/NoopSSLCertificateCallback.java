@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient;
 
 import java.security.cert.X509Certificate;
@@ -19,14 +20,14 @@ import javax.net.ssl.SSLSession;
  */
 public class NoopSSLCertificateCallback implements ISSLCertificateCallback {
 
-	@Override
-	public boolean allowCertificate(X509Certificate[] chain) {
-		return true;
-	}
+    @Override
+    public boolean allowCertificate(X509Certificate[] chain) {
+        return true;
+    }
 
-	@Override
-	public boolean allowHostname(String hostname, SSLSession session) {
-		return true;
-	}
+    @Override
+    public boolean allowHostname(String hostname, SSLSession session) {
+        return true;
+    }
 
 }

@@ -8,27 +8,25 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient;
 
 import com.openshift.restclient.model.IStatus;
 
 /**
- * The exception thrown when the client is trying to submit a request
- * to with parameters that are not accepted by the server
- * 
- * @author jeff.cantrill
+ * The exception thrown when the client is trying to submit a request to with
+ * parameters that are not accepted by the server
  *
  */
 public class BadRequestException extends OpenShiftException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -333562634088784896L;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -333562634088784896L;
-
-	public BadRequestException(Throwable e, IStatus status, String endpoint) {
-		super(e, status, "%s", endpoint);
-	}
+    public BadRequestException(Throwable e, IStatus status, String endpoint) {
+        super(e, status, "%s", endpoint);
+    }
 
 }

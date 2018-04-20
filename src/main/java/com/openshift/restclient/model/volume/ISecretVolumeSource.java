@@ -5,5 +5,6 @@ package com.openshift.restclient.model.volume;
  */
 public interface ISecretVolumeSource extends IVolumeSource {
     String getSecretName();
+
     void setSecretName(String secretName);
 }

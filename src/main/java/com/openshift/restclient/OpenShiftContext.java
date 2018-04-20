@@ -6,13 +6,14 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * OpenShift Context. 
+ * OpenShift Context.
  * 
  * @author Fred Bricon
  * 
@@ -20,44 +21,42 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class OpenShiftContext {
 
-	private Map<String, Object> context = new ConcurrentHashMap<>();
-	
-	private static ThreadLocal<OpenShiftContext> threadLocalBinary = new ThreadLocal<OpenShiftContext>() {
-		protected OpenShiftContext initialValue() {
-			return new OpenShiftContext();
-		};
-	};
-	
-	private OpenShiftContext() {
-	}
-	
-	/**
-	 * Returns the {@link OpenShiftContext} instance for the current {@link Thread}. 
-	 * 
-	 * @return an {@link OpenShiftContext}
-	 */
-	public static OpenShiftContext get() {
-		return threadLocalBinary.get();
-	}
-	
-	public void put(String key, Object value) {
-		context.put(key, value);
-	}
+    private Map<String, Object> context = new ConcurrentHashMap<>();
 
-	@SuppressWarnings("unchecked")
-	public <T> T get(String key) {
-		T value = (T) context.get(key);
-		return value;
-	}
-	
-	public void remove(String key) {
-		context.remove(key);
-	}
-	
-	public void clear() {
-		context.clear();
-	}
-	
-		
-	
+    private static ThreadLocal<OpenShiftContext> threadLocalBinary = new ThreadLocal<OpenShiftContext>() {
+        protected OpenShiftContext initialValue() {
+            return new OpenShiftContext();
+        }
+    };
+
+    private OpenShiftContext() {
+    }
+
+    /**
+     * Returns the {@link OpenShiftContext} instance for the current {@link Thread}.
+     * 
+     * @return an {@link OpenShiftContext}
+     */
+    public static OpenShiftContext get() {
+        return threadLocalBinary.get();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T> T get(String key) {
+        T value = (T) context.get(key);
+        return value;
+    }
+
+    public void put(String key, Object value) {
+        context.put(key, value);
+    }
+
+    public void remove(String key) {
+        context.remove(key);
+    }
+
+    public void clear() {
+        context.clear();
+    }
+
 }

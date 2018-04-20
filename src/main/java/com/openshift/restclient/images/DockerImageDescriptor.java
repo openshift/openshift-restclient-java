@@ -6,27 +6,25 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.images;
 
-/**
- * @author Jeff Cantrill
- */
-public class DockerImageDescriptor{
-	
-	private final String description;
-	private final DockerImageURI name;
+public class DockerImageDescriptor {
 
-	public DockerImageDescriptor(DockerImageURI name, String description){
-		this.name = name;		
-		this.description = description;
-	}
+    private final String description;
+    private final DockerImageURI name;
 
-	public String getDescription() {
-		return description;
-	}
-	
-	public DockerImageURI getImageUri() {
-		return name;
-	}
-	
+    public DockerImageDescriptor(DockerImageURI name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public DockerImageURI getImageUri() {
+        return name;
+    }
+
 }

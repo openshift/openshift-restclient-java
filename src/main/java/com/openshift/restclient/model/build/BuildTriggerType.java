@@ -6,24 +6,22 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
-/**
- * @author Jeff Cantrill
- */
 public interface BuildTriggerType {
-	@Deprecated
-	static final String generic = "generic";
-	
-	@Deprecated
-	static final String github = "github";
-	
-	@Deprecated
-	static final String imageChange = "imageChange";
+    @Deprecated
+    static final String generic = "generic";
 
-	static final String CONFIG_CHANGE = "ConfigChange";
-	static final String GENERIC = "Generic";
-	static final String GITHUB = "GitHub";
-	static final String IMAGE_CHANGE = "ImageChange";
-	
+    @Deprecated
+    static final String github = "github";
+
+    @Deprecated
+    static final String imageChange = "imageChange";
+
+    static final String CONFIG_CHANGE = "ConfigChange";
+    static final String GENERIC = "Generic";
+    static final String GITHUB = "GitHub";
+    static final String IMAGE_CHANGE = "ImageChange";
+
 }

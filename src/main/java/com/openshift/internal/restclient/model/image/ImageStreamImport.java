@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.image;
 
 import java.util.ArrayList;
@@ -25,74 +26,64 @@ import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IStatus;
 import com.openshift.restclient.model.image.IImageStreamImport;
 
-/**
- * 
- * @author jeff.cantrill
- *
- */
 public class ImageStreamImport extends KubernetesResource implements IImageStreamImport {
 
-	private static final String FROM_KIND = "from.kind";
-	public static final String IMAGE_DOCKER_IMAGE_REFERENCE = "image.dockerImageReference";
-	private static final String SPEC_IMAGES = "spec.images";
-	private static final String SPEC_IMPORT = "spec.import";
-	private static final String STATUS = "status";
-	public static final String STATUS_IMAGES = "status.images";
-	private static final String TAG = "tag";
+    private static final String FROM_KIND = "from.kind";
+    public static final String IMAGE_DOCKER_IMAGE_REFERENCE = "image.dockerImageReference";
+    private static final String SPEC_IMAGES = "spec.images";
+    private static final String SPEC_IMPORT = "spec.import";
+    private static final String STATUS = "status";
+    public static final String STATUS_IMAGES = "status.images";
+    private static final String TAG = "tag";
 
-	public ImageStreamImport(ModelNode node, IClient client, Map<String, String[]> overrideProperties) {
-		super(node, client, overrideProperties);
-	}
+    public ImageStreamImport(ModelNode node, IClient client, Map<String, String[]> overrideProperties) {
+        super(node, client, overrideProperties);
+    }
 
-	@Override
-	public void setImport(boolean importTags) {
-		set(SPEC_IMPORT, importTags);
-	}
+    @Override
+    public void setImport(boolean importTags) {
+        set(SPEC_IMPORT, importTags);
+    }
 
-	@Override
-	public boolean isImport() {
-		return asBoolean(SPEC_IMPORT);
-	}
+    @Override
+    public boolean isImport() {
+        return asBoolean(SPEC_IMPORT);
+    }
 
-	@Override
-	public void addImage(String fromKind, DockerImageURI imageUri) {
-		ModelNode image = new ModelNode();
-		set(image, FROM_KIND, fromKind);
-		set(image, "from.name", imageUri.getAbsoluteUri());
-		get(SPEC_IMAGES).add(image);
-	}
+    @Override
+    public void addImage(String fromKind, DockerImageURI imageUri) {
+        ModelNode image = new ModelNode();
+        set(image, FROM_KIND, fromKind);
+        set(image, "from.name", imageUri.getAbsoluteUri());
+        get(SPEC_IMAGES).add(image);
+    }
 
-	@Override
-	public Collection<IStatus> getImageStatus() {
-		Collection<IStatus> status = new ArrayList<>();
-		ModelNode images = get(STATUS_IMAGES);
-		if(images.isDefined()) {
-			images.asList()
-				.stream()
-				.filter(n->get(n,STATUS).isDefined())
-				.forEach(n->status.add(new Status(get(n,STATUS), getClient(), getPropertyKeys())));
-		}
-		return status;
-	}
+    @Override
+    public Collection<IStatus> getImageStatus() {
+        Collection<IStatus> status = new ArrayList<>();
+        ModelNode images = get(STATUS_IMAGES);
+        if (images.isDefined()) {
+            images.asList().stream().filter(n -> get(n, STATUS).isDefined())
+                    .forEach(n -> status.add(new Status(get(n, STATUS), getClient(), getPropertyKeys())));
+        }
+        return status;
+    }
 
-	@Override
-	public String getImageJsonFor(DockerImageURI uri) {
-		return getImageJsonFor(uri.getTag());
-	}
+    @Override
+    public String getImageJsonFor(DockerImageURI uri) {
+        return getImageJsonFor(uri.getTag());
+    }
 
-	@Override
-	public String getImageJsonFor(String tag) {
-		ModelNode images = get(STATUS_IMAGES);
-		if(images.isDefined() && StringUtils.isNotBlank(tag)) {
-			Optional<ModelNode> node = images.asList()
-				.stream()
-				.filter(n->tag.equals(asString(n,TAG)))
-				.findFirst();
-			if(node.isPresent()) {
-				return node.get().toJSONString(true);
-			}
-		}		
-		return null;
-	}
+    @Override
+    public String getImageJsonFor(String tag) {
+        ModelNode images = get(STATUS_IMAGES);
+        if (images.isDefined() && StringUtils.isNotBlank(tag)) {
+            Optional<ModelNode> node = images.asList().stream().filter(n -> tag.equals(asString(n, TAG))).findFirst();
+            if (node.isPresent()) {
+                return node.get().toJSONString(true);
+            }
+        }
+        return null;
+    }
 
 }

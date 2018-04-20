@@ -6,27 +6,26 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient;
 
 /**
- * This list of supported Kubernetes API Models
- * by this client
+ * This list of supported Kubernetes API Models by this client
  * 
  * @author Jeff Cantrill
  */
-public enum KubernetesAPIVersion implements APIModelVersion{
-	@Deprecated
-	v1beta3(2),
-	v1(3);
-	
-	private int order;
-	
-	KubernetesAPIVersion( int order){
-		this.order = order;
-	}
-	
-	@Override
-	public int getOrder(){
-		return order;
-	}
+public enum KubernetesAPIVersion implements APIModelVersion {
+    @Deprecated
+    v1beta3(2), v1(3);
+
+    private int order;
+
+    KubernetesAPIVersion(int order) {
+        this.order = order;
+    }
+
+    @Override
+    public int getOrder() {
+        return order;
+    }
 }

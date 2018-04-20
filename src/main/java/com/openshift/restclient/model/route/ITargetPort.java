@@ -6,30 +6,33 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.route;
 
 /**
- * Target port for routes. If both attributes are present, then name is preferred.
+ * Target port for routes. If both attributes are present, then name is
+ * preferred.
  * 
  * @author Jeff Maury
  */
 public interface ITargetPort {
-	
-	/**
-	 * Returns the target port name.
-	 * 
-	 * @return target port name.
-	 */
-	String getTargetPortName();
 
-	/**
-	 * Sets the target port name.
-	 * 
-	 * @param portName target port name
-	 */
-	void setTargetPortName(String portName);
+    /**
+     * Returns the target port name.
+     * 
+     * @return target port name.
+     */
+    String getTargetPortName();
 
-	/**
+    /**
+     * Sets the target port name.
+     * 
+     * @param portName
+     *            target port name
+     */
+    void setTargetPortName(String portName);
+
+    /**
      * Returns the target port value.
      * 
      * @return target port value.
@@ -39,7 +42,8 @@ public interface ITargetPort {
     /**
      * Sets the target port value.
      * 
-     * @param portName target port value
+     * @param portName
+     *            target port value
      */
     void setTargetPort(Integer port);
 }

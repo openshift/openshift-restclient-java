@@ -6,16 +6,15 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IBuildStrategy {
-	
-	/**
-	 * The type of build Strategy
-	 * @return {@link BuildStrategyType}
-	 */
-	String getType();
+
+    /**
+     * The type of build Strategy
+     * 
+     * @return {@link BuildStrategyType}
+     */
+    String getType();
 }

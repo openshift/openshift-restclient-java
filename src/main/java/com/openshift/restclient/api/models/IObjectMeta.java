@@ -8,37 +8,35 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.api.models;
 
 /**
  * ObjectMeta info as defined by the server
- * @author jeff.cantrill
- *
  */
 public interface IObjectMeta extends ILabelable, IAnnotatable {
 
-	/**
-	 * Returns the identifier for this resource
-	 * @return
-	 */
-	String getName();
-	
-	/**
-	 * Returns the timestamp of when this resource
-	 * was created
-	 * @return
-	 */
-	String getCreationTimeStamp();
+    /**
+     * Returns the identifier for this resource
+     * 
+     */
+    String getName();
 
-	/**
-	 * Returns the scope of this resource
-	 * @return
-	 */
-	String getNamespace();
+    /**
+     * Returns the timestamp of when this resource was created
+     * 
+     */
+    String getCreationTimeStamp();
 
-	/**
-	 * A value that represents the version of this resource
-	 * @return
-	 */
-	String getResourceVersion();
+    /**
+     * Returns the scope of this resource
+     * 
+     */
+    String getNamespace();
+
+    /**
+     * A value that represents the version of this resource
+     * 
+     */
+    String getResourceVersion();
 }

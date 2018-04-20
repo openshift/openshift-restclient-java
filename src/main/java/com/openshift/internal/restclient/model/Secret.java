@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
 import java.io.ByteArrayOutputStream;
@@ -24,46 +25,44 @@ import com.openshift.restclient.utils.Base64Coder;
  * @author Jiri Pechanec
  */
 public class Secret extends KubernetesResource implements ISecret {
-	
-	private static final String SECRET_TYPE = "type";
-	private static final String SECRET_DATA = "data";
 
+    private static final String SECRET_TYPE = "type";
+    private static final String SECRET_DATA = "data";
 
-	public Secret(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
-	}
+    public Secret(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+    }
 
-	@Override
-	public void addData(String key, InputStream data) {
-		try {
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			IOUtils.copy(data, os);
-			addData(key, os.toByteArray());
-		}
-		catch (IOException e) {
-			throw new IllegalArgumentException("Could not process data stream", e);
-		}
-	}
+    @Override
+    public void addData(String key, InputStream data) {
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            IOUtils.copy(data, os);
+            addData(key, os.toByteArray());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not process data stream", e);
+        }
+    }
 
-	@Override
-	public void addData(final String key, final byte[] data) {
-		ModelNode dataNode = get(SECRET_DATA);
-		dataNode.get(key).set(Base64Coder.encode(data));
-	}
+    @Override
+    public void addData(final String key, final byte[] data) {
+        ModelNode dataNode = get(SECRET_DATA);
+        dataNode.get(key).set(Base64Coder.encode(data));
+    }
 
-	@Override
-	public byte[] getData(final String key) {
-		return Base64Coder.decodeBinary(asMap(SECRET_DATA).get(key));
-	}
+    @Override
+    public byte[] getData(final String key) {
+        return Base64Coder.decodeBinary(asMap(SECRET_DATA).get(key));
+    }
 
-	@Override
-	public void setType(final String type) {
-		get(SECRET_TYPE).set(type.toString());
-	}
+    @Override
+    public void setType(final String type) {
+        get(SECRET_TYPE).set(type.toString());
+    }
 
-	@Override
-	public String getType() {
-		return asString(SECRET_TYPE);
-	}
-	
+    @Override
+    public String getType() {
+        return asString(SECRET_TYPE);
+    }
+
 }

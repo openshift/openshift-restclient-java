@@ -6,18 +6,17 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IWebhookTrigger extends IBuildTrigger {
-	
-	String getSecret();
-	
-	/**
-	 * Returns the URL to trigger the build for the resource
-	 * @return the URL or empty if the resource is not configured with an IClient
-	 */
-	String getWebhookURL();
+
+    String getSecret();
+
+    /**
+     * Returns the URL to trigger the build for the resource
+     * 
+     * @return the URL or empty if the resource is not configured with an IClient
+     */
+    String getWebhookURL();
 }

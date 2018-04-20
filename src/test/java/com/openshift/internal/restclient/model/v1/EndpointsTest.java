@@ -8,9 +8,10 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
-import static org.fest.assertions.Assertions.*;
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.List;
 
@@ -29,27 +30,27 @@ import com.openshift.restclient.api.models.IEndpoints.IEndpointSubset;
 import com.openshift.restclient.utils.Samples;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EndpointsTest extends TypeMapperFixture{
+public class EndpointsTest extends TypeMapperFixture {
 
-	private static String JSON = Samples.V1_ENDPOINTS.getContentAsString();
-	
-	@Mock
-	private IEndpoints endpoint;
+    private static String JSON = Samples.V1_ENDPOINTS.getContentAsString();
 
-	@Before
-	public void setUp() throws Exception {
-	    super.setUp();
-	    IResourceFactory factory = getIClient().getResourceFactory();
-		endpoint = factory.create(JSON);
-	}
+    @Mock
+    private IEndpoints endpoint;
 
-	@Test
-	public void testDeserialization() {
-	    List<IEndpointSubset> subSets = endpoint.getSubSets();
-	    assertThat(subSets).isNotEmpty();
-	    IEndpointSubset subset = subSets.get(0);
-	    
-	    List<IEndpointAddress> addresses = subset.getAddresses();
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        IResourceFactory factory = getIClient().getResourceFactory();
+        endpoint = factory.create(JSON);
+    }
+
+    @Test
+    public void testDeserialization() {
+        List<IEndpointSubset> subSets = endpoint.getSubSets();
+        assertThat(subSets).isNotEmpty();
+        IEndpointSubset subset = subSets.get(0);
+
+        List<IEndpointAddress> addresses = subset.getAddresses();
         assertThat(addresses).isNotEmpty();
         IEndpointAddress address = addresses.get(0);
         assertThat(address.getName()).isEmpty();
@@ -73,6 +74,6 @@ public class EndpointsTest extends TypeMapperFixture{
         assertThat(port.getName()).isEqualTo("443-tcp");
         assertThat(port.getPort()).isEqualTo(443);
         assertThat(port.getProtocol()).isEqualTo("TCP");
-	}
+    }
 
 }

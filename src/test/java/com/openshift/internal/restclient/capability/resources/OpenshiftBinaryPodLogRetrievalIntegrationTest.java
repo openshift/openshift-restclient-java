@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import static org.junit.Assert.assertNotNull;
@@ -30,46 +31,41 @@ import com.openshift.restclient.capability.resources.IPodLogRetrieval;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IResource;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
     private static final Logger LOG = LoggerFactory.getLogger(OpenshiftBinaryPodLogRetrievalIntegrationTest.class);
-	private IntegrationTestHelper helper = new IntegrationTestHelper();
-	private Exception ex;
+    private IntegrationTestHelper helper = new IntegrationTestHelper();
+    private Exception ex;
 
-	@Test
-	public void testLogRetrieval() {
-		System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
-		IClient client = helper.createClientForBasicAuth();
-		List<IResource> pods = client.list(ResourceKind.POD, "default");
-		IPod pod = (IPod) pods.stream().filter(p->p.getName().startsWith("docker-registry")).findFirst().orElse(null);
-		assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
+    @Test
+    public void testLogRetrieval() {
+        System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
+        IClient client = helper.createClientForBasicAuth();
+        List<IResource> pods = client.list(ResourceKind.POD, "default");
+        IPod pod = (IPod) pods.stream().filter(p -> p.getName().startsWith("docker-registry")).findFirst().orElse(null);
+        assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
 
-		ex = pod.accept(new CapabilityVisitor<IPodLogRetrieval, Exception>() {
+        ex = pod.accept(new CapabilityVisitor<IPodLogRetrieval, Exception>() {
 
-			@Override
-			public Exception visit(IPodLogRetrieval cap) {
-			    StringBuilder builder = new StringBuilder();
-				try {
-					BufferedInputStream os = new BufferedInputStream(cap.getLogs(false, new SkipTlsVerify()));
-					int c;
-					while((c = os.read()) != -1) {
-					    builder.append((char)c);
-					}
-				} catch (Exception e) {
-				    LOG.error("There was an error:", e);
-					return e;
-				}finally {
-				    LOG.info(builder.toString());
-					cap.stop();
-				}
-				return null;
-			}
+            @Override
+            public Exception visit(IPodLogRetrieval cap) {
+                StringBuilder builder = new StringBuilder();
+                try {
+                    BufferedInputStream os = new BufferedInputStream(cap.getLogs(false, new SkipTlsVerify()));
+                    int c;
+                    while ((c = os.read()) != -1) {
+                        builder.append((char) c);
+                    }
+                } catch (Exception e) {
+                    LOG.error("There was an error:", e);
+                    return e;
+                } finally {
+                    LOG.info(builder.toString());
+                    cap.stop();
+                }
+                return null;
+            }
 
-		}, null);
-		assertNull("Expected no exception", ex);
-	}
+        }, null);
+        assertNull("Expected no exception", ex);
+    }
 }

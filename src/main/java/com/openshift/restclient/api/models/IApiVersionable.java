@@ -8,19 +8,18 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.api.models;
 
 /**
  * A model that can be versioned
- * @author jeff.cantrill
  *
  */
 public interface IApiVersionable {
 
-	/**
-	 * The api version of the resource
-	 * as found at apiVersion
-	 * @return
-	 */
-	String getApiVersion();
+    /**
+     * The api version of the resource as found at apiVersion
+     * 
+     */
+    String getApiVersion();
 }

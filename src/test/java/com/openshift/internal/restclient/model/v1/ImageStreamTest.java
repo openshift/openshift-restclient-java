@@ -6,9 +6,12 @@
  *
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
@@ -28,57 +31,55 @@ import com.openshift.restclient.model.IImageStream;
 import com.openshift.restclient.model.image.ITagReference;
 import com.openshift.restclient.utils.Samples;
 
-/**
- * @author Jeff Cantrill
- */
 public class ImageStreamTest {
-	private static final String VERSION = "v1";
-	private static IClient client;
-	private IImageStream stream;
-	private ModelNode node;
+    private static final String VERSION = "v1";
+    private static IClient client;
+    private IImageStream stream;
+    private ModelNode node;
 
-	@Before
-	public void setup(){
-		client = mock(IClient.class);
-		node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM.getContentAsString());
-		stream = new ImageStream(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM));
-	}
-	
-	@Test
-	public void testGetTags() {
-		Collection<String> tags = stream.getTags().stream().map(tr->tr.getName()).collect(Collectors.toList());
-		assertArrayEquals(new Object [] {"8.1", "latest"}, tags.toArray());
-	}
-	
-	@Test
-	public void testAddTag() {
-		ITagReference tag = stream.addTag("1234", ResourceKind.IMAGE_STREAM_TAG, "foo/bar");
-		Optional<ITagReference> actTag = stream.getTags().stream().filter(t->"1234".equals(t.getName())).findFirst();
-		assertTrue("Exp. the tag to have been added",actTag.isPresent());
-		assertEquals(tag.toJson(), actTag.get().toJson());
-	}
-	
-	@Test
-	public void testAddTagWithNamespace() {
-		ITagReference tag = stream.addTag("1234", ResourceKind.IMAGE_STREAM_TAG, "foo/bar", "fromNmspc");
-		Optional<ITagReference> actTag = stream.getTags().stream().filter(t->"1234".equals(t.getName())).findFirst();
-		assertTrue("Exp. the tag to have been added",actTag.isPresent());
-		assertEquals(tag.toJson(), actTag.get().toJson());
-	}
-	
-	@Test
-	public void getDockerImageRepository() {
-		DockerImageURI uri = new DockerImageURI("172.30.224.48:5000/openshift/wildfly:latest");
-		assertEquals(uri, stream.getDockerImageRepository());
-		node.get("spec").clear();
-		assertEquals(uri, stream.getDockerImageRepository());
-	}
+    @Before
+    public void setup() {
+        client = mock(IClient.class);
+        node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM.getContentAsString());
+        stream = new ImageStream(node, client,
+                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM));
+    }
 
-	@Test
-	public void setDockerImageRepository() {
-		DockerImageURI newUri = new DockerImageURI("172.30.244.213:5000/tests/origin-ruby-sample");
-		stream.setDockerImageRepository(newUri);
-		assertEquals(newUri, stream.getDockerImageRepository());
-	}
+    @Test
+    public void testGetTags() {
+        Collection<String> tags = stream.getTags().stream().map(tr -> tr.getName()).collect(Collectors.toList());
+        assertArrayEquals(new Object[] { "8.1", "latest" }, tags.toArray());
+    }
+
+    @Test
+    public void testAddTag() {
+        ITagReference tag = stream.addTag("1234", ResourceKind.IMAGE_STREAM_TAG, "foo/bar");
+        Optional<ITagReference> actTag = stream.getTags().stream().filter(t -> "1234".equals(t.getName())).findFirst();
+        assertTrue("Exp. the tag to have been added", actTag.isPresent());
+        assertEquals(tag.toJson(), actTag.get().toJson());
+    }
+
+    @Test
+    public void testAddTagWithNamespace() {
+        ITagReference tag = stream.addTag("1234", ResourceKind.IMAGE_STREAM_TAG, "foo/bar", "fromNmspc");
+        Optional<ITagReference> actTag = stream.getTags().stream().filter(t -> "1234".equals(t.getName())).findFirst();
+        assertTrue("Exp. the tag to have been added", actTag.isPresent());
+        assertEquals(tag.toJson(), actTag.get().toJson());
+    }
+
+    @Test
+    public void getDockerImageRepository() {
+        DockerImageURI uri = new DockerImageURI("172.30.224.48:5000/openshift/wildfly:latest");
+        assertEquals(uri, stream.getDockerImageRepository());
+        node.get("spec").clear();
+        assertEquals(uri, stream.getDockerImageRepository());
+    }
+
+    @Test
+    public void setDockerImageRepository() {
+        DockerImageURI newUri = new DockerImageURI("172.30.244.213:5000/tests/origin-ruby-sample");
+        stream.setDockerImageRepository(newUri);
+        assertEquals(newUri, stream.getDockerImageRepository());
+    }
 
 }

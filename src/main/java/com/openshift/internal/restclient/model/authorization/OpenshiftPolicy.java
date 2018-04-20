@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.authorization;
 
 import java.util.Map;
@@ -20,9 +21,8 @@ import com.openshift.restclient.model.authorization.IPolicy;
 
 public class OpenshiftPolicy extends KubernetesResource implements IPolicy {
 
-	public OpenshiftPolicy(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
-		super(node, client, propertyKeys);
-		// TODO Auto-generated constructor stub
-	}
+    public OpenshiftPolicy(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+    }
 
 }

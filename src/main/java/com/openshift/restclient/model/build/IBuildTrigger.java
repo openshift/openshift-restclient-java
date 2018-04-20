@@ -6,12 +6,10 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IBuildTrigger {
-	
-	String getType();
+
+    String getType();
 }

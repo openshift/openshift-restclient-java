@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.model.probe;
 
 /**
@@ -15,18 +16,23 @@ package com.openshift.restclient.model.probe;
  */
 public interface IProbe {
 
-	void setInitialDelaySeconds(int delay);
-	int getInitialDelaySeconds();
+    void setInitialDelaySeconds(int delay);
 
-	void setPeriodSeconds(int period);
-	int getPeriodSeconds();
+    int getInitialDelaySeconds();
 
-	void setSuccessThreshold(int threshold);
-	int getSuccessThreshold();
+    void setPeriodSeconds(int period);
 
-	void setFailureThreshold(int failureThreshold);
-	int getFailureThreshold();
+    int getPeriodSeconds();
 
-	void setTimeoutSeconds(int timeout);
-	int getTimeoutSeconds();
+    void setSuccessThreshold(int threshold);
+
+    int getSuccessThreshold();
+
+    void setFailureThreshold(int failureThreshold);
+
+    int getFailureThreshold();
+
+    void setTimeoutSeconds(int timeout);
+
+    int getTimeoutSeconds();
 }

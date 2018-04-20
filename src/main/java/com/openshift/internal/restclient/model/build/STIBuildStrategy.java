@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.build;
 
 import java.util.Map;
@@ -14,52 +15,49 @@ import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.ISTIBuildStrategy;
 
-/**
- * @author Jeff Cantrill
- */
 @Deprecated
-public class STIBuildStrategy implements ISTIBuildStrategy{
+public class STIBuildStrategy implements ISTIBuildStrategy {
 
-	private DockerImageURI image;
-	private String scriptsLocation;
-	private boolean incremental;
-	private Map<String, String> envVars;
+    private DockerImageURI image;
+    private String scriptsLocation;
+    private boolean incremental;
+    private Map<String, String> envVars;
 
-	public STIBuildStrategy(String image, String scriptsLocation, boolean incremental, Map<String, String> envVars) {
-		this.image = new DockerImageURI(image);
-		this.scriptsLocation = scriptsLocation;
-		this.incremental = incremental;
-		this.envVars = envVars;
-	}
+    public STIBuildStrategy(String image, String scriptsLocation, boolean incremental, Map<String, String> envVars) {
+        this.image = new DockerImageURI(image);
+        this.scriptsLocation = scriptsLocation;
+        this.incremental = incremental;
+        this.envVars = envVars;
+    }
 
-	@Override
-	public String getType() {
-		return BuildStrategyType.STI;
-	}
+    @Override
+    public String getType() {
+        return BuildStrategyType.STI;
+    }
 
-	@Override
-	public DockerImageURI getImage() {
-		return image;
-	}
+    @Override
+    public DockerImageURI getImage() {
+        return image;
+    }
 
-	@Override
-	public String getScriptsLocation() {
-		return scriptsLocation;
-	}
+    @Override
+    public String getScriptsLocation() {
+        return scriptsLocation;
+    }
 
-	@Override
-	public Map<String, String> getEnvironmentVariables() {
-		return envVars;
-	}
+    @Override
+    public Map<String, String> getEnvironmentVariables() {
+        return envVars;
+    }
 
-	@Override
-	public boolean incremental() {
-		return incremental;
-	}
+    @Override
+    public boolean incremental() {
+        return incremental;
+    }
 
-	@Override
-	public boolean forceClean() {
-		return !incremental;
-	}
+    @Override
+    public boolean forceClean() {
+        return !incremental;
+    }
 
 }

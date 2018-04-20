@@ -8,24 +8,22 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.user;
 
 import com.openshift.restclient.model.IResource;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IUser extends IResource {
 
-	/**
-	 * The full name of this user
-	 * @return 
-	 */
-	String getFullName();
+    /**
+     * The full name of this user
+     * 
+     */
+    String getFullName();
 
-	/**
-	 * Returns the user uid as specified in the metadata
-	 * @return
-	 */
-	String getUID();
+    /**
+     * Returns the user uid as specified in the metadata
+     * 
+     */
+    String getUID();
 }

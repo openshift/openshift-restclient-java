@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import com.openshift.restclient.capability.ICapability;
@@ -13,15 +14,13 @@ import com.openshift.restclient.capability.ICapability;
 /**
  * Trace the source template that defined the resource
  * 
- * @author Jeff Cantrill
  */
 public interface ITemplateTraceability extends ICapability {
 
-	/**
-	 * Get the name of the template if any associated
-	 * with this resource
-	 * @return
-	 */
-	String getTemplateName();
+    /**
+     * Get the name of the template if any associated with this resource
+     * 
+     */
+    String getTemplateName();
 
 }

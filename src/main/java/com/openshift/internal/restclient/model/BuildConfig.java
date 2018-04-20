@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
 import java.util.ArrayList;
@@ -40,48 +41,47 @@ import com.openshift.restclient.model.build.IJenkinsPipelineStrategy;
 import com.openshift.restclient.model.build.ISourceBuildStrategy;
 import com.openshift.restclient.model.build.IWebhookTrigger;
 
-/**
- * @author Jeff Cantrill
- */
 public class BuildConfig extends KubernetesResource implements IBuildConfig {
-	
-	private static final String BUILDCONFIG_SOURCE_CONTEXTDIR = "spec.source.contextDir";
-	private static final String BUILDCONFIG_SOURCE_TYPE = "spec.source.type";
-	private static final String BUILDCONFIG_SOURCE_URI = "spec.source.git.uri";
-	private static final String BUILDCONFIG_SOURCE_REF = "spec.source.git.ref";
-	
-	public static final String BUILDCONFIG_TYPE = "spec.strategy.type";
-	private static final String BUILDCONFIG_CUSTOM_IMAGE = "spec.strategy.customStrategy.image";
-	private static final String BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET = "spec.strategy.customStrategy.exposeDockerSocket";
-	private static final String BUILDCONFIG_CUSTOM_ENV = "spec.strategy.customStrategy.env";
-	public static final String BUILDCONFIG_DOCKER_CONTEXTDIR = "spec.strategy.dockerStrategy.contextDir";
-	public static final String BUILDCONFIG_DOCKER_NOCACHE = "spec.strategy.dockerStrategy.noCache";
-	public static final String BUILDCONFIG_DOCKER_BASEIMAGE = "spec.strategy.dockerStrategy.baseImage";
-	private static final String BUILDCONFIG_OUTPUT_REPO =  "spec.output.to.name";
-	private static final String BUILDCONFIG_TRIGGERS = "spec.triggers";
-	private static final String BUILDCONFIG_STRATEGY =  "spec.strategy";
-	private static final String BUILD_CONFIG_WEBHOOK_GITHUB_SECRET = "github.secret";
-	private static final String BUILD_CONFIG_WEBHOOK_GENERIC_SECRET = "generic.secret";
-	private static final String BUILD_CONFIG_IMAGECHANGE_IMAGE = "imageChange.image";
-	private static final String BUILD_CONFIG_IMAGECHANGE_NAME = "imageChange.from.name";
-	private static final String BUILD_CONFIG_IMAGECHANGE_TAG = "imageChange.tag";
 
-	public BuildConfig(ModelNode node, IClient client, Map<String, String []> overrideProperties) {
-		super(node, client, null);
-		CapabilityInitializer.initializeCapabilities(getModifiableCapabilities(), this, client);
-	}
+    private static final String BUILDCONFIG_SOURCE_CONTEXTDIR = "spec.source.contextDir";
+    private static final String BUILDCONFIG_SOURCE_TYPE = "spec.source.type";
+    private static final String BUILDCONFIG_SOURCE_URI = "spec.source.git.uri";
+    private static final String BUILDCONFIG_SOURCE_REF = "spec.source.git.ref";
 
-	@Override
-	public IObjectReference getBuildOutputReference() {
-		return new ObjectReference(get("spec.output.to"));
-	}
+    public static final String BUILDCONFIG_TYPE = "spec.strategy.type";
+    private static final String BUILDCONFIG_CUSTOM_IMAGE = "spec.strategy.customStrategy.image";
+    private static final String BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET = "spec.strategy.customStrategy.exposeDockerSocket";
+    private static final String BUILDCONFIG_CUSTOM_ENV = "spec.strategy.customStrategy.env";
+    public static final String BUILDCONFIG_DOCKER_CONTEXTDIR = "spec.strategy.dockerStrategy.contextDir";
+    public static final String BUILDCONFIG_DOCKER_NOCACHE = "spec.strategy.dockerStrategy.noCache";
+    public static final String BUILDCONFIG_DOCKER_BASEIMAGE = "spec.strategy.dockerStrategy.baseImage";
+    private static final String BUILDCONFIG_OUTPUT_REPO = "spec.output.to.name";
+    private static final String BUILDCONFIG_TRIGGERS = "spec.triggers";
+    private static final String BUILDCONFIG_STRATEGY = "spec.strategy";
+    private static final String BUILD_CONFIG_WEBHOOK_GITHUB_SECRET = "github.secret";
+    private static final String BUILD_CONFIG_WEBHOOK_GENERIC_SECRET = "generic.secret";
+    private static final String BUILD_CONFIG_IMAGECHANGE_IMAGE = "imageChange.image";
+    private static final String BUILD_CONFIG_IMAGECHANGE_NAME = "imageChange.from.name";
+    private static final String BUILD_CONFIG_IMAGECHANGE_TAG = "imageChange.tag";
 
-	@Override
-	public List<IBuildTrigger> getBuildTriggers() {
-		List<IBuildTrigger> triggers = new ArrayList<IBuildTrigger>();
-		if (has(BUILDCONFIG_TRIGGERS)) {
+    public BuildConfig(ModelNode node, IClient client, Map<String, String[]> overrideProperties) {
+        super(node, client, null);
+        CapabilityInitializer.initializeCapabilities(getModifiableCapabilities(), this, client);
+    }
+
+    @Override
+    public IObjectReference getBuildOutputReference() {
+        return new ObjectReference(get("spec.output.to"));
+    }
+
+    @Override
+    public List<IBuildTrigger> getBuildTriggers() {
+        List<IBuildTrigger> triggers = new ArrayList<IBuildTrigger>();
+        if (has(BUILDCONFIG_TRIGGERS)) {
             List<ModelNode> list = get(BUILDCONFIG_TRIGGERS).asList();
-            final String url = getClient() != null && StringUtils.isNotEmpty(getNamespaceName()) ? getClient().getResourceURI(this) : "";
+            final String url = getClient() != null && StringUtils.isNotEmpty(getNamespaceName())
+                    ? getClient().getResourceURI(this)
+                    : "";
             for (ModelNode node : list) {
                 String type = node.get(TYPE).asString();
                 switch (type) {
@@ -101,158 +101,162 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
                     break;
                 case BuildTriggerType.CONFIG_CHANGE:
                     triggers.add(new ImageChangeTrigger(BuildTriggerType.CONFIG_CHANGE, null, null));
+                    break;
                 default:
                 }
-            } 
+            }
         }
         return triggers;
-	}
+    }
 
-	@Override
-	public void addBuildTrigger(IBuildTrigger trigger) {
-		ModelNode triggers = get(BUILDCONFIG_TRIGGERS);
-		ModelNode triggerNode = triggers.add();
-		switch(trigger.getType()) {
-		case BuildTriggerType.GENERIC:
-			if(!(trigger instanceof IWebhookTrigger)) {
-				throw new IllegalArgumentException("IBuildTrigger of type generic does not implement IWebhookTrigger");
-			}
-			IWebhookTrigger generic = (IWebhookTrigger)trigger;
-			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GENERIC_SECRET)).set(generic.getSecret());
-			break;
-		case BuildTriggerType.GITHUB:
-			if(!(trigger instanceof IWebhookTrigger)) {
-				throw new IllegalArgumentException("IBuildTrigger of type github does not implement IWebhookTrigger");
-			}
-			IWebhookTrigger github = (IWebhookTrigger)trigger;
-			triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GITHUB_SECRET)).set(github.getSecret());
-			break;
-		case BuildTriggerType.IMAGE_CHANGE:{
-			if(!(trigger instanceof IImageChangeTrigger)) {
-				throw new IllegalArgumentException("IBuildTrigger of type imageChange does not implement IImageChangeTrigger");
-			}
-			IImageChangeTrigger image = (IImageChangeTrigger)trigger;
-			if(image.getImage() != null)
-				triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_IMAGE)).set(image.getImage().toString());
-			if(image.getFrom() != null)
-				triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_NAME)).set(image.getFrom().toString());
-			if(StringUtils.isNotEmpty(image.getTag()))
-				triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_TAG)).set(StringUtils.defaultIfBlank(image.getTag(), ""));
-			break;
-			
-			}
-		}
-		triggerNode.get(TYPE).set(trigger.getType());
-	}
+    @Override
+    public void addBuildTrigger(IBuildTrigger trigger) {
+        ModelNode triggers = get(BUILDCONFIG_TRIGGERS);
+        ModelNode triggerNode = triggers.add();
+        switch (trigger.getType()) {
+        case BuildTriggerType.GENERIC:
+            if (!(trigger instanceof IWebhookTrigger)) {
+                throw new IllegalArgumentException("IBuildTrigger of type generic does not implement IWebhookTrigger");
+            }
+            IWebhookTrigger generic = (IWebhookTrigger) trigger;
+            triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GENERIC_SECRET)).set(generic.getSecret());
+            break;
+        case BuildTriggerType.GITHUB:
+            if (!(trigger instanceof IWebhookTrigger)) {
+                throw new IllegalArgumentException("IBuildTrigger of type github does not implement IWebhookTrigger");
+            }
+            IWebhookTrigger github = (IWebhookTrigger) trigger;
+            triggerNode.get(getPath(BUILD_CONFIG_WEBHOOK_GITHUB_SECRET)).set(github.getSecret());
+            break;
+        case BuildTriggerType.IMAGE_CHANGE: {
+            if (!(trigger instanceof IImageChangeTrigger)) {
+                throw new IllegalArgumentException(
+                        "IBuildTrigger of type imageChange does not implement IImageChangeTrigger");
+            }
+            IImageChangeTrigger image = (IImageChangeTrigger) trigger;
+            if (image.getImage() != null) {
+                triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_IMAGE)).set(image.getImage().toString());
+            }
+            if (image.getFrom() != null) {
+                triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_NAME)).set(image.getFrom().toString());
+            }
+            if (StringUtils.isNotEmpty(image.getTag())) {
+                triggerNode.get(getPath(BUILD_CONFIG_IMAGECHANGE_TAG))
+                        .set(StringUtils.defaultIfBlank(image.getTag(), ""));
+            }
+            break;
 
-	@Override
-	public String getOutputRepositoryName() {
-		return asString(BUILDCONFIG_OUTPUT_REPO);
-	}
+        }
+        }
+        triggerNode.get(TYPE).set(trigger.getType());
+    }
 
-	public String getSourceURI() {
-		return asString(BUILDCONFIG_SOURCE_URI);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends IBuildSource> T getBuildSource() {
-		switch(asString(BUILDCONFIG_SOURCE_TYPE)){
-		case BuildSourceType.GIT:
-			return (T) new GitBuildSource(asString(BUILDCONFIG_SOURCE_URI), asString(BUILDCONFIG_SOURCE_REF), asString(BUILDCONFIG_SOURCE_CONTEXTDIR));
-		default:
-		}
-		return null;
-	}
+    @Override
+    public String getOutputRepositoryName() {
+        return asString(BUILDCONFIG_OUTPUT_REPO);
+    }
 
-	@Override
-	public void setBuildSource(IBuildSource source){
-		switch(source.getType()) {
-		case BuildSourceType.GIT:
-			if(!(source instanceof IGitBuildSource)) {
-				throw new IllegalArgumentException("IBuildSource of type Git does not implement IGitBuildSource");
-			}
-			IGitBuildSource git = (IGitBuildSource) source;
-			set(BUILDCONFIG_SOURCE_REF, git.getRef());
-			break;
-		}
-		set(BUILDCONFIG_SOURCE_URI, source.getURI());
-		set(BUILDCONFIG_SOURCE_TYPE, source.getType().toString());
-		set(BUILDCONFIG_SOURCE_CONTEXTDIR, source.getContextDir());
-	}
-	
-	@Override
-	public void setBuildStrategy(IBuildStrategy strategy) {
-		// Remove other strategies if already set?
-		switch(strategy.getType()) {
-		case BuildStrategyType.CUSTOM:
-			if ( !(strategy instanceof ICustomBuildStrategy)) {
-				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement ICustomBuildStrategy");
-			}
-			ICustomBuildStrategy custom = (ICustomBuildStrategy)strategy;
-			if(custom.getImage() != null) {
-				set(BUILDCONFIG_CUSTOM_IMAGE, custom.getImage().toString());
-			}
-			set(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET, custom.exposeDockerSocket());
-			if(custom.getEnvironmentVariables() != null) {
-				setEnvMap(BUILDCONFIG_CUSTOM_ENV, custom.getEnvironmentVariables());
-			}
-			break;
-		case BuildStrategyType.SOURCE:
-			ISourceBuildStrategy source = (ISourceBuildStrategy) strategy;
-			get(BUILDCONFIG_STRATEGY).set(ModelNode.fromJSONString(source.toString()));
-			break;
-		case BuildStrategyType.DOCKER:
-			if ( !(strategy instanceof IDockerBuildStrategy)) {
-				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement IDockerBuildStrategy");
-			}
-			IDockerBuildStrategy docker = (IDockerBuildStrategy)strategy;
-			if(docker.getBaseImage() != null) {
-				set(BUILDCONFIG_DOCKER_BASEIMAGE, docker.getBaseImage().toString());
-			}
-			if(docker.getContextDir() != null) {
-				set(BUILDCONFIG_DOCKER_CONTEXTDIR, docker.getContextDir());
-			}
-			set(BUILDCONFIG_DOCKER_NOCACHE, docker.isNoCache());
-			break;
-		case BuildStrategyType.JENKINS_PIPELINE:
-			if ( !(strategy instanceof IJenkinsPipelineStrategy)) {
-				throw new IllegalArgumentException("IBuildStrategy of type Custom does not implement IJenkinsPipelineStrategy");
-			}
-			IJenkinsPipelineStrategy jenkins = (IJenkinsPipelineStrategy)strategy;
-			get(BUILDCONFIG_STRATEGY).set(ModelNode.fromJSONString(jenkins.toString()));
-			break;
-		}
+    public String getSourceURI() {
+        return asString(BUILDCONFIG_SOURCE_URI);
+    }
 
-		set(BUILDCONFIG_TYPE, strategy.getType());
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends IBuildSource> T getBuildSource() {
+        switch (asString(BUILDCONFIG_SOURCE_TYPE)) {
+        case BuildSourceType.GIT:
+            return (T) new GitBuildSource(asString(BUILDCONFIG_SOURCE_URI), asString(BUILDCONFIG_SOURCE_REF),
+                    asString(BUILDCONFIG_SOURCE_CONTEXTDIR));
+        default:
+        }
+        return null;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public  <T extends IBuildStrategy> T getBuildStrategy() {
-		switch(asString(BUILDCONFIG_TYPE)){
+    @Override
+    public void setBuildSource(IBuildSource source) {
+        switch (source.getType()) {
+        case BuildSourceType.GIT:
+            if (!(source instanceof IGitBuildSource)) {
+                throw new IllegalArgumentException("IBuildSource of type Git does not implement IGitBuildSource");
+            }
+            IGitBuildSource git = (IGitBuildSource) source;
+            set(BUILDCONFIG_SOURCE_REF, git.getRef());
+            break;
+        }
+        set(BUILDCONFIG_SOURCE_URI, source.getURI());
+        set(BUILDCONFIG_SOURCE_TYPE, source.getType().toString());
+        set(BUILDCONFIG_SOURCE_CONTEXTDIR, source.getContextDir());
+    }
 
-		case BuildStrategyType.CUSTOM:
-			return (T) new CustomBuildStrategy(
-						asString(BUILDCONFIG_CUSTOM_IMAGE),
-						asBoolean(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET),
-						getEnvMap(BUILDCONFIG_CUSTOM_ENV)
-					);
-		case BuildStrategyType.SOURCE:
-			return (T) new SourceBuildStrategy(get(BUILDCONFIG_STRATEGY), getPropertyKeys());
+    @Override
+    public void setBuildStrategy(IBuildStrategy strategy) {
+        // Remove other strategies if already set?
+        switch (strategy.getType()) {
+        case BuildStrategyType.CUSTOM:
+            if (!(strategy instanceof ICustomBuildStrategy)) {
+                throw new IllegalArgumentException(
+                        "IBuildStrategy of type Custom does not implement ICustomBuildStrategy");
+            }
+            ICustomBuildStrategy custom = (ICustomBuildStrategy) strategy;
+            if (custom.getImage() != null) {
+                set(BUILDCONFIG_CUSTOM_IMAGE, custom.getImage().toString());
+            }
+            set(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET, custom.exposeDockerSocket());
+            if (custom.getEnvironmentVariables() != null) {
+                setEnvMap(BUILDCONFIG_CUSTOM_ENV, custom.getEnvironmentVariables());
+            }
+            break;
+        case BuildStrategyType.SOURCE:
+            ISourceBuildStrategy source = (ISourceBuildStrategy) strategy;
+            get(BUILDCONFIG_STRATEGY).set(ModelNode.fromJSONString(source.toString()));
+            break;
+        case BuildStrategyType.DOCKER:
+            if (!(strategy instanceof IDockerBuildStrategy)) {
+                throw new IllegalArgumentException(
+                        "IBuildStrategy of type Custom does not implement IDockerBuildStrategy");
+            }
+            IDockerBuildStrategy docker = (IDockerBuildStrategy) strategy;
+            if (docker.getBaseImage() != null) {
+                set(BUILDCONFIG_DOCKER_BASEIMAGE, docker.getBaseImage().toString());
+            }
+            if (docker.getContextDir() != null) {
+                set(BUILDCONFIG_DOCKER_CONTEXTDIR, docker.getContextDir());
+            }
+            set(BUILDCONFIG_DOCKER_NOCACHE, docker.isNoCache());
+            break;
+        case BuildStrategyType.JENKINS_PIPELINE:
+            if (!(strategy instanceof IJenkinsPipelineStrategy)) {
+                throw new IllegalArgumentException(
+                        "IBuildStrategy of type Custom does not implement IJenkinsPipelineStrategy");
+            }
+            IJenkinsPipelineStrategy jenkins = (IJenkinsPipelineStrategy) strategy;
+            get(BUILDCONFIG_STRATEGY).set(ModelNode.fromJSONString(jenkins.toString()));
+            break;
+        }
 
-		case BuildStrategyType.DOCKER:
-			return (T) new DockerBuildStrategy(
-					asString(BUILDCONFIG_DOCKER_CONTEXTDIR),
-					asBoolean(BUILDCONFIG_DOCKER_NOCACHE),
-					asString(BUILDCONFIG_DOCKER_BASEIMAGE)
-					);
+        set(BUILDCONFIG_TYPE, strategy.getType());
+    }
 
-		case BuildStrategyType.JENKINS_PIPELINE:
-			return (T) new JenkinsPipelineStrategy(get(BUILDCONFIG_STRATEGY), getPropertyKeys());
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends IBuildStrategy> T getBuildStrategy() {
+        switch (asString(BUILDCONFIG_TYPE)) {
 
-		default:
-		}
-		return null;
-	}
+        case BuildStrategyType.CUSTOM:
+            return (T) new CustomBuildStrategy(asString(BUILDCONFIG_CUSTOM_IMAGE),
+                    asBoolean(BUILDCONFIG_CUSTOM_EXPOSEDOCKERSOCKET), getEnvMap(BUILDCONFIG_CUSTOM_ENV));
+        case BuildStrategyType.SOURCE:
+            return (T) new SourceBuildStrategy(get(BUILDCONFIG_STRATEGY), getPropertyKeys());
+
+        case BuildStrategyType.DOCKER:
+            return (T) new DockerBuildStrategy(asString(BUILDCONFIG_DOCKER_CONTEXTDIR),
+                    asBoolean(BUILDCONFIG_DOCKER_NOCACHE), asString(BUILDCONFIG_DOCKER_BASEIMAGE));
+
+        case BuildStrategyType.JENKINS_PIPELINE:
+            return (T) new JenkinsPipelineStrategy(get(BUILDCONFIG_STRATEGY), getPropertyKeys());
+
+        default:
+        }
+        return null;
+    }
 }

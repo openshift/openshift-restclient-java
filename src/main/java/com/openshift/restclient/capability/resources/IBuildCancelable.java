@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import com.openshift.restclient.capability.ICapability;
@@ -15,15 +16,16 @@ import com.openshift.restclient.model.IBuild;
 
 /**
  * Capability to cancel a build that is running
+ * 
  * @author jeff.cantrill
  *
  */
 public interface IBuildCancelable extends ICapability {
-	
-	/**
-	 * Cancel the build
-	 * @return
-	 */
-	IBuild cancel();
+
+    /**
+     * Cancel the build
+     * 
+     */
+    IBuild cancel();
 
 }

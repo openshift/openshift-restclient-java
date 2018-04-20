@@ -8,13 +8,15 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
+
+import java.util.Optional;
+
+import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.model.IHandler;
 import com.openshift.restclient.model.ILifecycle;
-import org.jboss.dmr.ModelNode;
-
-import java.util.Optional;
 
 /**
  * @author Ulf Lilleengen
@@ -44,8 +46,10 @@ public class Lifecycle implements ILifecycle {
     @Override
     public String toJson() {
         ModelNode node = new ModelNode();
-        preStop.ifPresent(handler -> node.get(PRESTOP).get(handler.getType()).set(ModelNode.fromJSONString(handler.toJson())));
-        postStart.ifPresent(handler -> node.get(POSTSTART).get(handler.getType()).set(ModelNode.fromJSONString(handler.toJson())));
+        preStop.ifPresent(
+            handler -> node.get(PRESTOP).get(handler.getType()).set(ModelNode.fromJSONString(handler.toJson())));
+        postStart.ifPresent(
+            handler -> node.get(POSTSTART).get(handler.getType()).set(ModelNode.fromJSONString(handler.toJson())));
         return node.toJSONString(true);
     }
 

@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import static com.openshift.internal.restclient.capability.resources.testutils.BinaryCapabilityTestMocks.OC_LOCATION;
@@ -42,98 +43,73 @@ import com.openshift.restclient.model.IPod;
 
 public class OpenShiftBinaryRSyncTest {
 
-	private static final String LOCAL_PATH = "/local/42";
-	private static final String POD_PATH = "/deployment/42";
+    private static final String LOCAL_PATH = "/local/42";
+    private static final String POD_PATH = "/deployment/42";
 
-	private IPod pod;
+    private IPod pod;
 
-	private OpenShiftBinaryRSync binaryRsync;
+    private OpenShiftBinaryRSync binaryRsync;
 
-	@Before
-	public void before() throws MalformedURLException {
-		IClient client = mockClient();
-		this.pod = mockPod();
-		this.binaryRsync = createBinaryRSync(client);
-	}
+    @Before
+    public void before() throws MalformedURLException {
+        IClient client = mockClient();
+        this.pod = mockPod();
+        this.binaryRsync = createBinaryRSync(client);
+    }
 
-	private OpenShiftBinaryRSync createBinaryRSync(IClient client) {
-		OpenShiftBinaryRSync binaryRsync = spy(new OpenShiftBinaryRSync(client));
-		doReturn(OC_LOCATION).when(binaryRsync).getOpenShiftBinaryLocation();
-		doReturn(null).when(binaryRsync).startProcess(any(ProcessBuilder.class));
-		return binaryRsync;
-	}
+    private OpenShiftBinaryRSync createBinaryRSync(IClient client) {
+        OpenShiftBinaryRSync binaryRsync = spy(new OpenShiftBinaryRSync(client));
+        doReturn(OC_LOCATION).when(binaryRsync).getOpenShiftBinaryLocation();
+        doReturn(null).when(binaryRsync).startProcess(any(ProcessBuilder.class));
+        return binaryRsync;
+    }
 
+    @Test
+    public void shouldBuildCommandLineWithoutSkipSSL() {
+        // given
+        ArgumentCaptor<ProcessBuilder> processBuilderArgument = ArgumentCaptor.forClass(ProcessBuilder.class);
+        Peer localPeer = new LocalPeer(LOCAL_PATH);
+        PodPeer podPeer = new PodPeer(POD_PATH, pod);
+        // when
+        binaryRsync.sync(localPeer, podPeer);
+        // then
+        verify(binaryRsync).startProcess(processBuilderArgument.capture());
+        ProcessBuilder builder = processBuilderArgument.getValue();
+        assertThat(builder.command()).isEqualTo(Arrays.asList(OC_LOCATION, OpenShiftBinaryRSync.RSYNC_COMMAND,
+                "--token=" + TOKEN, "--server=" + SERVER_URL.toString(), "-n", POD_NAMESPACE, LOCAL_PATH,
+                POD_NAME + ":" + POD_PATH));
+    }
 
-	@Test
-	public void shouldBuildCommandLineWithoutSkipSSL() {
-		// given
-		ArgumentCaptor<ProcessBuilder> processBuilderArgument = ArgumentCaptor.forClass(ProcessBuilder.class);
-		Peer localPeer = new LocalPeer(LOCAL_PATH);
-		PodPeer podPeer = new PodPeer(POD_PATH, pod);
-		// when
-		binaryRsync.sync(localPeer, podPeer);
-		// then
-		verify(binaryRsync).startProcess(processBuilderArgument.capture());
-		ProcessBuilder builder = processBuilderArgument.getValue();
-		assertThat(builder.command()).isEqualTo(Arrays.asList(
-				OC_LOCATION,
-				OpenShiftBinaryRSync.RSYNC_COMMAND,
-				"--token=" + TOKEN,
-				"--server=" + SERVER_URL.toString(),
-				"-n", 
-				POD_NAMESPACE,
-				LOCAL_PATH,
-				POD_NAME + ":" + POD_PATH));
-	}
+    @Test
+    public void shouldBuildCommandLineWithSkipSSLNoPermsGitExclude() {
+        // given
+        ArgumentCaptor<ProcessBuilder> processBuilderArgument = ArgumentCaptor.forClass(ProcessBuilder.class);
+        Peer localPeer = new LocalPeer(LOCAL_PATH);
+        PodPeer podPeer = new PodPeer(POD_PATH, pod);
+        // when
+        binaryRsync.sync(localPeer, podPeer, new SkipTlsVerify(), new NoPerms(), new GitFolderExclude());
+        // then
+        verify(binaryRsync).startProcess(processBuilderArgument.capture());
+        ProcessBuilder builder = processBuilderArgument.getValue();
+        assertThat(builder.command())
+                .isEqualTo(Arrays.asList(OC_LOCATION, OpenShiftBinaryRSync.RSYNC_COMMAND, "--token=" + TOKEN,
+                        "--server=" + SERVER_URL.toString(), "-n", POD_NAMESPACE, "--insecure-skip-tls-verify=true",
+                        "--no-perms=true", "--exclude=.git", LOCAL_PATH, POD_NAME + ":" + POD_PATH));
+    }
 
-	@Test
-	public void shouldBuildCommandLineWithSkipSSLNoPermsGitExclude() {
-		// given
-		ArgumentCaptor<ProcessBuilder> processBuilderArgument = ArgumentCaptor.forClass(ProcessBuilder.class);
-		Peer localPeer = new LocalPeer(LOCAL_PATH);
-		PodPeer podPeer = new PodPeer(POD_PATH, pod);
-		// when
-		binaryRsync.sync(localPeer, podPeer, 
-				new SkipTlsVerify(), new NoPerms(), new GitFolderExclude());
-		// then
-		verify(binaryRsync).startProcess(processBuilderArgument.capture());
-		ProcessBuilder builder = processBuilderArgument.getValue();
-		assertThat(builder.command()).isEqualTo(Arrays.asList(
-				OC_LOCATION, 
-				OpenShiftBinaryRSync.RSYNC_COMMAND,
-				"--token=" + TOKEN,
-				"--server=" + SERVER_URL.toString(),
-				"-n",
-				POD_NAMESPACE,
-				"--insecure-skip-tls-verify=true",
-				"--no-perms=true",
-				"--exclude=.git",
-				LOCAL_PATH,
-				POD_NAME + ":" + POD_PATH));
-	}
-
-	@Test
-	public void shouldBuildCommandLineWithExcludeDotGitDotNpm() {
-		// given
-		ArgumentCaptor<ProcessBuilder> processBuilderArgument = ArgumentCaptor.forClass(ProcessBuilder.class);
-		Peer localPeer = new LocalPeer(LOCAL_PATH);
-		PodPeer podPeer = new PodPeer(POD_PATH, pod);
-		// when
-		binaryRsync.sync(localPeer, podPeer, 
-				new Exclude(".git", ".npm"));
-		// then
-		verify(binaryRsync).startProcess(processBuilderArgument.capture());
-		ProcessBuilder builder = processBuilderArgument.getValue();
-		assertThat(builder.command()).isEqualTo(Arrays.asList(
-				OC_LOCATION, 
-				OpenShiftBinaryRSync.RSYNC_COMMAND,
-				"--token=" + TOKEN,
-				"--server=" + SERVER_URL.toString(), 
-				"-n",
-				POD_NAMESPACE,
-				"--exclude=.git",
-				"--exclude=.npm",
-				LOCAL_PATH,
-				POD_NAME + ":" + POD_PATH));
-	}
+    @Test
+    public void shouldBuildCommandLineWithExcludeDotGitDotNpm() {
+        // given
+        ArgumentCaptor<ProcessBuilder> processBuilderArgument = ArgumentCaptor.forClass(ProcessBuilder.class);
+        Peer localPeer = new LocalPeer(LOCAL_PATH);
+        PodPeer podPeer = new PodPeer(POD_PATH, pod);
+        // when
+        binaryRsync.sync(localPeer, podPeer, new Exclude(".git", ".npm"));
+        // then
+        verify(binaryRsync).startProcess(processBuilderArgument.capture());
+        ProcessBuilder builder = processBuilderArgument.getValue();
+        assertThat(builder.command()).isEqualTo(Arrays.asList(OC_LOCATION, OpenShiftBinaryRSync.RSYNC_COMMAND,
+                "--token=" + TOKEN, "--server=" + SERVER_URL.toString(), "-n", POD_NAMESPACE, "--exclude=.git",
+                "--exclude=.npm", LOCAL_PATH, POD_NAME + ":" + POD_PATH));
+    }
 }

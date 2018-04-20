@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.api.capabilities;
 
 import com.openshift.restclient.OpenShiftException;
@@ -16,16 +17,15 @@ import com.openshift.restclient.capability.ICapability;
 
 /**
  * Allow a resource to scale
- * @author jeff.cantrill
  *
  */
 public interface IScalable extends ICapability {
 
-	/**
-	 * Scale to the desired replicas. Value
-	 * less then 0 will scale to 0
-	 * @param replicas
-	 * @throws OpenShiftException if there are errors
-	 */
-	IScale scaleTo(int replicas);
+    /**
+     * Scale to the desired replicas. Value less then 0 will scale to 0
+     * 
+     * @throws OpenShiftException
+     *             if there are errors
+     */
+    IScale scaleTo(int replicas);
 }

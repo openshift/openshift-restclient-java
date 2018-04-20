@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import com.openshift.restclient.capability.ICapability;
@@ -17,17 +18,14 @@ import com.openshift.restclient.model.image.IImageStreamImport;
 /**
  * Import tags from a repository for an image
  * 
- * @author jeff.cantrill
  *
  */
 public interface IImageStreamImportCapability extends ICapability {
 
-	/**
-	 * Import docker image metadata
-	 * @param uri
-	 * @return
-	 * @throws OpenShiftException
-	 */
-	IImageStreamImport importImageMetadata(DockerImageURI uri);
-	
+    /**
+     * Import docker image metadata
+     * 
+     */
+    IImageStreamImport importImageMetadata(DockerImageURI uri);
+
 }

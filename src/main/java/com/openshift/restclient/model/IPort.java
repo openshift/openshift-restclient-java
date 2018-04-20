@@ -8,23 +8,23 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 /**
  * Port details.
- * @author Jeff Cantrill
  *
  */
 public interface IPort {
-	
-	/**
-	 * The name of the port
-	 * 
-	 * @return the name or null if undefined.
-	 */
-	String getName();
-	
-	int getContainerPort();
-	
-	String getProtocol();
+
+    /**
+     * The name of the port
+     * 
+     * @return the name or null if undefined.
+     */
+    String getName();
+
+    int getContainerPort();
+
+    String getProtocol();
 }

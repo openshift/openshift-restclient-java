@@ -8,9 +8,12 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.volume;
 
-import static com.openshift.internal.util.JBossDmrExtentions.*;
+import static com.openshift.internal.util.JBossDmrExtentions.asBoolean;
+import static com.openshift.internal.util.JBossDmrExtentions.asString;
+import static com.openshift.internal.util.JBossDmrExtentions.set;
 
 import java.util.HashMap;
 
@@ -20,69 +23,60 @@ import com.openshift.internal.restclient.model.ModelNodeAdapter;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.model.volume.IVolume;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
-public abstract class AbstractVolume 
-	extends ModelNodeAdapter 
-	implements IVolume, ResourcePropertyKeys{
-	
-	private static final String READONLY = "readOnly";
-	private static final String MOUNT_PATH = "mountPath";
-	
-	public AbstractVolume(ModelNode node) {
-		super(node, new HashMap<String, String []>());
-	}
+public abstract class AbstractVolume extends ModelNodeAdapter implements IVolume, ResourcePropertyKeys {
 
-	@Override
-	public String getName() {
-		return asString(getNode(), getPropertyKeys(), NAME);
-	}
+    private static final String READONLY = "readOnly";
+    private static final String MOUNT_PATH = "mountPath";
 
-	@Override
-	public void setName(String name) {
-		set(getNode(), getPropertyKeys(), NAME, name);
-	}
+    public AbstractVolume(ModelNode node) {
+        super(node, new HashMap<String, String[]>());
+    }
 
-	@Override
-	public void setMountPath(String path) {
-		set(getNode(), getPropertyKeys(), MOUNT_PATH, path);
-	}
+    @Override
+    public String getName() {
+        return asString(getNode(), getPropertyKeys(), NAME);
+    }
 
-	@Override
-	public String getMountPath() {
-		return asString(getNode(), getPropertyKeys(), MOUNT_PATH);
-	}
+    @Override
+    public void setName(String name) {
+        set(getNode(), getPropertyKeys(), NAME, name);
+    }
 
-	@Override
-	public void setReadOnly(boolean readonly) {
-		set(getNode(), getPropertyKeys(), READONLY, readonly);
-	}
+    @Override
+    public void setMountPath(String path) {
+        set(getNode(), getPropertyKeys(), MOUNT_PATH, path);
+    }
 
-	@Override
-	public boolean isReadOnly() {
-		return asBoolean(getNode(), getPropertyKeys(), READONLY);
-	}
+    @Override
+    public String getMountPath() {
+        return asString(getNode(), getPropertyKeys(), MOUNT_PATH);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if(!(obj instanceof AbstractVolume))
-			return false;
-		AbstractVolume other = (AbstractVolume) obj;
-		return getName().equals(other.getName()) &&
-				getMountPath().equals(other.getMountPath()) &&
-				isReadOnly() == other.isReadOnly();
-	}
+    @Override
+    public void setReadOnly(boolean readonly) {
+        set(getNode(), getPropertyKeys(), READONLY, readonly);
+    }
 
-	@Override
-	public int hashCode() {
-		int code = isReadOnly() ? 1 : 0;
-		code = code + getName().hashCode();
-		return code + getMountPath().hashCode();
-	}
-	
-	
-	
+    @Override
+    public boolean isReadOnly() {
+        return asBoolean(getNode(), getPropertyKeys(), READONLY);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof AbstractVolume)) {
+            return false;
+        }
+        AbstractVolume other = (AbstractVolume) obj;
+        return getName().equals(other.getName()) && getMountPath().equals(other.getMountPath())
+                && isReadOnly() == other.isReadOnly();
+    }
+
+    @Override
+    public int hashCode() {
+        int code = isReadOnly() ? 1 : 0;
+        code = code + getName().hashCode();
+        return code + getMountPath().hashCode();
+    }
+
 }

@@ -8,13 +8,9 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.deploy;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 public interface IDeploymentConfigChangeTrigger extends IDeploymentTrigger {
 
 }

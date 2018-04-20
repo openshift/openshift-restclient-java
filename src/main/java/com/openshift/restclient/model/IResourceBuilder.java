@@ -8,28 +8,28 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 import java.util.Map;
 
 /**
  * A builder for building up resources
- * @author jeff.cantrill
  *
- * @param <T>
  */
 @SuppressWarnings("rawtypes")
 public interface IResourceBuilder<T extends IResource, B extends IResourceBuilder> {
-	
-	 B named(String name);
-	 B inNamespace(String name);
 
-	B withLabels(Map<String, String> labels);
+    B named(String name);
 
-	T build();
-	
-	interface Endable{
-		
-		IResourceBuilder<? extends IResource, ?> end();
-	}
+    B inNamespace(String name);
+
+    B withLabels(Map<String, String> labels);
+
+    T build();
+
+    interface Endable {
+
+        IResourceBuilder<? extends IResource, ?> end();
+    }
 }

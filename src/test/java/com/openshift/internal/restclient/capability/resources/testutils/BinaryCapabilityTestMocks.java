@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources.testutils;
 
 import static org.mockito.Mockito.doReturn;
@@ -23,39 +24,39 @@ import com.openshift.restclient.model.IPod;
 
 public class BinaryCapabilityTestMocks {
 
-	public static final String SERVER_URL = "https://localhost:8443";
-	public static final String TOKEN = "phWDXIqSspYBZARPQIzqaevHGDIxduQGbhcZuwj48EI";
+    public static final String SERVER_URL = "https://localhost:8443";
+    public static final String TOKEN = "phWDXIqSspYBZARPQIzqaevHGDIxduQGbhcZuwj48EI";
 
-	public static final String OC_LOCATION = "/path/to/oc";
+    public static final String OC_LOCATION = "/path/to/oc";
 
-	public static final String POD_NAME = "papa-smurf";
-	public static final String POD_NAMESPACE = "the-smurfs";
+    public static final String POD_NAME = "papa-smurf";
+    public static final String POD_NAMESPACE = "the-smurfs";
 
-	public static IClient mockClient() throws MalformedURLException {
-		IClient client = mock(IClient.class);
-		doReturn(new URL(SERVER_URL)).when(client).getBaseURL();
-		IAuthorizationContext context = mockAuthorizationContext();
-		doReturn(context).when(client).getAuthorizationContext();
-		return client;
-	}
-	
-	private static IAuthorizationContext mockAuthorizationContext() {
-		IAuthorizationContext context = mock(IAuthorizationContext.class);
-		doReturn(TOKEN).when(context).getToken();
-		return context;
-	}
+    public static IClient mockClient() throws MalformedURLException {
+        IClient client = mock(IClient.class);
+        doReturn(new URL(SERVER_URL)).when(client).getBaseURL();
+        IAuthorizationContext context = mockAuthorizationContext();
+        doReturn(context).when(client).getAuthorizationContext();
+        return client;
+    }
 
-	public static IPod mockPod() {
-		IPod pod = mock(IPod.class);
-		doReturn(POD_NAME).when(pod).getName();
-		doReturn(POD_NAMESPACE).when(pod).getNamespaceName();
-		return pod;
-	}
-	
-	public static PortPair mockPortPair(int localPort, int remotePort) {
-		PortPair ports = mock(PortPair.class);
-		doReturn(localPort).when(ports).getLocalPort();
-		doReturn(remotePort).when(ports).getRemotePort();
-		return ports;
-	}
+    private static IAuthorizationContext mockAuthorizationContext() {
+        IAuthorizationContext context = mock(IAuthorizationContext.class);
+        doReturn(TOKEN).when(context).getToken();
+        return context;
+    }
+
+    public static IPod mockPod() {
+        IPod pod = mock(IPod.class);
+        doReturn(POD_NAME).when(pod).getName();
+        doReturn(POD_NAMESPACE).when(pod).getNamespaceName();
+        return pod;
+    }
+
+    public static PortPair mockPortPair(int localPort, int remotePort) {
+        PortPair ports = mock(PortPair.class);
+        doReturn(localPort).when(ports).getLocalPort();
+        doReturn(remotePort).when(ports).getRemotePort();
+        return ports;
+    }
 }

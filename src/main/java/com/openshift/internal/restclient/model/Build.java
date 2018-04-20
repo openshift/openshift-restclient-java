@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
 import java.util.Map;
@@ -28,112 +29,106 @@ import com.openshift.restclient.model.build.IBuildSource;
 import com.openshift.restclient.model.build.IBuildStatus;
 import com.openshift.restclient.model.build.IBuildStrategy;
 
-/**
- * @author Jeff Cantrill
- */
-public class Build extends KubernetesResource implements IBuild{
-	
-	private static final String BUILD_MESSAGE = "status.message";
-	private static final String BUILD_PODNAME = "podName";
-	private static final String BUILD_STATUS = "status.phase";
-	private static final String BUILD_STATUS_CANCELLED = "status.cancelled";
-	private static final String OUTPUT_KIND = "spec.output.to.kind";
-	private static final String OUTPUT_NAME = "spec.output.to.name";
-	
-	private static final String COMPLETE = "Complete";
-	private static final String FAILED = "Failed";
-	private static final String CANCELLED = "Cancelled";
-	private Map<String, String[]> propertyKeys;
+public class Build extends KubernetesResource implements IBuild {
 
+    private static final String BUILD_MESSAGE = "status.message";
+    private static final String BUILD_PODNAME = "podName";
+    private static final String BUILD_STATUS = "status.phase";
+    private static final String BUILD_STATUS_CANCELLED = "status.cancelled";
+    private static final String OUTPUT_KIND = "spec.output.to.kind";
+    private static final String OUTPUT_NAME = "spec.output.to.name";
 
-	public Build(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
-		this.propertyKeys = propertyKeys;
-		CapabilityInitializer.initializeCapabilities(getModifiableCapabilities(), this, client);
-	}
+    private static final String COMPLETE = "Complete";
+    private static final String FAILED = "Failed";
+    private static final String CANCELLED = "Cancelled";
+    private Map<String, String[]> propertyKeys;
 
-	@Override
-	public String getStatus() {
-		return asString(BUILD_STATUS);
-	}
+    public Build(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+        this.propertyKeys = propertyKeys;
+        CapabilityInitializer.initializeCapabilities(getModifiableCapabilities(), this, client);
+    }
 
-	@Override
-	public String getMessage() {
-		return asString(BUILD_MESSAGE);
-	}
+    @Override
+    public String getStatus() {
+        return asString(BUILD_STATUS);
+    }
 
-	@Override
-	public String getPodName() {
-		return asString(BUILD_PODNAME);
-	}
+    @Override
+    public String getMessage() {
+        return asString(BUILD_MESSAGE);
+    }
 
-	@Override
-	public boolean cancel() {
-		String currentStatus = getStatus();
-		if (!currentStatus.equalsIgnoreCase(COMPLETE) && !currentStatus.equalsIgnoreCase(FAILED) && !currentStatus.equalsIgnoreCase(CANCELLED)) {
-			set(BUILD_STATUS_CANCELLED, true);
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public String getPodName() {
+        return asString(BUILD_PODNAME);
+    }
 
-	@Override
-	public DockerImageURI getOutputTo() {
-		return new DockerImageURI(asString(OUTPUT_NAME));
-	}
+    @Override
+    public boolean cancel() {
+        String currentStatus = getStatus();
+        if (!currentStatus.equalsIgnoreCase(COMPLETE) && !currentStatus.equalsIgnoreCase(FAILED)
+                && !currentStatus.equalsIgnoreCase(CANCELLED)) {
+            set(BUILD_STATUS_CANCELLED, true);
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public String getOutputKind() {
-		return asString(OUTPUT_KIND);
-	}
+    @Override
+    public DockerImageURI getOutputTo() {
+        return new DockerImageURI(asString(OUTPUT_NAME));
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends IBuildSource> T getBuildSource() {
-		switch(asString("spec.source.type")){
-		case BuildSourceType.GIT:
-			return (T) new GitBuildSource(asString("spec.source.git.uri"), asString("spec.source.git.ref"), asString("spec.source.git.contextDir"));
-		default:
-		}
-		return null;
-	}
+    @Override
+    public String getOutputKind() {
+        return asString(OUTPUT_KIND);
+    }
 
-	@SuppressWarnings("unchecked")
-	public  <T extends IBuildStrategy> T getBuildStrategy() {
-		switch(asString("spec.strategy.type")){
-		
-		case BuildStrategyType.CUSTOM:
-			return (T) new CustomBuildStrategy(
-						asString("spec.strategy.customStrategy.image"),
-						asBoolean("spec.strategy.customStrategy.exposeDockerSocket"),
-						getEnvMap("spec.strategy.customStrategy.env")
-					);
-		case BuildStrategyType.SOURCE:
-			return (T) new SourceBuildStrategy(get("spec.strategy"), getPropertyKeys());
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends IBuildSource> T getBuildSource() {
+        switch (asString("spec.source.type")) {
+        case BuildSourceType.GIT:
+            return (T) new GitBuildSource(asString("spec.source.git.uri"), asString("spec.source.git.ref"),
+                    asString("spec.source.git.contextDir"));
+        default:
+        }
+        return null;
+    }
 
-		case BuildStrategyType.DOCKER:
-			return (T) new DockerBuildStrategy(
-					asString("spec.strategy.dockerStrategy.contextDir"),
-					asBoolean("spec.strategy.dockerStrategy.noCache"),
-					asString("spec.strategy.dockerStrategy.baseImage")
-					);
+    @SuppressWarnings("unchecked")
+    public <T extends IBuildStrategy> T getBuildStrategy() {
+        switch (asString("spec.strategy.type")) {
 
-		case BuildStrategyType.JENKINS_PIPELINE:
-			return (T) new JenkinsPipelineStrategy(get("spec.strategy"), getPropertyKeys());
+        case BuildStrategyType.CUSTOM:
+            return (T) new CustomBuildStrategy(asString("spec.strategy.customStrategy.image"),
+                    asBoolean("spec.strategy.customStrategy.exposeDockerSocket"),
+                    getEnvMap("spec.strategy.customStrategy.env"));
+        case BuildStrategyType.SOURCE:
+            return (T) new SourceBuildStrategy(get("spec.strategy"), getPropertyKeys());
 
-		default:
-		}
-		return null;
-	}
+        case BuildStrategyType.DOCKER:
+            return (T) new DockerBuildStrategy(asString("spec.strategy.dockerStrategy.contextDir"),
+                    asBoolean("spec.strategy.dockerStrategy.noCache"),
+                    asString("spec.strategy.dockerStrategy.baseImage"));
 
-	@Override
-	public String getPushSecret() {
-		return asString("spec.output.pushSecret.name");
-	}
+        case BuildStrategyType.JENKINS_PIPELINE:
+            return (T) new JenkinsPipelineStrategy(get("spec.strategy"), getPropertyKeys());
 
-	@Override
-	public IBuildStatus getBuildStatus() {
-		return new BuildStatus(get("status"), this.propertyKeys);
-	}
-	
+        default:
+        }
+        return null;
+    }
+
+    @Override
+    public String getPushSecret() {
+        return asString("spec.output.pushSecret.name");
+    }
+
+    @Override
+    public IBuildStatus getBuildStatus() {
+        return new BuildStatus(get("status"), this.propertyKeys);
+    }
+
 }

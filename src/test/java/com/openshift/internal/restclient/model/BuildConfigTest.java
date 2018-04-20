@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
 import static org.junit.Assert.assertEquals;
@@ -23,23 +24,24 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IBuildConfig;
 
 /**
- * Tests unrelated to the underlying model structure and
- * should api version independent
+ * Tests unrelated to the underlying model structure and should api version
+ * independent
+ * 
  * @author Jeff Maury
  *
  */
 public class BuildConfigTest {
 
-	private IBuildConfig config;
+    private IBuildConfig config;
 
-	@Before
-	public void setUp() throws Exception {
-	    config = new BuildConfig(new ModelNode(), mock(IClient.class), new HashMap<>());
-	}
+    @Before
+    public void setUp() throws Exception {
+        config = new BuildConfig(new ModelNode(), mock(IClient.class), new HashMap<>());
+    }
 
-	@Test
-	public void testBuildTriggersShouldReturn() {
-		assertEquals(0, config.getBuildTriggers().size());
-	}
+    @Test
+    public void testBuildTriggersShouldReturn() {
+        assertEquals(0, config.getBuildTriggers().size());
+    }
 
 }

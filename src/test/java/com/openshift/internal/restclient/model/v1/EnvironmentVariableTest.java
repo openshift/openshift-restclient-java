@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -28,64 +29,68 @@ import com.openshift.restclient.utils.EnvironmentVariableUtils;
  */
 public class EnvironmentVariableTest {
 
-	@Test
-	public void shouldBeEqualGivenEqualNameAndValue() {
-		// given
-		IEnvironmentVariable var1 = createEnvironmentVariable("foo", "bar");
-		IEnvironmentVariable var2 = createEnvironmentVariable("foo", "bar");
-		// when
-		// then
-		assertThat(var1).isEqualTo(var2);
-	}
+    @Test
+    public void shouldBeEqualGivenEqualNameAndValue() {
+        // given
+        IEnvironmentVariable var1 = createEnvironmentVariable("foo", "bar");
+        IEnvironmentVariable var2 = createEnvironmentVariable("foo", "bar");
+        // when
+        // then
+        assertThat(var1).isEqualTo(var2);
+    }
 
-	@Test
-	public void shouldBeNonEqualGivenNonEqualNameAndValue() {
-		// given
-		IEnvironmentVariable var1 = createEnvironmentVariable("foo", "bar");
-		IEnvironmentVariable var2 = createEnvironmentVariable("kung", "foo");
-		// when
-		// then
-		assertThat(var1).isNotEqualTo(var2);
-	}
+    @Test
+    public void shouldBeNonEqualGivenNonEqualNameAndValue() {
+        // given
+        IEnvironmentVariable var1 = createEnvironmentVariable("foo", "bar");
+        IEnvironmentVariable var2 = createEnvironmentVariable("kung", "foo");
+        // when
+        // then
+        assertThat(var1).isNotEqualTo(var2);
+    }
 
-	@Test
-	public void shouldReturnEmptyMapGivenEmptyEnvVars() {
-		// given
-		Collection<IEnvironmentVariable> envVars = Collections.emptyList();
-		// when
-		Map<String, String> envVarsMap = EnvironmentVariableUtils.toMapOfStrings(envVars);
-		// then
-		assertThat(envVarsMap).isEmpty();
-	}
+    @Test
+    public void shouldReturnEmptyMapGivenEmptyEnvVars() {
+        // given
+        Collection<IEnvironmentVariable> envVars = Collections.emptyList();
+        // when
+        Map<String, String> envVarsMap = EnvironmentVariableUtils.toMapOfStrings(envVars);
+        // then
+        assertThat(envVarsMap).isEmpty();
+    }
 
-	@SuppressWarnings("serial")
-	@Test
-	public void shouldReturnMapOfStringsForEnvVariables() {
-		// given
-		Collection<IEnvironmentVariable> envVars = createEnvironmentVariables("foo", "bar", "kung", "foo", "smurfHater", "gargamel");
-		// when
-		Map<String, String> envVarsMap = EnvironmentVariableUtils.toMapOfStrings(envVars);
-		// then
-		assertThat(envVarsMap).isEqualTo(
-				new HashMap<String, String>() {{ put("foo", "bar"); put("kung", "foo"); put("smurfHater", "gargamel"); }});
-	}
+    @SuppressWarnings("serial")
+    @Test
+    public void shouldReturnMapOfStringsForEnvVariables() {
+        // given
+        Collection<IEnvironmentVariable> envVars = createEnvironmentVariables("foo", "bar", "kung", "foo", "smurfHater",
+                "gargamel");
+        // when
+        Map<String, String> envVarsMap = EnvironmentVariableUtils.toMapOfStrings(envVars);
+        // then
+        assertThat(envVarsMap).isEqualTo(new HashMap<String, String>() {
+            {
+                put("foo", "bar");
+                put("kung", "foo");
+                put("smurfHater", "gargamel");
+            }
+        });
+    }
 
-	private Collection<IEnvironmentVariable> createEnvironmentVariables(String... touples) {
-		assertThat(touples).isNotNull();
-		assertThat(touples.length % 2).isEqualTo(0);
+    private Collection<IEnvironmentVariable> createEnvironmentVariables(String... touples) {
+        assertThat(touples).isNotNull();
+        assertThat(touples.length % 2).isEqualTo(0);
 
-		ArrayList<IEnvironmentVariable> envVars = new ArrayList<IEnvironmentVariable>();
-		for (int i = 0; i < touples.length;) {
-			envVars.add(createEnvironmentVariable(touples[i++], touples[i++]));
-		}
-		return envVars;
-	}
+        ArrayList<IEnvironmentVariable> envVars = new ArrayList<IEnvironmentVariable>();
+        for (int i = 0; i < touples.length;) {
+            envVars.add(createEnvironmentVariable(touples[i++], touples[i++]));
+        }
+        return envVars;
+    }
 
-	private IEnvironmentVariable createEnvironmentVariable(String name, String value) {
-		ModelNodeBuilder builder = new ModelNodeBuilder();
-		builder
-			.set(EnvironmentVariable.NAME, name)
-			.set(EnvironmentVariable.VALUE, value);
-		return new EnvironmentVariable(builder.build(), null);
-	}
+    private IEnvironmentVariable createEnvironmentVariable(String name, String value) {
+        ModelNodeBuilder builder = new ModelNodeBuilder();
+        builder.set(EnvironmentVariable.NAME, name).set(EnvironmentVariable.VALUE, value);
+        return new EnvironmentVariable(builder.build(), null);
+    }
 }

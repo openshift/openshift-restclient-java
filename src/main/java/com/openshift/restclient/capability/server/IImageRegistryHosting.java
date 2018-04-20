@@ -6,21 +6,21 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.capability.server;
 
 import com.openshift.restclient.capability.ICapability;
 
 /**
- * Identifies an OpenShift server as capable of
- * hosting images via its own registry
- * 
- * @author Jeff Cantrill
+ * Identifies an OpenShift server as capable of hosting images via its own
+ * registry
  */
-public interface IImageRegistryHosting extends ICapability{
-	
-	/**
-	 * Gets the Image Registry URI
-	 * @return the registry URI (e.g. 172.121.17.212:5001)
-	 */
-	String getRegistryUri();
+public interface IImageRegistryHosting extends ICapability {
+
+    /**
+     * Gets the Image Registry URI
+     * 
+     * @return the registry URI (e.g. 172.121.17.212:5001)
+     */
+    String getRegistryUri();
 }

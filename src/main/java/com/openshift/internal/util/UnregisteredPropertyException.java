@@ -8,17 +8,13 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.util;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 @SuppressWarnings("serial")
 public class UnregisteredPropertyException extends RuntimeException {
 
-	public UnregisteredPropertyException(String property) {
-		super(String.format("No path was found for property '%s' in the property map.", property));
-	}
+    public UnregisteredPropertyException(String property) {
+        super(String.format("No path was found for property '%s' in the property map.", property));
+    }
 }

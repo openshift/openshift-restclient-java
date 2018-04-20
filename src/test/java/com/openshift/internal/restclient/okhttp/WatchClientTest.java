@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.okhttp;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -38,47 +39,43 @@ import okhttp3.Response;
  * @author Andre Dietisheim
  */
 public class WatchClientTest {
-	
-	@Test
-	public void testOnFailureCallBackNotifiesListener() {
-		DefaultClient client = null;
-		
-		IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
-		
-		WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
-		endpoint.onFailure(new IOException(), null);
-		verify(listener).error(any(Throwable.class));
-	}
-	
-	@Test
-	public void shouldIgnoreUnsupportedFeatureResponseOnFailure() {
-		DefaultClient client = mock(DefaultClient.class);
-		IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
-		
-		WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
-		Response.Builder responseBuilder = new Response.Builder();
-		responseBuilder.code(IHttpConstants.STATUS_OK)
-						.protocol(Protocol.HTTP_2)
-						.request(new Request.Builder().url("http://localhost").build());
-		endpoint.onFailure(new ProtocolException(), responseBuilder.build());
-		verify(listener, never()).error(any());
-	}
 
-	@Test
-	public void changeTypeShouldEqualSameChangeType() {
-		assertThat(ChangeType.ADDED, 
-				equalTo(ChangeType.ADDED));
-	}
-	
-	@Test
-	public void changeTypeShouldNotEqualDifferentChangeType() {
-		assertThat(ChangeType.ADDED, 
-				not(equalTo(ChangeType.DELETED)));
-	}
+    @Test
+    public void testOnFailureCallBackNotifiesListener() {
+        DefaultClient client = null;
 
-	@Test
-	public void changeTypeShouldEqualSameChangeTypeInLowercase() {
-		assertThat(ChangeType.ADDED, 
-				equalTo(new ChangeType(ChangeType.ADDED.getValue().toLowerCase())));
-	}
+        IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
+
+        WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
+        endpoint.onFailure(new IOException(), null);
+        verify(listener).error(any(Throwable.class));
+    }
+
+    @Test
+    public void shouldIgnoreUnsupportedFeatureResponseOnFailure() {
+        DefaultClient client = mock(DefaultClient.class);
+        IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
+
+        WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
+        Response.Builder responseBuilder = new Response.Builder();
+        responseBuilder.code(IHttpConstants.STATUS_OK).protocol(Protocol.HTTP_2)
+                .request(new Request.Builder().url("http://localhost").build());
+        endpoint.onFailure(new ProtocolException(), responseBuilder.build());
+        verify(listener, never()).error(any());
+    }
+
+    @Test
+    public void changeTypeShouldEqualSameChangeType() {
+        assertThat(ChangeType.ADDED, equalTo(ChangeType.ADDED));
+    }
+
+    @Test
+    public void changeTypeShouldNotEqualDifferentChangeType() {
+        assertThat(ChangeType.ADDED, not(equalTo(ChangeType.DELETED)));
+    }
+
+    @Test
+    public void changeTypeShouldEqualSameChangeTypeInLowercase() {
+        assertThat(ChangeType.ADDED, equalTo(new ChangeType(ChangeType.ADDED.getValue().toLowerCase())));
+    }
 }

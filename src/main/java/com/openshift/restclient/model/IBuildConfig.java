@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 import java.util.List;
@@ -14,69 +15,66 @@ import com.openshift.restclient.model.build.IBuildSource;
 import com.openshift.restclient.model.build.IBuildStrategy;
 import com.openshift.restclient.model.build.IBuildTrigger;
 
-/**
- * @author Jeff Cantrill
- */
-public interface IBuildConfig extends IResource{
-	
-	/**
-	 * To defines an optional location to push the output of this build to.
-	 * Kind must be one of 'ImageStreamTag' or 'DockerImage'.
-	 * @return a mutable object reference
-	 */
-	IObjectReference getBuildOutputReference();
-	
-	/**
-	 * Returns the source URL for a build
-	 * @return
-	 */
-	String getSourceURI();
-	
-	/**
-	 * Returns the policies which will trigger a build
-	 * @return
-	 */
-	List<IBuildTrigger> getBuildTriggers();
-	
-	/**
-	 * Add a trigger to the list of triggers for this build.
-	 *
-	 * @param trigger
-	 */
-	void addBuildTrigger(IBuildTrigger trigger);
+public interface IBuildConfig extends IResource {
 
-	/**
-	 * Returns the source info of the build
-	 * @return
-	 */
-	<T extends IBuildSource> T getBuildSource();
+    /**
+     * To defines an optional location to push the output of this build to. Kind
+     * must be one of 'ImageStreamTag' or 'DockerImage'.
+     * 
+     * @return a mutable object reference
+     */
+    IObjectReference getBuildOutputReference();
 
-	/**
-	 * Set the source for the build.
-	 *
-	 * @param source
-	 */
-	void setBuildSource(IBuildSource source);
+    /**
+     * Returns the source URL for a build
+     * 
+     */
+    String getSourceURI();
 
-	/**
-	 * Returns the strategy to for building the source
-	 * @return
-	 */
-	<T extends IBuildStrategy> T getBuildStrategy(); 	
+    /**
+     * Returns the policies which will trigger a build
+     * 
+     */
+    List<IBuildTrigger> getBuildTriggers();
 
-	/**
-	 * Set the strategy for how the build should be built. <br/>
-	 * Depending on the strategies available on the server this
-	 * could be 'source', 'docker' or 'custom'.
-	 *
-	 * @param strategy
-	 */
-	void setBuildStrategy(IBuildStrategy strategy);
-	
-	/**
-	 * Retrieves the name of the repository where the
-	 * resulting build image will be pushed
-	 * @return
-	 */
-	String getOutputRepositoryName();
+    /**
+     * Add a trigger to the list of triggers for this build.
+     *
+     */
+    void addBuildTrigger(IBuildTrigger trigger);
+
+    /**
+     * Returns the source info of the build
+     * 
+     * @return
+     */
+    <T extends IBuildSource> T getBuildSource();
+
+    /**
+     * Set the source for the build.
+     *
+     */
+    void setBuildSource(IBuildSource source);
+
+    /**
+     * Returns the strategy to for building the source
+     * 
+     * @return
+     */
+    <T extends IBuildStrategy> T getBuildStrategy();
+
+    /**
+     * Set the strategy for how the build should be built. <br/>
+     * Depending on the strategies available on the server this could be 'source',
+     * 'docker' or 'custom'.
+     *
+     */
+    void setBuildStrategy(IBuildStrategy strategy);
+
+    /**
+     * Retrieves the name of the repository where the resulting build image will be
+     * pushed
+     * 
+     */
+    String getOutputRepositoryName();
 }

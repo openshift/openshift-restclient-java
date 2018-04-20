@@ -5,5 +5,6 @@ package com.openshift.restclient.model.volume;
  */
 public interface IEmptyDirVolumeSource extends IVolumeSource {
     String getMedium();
+
     void setMedium(String medium);
 }

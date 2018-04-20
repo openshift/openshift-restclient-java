@@ -8,63 +8,58 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.deploy;
 
 import java.util.Collection;
 
 import com.openshift.restclient.images.DockerImageURI;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 public interface IDeploymentImageChangeTrigger extends IDeploymentTrigger {
 
-	/**
-	 * Returns the name of the docker image repo to watch
-	 * @return
-	 */
-	DockerImageURI getFrom();
+    /**
+     * Returns the name of the docker image repo to watch
+     * 
+     */
+    DockerImageURI getFrom();
 
-	/**
-	 * Automatically sets kind to "ImageStreamTag" if kind is empty
-	 * @param fromImage
-	 */
-	void setFrom(DockerImageURI fromImage);
-	
-	/**
-	 * The namespace of the ImageStreamTag
-	 * @param namespace
-	 */
-	void setNamespace(String namespace);
+    /**
+     * Automatically sets kind to "ImageStreamTag" if kind is empty
+     * 
+     */
+    void setFrom(DockerImageURI fromImage);
 
-	/**
-	 * @return The namespace of the ImageStreamTag
-	 * 
-	 */
-	String getNamespace();
+    /**
+     * The namespace of the ImageStreamTag
+     * 
+     */
+    void setNamespace(String namespace);
 
-	void setKind(String kind);
-	
-	String getKind();
-	
-	boolean isAutomatic();
-	
-	void setAutomatic(boolean auto);
-	
-	/**
-	 * The container names for this trigger
-	 * @return
-	 */
-	Collection<String> getContainerNames();
-	
-	void setContainerNames(Collection<String> names);
+    /**
+     * @return The namespace of the ImageStreamTag
+     * 
+     */
+    String getNamespace();
 
-	/**
-	 * Convenience method for setting
-	 * a single container name
-	 * @param names
-	 */
-	void setContainerName(String names);
+    void setKind(String kind);
+
+    String getKind();
+
+    boolean isAutomatic();
+
+    void setAutomatic(boolean auto);
+
+    /**
+     * The container names for this trigger
+     * 
+     */
+    Collection<String> getContainerNames();
+
+    void setContainerNames(Collection<String> names);
+
+    /**
+     * Convenience method for setting a single container name
+     * 
+     */
+    void setContainerName(String names);
 }

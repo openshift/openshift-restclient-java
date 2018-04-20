@@ -8,7 +8,15 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.jboss.dmr.ModelNode;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.openshift.internal.restclient.model.ExecAction;
 import com.openshift.internal.restclient.model.Lifecycle;
@@ -16,12 +24,6 @@ import com.openshift.restclient.model.IExecAction;
 import com.openshift.restclient.model.IHandler;
 import com.openshift.restclient.model.ILifecycle;
 import com.openshift.restclient.utils.Samples;
-import org.jboss.dmr.ModelNode;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ulf Lilleengen

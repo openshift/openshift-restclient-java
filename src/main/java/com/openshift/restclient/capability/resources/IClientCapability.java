@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import com.openshift.restclient.IClient;
@@ -15,10 +16,9 @@ import com.openshift.restclient.capability.ICapability;
 
 /**
  * The capability to retrieve the client from a resource
- * @author Jeff Cantrill
  *
  */
 public interface IClientCapability extends ICapability {
-	
-	IClient getClient();
+
+    IClient getClient();
 }

@@ -6,10 +6,18 @@
  *
  * Contributors: Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 
@@ -31,63 +39,65 @@ import com.openshift.restclient.utils.Samples;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectTemplateProcessingTest {
-	
-	private static final String NAMESPACE = "aProjectNamespace";
-	private IProjectTemplateProcessing capability;
-	@Mock
-	private ITemplate template;
-	@Mock
-	private IClient client;
-	@Mock
-	private ITemplateProcessing serverCapability;
-	@Mock
-	private IProject project;
-	
-	@Before
-	public void setUp() throws Exception {
-		when(project.getNamespaceName()).thenReturn(NAMESPACE);
-		when(client.supports(eq(ITemplateProcessing.class))).thenReturn(true);
-		when(client.getCapability(eq(ITemplateProcessing.class))).thenReturn(serverCapability);
-		
-		capability = new ProjectTemplateProcessing(project, client);
-	}
-	
-	@Test
-	public void isSupportedShouldBeFalseForNullClient() {
-		capability = new ProjectTemplateProcessing(project, null);
-		assertFalse(capability.isSupported());
-	}
-	
-	@Test
-	public void isSupportedShouldBeFalseIfTheClientDoesntSupportTemplates() {
-		when(client.supports(eq(ITemplateProcessing.class))).thenReturn(false);
-		capability = new ProjectTemplateProcessing(project, client);
-		assertFalse(capability.isSupported());
-	}
 
-	@Test
-	public void isSupportedShouldBeTrueIfTheClientSupportTemplates() {
-		assertTrue(capability.isSupported());
-	}
-	
-	@Test
-	public void processTemplateShouldUseTheClientsCapability() {
-		when(serverCapability.process(any(ITemplate.class), anyString())).thenReturn(template);
-		
-		assertEquals(template, capability.process(template));
-		verify(serverCapability).process(eq(template), eq(NAMESPACE));
-	}
+    private static final String NAMESPACE = "aProjectNamespace";
+    private IProjectTemplateProcessing capability;
+    @Mock
+    private ITemplate template;
+    @Mock
+    private IClient client;
+    @Mock
+    private ITemplateProcessing serverCapability;
+    @Mock
+    private IProject project;
 
-	@Test
-	public void applyTemplateShouldUseTheClientToCreateTheResources() {
-		@SuppressWarnings("unchecked")
-		Collection<IResource> resources = mock(Collection.class);
-		when(client.create(any(IList.class), anyString())).thenReturn(resources);
-		when(client.getResourceFactory()).thenReturn(new ResourceFactory(client) {});
-		ITemplate template = new ResourceFactory(client) {}.create(Samples.V1_TEMPLATE.getContentAsString());
-		
-		assertEquals(resources, capability.apply(template));
-		verify(client).create(any(IList.class), eq(NAMESPACE));
-	}
-	
+    @Before
+    public void setUp() throws Exception {
+        when(project.getNamespaceName()).thenReturn(NAMESPACE);
+        when(client.supports(eq(ITemplateProcessing.class))).thenReturn(true);
+        when(client.getCapability(eq(ITemplateProcessing.class))).thenReturn(serverCapability);
+
+        capability = new ProjectTemplateProcessing(project, client);
+    }
+
+    @Test
+    public void isSupportedShouldBeFalseForNullClient() {
+        capability = new ProjectTemplateProcessing(project, null);
+        assertFalse(capability.isSupported());
+    }
+
+    @Test
+    public void isSupportedShouldBeFalseIfTheClientDoesntSupportTemplates() {
+        when(client.supports(eq(ITemplateProcessing.class))).thenReturn(false);
+        capability = new ProjectTemplateProcessing(project, client);
+        assertFalse(capability.isSupported());
+    }
+
+    @Test
+    public void isSupportedShouldBeTrueIfTheClientSupportTemplates() {
+        assertTrue(capability.isSupported());
+    }
+
+    @Test
+    public void processTemplateShouldUseTheClientsCapability() {
+        when(serverCapability.process(any(ITemplate.class), anyString())).thenReturn(template);
+
+        assertEquals(template, capability.process(template));
+        verify(serverCapability).process(eq(template), eq(NAMESPACE));
+    }
+
+    @Test
+    public void applyTemplateShouldUseTheClientToCreateTheResources() {
+        @SuppressWarnings("unchecked")
+        Collection<IResource> resources = mock(Collection.class);
+        when(client.create(any(IList.class), anyString())).thenReturn(resources);
+        when(client.getResourceFactory()).thenReturn(new ResourceFactory(client) {
+        });
+        ITemplate template = new ResourceFactory(client) {
+        }.create(Samples.V1_TEMPLATE.getContentAsString());
+
+        assertEquals(resources, capability.apply(template));
+        verify(client).create(any(IList.class), eq(NAMESPACE));
+    }
+
 }
