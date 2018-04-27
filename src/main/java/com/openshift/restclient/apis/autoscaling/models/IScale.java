@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.apis.autoscaling.models;
 
 import com.openshift.restclient.api.models.INameSetable;
@@ -17,20 +18,19 @@ import com.openshift.restclient.api.models.ITypeMeta;
 
 /**
  * Scale object payload to scalable resources
- * @author jeff.cantrill
  *
  */
 public interface IScale extends ITypeMeta, IObjectMeta, INamespaceSetable, INameSetable {
 
-	/**
-	 * The number of desired replicas
-	 * @return
-	 */
-	int getSpecReplicas();
-	
-	/**
-	 * Set the number of desired replicas
-	 * @param replicas
-	 */
-	void setSpecReplicas(int replicas);
+    /**
+     * The number of desired replicas
+     * 
+     */
+    int getSpecReplicas();
+
+    /**
+     * Set the number of desired replicas
+     * 
+     */
+    void setSpecReplicas(int replicas);
 }

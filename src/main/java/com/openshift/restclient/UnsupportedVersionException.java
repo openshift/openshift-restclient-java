@@ -6,20 +6,18 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient;
 
-/**
- * @author Jeff Cantrill
- */
 public class UnsupportedVersionException extends OpenShiftException {
-	
-	private static final long serialVersionUID = 1L;
 
-	public UnsupportedVersionException(String version){
-		super(String.format("OpenShift API version '%s' is not supported by this client", version));
-	}
+    private static final long serialVersionUID = 1L;
 
-	public UnsupportedVersionException(String message, Object... arguments) {
-		super(message, arguments);
-	}
+    public UnsupportedVersionException(String version) {
+        super(String.format("OpenShift API version '%s' is not supported by this client", version));
+    }
+
+    public UnsupportedVersionException(String message, Object... arguments) {
+        super(message, arguments);
+    }
 }

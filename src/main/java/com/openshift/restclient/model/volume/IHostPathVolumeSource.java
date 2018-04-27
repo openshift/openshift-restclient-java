@@ -8,20 +8,21 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.model.volume;
 
 /**
  * VolumeSource for hostpath volumes of a pod
- * @author jeff.cantrill
+ * 
  *
  */
 public interface IHostPathVolumeSource extends IVolumeSource {
 
-	/**
-	 * Host path mapped into a pod
-	 * @return
-	 */
-	String getPath();
-	
-	void setPath(String path);
+    /**
+     * Host path mapped into a pod
+     * 
+     */
+    String getPath();
+
+    void setPath(String path);
 }

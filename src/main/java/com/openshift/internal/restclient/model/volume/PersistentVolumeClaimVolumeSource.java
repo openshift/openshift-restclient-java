@@ -8,15 +8,17 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.internal.restclient.model.volume;
 
-import com.openshift.restclient.model.volume.IPersistentVolumeClaimVolumeSource;
-import com.openshift.restclient.model.volume.VolumeType;
-import org.jboss.dmr.ModelNode;
+package com.openshift.internal.restclient.model.volume;
 
 import static com.openshift.internal.util.JBossDmrExtentions.asBoolean;
 import static com.openshift.internal.util.JBossDmrExtentions.asString;
 import static com.openshift.internal.util.JBossDmrExtentions.set;
+
+import org.jboss.dmr.ModelNode;
+
+import com.openshift.restclient.model.volume.IPersistentVolumeClaimVolumeSource;
+import com.openshift.restclient.model.volume.VolumeType;
 
 /**
  * @author Ulf Lilleengen

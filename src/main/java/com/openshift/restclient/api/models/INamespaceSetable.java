@@ -8,20 +8,19 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.api.models;
 
 /**
- * A resource where the client can
- * define the namespace on the object
- * (e.g. ObjectRef)
- * @author jeff.cantrill
+ * A resource where the client can define the namespace on the object (e.g.
+ * ObjectRef)
  *
  */
 public interface INamespaceSetable {
 
-	/**
-	 * The namespace for the object ref
-	 * @param namespace
-	 */
-	void setNamespace(String namespace);
+    /**
+     * The namespace for the object ref
+     * 
+     */
+    void setNamespace(String namespace);
 }

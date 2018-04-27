@@ -6,10 +6,11 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import org.jboss.dmr.ModelNode;
 import org.junit.BeforeClass;
@@ -24,32 +25,31 @@ import com.openshift.restclient.utils.Samples;
 
 /**
  * Test to validate the lookup paths are correct for the version
- * @author Jeff Cantrill
  */
-public class StatusTest{
+public class StatusTest {
 
-	private static final String VERSION = "v1";
-	private static IStatus status;
-	
-	@BeforeClass
-	public static void setUp(){
-		IClient client = mock(IClient.class);
-		ModelNode node = ModelNode.fromJSONString(Samples.V1_Status.getContentAsString());
-		status = new Status(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.STATUS));
-	}
-	
-	@Test
-	public void testGetMessage() {
-		assertEquals("Unable to determine kind and namespace from url, /osapi/users", status.getMessage());
-	}
-	
-	@Test
-	public void testGetCode() {
-		assertEquals(403, status.getCode());
-	}
+    private static final String VERSION = "v1";
+    private static IStatus status;
 
-	@Test
-	public void testGetStatus() {
-		assertEquals("Failure", status.getStatus());
-	}
+    @BeforeClass
+    public static void setUp() {
+        IClient client = mock(IClient.class);
+        ModelNode node = ModelNode.fromJSONString(Samples.V1_Status.getContentAsString());
+        status = new Status(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.STATUS));
+    }
+
+    @Test
+    public void testGetMessage() {
+        assertEquals("Unable to determine kind and namespace from url, /osapi/users", status.getMessage());
+    }
+
+    @Test
+    public void testGetCode() {
+        assertEquals(403, status.getCode());
+    }
+
+    @Test
+    public void testGetStatus() {
+        assertEquals("Failure", status.getStatus());
+    }
 }

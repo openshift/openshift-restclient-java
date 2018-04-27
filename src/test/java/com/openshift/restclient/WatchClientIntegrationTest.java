@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient;
 
 import static com.openshift.internal.restclient.IntegrationTestHelper.cleanUpResource;
@@ -34,88 +35,83 @@ import com.openshift.restclient.model.IService;
 
 public class WatchClientIntegrationTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(WatchClientIntegrationTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WatchClientIntegrationTest.class);
 
-	private IntegrationTestHelper helper = new IntegrationTestHelper();
-	private IClient client;
-	private IResource project;
-	public static final String [] KINDS = new String[] {
-			ResourceKind.BUILD_CONFIG, 
-			ResourceKind.DEPLOYMENT_CONFIG, 
-			ResourceKind.SERVICE, 
-			ResourceKind.POD,
-			ResourceKind.REPLICATION_CONTROLLER, 
-			ResourceKind.BUILD, 
-			ResourceKind.IMAGE_STREAM, 
-			ResourceKind.ROUTE
-	};
+    private IntegrationTestHelper helper = new IntegrationTestHelper();
+    private IClient client;
+    private IResource project;
+    public static final String[] KINDS = new String[] { ResourceKind.BUILD_CONFIG, ResourceKind.DEPLOYMENT_CONFIG,
+        ResourceKind.SERVICE, ResourceKind.POD, ResourceKind.REPLICATION_CONTROLLER, ResourceKind.BUILD,
+        ResourceKind.IMAGE_STREAM, ResourceKind.ROUTE };
 
-	private ExecutorService service;
-	private boolean isError;
+    private ExecutorService service;
+    private boolean isError;
 
-	@Before
-	public void setup() {
-		service = Executors.newSingleThreadScheduledExecutor();
-		client = helper.createClientForBasicAuth();
-		IResource projRequest = client.getResourceFactory().stub(ResourceKind.PROJECT_REQUEST, helper.generateNamespace());
-		project = client.create(projRequest);
-	}
-	
-	@After
-	public void teardown() {
-		cleanUpResource(client, project);
-		service.shutdownNow();
-	}
-	
-	@SuppressWarnings("rawtypes")
-	@Test(timeout=60000)
-	public void test() throws Exception{
-		List results = new ArrayList();
-		CountDownLatch latch = new CountDownLatch(KINDS.length);
-		IOpenShiftWatchListener listener = new IOpenShiftWatchListener() {
+    @Before
+    public void setup() {
+        service = Executors.newSingleThreadScheduledExecutor();
+        client = helper.createClientForBasicAuth();
+        IResource projRequest = client.getResourceFactory().stub(ResourceKind.PROJECT_REQUEST,
+                helper.generateNamespace());
+        project = client.create(projRequest);
+    }
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public void received(IResource resource, ChangeType change) {
-				results.add(change);
-			}
-			
-			@Override
-			public void connected(List<IResource> resources) {
-				latch.countDown();
-			}
+    @After
+    public void teardown() {
+        cleanUpResource(client, project);
+        service.shutdownNow();
+    }
 
-			@Override
-			public void disconnected() {
-				latch.countDown();
-			}
+    @SuppressWarnings("rawtypes")
+    @Test(timeout = 60000)
+    public void test() throws Exception {
+        List results = new ArrayList();
+        CountDownLatch latch = new CountDownLatch(KINDS.length);
+        IOpenShiftWatchListener listener = new IOpenShiftWatchListener() {
 
-			@Override
-			public void error(Throwable err) {
-				latch.countDown();
-				isError = true;
-				LOG.error("",err);
-			}
-		};
-		
-		IWatcher watcher = null;
-		try {
-			watcher = client.watch(project.getName(), listener, KINDS);
-			latch.await();
-			assertFalse("Expected connection without error",isError);
-			IService service = client.getResourceFactory().stub(ResourceKind.SERVICE,"hello-world", project.getName());
-			service.addPort(8080,8080);
-			service = client.create(service);
-			service.addLabel("foo", "bar");
-			service = client.update(service);
-			client.delete(service);
-			assertArrayEquals(new ChangeType[] {ChangeType.ADDED, ChangeType.MODIFIED, ChangeType.DELETED}, results.toArray());
-			assertEquals(0, latch.getCount());
-		}finally {
-			if(watcher != null) {
-				watcher.stop();
-			}
-		}
-	}
+            @SuppressWarnings("unchecked")
+            @Override
+            public void received(IResource resource, ChangeType change) {
+                results.add(change);
+            }
+
+            @Override
+            public void connected(List<IResource> resources) {
+                latch.countDown();
+            }
+
+            @Override
+            public void disconnected() {
+                latch.countDown();
+            }
+
+            @Override
+            public void error(Throwable err) {
+                latch.countDown();
+                isError = true;
+                LOG.error("", err);
+            }
+        };
+
+        IWatcher watcher = null;
+        try {
+            watcher = client.watch(project.getName(), listener, KINDS);
+            latch.await();
+            assertFalse("Expected connection without error", isError);
+            IService service = client.getResourceFactory().stub(ResourceKind.SERVICE, "hello-world", project.getName());
+            service.addPort(8080, 8080);
+            service = client.create(service);
+            service.addLabel("foo", "bar");
+            service = client.update(service);
+            client.delete(service);
+            assertArrayEquals(new ChangeType[] { ChangeType.ADDED, ChangeType.MODIFIED, ChangeType.DELETED },
+                    results.toArray());
+            assertEquals(0, latch.getCount());
+        } finally {
+            if (watcher != null) {
+                watcher.stop();
+            }
+        }
+    }
 
 }

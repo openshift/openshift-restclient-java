@@ -8,22 +8,24 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.volume;
 
 /**
- * The volumes that are mounted 
- * in a container
- * @author jeff.cantrill
+ * The volumes that are mounted in a container
  *
  */
 public interface IVolumeMount {
 
-	String getName();
-	void setName(String name);
-	
-	void setMountPath(String path);
-	String getMountPath();
-	
-	void setReadOnly(boolean readonly);
-	boolean isReadOnly();
+    String getName();
+
+    void setName(String name);
+
+    void setMountPath(String path);
+
+    String getMountPath();
+
+    void setReadOnly(boolean readonly);
+
+    boolean isReadOnly();
 }

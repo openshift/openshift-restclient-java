@@ -8,25 +8,24 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient;
 
 /**
- * The exception thrown when the client is trying to submit a request
- * to an unrecognized endpoint.  This usually occurs when a newer client
- * is trying to utilize a feature that is unavailable to an older server
- * 
- * @author jeff.cantrill
+ * The exception thrown when the client is trying to submit a request to an
+ * unrecognized endpoint. This usually occurs when a newer client is trying to
+ * utilize a feature that is unavailable to an older server
  *
  */
 public class UnsupportedEndpointException extends OpenShiftException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -9004398690965821552L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -9004398690965821552L;
 
-	public UnsupportedEndpointException(String message, Object... arguments) {
-		super(message, arguments);
-	}
+    public UnsupportedEndpointException(String message, Object... arguments) {
+        super(message, arguments);
+    }
 
 }

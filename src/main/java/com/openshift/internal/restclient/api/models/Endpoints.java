@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.restclient.api.models;
 
 import java.util.ArrayList;
@@ -75,10 +76,10 @@ public class Endpoints extends KubernetesResource implements IEndpoints {
             }
             return ports;
         }
-        
+
     }
-    
-    private static class EndpointAddress extends ModelNodeAdapter implements IEndpointAddress{
+
+    private static class EndpointAddress extends ModelNodeAdapter implements IEndpointAddress {
 
         private static final String TARGET_REF = "targetRef";
 
@@ -95,7 +96,7 @@ public class Endpoints extends KubernetesResource implements IEndpoints {
         public String getHostName() {
             return JBossDmrExtentions.asString(getNode(), getPropertyKeys(), "hostname");
         }
-        
+
         @Override
         public String getNodeName() {
             return JBossDmrExtentions.asString(getNode(), getPropertyKeys(), "nodeName");
@@ -108,15 +109,15 @@ public class Endpoints extends KubernetesResource implements IEndpoints {
 
         @Override
         public IObjectReference getTargetRef() {
-            if(getNode().has(JBossDmrExtentions.getPath(getPropertyKeys(), TARGET_REF))) {
+            if (getNode().has(JBossDmrExtentions.getPath(getPropertyKeys(), TARGET_REF))) {
                 ModelNode node = JBossDmrExtentions.get(getNode(), getPropertyKeys(), TARGET_REF);
                 return new ObjectReference(node);
             }
             return null;
         }
-        
+
     }
-    
+
     private static class EndpointPort extends ModelNodeAdapter implements IEndpointPort {
 
         protected EndpointPort(ModelNode node, Map<String, String[]> propertyKeys) {
@@ -137,7 +138,6 @@ public class Endpoints extends KubernetesResource implements IEndpoints {
         public String getProtocol() {
             return JBossDmrExtentions.asString(getNode(), getPropertyKeys(), PROTOCOL);
         }
-        
+
     }
 }
-

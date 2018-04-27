@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 import java.util.Optional;
@@ -17,11 +18,14 @@ import java.util.Optional;
  */
 public interface ILifecycle extends JSONSerializeable {
     Optional<IHandler> getPostStart();
+
     Optional<IHandler> getPreStop();
 
     interface IBuilder {
         IBuilder preStop(IHandler handler);
+
         IBuilder postStart(IHandler handler);
+
         ILifecycle build();
     }
 }

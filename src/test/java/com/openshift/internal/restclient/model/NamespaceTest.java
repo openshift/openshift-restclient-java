@@ -1,16 +1,17 @@
 package com.openshift.internal.restclient.model;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
+import org.jboss.dmr.ModelNode;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.INamespace;
 import com.openshift.restclient.utils.Samples;
-import org.jboss.dmr.ModelNode;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 public class NamespaceTest {
 

@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import com.openshift.restclient.IClient;
@@ -15,29 +16,28 @@ import com.openshift.restclient.capability.resources.IClientCapability;
 
 /**
  * Implementation to retrieve the client from a resource
- * @author Jeff Cantrill
  */
 public class ClientCapability implements IClientCapability {
-	
-	private IClient client;
-	
-	public ClientCapability(IClient client) {
-		this.client = client;
-	}
-	
-	@Override
-	public boolean isSupported() {
-		return client != null;
-	}
 
-	@Override
-	public String getName() {
-		return getClass().getSimpleName();
-	}
+    private IClient client;
 
-	@Override
-	public IClient getClient() {
-		return client;
-	}
+    public ClientCapability(IClient client) {
+        this.client = client;
+    }
+
+    @Override
+    public boolean isSupported() {
+        return client != null;
+    }
+
+    @Override
+    public String getName() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public IClient getClient() {
+        return client;
+    }
 
 }

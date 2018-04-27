@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.project;
 
 import java.util.Map;
@@ -20,31 +21,31 @@ import com.openshift.restclient.model.project.IProjectRequest;
 
 public class OpenshiftProjectRequest extends KubernetesResource implements IProjectRequest {
 
-	private static final String DISPLAYNAME = "displayName";
-	private static final String DESCRIPTION = "description";
+    private static final String DISPLAYNAME = "displayName";
+    private static final String DESCRIPTION = "description";
 
-	public OpenshiftProjectRequest(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
-		super(node, client, propertyKeys);
-	}
+    public OpenshiftProjectRequest(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+    }
 
-	@Override
-	public void setDisplayName(String name) {
-		set(DISPLAYNAME, name);
-	}
+    @Override
+    public void setDisplayName(String name) {
+        set(DISPLAYNAME, name);
+    }
 
-	@Override
-	public String getDisplayName() {
-		return asString(DISPLAYNAME);
-	}
+    @Override
+    public String getDisplayName() {
+        return asString(DISPLAYNAME);
+    }
 
-	@Override
-	public void setDescription(String description) {
-		set(DESCRIPTION, description);
-	}
+    @Override
+    public void setDescription(String description) {
+        set(DESCRIPTION, description);
+    }
 
-	@Override
-	public String getDescription() {
-		return asString(DESCRIPTION);
-	}
+    @Override
+    public String getDescription() {
+        return asString(DESCRIPTION);
+    }
 
 }

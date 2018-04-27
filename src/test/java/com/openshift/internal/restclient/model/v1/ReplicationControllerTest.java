@@ -6,11 +6,12 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
 import static com.openshift.internal.util.JBossDmrExtentions.getPath;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.*;
+import static org.fest.assertions.MapAssert.entry;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -56,304 +57,298 @@ import com.openshift.restclient.model.volume.IVolumeMount;
 import com.openshift.restclient.model.volume.IVolumeSource;
 import com.openshift.restclient.utils.Samples;
 
-/**
- * @author Jeff Cantrill
- */
 public class ReplicationControllerTest {
 
-	private static final String VERSION = "v1";
-	private static IReplicationController rc;
-	private static ModelNode node;
-	private static IClient client;
-	
-	@Before
-	public void setup(){
-		client = mock(IClient.class);
-		node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
-		rc = new ReplicationController(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
-	}
-	
-	public void testGetEnvironmentVariablesWithValueFrom() {
+    private static final String VERSION = "v1";
+    private static IReplicationController rc;
+    private static ModelNode node;
+    private static IClient client;
 
-		Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables();
-		
-		//fieldref
-		Optional<IEnvironmentVariable> envVar = envVars.stream().filter(e->"OPENSHIFT_KUBE_PING_NAMESPACE".equals(e.getName())).findFirst();
-		assertTrue("Exp. to find env var", envVar.isPresent());
-		IEnvVarSource from = envVar.get().getValueFrom();
-		assertTrue(from instanceof IObjectFieldSelector);
-		IObjectFieldSelector selector = (IObjectFieldSelector)from;
-		assertEquals("v1",selector.getApiVersion());
-		assertEquals("metadata.namespace",selector.getFieldPath());
+    @Before
+    public void setup() {
+        client = mock(IClient.class);
+        node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
+        rc = new ReplicationController(node, client,
+                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
+    }
 
-		//configmapkeyref
-		envVar = envVars.stream().filter(e->"OPENSHIFT_CONFIGMAP_KEY_REF".equals(e.getName())).findFirst();
-		assertTrue("Exp. to find env var", envVar.isPresent());
-		from = envVar.get().getValueFrom();
-		assertTrue(from instanceof IConfigMapKeySelector);
-		IConfigMapKeySelector configSelector = (IConfigMapKeySelector) from;
-		assertEquals("xyz",configSelector.getName());
-		assertEquals("abc123",configSelector.getKey());
+    public void testGetEnvironmentVariablesWithValueFrom() {
 
-		//secretkeyref
-		envVar = envVars.stream().filter(e->"OPENSHIFT_SECRET_KEY_REF".equals(e.getName())).findFirst();
-		assertTrue("Exp. to find env var", envVar.isPresent());
-		from = envVar.get().getValueFrom();
-		assertTrue(from instanceof ISecretKeySelector);
-		ISecretKeySelector secretKeySelector = (ISecretKeySelector) from;
-		assertEquals("bar",secretKeySelector.getName());
-		assertEquals("foo",secretKeySelector.getKey());
-	}
-	
-	@Test
-	public void testEnvironmentVariable() {
-		//add
-		rc.setEnvironmentVariable("foo", "bar");
-		Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables();
-		Optional<IEnvironmentVariable> envVar = envVars.stream().filter(e->"foo".equals(e.getName())).findFirst();
-		assertTrue("Exp. to find env var", envVar.isPresent());
-		assertEquals("bar", envVar.get().getValue());
+        Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables();
 
-		//update
-		int size = rc.getEnvironmentVariables().size();
-		rc.setEnvironmentVariable("foo", "baz");
-		assertEquals(size, rc.getEnvironmentVariables().size());
-		envVars = rc.getEnvironmentVariables();
-		envVar = envVars.stream().filter(e->"foo".equals(e.getName())).findFirst();
-		assertEquals("baz", envVar.get().getValue());
+        // fieldref
+        Optional<IEnvironmentVariable> envVar = envVars.stream()
+                .filter(e -> "OPENSHIFT_KUBE_PING_NAMESPACE".equals(e.getName())).findFirst();
+        assertTrue("Exp. to find env var", envVar.isPresent());
+        IEnvVarSource from = envVar.get().getValueFrom();
+        assertTrue(from instanceof IObjectFieldSelector);
+        IObjectFieldSelector selector = (IObjectFieldSelector) from;
+        assertEquals("v1", selector.getApiVersion());
+        assertEquals("metadata.namespace", selector.getFieldPath());
 
-		rc.removeEnvironmentVariable("foo");
-		assertEquals(size - 1, rc.getEnvironmentVariables().size());
-	}
+        // configmapkeyref
+        envVar = envVars.stream().filter(e -> "OPENSHIFT_CONFIGMAP_KEY_REF".equals(e.getName())).findFirst();
+        assertTrue("Exp. to find env var", envVar.isPresent());
+        from = envVar.get().getValueFrom();
+        assertTrue(from instanceof IConfigMapKeySelector);
+        IConfigMapKeySelector configSelector = (IConfigMapKeySelector) from;
+        assertEquals("xyz", configSelector.getName());
+        assertEquals("abc123", configSelector.getKey());
 
-	@Test
-	public void testEnvironmentVariableFromMissingEnv() {
-		String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
-		ModelNode containers = node.get(path);
-		containers.get(0).remove("env");
-		testEnvironmentVariable();
-	}
+        // secretkeyref
+        envVar = envVars.stream().filter(e -> "OPENSHIFT_SECRET_KEY_REF".equals(e.getName())).findFirst();
+        assertTrue("Exp. to find env var", envVar.isPresent());
+        from = envVar.get().getValueFrom();
+        assertTrue(from instanceof ISecretKeySelector);
+        ISecretKeySelector secretKeySelector = (ISecretKeySelector) from;
+        assertEquals("bar", secretKeySelector.getName());
+        assertEquals("foo", secretKeySelector.getKey());
+    }
 
-	@Test
-	public void testEnvironmentVariableForANamedContainer() {
-		rc.setEnvironmentVariable("ruby-helloworld-database", "fooz", "balls");
-		Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables("ruby-helloworld-database");
-		Optional<IEnvironmentVariable> envVar = envVars.stream().filter(e->"fooz".equals(e.getName())).findFirst();
-		assertTrue("Exp. to find env var", envVar.isPresent());
-		assertEquals("balls", envVar.get().getValue());
-	}
-	
-	@Test
-	public void setReplicaSelector() {
-		Map<String, String> exp = new HashMap<>();
-		exp.put("foo", "bar");
-		rc.setReplicaSelector(exp);
-		assertEquals(exp, rc.getReplicaSelector());
-	}
+    @Test
+    public void testEnvironmentVariable() {
+        // add
+        rc.setEnvironmentVariable("foo", "bar");
+        Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables();
+        Optional<IEnvironmentVariable> envVar = envVars.stream().filter(e -> "foo".equals(e.getName())).findFirst();
+        assertTrue("Exp. to find env var", envVar.isPresent());
+        assertEquals("bar", envVar.get().getValue());
 
-	@Test
-	public void setReplicaSelectorFromMissingSelector() {
-		String[] path = new String[]{"status"};
-		node.get(path).clear();
-		setReplicaSelector();
-	}
+        // update
+        int size = rc.getEnvironmentVariables().size();
+        rc.setEnvironmentVariable("foo", "baz");
+        assertEquals(size, rc.getEnvironmentVariables().size());
+        envVars = rc.getEnvironmentVariables();
+        envVar = envVars.stream().filter(e -> "foo".equals(e.getName())).findFirst();
+        assertEquals("baz", envVar.get().getValue());
 
+        rc.removeEnvironmentVariable("foo");
+        assertEquals(size - 1, rc.getEnvironmentVariables().size());
+    }
 
-	@Test
-	public void setReplicaSelectorWithKeyValue() {
-		Map<String, String> exp = new HashMap<>();
-		exp.put("foo", "bar");
-		rc.setReplicaSelector("foo","bar");
-		assertEquals(exp, rc.getReplicaSelector());
-	}
-	
-	@Test
-	public void getReplicaSelector() {
-		Map<String, String> labels = new HashMap<>();
-		labels.put("name", "database");
-		labels.put("deployment", "database-1");
-		labels.put("deploymentconfig", "database");
-		assertEquals(labels, rc.getReplicaSelector());
-	}
-	
-	@Test
+    @Test
+    public void testEnvironmentVariableFromMissingEnv() {
+        String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
+        ModelNode containers = node.get(path);
+        containers.get(0).remove("env");
+        testEnvironmentVariable();
+    }
+
+    @Test
+    public void testEnvironmentVariableForANamedContainer() {
+        rc.setEnvironmentVariable("ruby-helloworld-database", "fooz", "balls");
+        Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables("ruby-helloworld-database");
+        Optional<IEnvironmentVariable> envVar = envVars.stream().filter(e -> "fooz".equals(e.getName())).findFirst();
+        assertTrue("Exp. to find env var", envVar.isPresent());
+        assertEquals("balls", envVar.get().getValue());
+    }
+
+    @Test
+    public void setReplicaSelector() {
+        Map<String, String> exp = new HashMap<>();
+        exp.put("foo", "bar");
+        rc.setReplicaSelector(exp);
+        assertEquals(exp, rc.getReplicaSelector());
+    }
+
+    @Test
+    public void setReplicaSelectorFromMissingSelector() {
+        String[] path = new String[] { "status" };
+        node.get(path).clear();
+        setReplicaSelector();
+    }
+
+    @Test
+    public void setReplicaSelectorWithKeyValue() {
+        Map<String, String> exp = new HashMap<>();
+        exp.put("foo", "bar");
+        rc.setReplicaSelector("foo", "bar");
+        assertEquals(exp, rc.getReplicaSelector());
+    }
+
+    @Test
+    public void getReplicaSelector() {
+        Map<String, String> labels = new HashMap<>();
+        labels.put("name", "database");
+        labels.put("deployment", "database-1");
+        labels.put("deploymentconfig", "database");
+        assertEquals(labels, rc.getReplicaSelector());
+    }
+
+    @Test
     public void getServiceAccountName() {
         assertEquals("dbServiceAccountName", rc.getServiceAccountName());
     }
-	
-	@Test
+
+    @Test
     public void setServiceAccountName() {
-	    rc.setServiceAccountName("newDBServiceAccountName");
+        rc.setServiceAccountName("newDBServiceAccountName");
         assertEquals("newDBServiceAccountName", rc.getServiceAccountName());
     }
-	
-	@Test
-	public void getDesiredReplicaCount(){
-		assertEquals(1, rc.getDesiredReplicaCount());
-	}
 
-	@Test
-	public void setDesiredReplicaCount(){
-		rc.setDesiredReplicaCount(9);
-		assertEquals(9, rc.getDesiredReplicaCount());
+    @Test
+    public void getDesiredReplicaCount() {
+        assertEquals(1, rc.getDesiredReplicaCount());
+    }
 
-		rc.setReplicas(6);
-		assertEquals(6, rc.getDesiredReplicaCount());
-	}
-	
-	@Test
-	public void getCurrentReplicaCount(){
-		assertEquals(2, rc.getCurrentReplicaCount());
-	}
-	
-	@Test
-	public void testGetImages(){
-		String [] exp = new String []{"openshift/mysql-55-centos7:latest"};
-		assertArrayEquals(exp , rc.getImages().toArray());
-	}
-	
-	@Test 
-	public void testGetContainer() {
-		assertNull(rc.getContainer(" "));
-		assertNotNull(rc.getContainer("ruby-helloworld-database"));
-	}
-	@Test 
-	public void testGetContainers() {
-		Collection<IContainer> containers = rc.getContainers();
-		assertNotNull(containers);
-		assertEquals(1, containers.size());
-		
-		String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
-		node.get(path).clear();
-		assertNotNull(rc.getContainers());
-	}
-	
-	@Test
-	public void testAddContainer() throws JSONException {
-		//remove containers hack
-		String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
-		node.get(path).clear();
-		//setup
-		DockerImageURI uri = new DockerImageURI("aproject/an_image_name");
-		IPort port = mock(IPort.class);
-		when(port.getProtocol()).thenReturn("TCP");
-		when(port.getContainerPort()).thenReturn(8080);
-		Set<IPort> ports = new HashSet<>();
-		ports.add(port);
-		
-		IContainer container = rc.addContainer(uri.getName(), uri, ports, new HashMap<String, String>(), Arrays.asList("/tmp"));
-		
-		List<ModelNode> containers = node.get(path).asList();
-		assertEquals(1, containers.size());
-		
-		ModelNode exp = new ModelNodeBuilder()
-			.set("name", uri.getName())
-			.set("image",uri.toString())
-			.add("ports", new ModelNodeBuilder()
-				.set("containerPort", port.getContainerPort())
-				.set("protocol", port.getProtocol())
-			)
-			.add("volumeMounts", new ModelNodeBuilder()
-				.set("name", uri.getName() +"-"+1)
-				.set("mountPath", "/tmp")
-				.set("readOnly", false)
-			)
-			.build();
-		
-		JSONAssert.assertEquals(exp.toJSONString(false), container.toJSONString(), true);
-		
-		Object [] sourceNames = rc.getVolumes().stream().map(IVolumeSource::getName).toArray();
+    @Test
+    public void setDesiredReplicaCount() {
+        rc.setDesiredReplicaCount(9);
+        assertEquals(9, rc.getDesiredReplicaCount());
 
-		Object [] contVolNames = container.getVolumes().stream().map(IVolume::getName).toArray();
-		assertArrayEquals(sourceNames,contVolNames);
-	}
-	
-	@Test
-	public void testAddContainerAllowsContainerToBeFurtherManipulated()  throws JSONException{
-		//remove containers hack
-		String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
-		node.get(path).clear();
-		
-		//setup
-		DockerImageURI uri = new DockerImageURI("arepo/aproject/an_image_name");
-		IPort port = mock(IPort.class);
-		when(port.getProtocol()).thenReturn("TCP");
-		when(port.getContainerPort()).thenReturn(8080);
-		Set<IPort> ports = new HashSet<>();
-		ports.add(port);
-		
-		IVolumeMount mount = mock(IVolumeMount.class);
-		when(mount.getName()).thenReturn(uri.getName() +"-"+1);
-		when(mount.getMountPath()).thenReturn("/tmp");
-		when(mount.isReadOnly()).thenReturn(Boolean.FALSE);
-		Set<IVolumeMount> mounts = new HashSet<>();
-		mounts.add(mount);
-		
-		IContainer container = rc.addContainer(uri.getName());
-		container.setImage(uri);
-		container.setPorts(ports);
-		container.setVolumeMounts(mounts);
-		
-		IVolumeMount fooVolumeMount = container.addVolumeMount("foobar");
-		fooVolumeMount.setMountPath("/tmp2");
-		
-		ModelNode exp = new ModelNodeBuilder()
-				.set("name", uri.getName())
-				.set("image",uri.toString())
-				.add("ports", new ModelNodeBuilder()
-					.set("containerPort", port.getContainerPort())
-					.set("protocol", port.getProtocol())
-				)
-				.add("volumeMounts", new ModelNodeBuilder()
-					.set("name", uri.getName() +"-"+1)
-					.set("mountPath", "/tmp")
-					.set("readOnly", false)
-				)
-				.add("volumeMounts", new ModelNodeBuilder()
-						.set("name", "foobar")
-						.set("mountPath", "/tmp2")
-						)
-				.build();
-		
-		JSONAssert.assertEquals(exp.toJSONString(false), container.toJSONString(), true);
-	}
-	
-	@Test
-	public void shouldReturnTemplateLabels() {
-		Map<String, String> labels = rc.getTemplateLabels();
-		assertThat(labels)
-				.hasSize(3)
-				.includes(entry("deployment", "database-1"))
-				.includes(entry("deploymentconfig", "database"))
-				.includes(entry("name", "database"));
-	}
+        rc.setReplicas(6);
+        assertEquals(6, rc.getDesiredReplicaCount());
+    }
 
-	@Test
-	public void testSetVolumes() {
-		IVolumeSource source = new EmptyDirVolumeSource("myvolume");
-		rc.setVolumes(Collections.singleton(source));
-		Set<IVolumeSource> volumes = rc.getVolumes();
-		assertEquals(1, volumes.size());
-		assertEquals("myvolume", volumes.iterator().next().getName());
-	}
+    @Test
+    public void getCurrentReplicaCount() {
+        assertEquals(2, rc.getCurrentReplicaCount());
+    }
 
-	@Test
-	public void testAddSecretVolumeToPodSpec() throws JSONException {
-            IVolumeMount volumeMount = new IVolumeMount() {
-                    public String getName() { return "my-secret"; }
-                    public String getMountPath() { return "/path/to/my/secret/"; }
-                    public boolean isReadOnly() { return true; }
-                    public void setName(String name) {}
-                    public void setMountPath(String path) {}
-                    public void setReadOnly(boolean readonly) {}
-                };
-            SecretVolumeSource source = new SecretVolumeSource(volumeMount.getName());
-		    source.setSecretName("the-secret");
-	        rc.addVolume(source);
-            Set<IVolumeSource> podSpecVolumes = rc.getVolumes();
-            Optional vol = podSpecVolumes.stream()
-                .filter(v->v.getName().equals(volumeMount.getName()))
-                .findFirst();
-            assertTrue("Expected to find secret volume in pod spec", vol.isPresent());
-        }
+    @Test
+    public void testGetImages() {
+        String[] exp = new String[] { "openshift/mysql-55-centos7:latest" };
+        assertArrayEquals(exp, rc.getImages().toArray());
+    }
+
+    @Test
+    public void testGetContainer() {
+        assertNull(rc.getContainer(" "));
+        assertNotNull(rc.getContainer("ruby-helloworld-database"));
+    }
+
+    @Test
+    public void testGetContainers() {
+        Collection<IContainer> containers = rc.getContainers();
+        assertNotNull(containers);
+        assertEquals(1, containers.size());
+
+        String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
+        node.get(path).clear();
+        assertNotNull(rc.getContainers());
+    }
+
+    @Test
+    public void testAddContainer() throws JSONException {
+        // remove containers hack
+        String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
+        node.get(path).clear();
+        // setup
+        IPort port = mock(IPort.class);
+        when(port.getProtocol()).thenReturn("TCP");
+        when(port.getContainerPort()).thenReturn(8080);
+        Set<IPort> ports = new HashSet<>();
+        ports.add(port);
+        DockerImageURI uri = new DockerImageURI("aproject/an_image_name");
+
+        IContainer container = rc.addContainer(uri.getName(), uri, ports, new HashMap<String, String>(),
+                Arrays.asList("/tmp"));
+
+        List<ModelNode> containers = node.get(path).asList();
+        assertEquals(1, containers.size());
+
+        ModelNode exp = new ModelNodeBuilder().set("name", uri.getName()).set("image", uri.toString())
+                .add("ports",
+                        new ModelNodeBuilder().set("containerPort", port.getContainerPort()).set("protocol",
+                                port.getProtocol()))
+                .add("volumeMounts", new ModelNodeBuilder().set("name", uri.getName() + "-" + 1)
+                        .set("mountPath", "/tmp").set("readOnly", false))
+                .build();
+
+        JSONAssert.assertEquals(exp.toJSONString(false), container.toJson(), true);
+
+        Object[] sourceNames = rc.getVolumes().stream().map(IVolumeSource::getName).toArray();
+
+        Object[] contVolNames = container.getVolumes().stream().map(IVolume::getName).toArray();
+        assertArrayEquals(sourceNames, contVolNames);
+    }
+
+    @Test
+    public void testAddContainerAllowsContainerToBeFurtherManipulated() throws JSONException {
+        // remove containers hack
+        String[] path = getPath(ReplicationController.SPEC_TEMPLATE_CONTAINERS);
+        node.get(path).clear();
+
+        // setup
+        IPort port = mock(IPort.class);
+        when(port.getProtocol()).thenReturn("TCP");
+        when(port.getContainerPort()).thenReturn(8080);
+        Set<IPort> ports = new HashSet<>();
+        ports.add(port);
+        DockerImageURI uri = new DockerImageURI("arepo/aproject/an_image_name");
+
+        IVolumeMount mount = mock(IVolumeMount.class);
+        when(mount.getName()).thenReturn(uri.getName() + "-" + 1);
+        when(mount.getMountPath()).thenReturn("/tmp");
+        when(mount.isReadOnly()).thenReturn(Boolean.FALSE);
+        Set<IVolumeMount> mounts = new HashSet<>();
+        mounts.add(mount);
+
+        IContainer container = rc.addContainer(uri.getName());
+        container.setImage(uri);
+        container.setPorts(ports);
+        container.setVolumeMounts(mounts);
+
+        IVolumeMount fooVolumeMount = container.addVolumeMount("foobar");
+        fooVolumeMount.setMountPath("/tmp2");
+
+        ModelNode exp = new ModelNodeBuilder().set("name", uri.getName()).set("image", uri.toString())
+                .add("ports",
+                        new ModelNodeBuilder().set("containerPort", port.getContainerPort()).set("protocol",
+                                port.getProtocol()))
+                .add("volumeMounts",
+                        new ModelNodeBuilder().set("name", uri.getName() + "-" + 1).set("mountPath", "/tmp")
+                                .set("readOnly", false))
+                .add("volumeMounts", new ModelNodeBuilder().set("name", "foobar").set("mountPath", "/tmp2")).build();
+
+        JSONAssert.assertEquals(exp.toJSONString(false), container.toJson(), true);
+    }
+
+    @Test
+    public void shouldReturnTemplateLabels() {
+        Map<String, String> labels = rc.getTemplateLabels();
+        assertThat(labels).hasSize(3).includes(entry("deployment", "database-1"))
+                .includes(entry("deploymentconfig", "database")).includes(entry("name", "database"));
+    }
+
+    @Test
+    public void testSetVolumes() {
+        IVolumeSource source = new EmptyDirVolumeSource("myvolume");
+        rc.setVolumes(Collections.singleton(source));
+        Set<IVolumeSource> volumes = rc.getVolumes();
+        assertEquals(1, volumes.size());
+        assertEquals("myvolume", volumes.iterator().next().getName());
+    }
+
+    @Test
+    public void testAddSecretVolumeToPodSpec() throws JSONException {
+        IVolumeMount volumeMount = new IVolumeMount() {
+            public String getName() {
+                return "my-secret";
+            }
+
+            public String getMountPath() {
+                return "/path/to/my/secret/";
+            }
+
+            public boolean isReadOnly() {
+                return true;
+            }
+
+            public void setName(String name) {
+            }
+
+            public void setMountPath(String path) {
+            }
+
+            public void setReadOnly(boolean readonly) {
+            }
+        };
+        SecretVolumeSource source = new SecretVolumeSource(volumeMount.getName());
+        source.setSecretName("the-secret");
+        rc.addVolume(source);
+        Set<IVolumeSource> podSpecVolumes = rc.getVolumes();
+        Optional vol = podSpecVolumes.stream().filter(v -> v.getName().equals(volumeMount.getName())).findFirst();
+        assertTrue("Expected to find secret volume in pod spec", vol.isPresent());
+    }
 }

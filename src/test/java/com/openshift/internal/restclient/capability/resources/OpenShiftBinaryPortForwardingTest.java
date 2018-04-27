@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import static com.openshift.internal.restclient.capability.resources.testutils.BinaryCapabilityTestMocks.OC_LOCATION;
@@ -39,76 +40,60 @@ import com.openshift.restclient.model.IPod;
 
 public class OpenShiftBinaryPortForwardingTest {
 
-	private static final int LOCAL_PORT1 = 8080;
-	private static final int REMOTE_PORT1 = 80;
+    private static final int LOCAL_PORT1 = 8080;
+    private static final int REMOTE_PORT1 = 80;
 
-	private static final int LOCAL_PORT2 = 8443;
-	private static final int REMOTE_PORT2 = 43;
+    private static final int LOCAL_PORT2 = 8443;
+    private static final int REMOTE_PORT2 = 43;
 
-	private IPod pod;
+    private IPod pod;
 
-	private OpenShiftBinaryPortForwarding binaryPortForwarding;
+    private OpenShiftBinaryPortForwarding binaryPortForwarding;
 
-	@Before
-	public void before() throws MalformedURLException {
-		IClient client = mockClient();
-		this.pod = mockPod();
-		this.binaryPortForwarding = createBinaryPortForwarding(pod, client);
-	}
+    @Before
+    public void before() throws MalformedURLException {
+        IClient client = mockClient();
+        this.pod = mockPod();
+        this.binaryPortForwarding = createBinaryPortForwarding(pod, client);
+    }
 
-	private OpenShiftBinaryPortForwarding createBinaryPortForwarding(IPod pod, IClient client) {
-		OpenShiftBinaryPortForwarding portForwarding = spy(new OpenShiftBinaryPortForwarding(pod, client));
-		doReturn(OC_LOCATION).when(portForwarding).getOpenShiftBinaryLocation();
-		doReturn(null).when(portForwarding).startProcess(any(ProcessBuilder.class));
-		return portForwarding;
-	}
+    private OpenShiftBinaryPortForwarding createBinaryPortForwarding(IPod pod, IClient client) {
+        OpenShiftBinaryPortForwarding portForwarding = spy(new OpenShiftBinaryPortForwarding(pod, client));
+        doReturn(OC_LOCATION).when(portForwarding).getOpenShiftBinaryLocation();
+        doReturn(null).when(portForwarding).startProcess(any(ProcessBuilder.class));
+        return portForwarding;
+    }
 
-	@Test
-	public void shouldBuildCommandLineWithoutSkipSSL() {
-		// given
-		ArgumentCaptor<ProcessBuilder> processBuilderArgument = ArgumentCaptor.forClass(ProcessBuilder.class);
-		List<PortPair> ports = Arrays.asList(
-				mockPortPair(LOCAL_PORT2, REMOTE_PORT2));
-		// when
-		binaryPortForwarding.forwardPorts(ports);
-		// then
-		verify(binaryPortForwarding).startProcess(processBuilderArgument.capture());
-		ProcessBuilder builder = processBuilderArgument.getValue();
-		assertThat(builder.command()).isEqualTo(Arrays.asList(
-				OC_LOCATION,
-				OpenShiftBinaryPortForwarding.PORT_FORWARD_COMMAND,
-				"--token=" + TOKEN,
-				"--server=" + SERVER_URL.toString(),
-				"-n",
-				POD_NAMESPACE,
-				"-p",
-				POD_NAME,
-				LOCAL_PORT2 + ":" + REMOTE_PORT2));
-	}
+    @Test
+    public void shouldBuildCommandLineWithoutSkipSSL() {
+        // given
+        ArgumentCaptor<ProcessBuilder> processBuilderArgument = ArgumentCaptor.forClass(ProcessBuilder.class);
+        List<PortPair> ports = Arrays.asList(mockPortPair(LOCAL_PORT2, REMOTE_PORT2));
+        // when
+        binaryPortForwarding.forwardPorts(ports);
+        // then
+        verify(binaryPortForwarding).startProcess(processBuilderArgument.capture());
+        ProcessBuilder builder = processBuilderArgument.getValue();
+        assertThat(builder.command())
+                .isEqualTo(Arrays.asList(OC_LOCATION, OpenShiftBinaryPortForwarding.PORT_FORWARD_COMMAND,
+                        "--token=" + TOKEN, "--server=" + SERVER_URL.toString(), "-n", POD_NAMESPACE, "-p", POD_NAME,
+                        LOCAL_PORT2 + ":" + REMOTE_PORT2));
+    }
 
-	@Test
-	public void shouldBuildCommandLineWith2PortsSkipSSL() {
-		// given
-		ArgumentCaptor<ProcessBuilder> processBuilderArgument = ArgumentCaptor.forClass(ProcessBuilder.class);
-		List<PortPair> ports = Arrays.asList(
-				mockPortPair(LOCAL_PORT1, REMOTE_PORT1), 
-				mockPortPair(LOCAL_PORT2, REMOTE_PORT2));
-		// when
-		binaryPortForwarding.forwardPorts(ports, new SkipTlsVerify());
-		// then
-		verify(binaryPortForwarding).startProcess(processBuilderArgument.capture());
-		ProcessBuilder builder = processBuilderArgument.getValue();
-		assertThat(builder.command()).isEqualTo(Arrays.asList(
-				OC_LOCATION,
-				OpenShiftBinaryPortForwarding.PORT_FORWARD_COMMAND,
-				"--token=" + TOKEN,
-				"--server=" + SERVER_URL.toString(),
-				"--insecure-skip-tls-verify=true",
-				"-n",
-				POD_NAMESPACE,
-				"-p",
-				POD_NAME,
-				LOCAL_PORT1 + ":" + REMOTE_PORT1,
-				LOCAL_PORT2 + ":" + REMOTE_PORT2));
-	}
+    @Test
+    public void shouldBuildCommandLineWith2PortsSkipSSL() {
+        // given
+        ArgumentCaptor<ProcessBuilder> processBuilderArgument = ArgumentCaptor.forClass(ProcessBuilder.class);
+        List<PortPair> ports = Arrays.asList(mockPortPair(LOCAL_PORT1, REMOTE_PORT1),
+                mockPortPair(LOCAL_PORT2, REMOTE_PORT2));
+        // when
+        binaryPortForwarding.forwardPorts(ports, new SkipTlsVerify());
+        // then
+        verify(binaryPortForwarding).startProcess(processBuilderArgument.capture());
+        ProcessBuilder builder = processBuilderArgument.getValue();
+        assertThat(builder.command()).isEqualTo(
+                Arrays.asList(OC_LOCATION, OpenShiftBinaryPortForwarding.PORT_FORWARD_COMMAND, "--token=" + TOKEN,
+                        "--server=" + SERVER_URL.toString(), "--insecure-skip-tls-verify=true", "-n", POD_NAMESPACE,
+                        "-p", POD_NAME, LOCAL_PORT1 + ":" + REMOTE_PORT1, LOCAL_PORT2 + ":" + REMOTE_PORT2));
+    }
 }

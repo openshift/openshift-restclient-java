@@ -7,31 +7,29 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
+
 package com.openshift.restclient;
 
 import com.openshift.restclient.model.IStatus;
 
-/**
- * @author jeff.cantrill
- */
 public class NotFoundException extends OpenShiftException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public NotFoundException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public NotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public NotFoundException(String message) {
-		super(message);
-	}
+    public NotFoundException(String message) {
+        super(message);
+    }
 
-	public NotFoundException(Throwable cause) {
-		super(cause, "");
-	}
-	
-	public NotFoundException(Throwable cause, IStatus status, String message, Object... arguments) {
-		super(cause, status, message, arguments);
-	}
+    public NotFoundException(Throwable cause) {
+        super(cause, "");
+    }
+
+    public NotFoundException(Throwable cause, IStatus status, String message, Object... arguments) {
+        super(cause, status, message, arguments);
+    }
 }

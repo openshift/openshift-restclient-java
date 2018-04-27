@@ -8,9 +8,12 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.deploy;
 
-import static com.openshift.internal.util.JBossDmrExtentions.*;
+import static com.openshift.internal.util.JBossDmrExtentions.asBoolean;
+import static com.openshift.internal.util.JBossDmrExtentions.asString;
+import static com.openshift.internal.util.JBossDmrExtentions.set;
 
 import java.util.Map;
 

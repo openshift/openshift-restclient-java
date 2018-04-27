@@ -1,10 +1,11 @@
 package com.openshift.internal.restclient.model;
 
-import com.openshift.restclient.IClient;
-import com.openshift.restclient.model.IConfigMap;
+import java.util.Map;
+
 import org.jboss.dmr.ModelNode;
 
-import java.util.Map;
+import com.openshift.restclient.IClient;
+import com.openshift.restclient.model.IConfigMap;
 
 /**
  * @author Ulf Lilleengen

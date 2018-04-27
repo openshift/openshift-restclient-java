@@ -8,35 +8,34 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.authorization;
 
 /**
- * The details about how to manually obtain
- * a request token
- *  
- * @author Jeff Cantrill
+ * The details about how to manually obtain a request token
+ * 
  */
 public interface IAuthorizationDetails {
-	
-	/**
-	 * The message returned from the server
-	 * for being unauthorized if provided
-	 * @return the message or empty string
-	 */
-	String getMessage();
-	
-	/**
-	 * The link to visit to request a valid
-	 * token that can be used to access
-	 * the server if provided
-	 * @return the link or null if not provided
-	 */
-	String getRequestTokenLink();
-	
-	/**
-	 * The authentication scheme
-	 * @return
-	 */
-	String getScheme();
-	
+
+    /**
+     * The message returned from the server for being unauthorized if provided
+     * 
+     * @return the message or empty string
+     */
+    String getMessage();
+
+    /**
+     * The link to visit to request a valid token that can be used to access the
+     * server if provided
+     * 
+     * @return the link or null if not provided
+     */
+    String getRequestTokenLink();
+
+    /**
+     * The authentication scheme
+     * 
+     */
+    String getScheme();
+
 }

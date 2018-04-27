@@ -6,14 +6,16 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
+
+import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.openshift.restclient.model.INamespace;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -23,363 +25,363 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
+import com.openshift.restclient.model.INamespace;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
-
-import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
 
 /**
  * Resource is an abstract representation of a Kubernetes resource
  * 
- * @author Jeff Cantrill
  */
 public class KubernetesResource implements IResource, ResourcePropertyKeys {
-	
-	private ModelNode node;
-	private IClient client;
-	private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
-	private Map<String, String []> propertyKeys;
-	private IProject project;
-	private INamespace namespace;
-	
-	/**
-	 * 
-	 * @param node
-	 * @param client
-	 * @param overrideProperties  the map of properties that override the defaults
-	 */
-	public KubernetesResource(ModelNode node, IClient client, Map<String, String []> overrideProperties){
-		if(overrideProperties == null) overrideProperties = new HashMap<String, String []>();
-		this.node = node;
-		this.client = client;
-		this.propertyKeys = overrideProperties;
-		initializeCapabilities(capabilities, this, client);
-	}
-	
-	@Override
-	public String getResourceVersion() {
-		return asString(METADATA_RESOURCE_VERSION);
-	}
 
-	@Override
-	public Map<String, String> getMetadata() {
-		return asMap(METADATA);
-	}
+    private ModelNode node;
+    private IClient client;
+    private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
+    private Map<String, String[]> propertyKeys;
+    private IProject project;
+    private INamespace namespace;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends ICapability> T getCapability(Class<T> capability) {
-		return (T) capabilities.get(capability);
-	}
-	
-	public Set<Class<? extends ICapability>> getCapabilities(){
-		return Collections.unmodifiableSet(capabilities.keySet());
-	}
-	
-	protected Map<Class<? extends ICapability>, ICapability> getModifiableCapabilities(){
-		return capabilities;
-	}
-	
-	@Override
-	public boolean supports(Class<? extends ICapability> capability) {
-		return capabilities.containsKey(capability);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends ICapability, R> R accept(CapabilityVisitor<T, R> visitor, R unsupportedValue){
-		if(capabilities.containsKey(visitor.getCapabilityType())){
-			T capability = (T) capabilities.get(visitor.getCapabilityType());
-			return (R) visitor.visit(capability);
-		}
-		return unsupportedValue;
-	}
-	
-	@Override
-	public IProject getProject() {
-		if(this.project == null) {
-			this.project = client.get(ResourceKind.PROJECT, getNamespaceName(), "");
-		}
-		return this.project;
-	}
+    /**
+     * 
+     * @param overrideProperties
+     *            the map of properties that override the defaults
+     */
+    public KubernetesResource(ModelNode node, IClient client, Map<String, String[]> overrideProperties) {
+        if (overrideProperties == null) {
+            overrideProperties = new HashMap<String, String[]>();
+        }
+        this.node = node;
+        this.client = client;
+        this.propertyKeys = overrideProperties;
+        initializeCapabilities(capabilities, this, client);
+    }
 
-	@Override
+    @Override
+    public String getResourceVersion() {
+        return asString(METADATA_RESOURCE_VERSION);
+    }
+
+    @Override
+    public Map<String, String> getMetadata() {
+        return asMap(METADATA);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends ICapability> T getCapability(Class<T> capability) {
+        return (T) capabilities.get(capability);
+    }
+
+    public Set<Class<? extends ICapability>> getCapabilities() {
+        return Collections.unmodifiableSet(capabilities.keySet());
+    }
+
+    protected Map<Class<? extends ICapability>, ICapability> getModifiableCapabilities() {
+        return capabilities;
+    }
+
+    @Override
+    public boolean supports(Class<? extends ICapability> capability) {
+        return capabilities.containsKey(capability);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends ICapability, R> R accept(CapabilityVisitor<T, R> visitor, R unsupportedValue) {
+        if (capabilities.containsKey(visitor.getCapabilityType())) {
+            T capability = (T) capabilities.get(visitor.getCapabilityType());
+            return (R) visitor.visit(capability);
+        }
+        return unsupportedValue;
+    }
+
+    @Override
+    public IProject getProject() {
+        if (this.project == null) {
+            this.project = client.get(ResourceKind.PROJECT, getNamespaceName(), "");
+        }
+        return this.project;
+    }
+
+    @Override
     public INamespace getNamespace() {
-	    if (this.namespace == null) {
-	        this.namespace = client.get(ResourceKind.NAMESPACE, getNamespaceName(), "");
+        if (this.namespace == null) {
+            this.namespace = client.get(ResourceKind.NAMESPACE, getNamespaceName(), "");
         }
         return this.namespace;
     }
 
-	@Override
-	public Map<String, String> getAnnotations() {
-		return asMap(ANNOTATIONS);
-	}
+    @Override
+    public Map<String, String> getAnnotations() {
+        return asMap(ANNOTATIONS);
+    }
 
-	@Override
-	public String getAnnotation(String key) {
-		return getAnnotations().get(key);
-	}
-	
-	
-	@Override
-	public void setAnnotation(String name, String value) {
-		if(value == null) return;
-		ModelNode annotations = get(ANNOTATIONS);
-		annotations.get(name).set(value);
-	}
-	
-	@Override
-	public void removeAnnotation(String name) {
-		ModelNode annotations = get(ANNOTATIONS);
-		annotations.remove(name);
-	}
+    @Override
+    public String getAnnotation(String key) {
+        return getAnnotations().get(key);
+    }
 
-	@Override
-	public boolean isAnnotatedWith(String key) {
-		Map<String, String> annotations = getAnnotations();
-		return annotations.containsKey(key);
-	}
-	
-	public Map<String, String []> getPropertyKeys(){
-		return this.propertyKeys;
-	}
-	
-	public IClient getClient(){
-		return client;
-	}
-	
-	public void setNode(ModelNode node) {
-		this.node = node.clone();
-	}
-	public ModelNode getNode(){
-		return node;
-	}
-	
-	public void refresh(){
-		//TODO find better way to bypass serialization/deserialization
-		this.node = ModelNode.fromJSONString(client.get(getKind(), getName(), getNamespaceName()).toString());
-	}
-	
-	@Override
-	public String getKind(){
-		return asString(KIND);
-	}
-	
-	@Override
-	public String getApiVersion(){
-		return asString(APIVERSION);
-	}
-	
-	@Override
-	public String getCreationTimeStamp(){
-		return asString(CREATION_TIMESTAMP);
-	}
-	@Override
-	public String getName(){
-		return asString(METADATA_NAME);
-	}
-	
-	public void setName(String name) {
-		set(METADATA_NAME, name);
-	}
-	
-	@Override
-	public String getNamespaceName(){
-		return asString(METADATA_NAMESPACE);
-	}
-	
-	public void setNamespace(String namespace){
-		set(METADATA_NAMESPACE, namespace);
-	}
+    @Override
+    public void setAnnotation(String name, String value) {
+        if (value == null) {
+            return;
+        }
+        ModelNode annotations = get(ANNOTATIONS);
+        annotations.get(name).set(value);
+    }
 
-	@Override
-	public void addLabel(String key, String value) {
-		ModelNode labels = node.get(getPath(LABELS));
-		labels.get(key).set(value);
-	}
-	
-	
-	@Override
-	public Map<String, String> getLabels() {
-		return asMap(LABELS);
-	}
-	
-	/*---------- utility methods ------*/
-	protected boolean has(String key) {
-		return node.has(getPath(key));
-	}
-	
-	protected ModelNode get(String key){
-		return get(node, key);
-	}
-	protected ModelNode get(ModelNode node, String key){
-		return node.get(getPath(key));
-	}
+    @Override
+    public void removeAnnotation(String name) {
+        ModelNode annotations = get(ANNOTATIONS);
+        annotations.remove(name);
+    }
 
-	protected Map<String, String> getEnvMap(String key) {
-		Map<String, String> values = new HashMap<String, String>();
-		ModelNode source = node.get(getPath(key));
-		if(source.getType() == ModelType.LIST){
-			for (ModelNode value : source.asList()) {
-				values.put(value.get("name").asString(), value.get("value").asString());
-			}
-		}
-		return values;
-	}
+    @Override
+    public boolean isAnnotatedWith(String key) {
+        Map<String, String> annotations = getAnnotations();
+        return annotations.containsKey(key);
+    }
 
-	protected void set(String key, Map<String, String> values) {
-		JBossDmrExtentions.set(node, propertyKeys, key, values);
-	}
-	
-	protected void set(String key, int value) {
-		JBossDmrExtentions.set(node, propertyKeys, key, value);
-	}
-	
-	protected void set(ModelNode node, String key, int value) {
-		JBossDmrExtentions.set(node, propertyKeys, key, value);
-	}
-	
-	protected void set(String key, String value){
-		JBossDmrExtentions.set(node, propertyKeys, key, value);
-	}
+    public Map<String, String[]> getPropertyKeys() {
+        return this.propertyKeys;
+    }
 
-	protected void set(ModelNode node, String key, String value){
-		JBossDmrExtentions.set(node, propertyKeys, key, value);
-	}
+    public IClient getClient() {
+        return client;
+    }
 
-	protected void set(String key, boolean value){
-		JBossDmrExtentions.set(node, propertyKeys, key, value);
-	}
-	
-	protected void set(ModelNode node, String key, boolean value){
-		JBossDmrExtentions.set(node, propertyKeys, key, value);
-	}
+    public void setNode(ModelNode node) {
+        this.node = node.clone();
+    }
 
-	protected void setEnvMap(String key, Map<String, String> values) {
-		ModelNode mapNodeParent = node.get(getPath(key));
-		for(Map.Entry<String, String> value: values.entrySet()) {
-			ModelNode mapNode = mapNodeParent.add();
-			mapNode.get("name").set(value.getKey());
-			mapNode.get("value").set(value.getValue());
-		}
-	}
+    public ModelNode getNode() {
+        return node;
+    }
 
-	protected String[] getPath(String key) {
-		return JBossDmrExtentions.getPath(propertyKeys, key);
-	}
-	
-	protected String asString(ModelNode node, String subKey) {
-		return JBossDmrExtentions.asString(node, propertyKeys, subKey);
-	}
-	
-	protected int asInt(String key){
-		return JBossDmrExtentions.asInt(node, propertyKeys, key);
-	}
-	
-	protected int asInt(ModelNode node, String key){
-		return JBossDmrExtentions.asInt(node, propertyKeys, key);
-	}
-	
-	protected Map<String, String> asMap(String property){
-		return JBossDmrExtentions.asMap(this.node, propertyKeys, property);
-	}
-	
-	protected String asString(String property){
-		return JBossDmrExtentions.asString(node, propertyKeys, property);
-	}
+    public void refresh() {
+        // TODO find better way to bypass serialization/deserialization
+        this.node = ModelNode.fromJSONString(client.get(getKind(), getName(), getNamespaceName()).toString());
+    }
 
-	protected boolean asBoolean(ModelNode node, String property) {
-		return JBossDmrExtentions.asBoolean(node, propertyKeys, property);
-	}
+    @Override
+    public String getKind() {
+        return asString(KIND);
+    }
 
-	protected boolean asBoolean(String property) {
-		return JBossDmrExtentions.asBoolean(node, propertyKeys, property);
-	}
+    @Override
+    public String getApiVersion() {
+        return asString(APIVERSION);
+    }
 
-	protected Set asSet(String property, ModelType type) {
-		return JBossDmrExtentions.asSet(node, propertyKeys, property, type);
-	}
+    @Override
+    public String getCreationTimeStamp() {
+        return asString(CREATION_TIMESTAMP);
+    }
 
-	protected void set(String property, Set<String> values) {
-		JBossDmrExtentions.set(node, propertyKeys, property, values);
-	}
+    @Override
+    public String getName() {
+        return asString(METADATA_NAME);
+    }
 
-	protected  void set(String property, String... values) {
-		JBossDmrExtentions.set(node, propertyKeys, property, values);
-	}
+    public void setName(String name) {
+        set(METADATA_NAME, name);
+    }
 
-	@Override
-	public String toString() {
-		return toJson(true);
-	}
-	
-	public String toPrettyString(){
-		return toJson(false);
-	}
-	
-	@Override
-	public int hashCode() {
-		String namespace = getNamespaceName();
-		String name = getName();
-		String kind = getKind();
-		final int prime = 31;
-		return prime * (namespace.hashCode() + name.hashCode() + kind.hashCode()); 
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		else if (obj == null)
-			return false;
-		else if (getClass() != obj.getClass())
-			return false;
-		else {
-			KubernetesResource other = (KubernetesResource) obj; 
-			if (getKind() != null){
-				if (!getKind().equals(other.getKind())) {
-					return false;
-				}
-			} else {
-				if (other.getKind() != null) {
-					return false;
-				}
-			}
-			if (getNamespaceName() != null) {
-				if(!getNamespaceName().equals(other.getNamespaceName())) {
-					return false;
-				}
-			} else {
-				if (other.getNamespaceName() != null) {
-					return false;
-				}
-			}
-			if (getName() != null) {
-				if(!getName().equals(other.getName())) {
-					return false;
-				}
-			} else {
-				if (other.getName() != null) {
-					return false;
-				}
-			}
-			
-		}
-		return true;
-	}
+    @Override
+    public String getNamespaceName() {
+        return asString(METADATA_NAMESPACE);
+    }
 
-	@Override
-	public String toJson() {
-		return toJson(false);
-	}
+    public void setNamespace(String namespace) {
+        set(METADATA_NAMESPACE, namespace);
+    }
 
-	@Override
-	public String toJson(boolean compact) {
-		return JBossDmrExtentions.toJsonString(node, compact);
-	}
+    @Override
+    public void addLabel(String key, String value) {
+        ModelNode labels = node.get(getPath(LABELS));
+        labels.get(key).set(value);
+    }
 
-	
+    @Override
+    public Map<String, String> getLabels() {
+        return asMap(LABELS);
+    }
+
+    /*---------- utility methods ------*/
+    protected boolean has(String key) {
+        return node.has(getPath(key));
+    }
+
+    protected ModelNode get(String key) {
+        return get(node, key);
+    }
+
+    protected ModelNode get(ModelNode node, String key) {
+        return node.get(getPath(key));
+    }
+
+    protected Map<String, String> getEnvMap(String key) {
+        Map<String, String> values = new HashMap<String, String>();
+        ModelNode source = node.get(getPath(key));
+        if (source.getType() == ModelType.LIST) {
+            for (ModelNode value : source.asList()) {
+                values.put(value.get("name").asString(), value.get("value").asString());
+            }
+        }
+        return values;
+    }
+
+    protected void set(String key, Map<String, String> values) {
+        JBossDmrExtentions.set(node, propertyKeys, key, values);
+    }
+
+    protected void set(String key, int value) {
+        JBossDmrExtentions.set(node, propertyKeys, key, value);
+    }
+
+    protected void set(ModelNode node, String key, int value) {
+        JBossDmrExtentions.set(node, propertyKeys, key, value);
+    }
+
+    protected void set(String key, String value) {
+        JBossDmrExtentions.set(node, propertyKeys, key, value);
+    }
+
+    protected void set(ModelNode node, String key, String value) {
+        JBossDmrExtentions.set(node, propertyKeys, key, value);
+    }
+
+    protected void set(String key, boolean value) {
+        JBossDmrExtentions.set(node, propertyKeys, key, value);
+    }
+
+    protected void set(ModelNode node, String key, boolean value) {
+        JBossDmrExtentions.set(node, propertyKeys, key, value);
+    }
+    
+    protected void set(String property, Set<String> values) {
+        JBossDmrExtentions.set(node, propertyKeys, property, values);
+    }
+
+    protected void set(String property, String... values) {
+        JBossDmrExtentions.set(node, propertyKeys, property, values);
+    }
+
+    protected void setEnvMap(String key, Map<String, String> values) {
+        ModelNode mapNodeParent = node.get(getPath(key));
+        for (Map.Entry<String, String> value : values.entrySet()) {
+            ModelNode mapNode = mapNodeParent.add();
+            mapNode.get("name").set(value.getKey());
+            mapNode.get("value").set(value.getValue());
+        }
+    }
+    
+    protected String[] getPath(String key) {
+        return JBossDmrExtentions.getPath(propertyKeys, key);
+    }
+
+    protected String asString(ModelNode node, String subKey) {
+        return JBossDmrExtentions.asString(node, propertyKeys, subKey);
+    }
+
+    protected String asString(String property) {
+        return JBossDmrExtentions.asString(node, propertyKeys, property);
+    }
+    
+    protected int asInt(String key) {
+        return JBossDmrExtentions.asInt(node, propertyKeys, key);
+    }
+
+    protected int asInt(ModelNode node, String key) {
+        return JBossDmrExtentions.asInt(node, propertyKeys, key);
+    }
+
+    protected Map<String, String> asMap(String property) {
+        return JBossDmrExtentions.asMap(this.node, propertyKeys, property);
+    }
+
+    protected boolean asBoolean(ModelNode node, String property) {
+        return JBossDmrExtentions.asBoolean(node, propertyKeys, property);
+    }
+
+    protected boolean asBoolean(String property) {
+        return JBossDmrExtentions.asBoolean(node, propertyKeys, property);
+    }
+
+    @SuppressWarnings("rawtypes")
+    protected Set asSet(String property, ModelType type) {
+        return JBossDmrExtentions.asSet(node, propertyKeys, property, type);
+    }
+
+    @Override
+    public String toString() {
+        return toJson(true);
+    }
+
+    public String toPrettyString() {
+        return toJson(false);
+    }
+
+    @Override
+    public int hashCode() {
+        String namespace = getNamespaceName();
+        String name = getName();
+        String kind = getKind();
+        final int prime = 31;
+        return prime * (namespace.hashCode() + name.hashCode() + kind.hashCode());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj == null) {
+            return false;
+        } else if (getClass() != obj.getClass()) {
+            return false;
+        } else {
+            KubernetesResource other = (KubernetesResource) obj;
+            if (getKind() != null) {
+                if (!getKind().equals(other.getKind())) {
+                    return false;
+                }
+            } else {
+                if (other.getKind() != null) {
+                    return false;
+                }
+            }
+            if (getNamespaceName() != null) {
+                if (!getNamespaceName().equals(other.getNamespaceName())) {
+                    return false;
+                }
+            } else {
+                if (other.getNamespaceName() != null) {
+                    return false;
+                }
+            }
+            if (getName() != null) {
+                if (!getName().equals(other.getName())) {
+                    return false;
+                }
+            } else {
+                if (other.getName() != null) {
+                    return false;
+                }
+            }
+
+        }
+        return true;
+    }
+
+    @Override
+    public String toJson() {
+        return toJson(false);
+    }
+
+    @Override
+    public String toJson(boolean compact) {
+        return JBossDmrExtentions.toJsonString(node, compact);
+    }
+
 }
-
-

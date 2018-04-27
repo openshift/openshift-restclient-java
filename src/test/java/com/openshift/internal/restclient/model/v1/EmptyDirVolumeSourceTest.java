@@ -8,17 +8,19 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
-import com.openshift.internal.restclient.model.volume.EmptyDirVolumeSource;
-import com.openshift.restclient.model.volume.IEmptyDirVolumeSource;
-import com.openshift.restclient.utils.Samples;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import com.openshift.internal.restclient.model.volume.EmptyDirVolumeSource;
+import com.openshift.restclient.model.volume.IEmptyDirVolumeSource;
+import com.openshift.restclient.utils.Samples;
 
 /**
  * @author Ulf Lilleengen

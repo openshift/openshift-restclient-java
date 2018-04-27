@@ -8,20 +8,16 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import com.openshift.restclient.OpenShiftException;
 
-/**
- * @author Jeff Cantrill
- *
- */
 @SuppressWarnings("serial")
 public class LocationNotFoundException extends OpenShiftException {
 
-	public LocationNotFoundException(String message) {
-		super(message, (Object [])null);
-	}
+    public LocationNotFoundException(String message) {
+        super(message, (Object[]) null);
+    }
 
-	
 }

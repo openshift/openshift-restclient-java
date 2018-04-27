@@ -8,28 +8,27 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.api.models;
 
 import java.util.Map;
 
 /**
  * A resource that can be labeled
- * @author jeff.cantrill
  *
  */
 public interface ILabelable {
-	
-	/**
-	 * Retrieves the labels associated with the resource
-	 * @return
-	 */
-	Map<String, String> getLabels();
-	
-	/**
-	 * Add or update a label;
-	 * @param key
-	 * @param value
-	 */
-	void addLabel(String key, String value);
+
+    /**
+     * Retrieves the labels associated with the resource
+     * 
+     */
+    Map<String, String> getLabels();
+
+    /**
+     * Add or update a label;
+     * 
+     */
+    void addLabel(String key, String value);
 
 }

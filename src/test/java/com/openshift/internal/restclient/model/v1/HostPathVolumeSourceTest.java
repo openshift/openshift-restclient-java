@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -22,30 +23,28 @@ import com.openshift.internal.restclient.model.volume.VolumeSource;
 import com.openshift.restclient.model.volume.IHostPathVolumeSource;
 
 public class HostPathVolumeSourceTest {
-	
-	private IHostPathVolumeSource source;
 
-	@Before
-	public void setUp() throws Exception {
-		ModelNode node = new ModelNodeBuilder()
-			.set("name", "somevolumesourcename")
-			.set("hostPath", new ModelNodeBuilder()
-					.set("path", "/foo").build()).build();
-		source = (IHostPathVolumeSource) VolumeSource.create(node);
-	}
+    private IHostPathVolumeSource source;
 
-	@Test
-	public void testName() {
-		assertThat(source.getName(), is("somevolumesourcename"));
-		source.setName("thenewname");
-		assertThat(source.getName(), is("thenewname"));
-	}
+    @Before
+    public void setUp() throws Exception {
+        ModelNode node = new ModelNodeBuilder().set("name", "somevolumesourcename")
+                .set("hostPath", new ModelNodeBuilder().set("path", "/foo").build()).build();
+        source = (IHostPathVolumeSource) VolumeSource.create(node);
+    }
 
-	@Test
-	public void testPath() {
-		assertThat(source.getPath(), is("/foo"));
-		source.setPath("thenewpath");
-		assertThat(source.getPath(), is("thenewpath"));
-	}
+    @Test
+    public void testName() {
+        assertThat(source.getName(), is("somevolumesourcename"));
+        source.setName("thenewname");
+        assertThat(source.getName(), is("thenewname"));
+    }
+
+    @Test
+    public void testPath() {
+        assertThat(source.getPath(), is("/foo"));
+        source.setPath("thenewpath");
+        assertThat(source.getPath(), is("thenewpath"));
+    }
 
 }

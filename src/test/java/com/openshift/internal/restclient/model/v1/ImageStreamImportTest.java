@@ -6,9 +6,13 @@
  *
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
@@ -26,40 +30,39 @@ import com.openshift.restclient.model.IStatus;
 import com.openshift.restclient.model.image.IImageStreamImport;
 import com.openshift.restclient.utils.Samples;
 
-/**
- * @author Jeff Cantrill
- */
 public class ImageStreamImportTest {
-	private static final String VERSION = "v1";
-	private static IClient client;
-	private IImageStreamImport stream;
+    private static final String VERSION = "v1";
+    private static IClient client;
+    private IImageStreamImport stream;
 
-	@Before
-	public void setup(){
-		client = mock(IClient.class);
-		ModelNode node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM_IMPORT.getContentAsString());
-		stream = new ImageStreamImport(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM_IMPORT));
-	}
-	
-	@Test
-	public void testImport() {
-		assertFalse(stream.isImport());
-		
-		stream.setImport(true);
-		assertTrue(stream.isImport());
-	}
-	
-	@Test
-	public void testGetImageStatus() {
-		Collection<IStatus> status = stream.getImageStatus();
-		assertEquals(1, status.size());
-		assertEquals("Success", status.iterator().next().getStatus());
-	}
-	
-	@Test
-	public void testGetImageJsonFor() {
-		assertTrue("Exp. to find the json blob for the given image", StringUtils.isNotBlank(stream.getImageJsonFor("latest")));
+    @Before
+    public void setup() {
+        client = mock(IClient.class);
+        ModelNode node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM_IMPORT.getContentAsString());
+        stream = new ImageStreamImport(node, client,
+                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM_IMPORT));
+    }
 
-		assertNull("Exp. to not find the json blob", stream.getImageJsonFor("bar"));
-	}
+    @Test
+    public void testImport() {
+        assertFalse(stream.isImport());
+
+        stream.setImport(true);
+        assertTrue(stream.isImport());
+    }
+
+    @Test
+    public void testGetImageStatus() {
+        Collection<IStatus> status = stream.getImageStatus();
+        assertEquals(1, status.size());
+        assertEquals("Success", status.iterator().next().getStatus());
+    }
+
+    @Test
+    public void testGetImageJsonFor() {
+        assertTrue("Exp. to find the json blob for the given image",
+                StringUtils.isNotBlank(stream.getImageJsonFor("latest")));
+
+        assertNull("Exp. to not find the json blob", stream.getImageJsonFor("bar"));
+    }
 }

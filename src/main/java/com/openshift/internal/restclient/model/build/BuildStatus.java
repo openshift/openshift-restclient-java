@@ -8,9 +8,12 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.build;
 
-import static com.openshift.internal.util.JBossDmrExtentions.*;
+import static com.openshift.internal.util.JBossDmrExtentions.asString;
+import static com.openshift.internal.util.JBossDmrExtentions.get;
+
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
@@ -21,33 +24,32 @@ import com.openshift.restclient.model.build.IBuildStatus;
 
 public class BuildStatus extends ModelNodeAdapter implements IBuildStatus {
 
-	public BuildStatus(ModelNode node, Map<String, String[]> propertyKeys) {
-		super(node, propertyKeys);
-	}
+    public BuildStatus(ModelNode node, Map<String, String[]> propertyKeys) {
+        super(node, propertyKeys);
+    }
 
-	@Override
-	public String getPhase() {
-		return asString(getNode(), getPropertyKeys(), "phase");
-	}
+    @Override
+    public String getPhase() {
+        return asString(getNode(), getPropertyKeys(), "phase");
+    }
 
-	@Override
-	public String getStartTime() {
-		return asString(getNode(), getPropertyKeys(), "startTimestamp");
-	}
+    @Override
+    public String getStartTime() {
+        return asString(getNode(), getPropertyKeys(), "startTimestamp");
+    }
 
-	@Override
-	public long getDuration() {
-		ModelNode node = get(getNode(), getPropertyKeys(), "duration");
-		if(!node.isDefined()) {
-			return 0L;
-		}
-		return node.asLong();
-	}
+    @Override
+    public long getDuration() {
+        ModelNode node = get(getNode(), getPropertyKeys(), "duration");
+        if (!node.isDefined()) {
+            return 0L;
+        }
+        return node.asLong();
+    }
 
-	@Override
-	public DockerImageURI getOutputDockerImage() {
-		return new DockerImageURI(asString(getNode(), getPropertyKeys(), "outputDockerImageReference"));
-	}
+    @Override
+    public DockerImageURI getOutputDockerImage() {
+        return new DockerImageURI(asString(getNode(), getPropertyKeys(), "outputDockerImageReference"));
+    }
 
-	
 }

@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
 import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
@@ -23,56 +24,54 @@ import com.openshift.restclient.model.IResource;
 
 /**
  * DMR implementation of a project
- * @author Jeff Cantrill
  */
-public class Project extends KubernetesResource implements IProject{
-	
-	private static final String ANNOTATION_DISPLAY_NAME = "openshift.io/display-name";
-	private static final String ANNOTATION_DESCRIPTION = "openshift.io/description";
-	
-	public Project(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
-		initializeCapabilities(getModifiableCapabilities(), this, getClient());
-	}
-	
-	@Override
-	public IProject getProject() {
-		return this;
-	}
+public class Project extends KubernetesResource implements IProject {
 
-	@Override
-	public String getNamespaceName() {
-		if(StringUtils.isEmpty(super.getNamespaceName()))
-			return getName();
-		return super.getNamespaceName();
-	}
+    private static final String ANNOTATION_DISPLAY_NAME = "openshift.io/display-name";
+    private static final String ANNOTATION_DESCRIPTION = "openshift.io/description";
 
+    public Project(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+        initializeCapabilities(getModifiableCapabilities(), this, getClient());
+    }
 
-	@Override
-	public String getDisplayName(){
-		return getAnnotation(ANNOTATION_DISPLAY_NAME);
-	}
-	
-	public void setDisplayName(String name) {
-		setAnnotation(ANNOTATION_DISPLAY_NAME, name);
-	}
-	
+    @Override
+    public IProject getProject() {
+        return this;
+    }
 
-	@Override
-	public String getDescription() {
-		return getAnnotation(ANNOTATION_DESCRIPTION);
-	}
+    @Override
+    public String getNamespaceName() {
+        if (StringUtils.isEmpty(super.getNamespaceName())) {
+            return getName();
+        }
+        return super.getNamespaceName();
+    }
 
+    @Override
+    public String getDisplayName() {
+        return getAnnotation(ANNOTATION_DISPLAY_NAME);
+    }
 
-	@Override
-	public void setDescription(String value) {
-		setAnnotation(ANNOTATION_DESCRIPTION, value);
-	}
+    public void setDisplayName(String name) {
+        setAnnotation(ANNOTATION_DISPLAY_NAME, name);
+    }
 
+    @Override
+    public String getDescription() {
+        return getAnnotation(ANNOTATION_DESCRIPTION);
+    }
 
-	@Override
-	public <T extends IResource> List<T> getResources(String kind){
-		if(getClient() == null) return new ArrayList<T>();
-		return getClient().list(kind, getName());
-	}
+    @Override
+    public void setDescription(String value) {
+        setAnnotation(ANNOTATION_DESCRIPTION, value);
+    }
+
+    @Override
+    public <T extends IResource> List<T> getResources(String kind) {
+        if (getClient() == null) {
+            return new ArrayList<T>();
+        }
+        return getClient().list(kind, getName());
+    }
 }

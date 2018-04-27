@@ -8,49 +8,46 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 /**
- * Environment variable representation to
- * allow more complex values then
- * name/value pairs.  An environmentVariable
- * will have either a value or valueFrom
- * but not both.
+ * Environment variable representation to allow more complex values then
+ * name/value pairs. An environmentVariable will have either a value or
+ * valueFrom but not both.
  * 
- * @author jeff.cantrill
  *
  */
-public interface IEnvironmentVariable extends JSONSerializeable{
-	
-	/**
-	 * The name of the env var
-	 * @return
-	 */
-	String getName();
-	
-	/**
-	 * The value of the environment variable or null if not
-	 * defined.
-	 * @return
-	 */
-	String getValue();
-	
-	/**
-	 * The ref value or null if not defined
-	 * @return
-	 */
-	IEnvVarSource getValueFrom();
-	
-	/**
-	 * Marker interface for sources of environment variables
-	 * @author jeff.cantrill
-	 *
-	 */
-	static interface IEnvVarSource{
-		
-	}
+public interface IEnvironmentVariable extends JSONSerializeable {
 
-	@Override
-	String toJson();
-	
+    /**
+     * The name of the env var
+     * 
+     */
+    String getName();
+
+    /**
+     * The value of the environment variable or null if not defined.
+     * 
+     */
+    String getValue();
+
+    /**
+     * The ref value or null if not defined
+     * 
+     */
+    IEnvVarSource getValueFrom();
+
+    /**
+     * Marker interface for sources of environment variables
+     * 
+     *
+     */
+    static interface IEnvVarSource {
+
+    }
+
+    @Override
+    String toJson();
+
 }

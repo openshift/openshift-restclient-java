@@ -6,30 +6,29 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IBuildSource {
-	
-	/**
-	 * The BuildSourceType
-	 * @return {@link BuildSourceType}
-	 */
-	String getType();
-	
-	/**
-	 * The URI to the source repo
-	 * @return
-	 */
-	String getURI();
 
-	/**
-	 * The sub-directory relative to the repo root where the source code for the application exists. 
-	 * This allows to have buildable sources in directory other than root of repository.  
-	 * 
-	 * @return
-	 */
-	String getContextDir();
+    /**
+     * The BuildSourceType
+     * 
+     * @return {@link BuildSourceType}
+     */
+    String getType();
+
+    /**
+     * The URI to the source repo
+     * 
+     */
+    String getURI();
+
+    /**
+     * The sub-directory relative to the repo root where the source code for the
+     * application exists. This allows to have buildable sources in directory other
+     * than root of repository.
+     * 
+     */
+    String getContextDir();
 }

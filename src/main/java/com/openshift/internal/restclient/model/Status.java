@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
 import java.util.HashMap;
@@ -16,45 +17,42 @@ import org.jboss.dmr.ModelNode;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IStatus;
 
-/**
- * @author Jeff Cantrill
- */
-public class Status extends KubernetesResource implements IStatus{
-	
-	private static final String STATUS_MESSAGE = "message";
-	private static final String STATUS_CODE = "code";
-	private static final String STATUS_STATUS = "status";
+public class Status extends KubernetesResource implements IStatus {
 
-	public Status(String json) {
-		this(ModelNode.fromJSONString(json), null, new HashMap<>());
-	}
+    private static final String STATUS_MESSAGE = "message";
+    private static final String STATUS_CODE = "code";
+    private static final String STATUS_STATUS = "status";
 
-	public Status(ModelNode node, IClient client, Map<String, String []> propertyKeys) {
-		super(node, client, propertyKeys);
-	}
+    public Status(String json) {
+        this(ModelNode.fromJSONString(json), null, new HashMap<>());
+    }
 
-	public String getMessage(){
-		return asString(STATUS_MESSAGE);
-	}
+    public Status(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+    }
 
-	@Override
-	public int getCode() {
-		return asInt(STATUS_CODE);
-	}
-	
-	@Override
-	public String getStatus() {
-		return asString(STATUS_STATUS);
-	}
+    public String getMessage() {
+        return asString(STATUS_MESSAGE);
+    }
 
-	@Override
-	public boolean isFailure() {
-		return FAILURE.equalsIgnoreCase(getStatus());
-	}
+    @Override
+    public int getCode() {
+        return asInt(STATUS_CODE);
+    }
 
-	@Override
-	public boolean isSuccess() {
-		return SUCCESS.equalsIgnoreCase(getStatus());
-	}
+    @Override
+    public String getStatus() {
+        return asString(STATUS_STATUS);
+    }
+
+    @Override
+    public boolean isFailure() {
+        return FAILURE.equalsIgnoreCase(getStatus());
+    }
+
+    @Override
+    public boolean isSuccess() {
+        return SUCCESS.equalsIgnoreCase(getStatus());
+    }
 
 }

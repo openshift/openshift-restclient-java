@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import com.openshift.restclient.capability.ICapability;
@@ -27,26 +28,22 @@ public interface IDeploymentTriggerable extends ICapability {
     
     /**
      * If set the true latest will update the deployment config with the latest state from all triggers.
-     * @param latest
      */
     void setLatest(boolean latest);
     
     /**
      * Returns the current setting of the latest flag.
-     * @return
      */
     boolean isLatest();
     
     /**
      * If set to try force will try to force a new deployment to run. If the deployment config is paused, 
      * then setting this to true will return an Invalid error.
-     * @param force
      */
     void setForce(boolean force);
     
     /**
      * Returns the latest setting of the force flag.
-     * @return
      */
     boolean isForce();
     
@@ -59,7 +56,6 @@ public interface IDeploymentTriggerable extends ICapability {
     
     /**
      * Returns the name of the deployment config seeded into the deployment request
-     * @return
      */
     String getResourceName();
 

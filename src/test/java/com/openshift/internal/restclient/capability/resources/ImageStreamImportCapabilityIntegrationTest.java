@@ -8,9 +8,12 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,46 +30,41 @@ import com.openshift.restclient.model.image.IImageStreamImport;
 
 import junit.framework.Assert;
 
-/**
- * 
- * @author jeff.cantrill
- *
- */
 public class ImageStreamImportCapabilityIntegrationTest {
 
-	private IImageStreamImportCapability cap;
-	private IProject project;
-	private IClient client;
-	private IntegrationTestHelper helper = new IntegrationTestHelper();
-	
-	@Before
-	public void setUp() throws Exception {
-		client = helper.createClientForBasicAuth();
-		project = helper.generateProject(client);
-		cap = new ImageStreamImportCapability(project, client);
-	}
-	
-	@After
-	public void tearDown() {
-		IntegrationTestHelper.cleanUpResource(client, project);
-	}
+    private IImageStreamImportCapability cap;
+    private IProject project;
+    private IClient client;
+    private IntegrationTestHelper helper = new IntegrationTestHelper();
 
-	@Test
-	public void testImportImageForExistingImage() {
-		DockerImageURI image = new DockerImageURI("openshift/hello-openshift");
-		IImageStreamImport imported = cap.importImageMetadata(image);
-		assertNotNull(imported);
-		IStatus status = imported.getImageStatus().iterator().next();
-		assertTrue(status.isSuccess());
-	}
+    @Before
+    public void setUp() throws Exception {
+        client = helper.createClientForBasicAuth();
+        project = helper.generateProject(client);
+        cap = new ImageStreamImportCapability(project, client);
+    }
 
-	@Test
-	public void testImportImageForUnknownImage() {
-		DockerImageURI image = new DockerImageURI("openshift/hello-openshifts");
-		IImageStreamImport imported = cap.importImageMetadata(image);
-		Assert.assertNotNull(imported);
-		IStatus status = imported.getImageStatus().iterator().next();
-		assertEquals(IHttpConstants.STATUS_UNAUTHORIZED, status.getCode()); //exp code when image does not exist
-	}
+    @After
+    public void tearDown() {
+        IntegrationTestHelper.cleanUpResource(client, project);
+    }
+
+    @Test
+    public void testImportImageForExistingImage() {
+        DockerImageURI image = new DockerImageURI("openshift/hello-openshift");
+        IImageStreamImport imported = cap.importImageMetadata(image);
+        assertNotNull(imported);
+        IStatus status = imported.getImageStatus().iterator().next();
+        assertTrue(status.isSuccess());
+    }
+
+    @Test
+    public void testImportImageForUnknownImage() {
+        DockerImageURI image = new DockerImageURI("openshift/hello-openshifts");
+        IImageStreamImport imported = cap.importImageMetadata(image);
+        Assert.assertNotNull(imported);
+        IStatus status = imported.getImageStatus().iterator().next();
+        assertEquals(IHttpConstants.STATUS_UNAUTHORIZED, status.getCode()); // exp code when image does not exist
+    }
 
 }

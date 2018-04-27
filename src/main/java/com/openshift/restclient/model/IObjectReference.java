@@ -8,67 +8,66 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 /**
- * An OpenShift object reference to an
- * OpenShift object
- * @author Jeff Cantrill
+ * An OpenShift object reference to an OpenShift object
  *
  */
 public interface IObjectReference {
 
-	/**
-	 * Returns the resource kind
-	 * @return
-	 */
-	String getKind();
-	
-	/**
-	 * The obj ref kind
-	 * @param kind
-	 */
-	void setKind(String kind);
+    /**
+     * Returns the resource kind
+     * 
+     */
+    String getKind();
 
-	/**
-	 * returns the api version of this resource
-	 * @return
-	 */
-	String getApiVersion();
-	
-	/**
-	 * returns the resource version of this resource
-	 * @return
-	 */
-	String getResourceVersion();
+    /**
+     * The obj ref kind
+     * 
+     */
+    void setKind(String kind);
 
-	/**
-	 * Returns the identifier for this resource
-	 * @return
-	 */
-	String getName();
-	
-	/**
-	 * The name of the obj ref
-	 * @param name
-	 */
-	void setName(String name);
+    /**
+     * returns the api version of this resource
+     * 
+     */
+    String getApiVersion();
 
-	/**
-	 * Returns the scope of this resource
-	 * @return
-	 */
-	String getNamespace();
-	
-	/**
-	 * The namespace for the object ref
-	 * @param namespace
-	 */
-	void setNamespace(String namespace);
+    /**
+     * returns the resource version of this resource
+     * 
+     */
+    String getResourceVersion();
 
-	String getFieldPath();
+    /**
+     * Returns the identifier for this resource
+     * 
+     */
+    String getName();
 
-	String getUID();
+    /**
+     * The name of the obj ref
+     * 
+     */
+    void setName(String name);
 
-	String toJson();
+    /**
+     * Returns the scope of this resource
+     * 
+     */
+    String getNamespace();
+
+    /**
+     * The namespace for the object ref
+     * 
+     */
+    void setNamespace(String namespace);
+
+    String getFieldPath();
+
+    String getUID();
+
+    String toJson();
 }

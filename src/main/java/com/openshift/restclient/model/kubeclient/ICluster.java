@@ -8,17 +8,19 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.kubeclient;
 
 public interface ICluster {
-	
-	String getName();
-	/**
-	 * The server url
-	 * @return
-	 */
-	String getServer();
-	
-	boolean isInsecureSkipTLSVerify();
-	
+
+    String getName();
+
+    /**
+     * The server url
+     * 
+     */
+    String getServer();
+
+    boolean isInsecureSkipTLSVerify();
+
 }

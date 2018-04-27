@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.restclient.okhttp;
 
 import java.io.IOException;
@@ -20,29 +21,28 @@ import okio.Buffer;
 
 /**
  * Adapter to WebSocketListener
- * @author jeff.cantrill
  *
  */
-public class WebSocketAdapter implements WebSocketListener{
+public class WebSocketAdapter implements WebSocketListener {
 
-	@Override
-	public void onOpen(WebSocket webSocket, Response response) {
-	}
+    @Override
+    public void onOpen(WebSocket webSocket, Response response) {
+    }
 
-	@Override
-	public void onFailure(IOException e, Response response) {
-	}
+    @Override
+    public void onFailure(IOException e, Response response) {
+    }
 
-	@Override
-	public void onMessage(ResponseBody message) throws IOException {
-	}
+    @Override
+    public void onMessage(ResponseBody message) throws IOException {
+    }
 
-	@Override
-	public void onPong(Buffer payload) {
-	}
+    @Override
+    public void onPong(Buffer payload) {
+    }
 
-	@Override
-	public void onClose(int code, String reason) {
-	}
-	
+    @Override
+    public void onClose(int code, String reason) {
+    }
+
 }

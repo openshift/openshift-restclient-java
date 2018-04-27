@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.restclient.okhttp;
 
 import okhttp3.Headers;
@@ -16,25 +17,23 @@ import okhttp3.Request.Builder;
 
 /**
  * A challange handler that can retrieve a token
- * @author jeff.cantrill
  *
  */
-interface IChallangeHandler{
-	
-	/**
-	 * Is able to handle a challange given the auth mechanism
-	 * provided in the header
-	 * 
-	 * @param headers
-	 * @return true if can handle, false otherwise
-	 */
-	boolean canHandle(Headers headers);
-	
-	/**
-	 * Handle the challange
-	 * 
-	 * @param builder
-	 * @return
-	 */
-	Request.Builder handleChallange(Builder builder);
+interface IChallangeHandler {
+
+    /**
+     * Is able to handle a challange given the auth mechanism provided in the header
+     * 
+     * @param headers the headers
+     * @return true if can handle, false otherwise
+     */
+    boolean canHandle(Headers headers);
+
+    /**
+     * Handle the challange
+     * 
+     * @param builder
+     * @return
+     */
+    Request.Builder handleChallange(Builder builder);
 }

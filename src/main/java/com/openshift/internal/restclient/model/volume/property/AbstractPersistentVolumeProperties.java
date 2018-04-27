@@ -4,8 +4,8 @@ import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.model.volume.property.IPersistentVolumeProperties;
 
-abstract public class AbstractPersistentVolumeProperties implements IPersistentVolumeProperties {
+public abstract class AbstractPersistentVolumeProperties implements IPersistentVolumeProperties {
 
-	public abstract void setProperties(ModelNode node);
+    public abstract void setProperties(ModelNode node);
 
 }

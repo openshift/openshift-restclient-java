@@ -8,20 +8,20 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.api.models;
 
 /**
- * A resource that can describe itself by
- * the kind it is
+ * A resource that can describe itself by the kind it is
+ * 
  * @author jeff.cantrill
  *
  */
 public interface IKindable {
 
-	/**
-	 * The kind of the resource as would be found
-	 * at kind 
-	 * @return
-	 */
-	String getKind();
+    /**
+     * The kind of the resource as would be found at kind
+     * 
+     */
+    String getKind();
 }

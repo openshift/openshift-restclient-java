@@ -6,16 +6,14 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IGitBuildSource extends IBuildSource {
-	
-	/**
-	 * The branch/tag/ref to build
-	 * @return
-	 */
-	String getRef();
+
+    /**
+     * The branch/tag/ref to build
+     * 
+     */
+    String getRef();
 }

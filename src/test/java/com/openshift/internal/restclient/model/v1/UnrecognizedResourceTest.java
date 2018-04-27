@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
 import static org.junit.Assert.assertEquals;
@@ -21,31 +22,30 @@ import com.openshift.restclient.utils.Samples;
 
 /**
  * Test to validate the lookup paths are correct for the version
- * @author Jeff Cantrill
  */
-public class UnrecognizedResourceTest{
+public class UnrecognizedResourceTest {
 
-	private IResource service;
-	
-	@Before
-	public void setUp(){
-		IClient client = mock(IClient.class);
-		service = new ResourceFactory(client).create(Samples.V1_UNRECOGNIZED.getContentAsString());
-	}
-	
-	@Test
-	public void testGetName() {
-		assertEquals("database", service.getName());
-	}
+    private IResource service;
 
-	@Test
-	public void testGetNamespace() {
-		assertEquals("test", service.getNamespaceName());
-	}
+    @Before
+    public void setUp() {
+        IClient client = mock(IClient.class);
+        service = new ResourceFactory(client).create(Samples.V1_UNRECOGNIZED.getContentAsString());
+    }
 
-	@Test
-	public void testGetKind() {
-		assertEquals("IMadeThisOneUp", service.getKind());
-	}
+    @Test
+    public void testGetName() {
+        assertEquals("database", service.getName());
+    }
+
+    @Test
+    public void testGetNamespace() {
+        assertEquals("test", service.getNamespaceName());
+    }
+
+    @Test
+    public void testGetKind() {
+        assertEquals("IMadeThisOneUp", service.getKind());
+    }
 
 }

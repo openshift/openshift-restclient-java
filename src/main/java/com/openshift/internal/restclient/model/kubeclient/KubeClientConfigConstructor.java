@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.kubeclient;
 
 import org.yaml.snakeyaml.TypeDescription;
@@ -15,21 +16,21 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 public class KubeClientConfigConstructor extends Constructor {
-	
-	private static final String USERS = "users";
-	private static final String CLUSTERS = "clusters";
-	private static final String CONTEXTS = "contexts";
 
-	public KubeClientConfigConstructor(PropertyUtils propertyUtils) {
-		super(KubeClientConfig.class);
+    private static final String USERS = "users";
+    private static final String CLUSTERS = "clusters";
+    private static final String CONTEXTS = "contexts";
 
-		TypeDescription configTypeDesc = new TypeDescription(KubeClientConfig.class);
-		configTypeDesc.putListPropertyType(CONTEXTS, Context.class);
-		configTypeDesc.putListPropertyType(CLUSTERS, Cluster.class);
-		configTypeDesc.putListPropertyType(USERS, User.class);
-		addTypeDescription(configTypeDesc);
-		
-		setPropertyUtils(propertyUtils);
-	}
+    public KubeClientConfigConstructor(PropertyUtils propertyUtils) {
+        super(KubeClientConfig.class);
+
+        TypeDescription configTypeDesc = new TypeDescription(KubeClientConfig.class);
+        configTypeDesc.putListPropertyType(CONTEXTS, Context.class);
+        configTypeDesc.putListPropertyType(CLUSTERS, Cluster.class);
+        configTypeDesc.putListPropertyType(USERS, User.class);
+        addTypeDescription(configTypeDesc);
+
+        setPropertyUtils(propertyUtils);
+    }
 
 }

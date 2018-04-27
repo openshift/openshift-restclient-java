@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
 import java.util.Map;
@@ -19,70 +20,67 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IEvent;
 import com.openshift.restclient.model.IObjectReference;
 
-/**
- * @author Jeff Cantrill
- */
 public class KubernetesEvent extends KubernetesResource implements IEvent {
 
-	public KubernetesEvent(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
-		super(node, client, propertyKeys);
-	}
+    public KubernetesEvent(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+    }
 
-	@Override
-	public String getReason() {
-		return asString("reason");
-	}
+    @Override
+    public String getReason() {
+        return asString("reason");
+    }
 
-	@Override
-	public String getMessage() {
-		return asString("message");
-	}
+    @Override
+    public String getMessage() {
+        return asString("message");
+    }
 
-	@Override
-	public IObjectReference getInvolvedObject() {
-		return new ObjectReference(get("involvedObject"));
-	}
+    @Override
+    public IObjectReference getInvolvedObject() {
+        return new ObjectReference(get("involvedObject"));
+    }
 
-	@Override
-	public String getFirstSeenTimestamp() {
-		return asString("firstTimestamp");
-	}
+    @Override
+    public String getFirstSeenTimestamp() {
+        return asString("firstTimestamp");
+    }
 
-	@Override
-	public String getLastSeenTimestamp() {
-		return asString("lastTimestamp");
-	}
+    @Override
+    public String getLastSeenTimestamp() {
+        return asString("lastTimestamp");
+    }
 
-	@Override
-	public int getCount() {
-		return asInt("count");
-	}
+    @Override
+    public int getCount() {
+        return asInt("count");
+    }
 
-	@Override
-	public String getType() {
-		return asString("type");
-	}
+    @Override
+    public String getType() {
+        return asString("type");
+    }
 
-	@Override
-	public IEventSource getEventSource() {
-		return new EventSource(get("source"), this.getPropertyKeys());
-	}
+    @Override
+    public IEventSource getEventSource() {
+        return new EventSource(get("source"), this.getPropertyKeys());
+    }
 
-	private static class EventSource extends ModelNodeAdapter implements IEventSource{
+    private static class EventSource extends ModelNodeAdapter implements IEventSource {
 
-		protected EventSource(ModelNode node, Map<String, String[]> propertyKeys) {
-			super(node, propertyKeys);
-		}
+        protected EventSource(ModelNode node, Map<String, String[]> propertyKeys) {
+            super(node, propertyKeys);
+        }
 
-		@Override
-		public String getComponent() {
-			return JBossDmrExtentions.asString(getNode(), getPropertyKeys(), "component");
-		}
+        @Override
+        public String getComponent() {
+            return JBossDmrExtentions.asString(getNode(), getPropertyKeys(), "component");
+        }
 
-		@Override
-		public String getHost() {
-			return JBossDmrExtentions.asString(getNode(), getPropertyKeys(), "host");
-		}
-		
-	}
+        @Override
+        public String getHost() {
+            return JBossDmrExtentions.asString(getNode(), getPropertyKeys(), "host");
+        }
+
+    }
 }

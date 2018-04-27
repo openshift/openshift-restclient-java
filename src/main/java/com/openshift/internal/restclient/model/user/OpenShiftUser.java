@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.user;
 
 import java.util.Map;
@@ -20,20 +21,20 @@ import com.openshift.restclient.model.user.IUser;
 
 public class OpenShiftUser extends KubernetesResource implements IUser {
 
-	private static final String USER_FULLNAME = "fullName";
-	
-	public OpenShiftUser(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
-		super(node, client, propertyKeys);
-	}
+    private static final String USER_FULLNAME = "fullName";
 
-	@Override
-	public String getFullName() {
-		return asString(USER_FULLNAME);
-	}
+    public OpenShiftUser(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+    }
 
-	@Override
-	public String getUID() {
-		return asString("metadata.uid");
-	}
-	
+    @Override
+    public String getFullName() {
+        return asString(USER_FULLNAME);
+    }
+
+    @Override
+    public String getUID() {
+        return asString("metadata.uid");
+    }
+
 }

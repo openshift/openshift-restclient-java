@@ -8,14 +8,10 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.deploy;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 public interface DeploymentTriggerType {
-	static final String CONFIG_CHANGE = "ConfigChange";
-	static final String IMAGE_CHANGE = "ImageChange";
+    static final String CONFIG_CHANGE = "ConfigChange";
+    static final String IMAGE_CHANGE = "ImageChange";
 }

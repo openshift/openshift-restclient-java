@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.model.kubeclient;
 
 import java.beans.IntrospectionException;
@@ -22,27 +23,22 @@ import com.openshift.internal.restclient.model.kubeclient.KubeClientConfig;
 import com.openshift.internal.restclient.model.kubeclient.KubeClientConfigConstructor;
 import com.openshift.restclient.utils.BeanUtils;
 
-/**
- * 
- * @author jeff.cantrill
- *
- */
 public class KubeClientConfigSerializer {
 
-	public IKubeClientConfig loadKubeClientConfig(Reader reader) {
-		Representer representer = new Representer();
-		Yaml parser = new Yaml(new KubeClientConfigConstructor(new YamlPropertyUtils()), representer);
-		representer.getPropertyUtils().setSkipMissingProperties(true);
-		return parser.loadAs(reader, KubeClientConfig.class);
-	}
-	
-	private static class YamlPropertyUtils extends PropertyUtils {
-		@Override
-		public Property getProperty(Class<? extends Object> type, String name) throws IntrospectionException {
-			if (name.indexOf('-') > -1) {
-				name = BeanUtils.toCamelCase(name, "-");
-			}
-			return super.getProperty(type, name);
-		}
-	}
+    public IKubeClientConfig loadKubeClientConfig(Reader reader) {
+        Representer representer = new Representer();
+        Yaml parser = new Yaml(new KubeClientConfigConstructor(new YamlPropertyUtils()), representer);
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        return parser.loadAs(reader, KubeClientConfig.class);
+    }
+
+    private static class YamlPropertyUtils extends PropertyUtils {
+        @Override
+        public Property getProperty(Class<? extends Object> type, String name) throws IntrospectionException {
+            if (name.indexOf('-') > -1) {
+                name = BeanUtils.toCamelCase(name, "-");
+            }
+            return super.getProperty(type, name);
+        }
+    }
 }

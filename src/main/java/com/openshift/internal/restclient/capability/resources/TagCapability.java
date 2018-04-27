@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import java.util.Arrays;
@@ -14,24 +15,21 @@ import java.util.Collection;
 import com.openshift.restclient.capability.resources.ITags;
 import com.openshift.restclient.model.IResource;
 
-/**
- * @author Jeff Cantrill
- */
 public class TagCapability extends AnnotationCapability implements ITags {
 
-	public TagCapability(IResource resource) {
-		super(TagCapability.class.getSimpleName(), resource);
-	}
+    public TagCapability(IResource resource) {
+        super(TagCapability.class.getSimpleName(), resource);
+    }
 
-	@Override
-	public Collection<String> getTags() {
-		String value = getAnnotationValue();
-		return Arrays.asList(value.split(","));
-	}
+    @Override
+    public Collection<String> getTags() {
+        String value = getAnnotationValue();
+        return Arrays.asList(value.split(","));
+    }
 
-	@Override
-	protected String getAnnotationKey() {
-		return "tags";
-	}
+    @Override
+    protected String getAnnotationKey() {
+        return "tags";
+    }
 
 }

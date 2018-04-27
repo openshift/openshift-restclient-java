@@ -8,14 +8,15 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 import com.openshift.restclient.model.IEnvironmentVariable.IEnvVarSource;
 
 public interface IConfigMapKeySelector extends IEnvVarSource {
-	
-	String getName();
-	
-	String getKey();
+
+    String getName();
+
+    String getKey();
 
 }

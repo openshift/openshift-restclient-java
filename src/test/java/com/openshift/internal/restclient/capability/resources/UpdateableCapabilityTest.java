@@ -6,10 +6,12 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,40 +27,38 @@ import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.resources.IUpdatable;
 import com.openshift.restclient.model.IService;
 
-/**
- * @author Jeff Cantrill
- */
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateableCapabilityTest {
 
-	@Mock private IClient client;
-	private IService service;
-	private IResourceFactory factory;
-	
-	@Before
-	public void setup(){
-		when(client.getOpenShiftAPIVersion()).thenReturn("v1");
-		factory = new ResourceFactory(client);
-		service = factory.stub(ResourceKind.SERVICE, "foo", "default");
-		service.setAnnotation("foo", "bar");
-	}
-	
-	@Test
-	public void testUpdateCapability() {
-		IService target = factory.stub(ResourceKind.SERVICE, "foo", "default");
-		target.setAnnotation("foo", "xyz");
-		
-		service.accept(new CapabilityVisitor<IUpdatable, IService>() {
+    @Mock
+    private IClient client;
+    private IService service;
+    private IResourceFactory factory;
 
-			@Override
-			public IService visit(IUpdatable capability) {
-				capability.updateFrom(target);
-				return null;
-			};
-		}, null);
-		assertNotSame("Exp. services to not be the same instance", target, service);
-		assertEquals("Exp. the annotation to be updated","xyz", service.getAnnotation("foo"));
-		assertEquals("Exp. the JSON to be the same", target.toJson(), service.toJson());
-	}
+    @Before
+    public void setup() {
+        when(client.getOpenShiftAPIVersion()).thenReturn("v1");
+        factory = new ResourceFactory(client);
+        service = factory.stub(ResourceKind.SERVICE, "foo", "default");
+        service.setAnnotation("foo", "bar");
+    }
+
+    @Test
+    public void testUpdateCapability() {
+        IService target = factory.stub(ResourceKind.SERVICE, "foo", "default");
+        target.setAnnotation("foo", "xyz");
+
+        service.accept(new CapabilityVisitor<IUpdatable, IService>() {
+
+            @Override
+            public IService visit(IUpdatable capability) {
+                capability.updateFrom(target);
+                return null;
+            }
+        }, null);
+        assertNotSame("Exp. services to not be the same instance", target, service);
+        assertEquals("Exp. the annotation to be updated", "xyz", service.getAnnotation("foo"));
+        assertEquals("Exp. the JSON to be the same", target.toJson(), service.toJson());
+    }
 
 }

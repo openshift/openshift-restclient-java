@@ -6,29 +6,27 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 import java.util.List;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IProject extends IResource {
 
-	/**
-	 * Retrieves resource of the given kind that are scoped to
-	 * this project
-	 * @param kind
-	 * @return List<IResources>
-	 */
-	<T extends IResource> List<T> getResources(String kind);
+    /**
+     * Retrieves resource of the given kind that are scoped to this project
+     * 
+     * @param kind
+     * @return List<IResources>
+     */
+    <T extends IResource> List<T> getResources(String kind);
 
-	String getDisplayName();
-	
-	void setDisplayName(String name);
-	
-	String getDescription();
-	
-	void setDescription(String value);
-	
+    String getDisplayName();
+
+    void setDisplayName(String name);
+
+    String getDescription();
+
+    void setDescription(String value);
+
 }

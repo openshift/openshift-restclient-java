@@ -8,26 +8,22 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import com.openshift.internal.restclient.APIModelVersion.VersionComparitor;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 public class APIModelVersionTest {
 
-	@Test
-	public void testVersionComparitor() {
-		VersionComparitor comparitor = new APIModelVersion.VersionComparitor();
-		int result = comparitor.compare(OpenShiftAPIVersion.v1, OpenShiftAPIVersion.v1beta3);
-		assertEquals("Exp. v1 to be greater then v1beta3", 1,result);
-	}
+    @Test
+    public void testVersionComparitor() {
+        VersionComparitor comparitor = new APIModelVersion.VersionComparitor();
+        int result = comparitor.compare(OpenShiftAPIVersion.v1, OpenShiftAPIVersion.v1beta3);
+        assertEquals("Exp. v1 to be greater then v1beta3", 1, result);
+    }
 
 }

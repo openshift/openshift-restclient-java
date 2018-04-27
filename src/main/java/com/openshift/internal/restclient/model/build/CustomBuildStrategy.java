@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.build;
 
 import java.util.Map;
@@ -14,38 +15,36 @@ import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.ICustomBuildStrategy;
 
-/**
- * @author Jeff Cantrill
- */
 public class CustomBuildStrategy implements ICustomBuildStrategy {
 
-	private DockerImageURI image;
-	private boolean exposeDockerSocket;
-	private Map<String, String> env;
+    private DockerImageURI image;
+    private boolean exposeDockerSocket;
+    private Map<String, String> env;
 
-	public CustomBuildStrategy(String image, boolean exposeDockerSocket, Map<String, String> env){
-		this.image = new DockerImageURI(image);
-		this.exposeDockerSocket = exposeDockerSocket;
-		this.env = env;
-	}
-	@Override
-	public String getType() {
-		return BuildStrategyType.CUSTOM;
-	}
+    public CustomBuildStrategy(String image, boolean exposeDockerSocket, Map<String, String> env) {
+        this.image = new DockerImageURI(image);
+        this.exposeDockerSocket = exposeDockerSocket;
+        this.env = env;
+    }
 
-	@Override
-	public Map<String, String> getEnvironmentVariables() {
-		return env;
-	}
+    @Override
+    public String getType() {
+        return BuildStrategyType.CUSTOM;
+    }
 
-	@Override
-	public boolean exposeDockerSocket() {
-		return exposeDockerSocket;
-	}
+    @Override
+    public Map<String, String> getEnvironmentVariables() {
+        return env;
+    }
 
-	@Override
-	public DockerImageURI getImage() {
-		return image;
-	}
+    @Override
+    public boolean exposeDockerSocket() {
+        return exposeDockerSocket;
+    }
+
+    @Override
+    public DockerImageURI getImage() {
+        return image;
+    }
 
 }

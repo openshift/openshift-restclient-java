@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient;
 
 import java.security.cert.X509Certificate;
@@ -17,12 +18,12 @@ import javax.net.ssl.SSLSession;
  * @author Andre Dietisheim
  */
 public interface ISSLCertificateCallback extends HostnameVerifier {
-	
-	boolean allowCertificate(X509Certificate[] chain);
 
-	boolean allowHostname(String hostname, SSLSession session); 
-	
-	default boolean verify(String hostname, SSLSession session) {
-		return allowHostname(hostname, session);
-	}
+    boolean allowCertificate(X509Certificate[] chain);
+
+    boolean allowHostname(String hostname, SSLSession session);
+
+    default boolean verify(String hostname, SSLSession session) {
+        return allowHostname(hostname, session);
+    }
 }

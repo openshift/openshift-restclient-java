@@ -8,13 +8,11 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.oauth;
 
 import com.openshift.restclient.model.IResource;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IOAuthAuthorizeToken extends IResource {
 
 }

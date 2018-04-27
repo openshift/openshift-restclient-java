@@ -8,40 +8,39 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.util;
-
-
 
 /**
  * @author André Dietisheim
  */
 public class Assert {
 
-	public static final class AssertionFailedException extends RuntimeException {
+    public static final class AssertionFailedException extends RuntimeException {
 
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-		public AssertionFailedException() {
-			super();
-		}
-		
-	}
-	
-	public static <V> V notNull(V value) {
-		if (value == null) {
-			throw new AssertionFailedException();
-		}
-		return value;
-	}
-	
-	public static void notEmpty(String value) {
-		notNull(value);
-		isTrue(!value.isEmpty());
-	}
-	
-	public static void isTrue(boolean assertion) {
-		if (!assertion) {
-			throw new AssertionFailedException();
-		}
-	}
+        public AssertionFailedException() {
+            super();
+        }
+
+    }
+
+    public static <V> V notNull(V value) {
+        if (value == null) {
+            throw new AssertionFailedException();
+        }
+        return value;
+    }
+
+    public static void notEmpty(String value) {
+        notNull(value);
+        isTrue(!value.isEmpty());
+    }
+
+    public static void isTrue(boolean assertion) {
+        if (!assertion) {
+            throw new AssertionFailedException();
+        }
+    }
 }

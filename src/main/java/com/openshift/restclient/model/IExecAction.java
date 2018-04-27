@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 /**
@@ -18,6 +19,7 @@ public interface IExecAction extends IHandler {
 
     interface IBuilder {
         IBuilder command(String command);
+
         IExecAction build();
     }
 }

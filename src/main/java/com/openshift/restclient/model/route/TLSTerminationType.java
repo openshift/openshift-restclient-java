@@ -8,15 +8,11 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.route;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
 public interface TLSTerminationType {
-	static final String EDGE = "edge";
-	static final String PASSTHROUGH = "passthrough";
-	static final String REENCRYPT = "reencrypt";
+    static final String EDGE = "edge";
+    static final String PASSTHROUGH = "passthrough";
+    static final String REENCRYPT = "reencrypt";
 }

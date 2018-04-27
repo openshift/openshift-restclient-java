@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import java.util.ArrayList;
@@ -22,112 +23,100 @@ import com.openshift.restclient.model.IPod;
 /**
  * Port forwarding implementation that wraps the OpenShift binary
  * 
- * @author Jeff Cantrill
- * @author Andre Dietisheim
- *
  */
 public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapability implements IPortForwardable {
-	
-	public static final String PORT_FORWARD_COMMAND = "port-forward";
-	private final IPod pod;
-	private final Collection<PortPair> pairs = new ArrayList<>();
 
-	static class PodName implements OpenShiftBinaryOption {
+    public static final String PORT_FORWARD_COMMAND = "port-forward";
+    private final IPod pod;
+    private final Collection<PortPair> pairs = new ArrayList<>();
 
-		private IPod pod;
+    static class PodName implements OpenShiftBinaryOption {
 
-		public PodName(IPod pod) {
-			this.pod = pod;
-		}
+        private IPod pod;
 
-		@Override
-		public void append(StringBuilder commandLine) {
-			commandLine.append(" -p ").append(pod.getName());
-		}
-	}
+        public PodName(IPod pod) {
+            this.pod = pod;
+        }
 
-	static class PortPairs implements OpenShiftBinaryOption {
+        @Override
+        public void append(StringBuilder commandLine) {
+            commandLine.append(" -p ").append(pod.getName());
+        }
+    }
 
-		private Collection<PortPair> pairs;
+    static class PortPairs implements OpenShiftBinaryOption {
 
-		public PortPairs(Collection<PortPair> pairs) {
-			this.pairs = pairs;
-		}
+        private Collection<PortPair> pairs;
 
-		@Override
-		public void append(StringBuilder commandLine) {
-			if (pairs == null) {
-				return;
-			}
-			for (PortPair pair : pairs) {
-				append(pair, commandLine);
-			}
-		}
+        public PortPairs(Collection<PortPair> pairs) {
+            this.pairs = pairs;
+        }
 
-		protected void append(PortPair pair, StringBuilder commandLine) {
-			commandLine
-				.append(" ")
-				.append(pair.getLocalPort())
-				.append(":")
-				.append(pair.getRemotePort()).append(" ");
-		}
-	}
+        @Override
+        public void append(StringBuilder commandLine) {
+            if (pairs == null) {
+                return;
+            }
+            for (PortPair pair : pairs) {
+                append(pair, commandLine);
+            }
+        }
 
-	public OpenShiftBinaryPortForwarding(IPod pod, IClient client) {
-		super(client);
-		this.pod = pod;
-	}
+        protected void append(PortPair pair, StringBuilder commandLine) {
+            commandLine.append(" ").append(pair.getLocalPort()).append(":").append(pair.getRemotePort()).append(" ");
+        }
+    }
 
-	@Override
-	protected void cleanup() {
-		this.pairs.clear();
-	}
+    public OpenShiftBinaryPortForwarding(IPod pod, IClient client) {
+        super(client);
+        this.pod = pod;
+    }
 
-	@Override
-	protected boolean validate() {
-		return !pairs.isEmpty();
-	}
+    @Override
+    protected void cleanup() {
+        this.pairs.clear();
+    }
 
-	@Override
-	public boolean isForwarding() {
-		return getProcess() != null && getProcess().isAlive();
-	}
+    @Override
+    protected boolean validate() {
+        return !pairs.isEmpty();
+    }
 
-	@Override
-	public boolean isSupported() {
-		return true;
-	}
+    @Override
+    public boolean isForwarding() {
+        return getProcess() != null && getProcess().isAlive();
+    }
 
-	@Override
-	public String getName() {
-		return OpenShiftBinaryPortForwarding.class.getSimpleName();
-	}
+    @Override
+    public boolean isSupported() {
+        return true;
+    }
 
-	@Override
-	public Collection<PortPair> getPortPairs() {
-		return pairs;
-	}
+    @Override
+    public String getName() {
+        return OpenShiftBinaryPortForwarding.class.getSimpleName();
+    }
 
-	@Override
-	public synchronized void forwardPorts(final Collection<PortPair> ports, final OpenShiftBinaryOption... options) {
-		if (ports == null || ports.isEmpty()) {
-			throw new OpenShiftException("Port-forwarding was invoked but no ports were specified.");
-		}
+    @Override
+    public Collection<PortPair> getPortPairs() {
+        return pairs;
+    }
 
-		this.pairs.addAll(ports);
-		start(options);
-	}
+    @Override
+    public synchronized void forwardPorts(final Collection<PortPair> ports, final OpenShiftBinaryOption... options) {
+        if (ports == null || ports.isEmpty()) {
+            throw new OpenShiftException("Port-forwarding was invoked but no ports were specified.");
+        }
 
-	@Override
-	protected String buildArgs(final List<OpenShiftBinaryOption> options) {
-		return new CommandLineBuilder(PORT_FORWARD_COMMAND)
-				.append(	new Token(getClient()))
-				.append(new Server(getClient()))
-				.append(options)
-				.append(new Namespace(pod))
-				.append(new PodName(pod))
-				.append(new PortPairs(pairs))
-				.build();
-	}
-	
+        this.pairs.addAll(ports);
+        start(options);
+    }
+
+    @Override
+    protected String buildArgs(final List<OpenShiftBinaryOption> options) {
+        return new CommandLineBuilder(PORT_FORWARD_COMMAND).append(new Token(getClient()))
+                .append(new Server(getClient())).append(options).append(new Namespace(pod)).append(new PodName(pod))
+                .append(new PortPairs(pairs)).build();
+    }
+
 }

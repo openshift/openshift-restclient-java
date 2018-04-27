@@ -1,15 +1,16 @@
 package com.openshift.internal.restclient.model;
 
-import com.openshift.restclient.IClient;
-import com.openshift.restclient.model.INamespace;
-import com.openshift.restclient.model.IResource;
-import org.jboss.dmr.ModelNode;
+import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
+import org.jboss.dmr.ModelNode;
+
+import com.openshift.restclient.IClient;
+import com.openshift.restclient.model.INamespace;
+import com.openshift.restclient.model.IResource;
 
 public class Namespace extends KubernetesResource implements INamespace {
 
@@ -24,7 +25,9 @@ public class Namespace extends KubernetesResource implements INamespace {
 
     @Override
     public <T extends IResource> List<T> getResources(String kind) {
-        if(getClient() == null) return new ArrayList<>();
+        if(getClient() == null) {
+            return new ArrayList<>();
+        }
         return getClient().list(kind, getName());
     }
 

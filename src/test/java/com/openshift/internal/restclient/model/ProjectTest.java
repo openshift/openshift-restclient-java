@@ -6,10 +6,14 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,35 +26,32 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.ResourceFactory;
-import com.openshift.internal.restclient.model.Project;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IService;
 
-/**
- * @author Jeff Cantrill
- */
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectTest {
 
-	@Mock private IClient client;
-	private Project project;
-	
-	@Before
-	public void setup(){
-		project = new ResourceFactory(client){}.create(OpenShiftAPIVersion.v1.toString(), ResourceKind.PROJECT);
-		project.setName("aprojectname");
-	}
-	
-	@Test
-	public void getResourcesShouldUseProjectNameForNamespaceWhenGettingResources() {
-		ArrayList<IService> services = new ArrayList<IService>();
-		when(client.<IService>list(eq(ResourceKind.SERVICE), anyString())).thenReturn(services);
-		List<IService> resources = project.getResources(ResourceKind.SERVICE);
-		
-		assertEquals("Exp. a list of services", services, resources);
-		verify(client).list(eq(ResourceKind.SERVICE), eq(project.getName()));
-	}
-	
+    @Mock
+    private IClient client;
+    private Project project;
+
+    @Before
+    public void setup() {
+        project = new ResourceFactory(client) {
+        }.create(OpenShiftAPIVersion.v1.toString(), ResourceKind.PROJECT);
+        project.setName("aprojectname");
+    }
+
+    @Test
+    public void getResourcesShouldUseProjectNameForNamespaceWhenGettingResources() {
+        ArrayList<IService> services = new ArrayList<IService>();
+        when(client.<IService>list(eq(ResourceKind.SERVICE), anyString())).thenReturn(services);
+        List<IService> resources = project.getResources(ResourceKind.SERVICE);
+
+        assertEquals("Exp. a list of services", services, resources);
+        verify(client).list(eq(ResourceKind.SERVICE), eq(project.getName()));
+    }
 
 }

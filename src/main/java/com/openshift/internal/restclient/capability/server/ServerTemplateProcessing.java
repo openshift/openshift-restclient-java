@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.server;
 
 import com.openshift.restclient.IApiTypeMapper;
@@ -14,35 +15,32 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.template.ITemplate;
 
-/**
- * @author Jeff Cantrill
- */
 public class ServerTemplateProcessing implements ITemplateProcessing {
 
-	private IClient client;
+    private IClient client;
 
-	public ServerTemplateProcessing(IClient client){
-		this.client = client;
-	}
-	
-	@Override
-	public boolean isSupported() {
-		IApiTypeMapper mapper = client.adapt(IApiTypeMapper.class);
-		if(mapper != null) {
-			return mapper.isSupported(ResourceKind.PROCESSED_TEMPLATES);
-		}
-		return false;
-	}
+    public ServerTemplateProcessing(IClient client) {
+        this.client = client;
+    }
 
-	@Override
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
+    @Override
+    public boolean isSupported() {
+        IApiTypeMapper mapper = client.adapt(IApiTypeMapper.class);
+        if (mapper != null) {
+            return mapper.isSupported(ResourceKind.PROCESSED_TEMPLATES);
+        }
+        return false;
+    }
 
-	@Override
-	public ITemplate process(ITemplate template, String namespace) {
-		return client.execute("POST", ResourceKind.PROCESSED_TEMPLATES, namespace, null, null, template);
+    @Override
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
 
-	}
-	
+    @Override
+    public ITemplate process(ITemplate template, String namespace) {
+        return client.execute("POST", ResourceKind.PROCESSED_TEMPLATES, namespace, null, null, template);
+
+    }
+
 }

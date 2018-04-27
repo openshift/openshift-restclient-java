@@ -8,12 +8,13 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.restclient.model.volume.property;
 
+package com.openshift.restclient.model.volume.property;
 
 public interface IHostPathVolumeProperties extends IPersistentVolumeProperties {
 
-	String getPath();
-	void setPath(String path);
+    String getPath();
+
+    void setPath(String path);
 
 }

@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.capability;
 
 /**
@@ -13,23 +14,23 @@ package com.openshift.restclient.capability;
  */
 public interface IBinaryCapability extends ICapability {
 
-	static final OpenShiftBinaryOption SKIP_TLS_VERIFY = new SkipTlsVerify();
+    static final OpenShiftBinaryOption SKIP_TLS_VERIFY = new SkipTlsVerify();
 
-	/**
-	 * Skips the SSL/TLS Verification when using a binary capability
-	 */
-	static class SkipTlsVerify implements OpenShiftBinaryOption {
+    /**
+     * Skips the SSL/TLS Verification when using a binary capability
+     */
+    static class SkipTlsVerify implements OpenShiftBinaryOption {
 
-		@Override
-		public void append(StringBuilder commandLine) {
-			commandLine.append(" --insecure-skip-tls-verify=true");
-		}
-	}
-	
-	static interface OpenShiftBinaryOption {
-		void append(StringBuilder builder);
-	}
+        @Override
+        public void append(StringBuilder commandLine) {
+            commandLine.append(" --insecure-skip-tls-verify=true");
+        }
+    }
 
-	static final String OPENSHIFT_BINARY_LOCATION = "openshift.restclient.oc.location";
+    static interface OpenShiftBinaryOption {
+        void append(StringBuilder builder);
+    }
+
+    static final String OPENSHIFT_BINARY_LOCATION = "openshift.restclient.oc.location";
 
 }

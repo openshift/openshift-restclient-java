@@ -6,46 +6,49 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.build;
 
-import com.openshift.restclient.IClient;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import com.openshift.restclient.IClient;
 
 public class BuildRequestTest {
-	@Mock private IClient client;
-	private BuildRequest config;
-	private ModelNode node = new ModelNode();
-	
-	@Before
-	public void setup(){
-		config = new BuildRequest(node, client, null);
-	}
-	
-	@Test
-	public void testBuildRequestEnvVars(){
+    @Mock
+    private IClient client;
+    private BuildRequest config;
+    private ModelNode node = new ModelNode();
 
-		config.setEnvironmentVariable( "env1", "value1" );
-		assertEquals( 1, node.get( "env" ).asList().size() );
+    @Before
+    public void setup() {
+        config = new BuildRequest(node, client, null);
+    }
 
-		config.setEnvironmentVariable( "env2", "value2" );
-		assertEquals( 2, node.get( "env" ).asList().size() );
+    @Test
+    public void testBuildRequestEnvVars() {
 
-		for ( ModelNode mn :  node.get( "env" ).asList() ) {
-			if ( mn.get("name").asString().equals( "env1" ) ) {
-				assertEquals(mn.get("value").asString(), "value1");
-			} else if (mn.get("name").asString().equals("env2")) {
-				assertEquals(mn.get( "value").asString(), "value2");
-			} else {
-				fail( "Unexpected environment variable: " + mn.toJSONString(false) );
-			}
-		}
+        config.setEnvironmentVariable("env1", "value1");
+        assertEquals(1, node.get("env").asList().size());
 
-	}
+        config.setEnvironmentVariable("env2", "value2");
+        assertEquals(2, node.get("env").asList().size());
+
+        for (ModelNode mn : node.get("env").asList()) {
+            if (mn.get("name").asString().equals("env1")) {
+                assertEquals(mn.get("value").asString(), "value1");
+            } else if (mn.get("name").asString().equals("env2")) {
+                assertEquals(mn.get("value").asString(), "value2");
+            } else {
+                fail("Unexpected environment variable: " + mn.toJSONString(false));
+            }
+        }
+
+    }
 
 }

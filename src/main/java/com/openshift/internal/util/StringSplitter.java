@@ -8,47 +8,48 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.util;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class StringSplitter {
-	private StringSplitter() {}
-	
-	public static List<String> split(String str, List<String> result) {
-		boolean inQuote = false;
-		StringBuilder builder = new StringBuilder();
-		
-		for(int i=0; i < str.length();++i) {
-			char c = str.charAt(i);
-			if (inQuote) {
-				if (c == '"') {
-					inQuote = false;
-				} else {
-					builder.append(c);
-				}
-			} else if (c == '"') {
-				inQuote = true;
-			} else if (c == ' ') {
-				if (builder.length() > 0) {
-					result.add(builder.toString());
-					builder = new StringBuilder();
-				}
-			} else {
-				builder.append(c);
-			}
-		}
-		if (builder.length() > 0) {
-			result.add(builder.toString());
-		}
-		return result;
-	}
+    private StringSplitter() {
+    }
 
-	public static List<String> split(String str) {
-		List<String> result = new ArrayList<>();
-		return split(str, result);
-	}
-	
+    public static List<String> split(String str, List<String> result) {
+        boolean inQuote = false;
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < str.length(); ++i) {
+            char c = str.charAt(i);
+            if (inQuote) {
+                if (c == '"') {
+                    inQuote = false;
+                } else {
+                    builder.append(c);
+                }
+            } else if (c == '"') {
+                inQuote = true;
+            } else if (c == ' ') {
+                if (builder.length() > 0) {
+                    result.add(builder.toString());
+                    builder = new StringBuilder();
+                }
+            } else {
+                builder.append(c);
+            }
+        }
+        if (builder.length() > 0) {
+            result.add(builder.toString());
+        }
+        return result;
+    }
+
+    public static List<String> split(String str) {
+        List<String> result = new ArrayList<>();
+        return split(str, result);
+    }
 
 }

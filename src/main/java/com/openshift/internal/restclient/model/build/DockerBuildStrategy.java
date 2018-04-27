@@ -6,46 +6,43 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.build;
 
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.IDockerBuildStrategy;
 
-/**
- * @author Jeff Cantrill
- */
 public class DockerBuildStrategy implements IDockerBuildStrategy {
 
-	private boolean noCache;
-	private DockerImageURI image;
-	private String contextDir;
+    private boolean noCache;
+    private DockerImageURI image;
+    private String contextDir;
 
-	public DockerBuildStrategy(String contextDir, boolean noCache,
-			String baseImage) {
-		this.contextDir = contextDir;
-		this.noCache = noCache;
-		this.image = new DockerImageURI(baseImage);
-	}
+    public DockerBuildStrategy(String contextDir, boolean noCache, String baseImage) {
+        this.contextDir = contextDir;
+        this.noCache = noCache;
+        this.image = new DockerImageURI(baseImage);
+    }
 
-	@Override
-	public String getType() {
-		return BuildStrategyType.DOCKER;
-	}
+    @Override
+    public String getType() {
+        return BuildStrategyType.DOCKER;
+    }
 
-	@Override
-	public String getContextDir() {
-		return contextDir;
-	}
+    @Override
+    public String getContextDir() {
+        return contextDir;
+    }
 
-	@Override
-	public boolean isNoCache() {
-		return noCache;
-	}
+    @Override
+    public boolean isNoCache() {
+        return noCache;
+    }
 
-	@Override
-	public DockerImageURI getBaseImage() {
-		return image;
-	}
+    @Override
+    public DockerImageURI getBaseImage() {
+        return image;
+    }
 
 }

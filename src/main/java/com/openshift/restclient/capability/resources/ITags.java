@@ -6,6 +6,7 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import java.util.Collection;
@@ -13,15 +14,13 @@ import java.util.Collection;
 import com.openshift.restclient.capability.ICapability;
 
 /**
- * Determine if resource is tagged with categories
- * of technologies it includes
+ * Determine if resource is tagged with categories of technologies it includes
  * 
- * @author Jeff Cantrill
  */
 public interface ITags extends ICapability {
-	
-	/**
-	 * The list of tags
-	 */
-	Collection<String> getTags();
+
+    /**
+     * The list of tags
+     */
+    Collection<String> getTags();
 }

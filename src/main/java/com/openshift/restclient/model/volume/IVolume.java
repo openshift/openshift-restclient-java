@@ -8,23 +8,26 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.volume;
 
 /**
  * 
- * @author Jeff Cantrill
  * @deprecated see {@link IVolumeMount}
  *
  */
 @Deprecated
 public interface IVolume {
 
-	String getName();
-	void setName(String name);
-	
-	void setMountPath(String path);
-	String getMountPath();
-	
-	void setReadOnly(boolean readonly);
-	boolean isReadOnly();
+    String getName();
+
+    void setName(String name);
+
+    void setMountPath(String path);
+
+    String getMountPath();
+
+    void setReadOnly(boolean readonly);
+
+    boolean isReadOnly();
 }

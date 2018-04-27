@@ -8,19 +8,18 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.capability;
 
 /**
- * Handle to something that can be
- * explicitly stopped or terminated
+ * Handle to something that can be explicitly stopped or terminated
  * 
- * @author jeff.cantrill
  *
  */
 public interface IStoppable {
-	
-	/**
-	 * Stop the process
-	 */
-	void stop();
+
+    /**
+     * Stop the process
+     */
+    void stop();
 }

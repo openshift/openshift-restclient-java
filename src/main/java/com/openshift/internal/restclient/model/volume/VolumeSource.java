@@ -8,37 +8,32 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.volume;
 
-import static com.openshift.internal.util.JBossDmrExtentions.*;
+import static com.openshift.internal.util.JBossDmrExtentions.asString;
+import static com.openshift.internal.util.JBossDmrExtentions.set;
 
 import java.util.HashMap;
 
-import com.openshift.restclient.model.volume.VolumeType;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.model.ModelNodeAdapter;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.model.volume.IVolumeSource;
+import com.openshift.restclient.model.volume.VolumeType;
 
-/**
- * 
- * @author Jeff Cantrill
- *
- */
-public abstract class VolumeSource
-	extends ModelNodeAdapter 
-	implements IVolumeSource, ResourcePropertyKeys {
+public abstract class VolumeSource extends ModelNodeAdapter implements IVolumeSource, ResourcePropertyKeys {
 
-	public VolumeSource(ModelNode node) {
-		super(node, new HashMap<String, String []>());
-	}
+    public VolumeSource(ModelNode node) {
+        super(node, new HashMap<String, String[]>());
+    }
 
-	@Override
-	public String getName() {
-		return asString(getNode(), getPropertyKeys(), NAME);
-	}
+    @Override
+    public String getName() {
+        return asString(getNode(), getPropertyKeys(), NAME);
+    }
 
     @Override
     public void setName(String name) {
@@ -61,9 +56,10 @@ public abstract class VolumeSource
         } else if (node.has(VolumeType.PERSISTENT_VOLUME_CLAIM)) {
             return new PersistentVolumeClaimVolumeSource(node);
         } else if (node.has(VolumeType.HOST_PATH)) {
-        	return new HostPathVolumeSource(node);
+            return new HostPathVolumeSource(node);
         } else {
-            return new VolumeSource(node) {};
+            return new VolumeSource(node) {
+            };
         }
     }
 }

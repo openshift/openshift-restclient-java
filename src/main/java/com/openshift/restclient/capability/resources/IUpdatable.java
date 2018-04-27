@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import com.openshift.restclient.capability.ICapability;
@@ -15,10 +16,9 @@ import com.openshift.restclient.model.IResource;
 
 /**
  * Allow a resource to be updated from another
- * @author jeff.cantrill
- *
+ * 
  */
 public interface IUpdatable extends ICapability {
 
-	void updateFrom(IResource source);
+    void updateFrom(IResource source);
 }

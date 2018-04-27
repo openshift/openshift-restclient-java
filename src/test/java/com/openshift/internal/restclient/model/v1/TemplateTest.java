@@ -6,10 +6,14 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
@@ -27,53 +31,54 @@ import com.openshift.restclient.utils.Samples;
 /**
  * Test to validate the lookup paths are correct for the version
  * 
- * @author Jeff Cantrill
  */
-public class TemplateTest{
+public class TemplateTest {
 
-	private static final String VERSION = "v1";
-	private ITemplate template;
-	
-	@Before
-	public void setUp(){
-		IClient client = mock(IClient.class);
-		when(client.getResourceFactory()).thenReturn(new ResourceFactory(client){});
-		ModelNode node = ModelNode.fromJSONString(Samples.V1_TEMPLATE.getContentAsString());
-		template = new Template(node, client, null);
-	}
-	@Test
-	public void testGetApiVersion() {
-		assertEquals(VERSION, template.getApiVersion());
-	}
+    private static final String VERSION = "v1";
+    private ITemplate template;
 
-	@Test
-	public void testGetItems() {
-		assertEquals("Exp. the number of items to be more than zero", 8, template.getObjects().size());
-	}
+    @Before
+    public void setUp() {
+        IClient client = mock(IClient.class);
+        when(client.getResourceFactory()).thenReturn(new ResourceFactory(client) {
+        });
+        ModelNode node = ModelNode.fromJSONString(Samples.V1_TEMPLATE.getContentAsString());
+        template = new Template(node, client, null);
+    }
 
-	@Test
-	public void testGetParameters() {
-		Map<String, IParameter> parameters = template.getParameters();
-		assertEquals("Exp. the number of items to be more than zero",5, parameters.size());
-		IParameter param = parameters.get("MYSQL_PASSWORD");
-		assertNotNull(param);
-		assertEquals("",param.getValue());
-		assertEquals("[a-zA-Z0-9]{8}",param.getFrom());
-		assertEquals("expression",param.getGeneratorName());
-		assertEquals("database password",param.getDescription());
-		assertTrue("required", param.isRequired());
-	}
-	
-	@Test
-	public void testGetLabels() {
-		assertEquals("Exp. to retrieve the labels",2, template.getLabels().size());
-		assertEquals("bar", template.getLabels().get("foo"));
-	}
+    @Test
+    public void testGetApiVersion() {
+        assertEquals(VERSION, template.getApiVersion());
+    }
 
-	@Test
-	public void testGetObjectLabels() {
-		assertEquals("Exp. to retrieve the object labels",1, template.getObjectLabels().size());
-		assertEquals("application-template-stibuild", template.getObjectLabels().get("template"));
-	}
+    @Test
+    public void testGetItems() {
+        assertEquals("Exp. the number of items to be more than zero", 8, template.getObjects().size());
+    }
+
+    @Test
+    public void testGetParameters() {
+        Map<String, IParameter> parameters = template.getParameters();
+        assertEquals("Exp. the number of items to be more than zero", 5, parameters.size());
+        IParameter param = parameters.get("MYSQL_PASSWORD");
+        assertNotNull(param);
+        assertEquals("", param.getValue());
+        assertEquals("[a-zA-Z0-9]{8}", param.getFrom());
+        assertEquals("expression", param.getGeneratorName());
+        assertEquals("database password", param.getDescription());
+        assertTrue("required", param.isRequired());
+    }
+
+    @Test
+    public void testGetLabels() {
+        assertEquals("Exp. to retrieve the labels", 2, template.getLabels().size());
+        assertEquals("bar", template.getLabels().get("foo"));
+    }
+
+    @Test
+    public void testGetObjectLabels() {
+        assertEquals("Exp. to retrieve the object labels", 1, template.getObjectLabels().size());
+        assertEquals("application-template-stibuild", template.getObjectLabels().get("template"));
+    }
 
 }

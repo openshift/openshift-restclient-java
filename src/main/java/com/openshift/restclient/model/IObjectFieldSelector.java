@@ -8,13 +8,14 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 import com.openshift.restclient.model.IEnvironmentVariable.IEnvVarSource;
 
 public interface IObjectFieldSelector extends IEnvVarSource {
-	
-	String getApiVersion();
-	
-	String getFieldPath();
+
+    String getApiVersion();
+
+    String getFieldPath();
 }

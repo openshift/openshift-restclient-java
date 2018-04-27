@@ -8,6 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import java.util.Collections;
@@ -30,16 +31,14 @@ import com.openshift.restclient.model.deploy.IDeploymentRequest;
  */
 public class DeploymentTrigger extends AbstractCapability implements IDeploymentTriggerable {
     private static final String DEPLOYMENT_ENDPOINT = "instantiate";
-	private static final String DEPLOYMENT_REQUEST = "DeploymentRequest";
+    private static final String DEPLOYMENT_REQUEST = "DeploymentRequest";
 
-    
     private IClient client;
     private IDeploymentConfig config;
     private ITypeFactory factory;
     private boolean latest;
     private boolean force;
     private String resourceName;
-
 
     public DeploymentTrigger(IDeploymentConfig resource, IClient client, ITypeFactory factory) {
         super(resource, client, DEPLOYMENT_ENDPOINT);
@@ -54,19 +53,21 @@ public class DeploymentTrigger extends AbstractCapability implements IDeployment
     }
 
     @Override
-	public boolean isSupported() {
-		return true;
-	}
+    public boolean isSupported() {
+        return true;
+    }
 
-	@Override
+    @Override
     public IDeploymentConfig trigger() {
         if (super.isSupported()) {
-            IDeploymentRequest request = (IDeploymentRequest) factory.stubKind(DEPLOYMENT_REQUEST, Optional.of(config.getName()), Optional.empty());
+            IDeploymentRequest request = (IDeploymentRequest) factory.stubKind(DEPLOYMENT_REQUEST,
+                    Optional.of(config.getName()), Optional.empty());
             request.setForce(force);
             request.setLatest(latest);
             request.setName(resourceName);
-            return (IDeploymentConfig) client.execute(client.getResourceFactory(), IHttpConstants.POST, config.getKind(), config.getNamespaceName(), config.getName(), DEPLOYMENT_ENDPOINT, null, request,
-                Collections.emptyMap());
+            return (IDeploymentConfig) client.execute(client.getResourceFactory(), IHttpConstants.POST,
+                    config.getKind(), config.getNamespaceName(), config.getName(), DEPLOYMENT_ENDPOINT, null, request,
+                    Collections.emptyMap());
         } else {
             IDeployCapability deployer = config.getCapability(IDeployCapability.class);
             deployer.deploy();

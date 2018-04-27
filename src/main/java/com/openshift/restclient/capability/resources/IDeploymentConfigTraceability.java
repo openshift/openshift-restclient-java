@@ -6,20 +6,18 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.IDeploymentConfig;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IDeploymentConfigTraceability extends ICapability {
-	
-	/**
-	 * Get the deployment configuration for a resource
-	 * @return
-	 */
-	IDeploymentConfig getDeploymentConfig();
+
+    /**
+     * Get the deployment configuration for a resource
+     * 
+     */
+    IDeploymentConfig getDeploymentConfig();
 
 }

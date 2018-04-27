@@ -8,13 +8,14 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.restclient.api.models;
 
 import com.openshift.restclient.model.JSONSerializeable;
 
 /**
  * Marker interface to kubernetes TypeMeta
- * @author jeff.cantrill
+ * 
  *
  */
 public interface ITypeMeta extends IApiVersionable, IKindable, JSONSerializeable {

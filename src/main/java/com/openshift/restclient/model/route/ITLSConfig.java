@@ -6,111 +6,110 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.route;
 
 /**
  * TLS configuration for routes.
  * 
- * @author Jeff Cantrill
  */
 public interface ITLSConfig {
-	
-	/**
-	 * Returns the termination type. If termination type is not set,
-	 * any termination config will be ignored.
-	 * 
-	 * @return Termination type.
-	 */
-	String getTerminationType();
 
-	/**
-	 * Sets the termination type to this config.
-	 * Termination indicates termination type. If termination type is not set,
-	 * any termination config will be ignored.
-	 * 
-	 * @param type
-	 *            termination type
-	 */
-	void setTerminationType(String type);
+    /**
+     * Returns the termination type. If termination type is not set, any termination
+     * config will be ignored.
+     * 
+     * @return Termination type.
+     */
+    String getTerminationType();
 
-	/**
-	 * Retrieves the certificate contents.
-	 * 
-	 * @return Certificate contents.
-	 */
-	String getCertificate();
+    /**
+     * Sets the termination type to this config. Termination indicates termination
+     * type. If termination type is not set, any termination config will be ignored.
+     * 
+     * @param type
+     *            termination type
+     */
+    void setTerminationType(String type);
 
-	/**
-	 * Sets the certificate contents.
-	 * 
-	 * @param certificate
-	 *            certificate contents
-	 */
-	void setCertificate(String certificate);
+    /**
+     * Retrieves the certificate contents.
+     * 
+     * @return Certificate contents.
+     */
+    String getCertificate();
 
-	/**
-	 * Retrieves the key file contents.
-	 * 
-	 * @return Key file contents.
-	 */
-	String getKey();
+    /**
+     * Sets the certificate contents.
+     * 
+     * @param certificate
+     *            certificate contents
+     */
+    void setCertificate(String certificate);
 
-	/**
-	 * Sets the key file contents.
-	 * 
-	 * @param key
-	 *            key file contents
-	 */
-	void setKey(String key);
+    /**
+     * Retrieves the key file contents.
+     * 
+     * @return Key file contents.
+     */
+    String getKey();
 
-	/**
-	 * Retrieves the certification authority certificate contents.
-	 * 
-	 * @return CA certificate contents.
-	 */
-	String getCACertificate();
+    /**
+     * Sets the key file contents.
+     * 
+     * @param key
+     *            key file contents
+     */
+    void setKey(String key);
 
-	/**
-	 * Sets the certification authority certificate contents.
-	 * 
-	 * @param caCertificate
-	 *            CA certificate contents
-	 */
-	void setCACertificate(String caCertificate);
+    /**
+     * Retrieves the certification authority certificate contents.
+     * 
+     * @return CA certificate contents.
+     */
+    String getCACertificate();
 
-	/**
-	 * DestinationCACertificate provides the contents of the CA certificate of
-	 * the final destination. When using reencrypt termination this file should
-	 * be provided in order to have routers use it for health checks on the
-	 * secure connection.
-	 * 
-	 * @return Contents of CA certificate of the final destination.
-	 */
-	String getDestinationCertificate();
+    /**
+     * Sets the certification authority certificate contents.
+     * 
+     * @param caCertificate
+     *            CA certificate contents
+     */
+    void setCACertificate(String caCertificate);
 
-	/**
-	 * DestinationCACertificate provides the contents of the CA certificate of
-	 * the final destination. When using reencrypt termination this file should
-	 * be provided in order to have routers use it for health checks on the
-	 * secure connection.
-	 * 
-	 * @param destinationCertificate
-	 *            contents of CA certificate of the final destination
-	 */
-	void setDestinationCertificate(String destinationCertificate);
+    /**
+     * DestinationCACertificate provides the contents of the CA certificate of the
+     * final destination. When using reencrypt termination this file should be
+     * provided in order to have routers use it for health checks on the secure
+     * connection.
+     * 
+     * @return Contents of CA certificate of the final destination.
+     */
+    String getDestinationCertificate();
 
-	/**
-	 * Retrieves InsecureEdgeTerminationPolicy
-	 *
-	 * @return InsecureEdgeTerminationPolicy
-	 */
-	String getInsecureEdgeTerminationPolicy();
+    /**
+     * DestinationCACertificate provides the contents of the CA certificate of the
+     * final destination. When using reencrypt termination this file should be
+     * provided in order to have routers use it for health checks on the secure
+     * connection.
+     * 
+     * @param destinationCertificate
+     *            contents of CA certificate of the final destination
+     */
+    void setDestinationCertificate(String destinationCertificate);
 
-	/**
-	 * Sets insecureEdgeTerminationPolicy
-	 *
-	 * @param insecureEdgeTerminationPolicy
-	 *            insecureEdgeTerminationPolicy
-	 */
-	void setInsecureEdgeTerminationPolicy(String insecureEdgeTerminationPolicy);
+    /**
+     * Retrieves InsecureEdgeTerminationPolicy
+     *
+     * @return InsecureEdgeTerminationPolicy
+     */
+    String getInsecureEdgeTerminationPolicy();
+
+    /**
+     * Sets insecureEdgeTerminationPolicy
+     *
+     * @param insecureEdgeTerminationPolicy
+     *            insecureEdgeTerminationPolicy
+     */
+    void setInsecureEdgeTerminationPolicy(String insecureEdgeTerminationPolicy);
 }

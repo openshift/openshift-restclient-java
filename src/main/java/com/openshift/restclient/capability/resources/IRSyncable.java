@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import java.io.InputStream;
@@ -18,192 +19,190 @@ import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.model.IPod;
 
 public interface IRSyncable extends IBinaryCapability {
-	
-	/** option to skip verifying the certificates during TLS connection establishment. */
-	static final OpenShiftBinaryOption EXCLUDE_GIT_FOLDER = new GitFolderExclude();
 
-	/** option to exclude files/folders that match the given expressions **/
-	static OpenShiftBinaryOption exclude(String... expressions) {
-		return new Exclude(expressions);
-	}
+    /**
+     * option to skip verifying the certificates during TLS connection
+     * establishment.
+     */
+    static final OpenShiftBinaryOption EXCLUDE_GIT_FOLDER = new GitFolderExclude();
 
-	/** option to not transfer file permissions. */
-	static final OpenShiftBinaryOption NO_PERMS = new NoPerms();
+    /** option to exclude files/folders that match the given expressions **/
+    static OpenShiftBinaryOption exclude(String... expressions) {
+        return new Exclude(expressions);
+    }
 
-	/** option to delete delete extraneous files from destination directories**/
-	static final OpenShiftBinaryOption DELETE = new Delete();
+    /** option to not transfer file permissions. */
+    static final OpenShiftBinaryOption NO_PERMS = new NoPerms();
 
-	/**
-	 * Excludes some files/directories that match the given patterns when rsync'ing
-	 * the remote pod and the local deployment directory.
-	 * 
-	 * @see {@link https://github.com/openshift/origin/issues/8223}
-	 */
-	 static class Exclude implements OpenShiftBinaryOption {
+    /** option to delete delete extraneous files from destination directories **/
+    static final OpenShiftBinaryOption DELETE = new Delete();
 
-		private String[] expressions;
+    /**
+     * Excludes some files/directories that match the given patterns when rsync'ing
+     * the remote pod and the local deployment directory.
+     * 
+     * @see {@link https://github.com/openshift/origin/issues/8223}
+     */
+    static class Exclude implements OpenShiftBinaryOption {
 
-		public Exclude(String... expressions) {
-			this.expressions = expressions;
-		}
-		
-		@Override
-		public void append(StringBuilder arguments) {
-			if (ArrayUtils.isEmpty(expressions)) {
-				return;
-			}
-			for (String expression : expressions) {
-				arguments.append(" --exclude=").append(expression);
-			}
-		}
-	}
+        private String[] expressions;
 
-	/**
-	 * Does not sync .git folders when rsync'ing
-	 */
-	static class GitFolderExclude extends Exclude {
+        public Exclude(String... expressions) {
+            this.expressions = expressions;
+        }
 
-		public GitFolderExclude() {
-			super(".git");
-		}
-	}
+        @Override
+        public void append(StringBuilder arguments) {
+            if (ArrayUtils.isEmpty(expressions)) {
+                return;
+            }
+            for (String expression : expressions) {
+                arguments.append(" --exclude=").append(expression);
+            }
+        }
+    }
 
-	/**
-	 * Avoids transferring file permissions when rsync'ing
-	 */
-	static class NoPerms implements OpenShiftBinaryOption {
+    /**
+     * Does not sync .git folders when rsync'ing
+     */
+    static class GitFolderExclude extends Exclude {
 
-		@Override
-		public void append(StringBuilder arguments) {
-			arguments.append(" --no-perms=true");
-		}
-	}
+        public GitFolderExclude() {
+            super(".git");
+        }
+    }
 
-	/**
-	 * Deletes extraneous files from destination directories when rsync'ing.
-	 */
-	static class Delete implements OpenShiftBinaryOption {
+    /**
+     * Avoids transferring file permissions when rsync'ing
+     */
+    static class NoPerms implements OpenShiftBinaryOption {
 
-		@Override
-		public void append(StringBuilder arguments) {
-			arguments.append(" --delete");
-		}
-	}
+        @Override
+        public void append(StringBuilder arguments) {
+            arguments.append(" --no-perms=true");
+        }
+    }
 
-	static class PodPeer extends Peer {
+    /**
+     * Deletes extraneous files from destination directories when rsync'ing.
+     */
+    static class Delete implements OpenShiftBinaryOption {
 
-		private static final char POD_PATH_SEPARATOR = ':';
+        @Override
+        public void append(StringBuilder arguments) {
+            arguments.append(" --delete");
+        }
+    }
 
-		private IPod pod;
+    static class PodPeer extends Peer {
 
-		public PodPeer(String location, IPod pod) {
-			super(location);
-			this.pod = pod;
-		}
+        private static final char POD_PATH_SEPARATOR = ':';
 
-		@Override
-		public boolean isPod() {
-			return true;
-		}
+        private IPod pod;
 
-		public IPod getPod() {
-			return pod;
-		}
-		
-		@Override
-		protected String getParameter() {
-			return new StringBuilder()
-					.append('"')
-					.append(pod.getName())
-					.append(POD_PATH_SEPARATOR)
-					.append(getLocation())
-					.append('"')
-					.toString();
-		}
-	}
-	
-	static class LocalPeer extends Peer {
+        public PodPeer(String location, IPod pod) {
+            super(location);
+            this.pod = pod;
+        }
 
-		public LocalPeer(String location) {
-			super(location);
-		}
+        @Override
+        public boolean isPod() {
+            return true;
+        }
 
-		@Override
-		public boolean isPod() {
-			return false;
-		}
-		
-		@Override
-		public IPod getPod() {
-			return null;
-		}
+        public IPod getPod() {
+            return pod;
+        }
 
-		protected String getParameter() {
-			return new StringBuilder()
-					.append('"')
-					.append(getLocation())
-					.append('"')
-					.toString();
-		}
-	}
+        @Override
+        protected String getParameter() {
+            return new StringBuilder().append('"').append(pod.getName()).append(POD_PATH_SEPARATOR)
+                    .append(getLocation()).append('"').toString();
+        }
+    }
 
-	abstract static class Peer implements OpenShiftBinaryOption {
+    static class LocalPeer extends Peer {
 
-		private String location;
+        public LocalPeer(String location) {
+            super(location);
+        }
 
-		private Peer(String path) {
-			this.location = path;
-		}
+        @Override
+        public boolean isPod() {
+            return false;
+        }
 
-		protected String getLocation() {
-			return location;
-		}
+        @Override
+        public IPod getPod() {
+            return null;
+        }
 
-		protected abstract String getParameter();
-		
-		public abstract boolean isPod();
+        protected String getParameter() {
+            return new StringBuilder().append('"').append(getLocation()).append('"').toString();
+        }
+    }
 
-		public abstract IPod getPod();
+    abstract static class Peer implements OpenShiftBinaryOption {
 
-		@Override
-		public void append(StringBuilder commandLine) {
-			commandLine.append(" ").append(getParameter());
-		}
-	}
+        private String location;
 
-	/**
-	 * Synchronizes the give {@code destination} with the given {@code source}
-	 * @param source the source of the rsync
-	 * @param destination the destination of the rsync
-	 * @param options the options to pass to the underlying {@code oc rsync} command
-	 * @return the underlying {@link Process} streams to be displayed in a console.
-	 */
-	InputStream sync(Peer source, Peer destination, OpenShiftBinaryOption... options);
-		
-	/**
-	 * Stops rsync'ing, forcibly if necessary.
-	 */
-	void stop();
+        private Peer(String path) {
+            this.location = path;
+        }
 
-	/**
-	 * Indicates if the {@link Process} completed or not
-	 * 
-	 * @return <code>true</code> if the {@link Process} completed,
-	 *         <code>false</code> otherwise.
-	 */
-	boolean isDone();
+        protected String getLocation() {
+            return location;
+        }
 
-	/**
-	 * @return the {@link Process} exit value when it completed, {@code -1} if
-	 *         it's still running
-	 */
-	int exitValue();
+        protected abstract String getParameter();
 
-	/**
-	 * Blocks until the process is done.
-	 * 
-	 * @throws InterruptedException
-	 *             if the current thread is interrupted while waiting
-	 */
-	void await() throws InterruptedException;
+        public abstract boolean isPod();
+
+        public abstract IPod getPod();
+
+        @Override
+        public void append(StringBuilder commandLine) {
+            commandLine.append(" ").append(getParameter());
+        }
+    }
+
+    /**
+     * Synchronizes the give {@code destination} with the given {@code source}
+     * 
+     * @param source
+     *            the source of the rsync
+     * @param destination
+     *            the destination of the rsync
+     * @param options
+     *            the options to pass to the underlying {@code oc rsync} command
+     * @return the underlying {@link Process} streams to be displayed in a console.
+     */
+    InputStream sync(Peer source, Peer destination, OpenShiftBinaryOption... options);
+
+    /**
+     * Stops rsync'ing, forcibly if necessary.
+     */
+    void stop();
+
+    /**
+     * Indicates if the {@link Process} completed or not
+     * 
+     * @return <code>true</code> if the {@link Process} completed,
+     *         <code>false</code> otherwise.
+     */
+    boolean isDone();
+
+    /**
+     * @return the {@link Process} exit value when it completed, {@code -1} if it's
+     *         still running
+     */
+    int exitValue();
+
+    /**
+     * Blocks until the process is done.
+     * 
+     * @throws InterruptedException
+     *             if the current thread is interrupted while waiting
+     */
+    void await() throws InterruptedException;
 }

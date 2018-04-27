@@ -6,10 +6,14 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.v1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,54 +24,48 @@ import com.openshift.restclient.model.volume.IPersistentVolumeClaim;
 import com.openshift.restclient.model.volume.PVCAccessModes;
 import com.openshift.restclient.utils.Samples;
 
-import java.util.Collections;
-
-/**
- * @author Jeff Cantrill
- */
 public class PVCTest {
 
-	private static final String V1 = "v1";
-	private IPersistentVolumeClaim claim;
-	
-	@Before
-	public void setup(){
-		IClient client = mock(IClient.class);
-		claim = new ResourceFactory(client).create(Samples.V1_PVC.getContentAsString());
-		assertEquals(V1, claim.getApiVersion());
-	}
-	
-	@Test
-	public void testGetAccessModes(){
-		assertArrayEquals(new String[] {PVCAccessModes.READ_WRITE_ONCE}, claim.getAccessModes().toArray());
-	}
+    private static final String V1 = "v1";
+    private IPersistentVolumeClaim claim;
 
-	@Test
-	public void testSetAccessModes() {
-		claim.setAccessModes(Collections.singleton(PVCAccessModes.READ_WRITE_MANY));
-		assertArrayEquals(new String[] {PVCAccessModes.READ_WRITE_MANY}, claim.getAccessModes().toArray());
-	}
+    @Before
+    public void setup() {
+        IClient client = mock(IClient.class);
+        claim = new ResourceFactory(client).create(Samples.V1_PVC.getContentAsString());
+        assertEquals(V1, claim.getApiVersion());
+    }
 
-	
-	@Test
-	public void testGetStatus(){
-		assertEquals("Pending", claim.getStatus());
-	}
-	
-	@Test
-	public void testGetRequestedStorage(){
-		assertEquals("15m", claim.getRequestedStorage());
-	}
+    @Test
+    public void testGetAccessModes() {
+        assertArrayEquals(new String[] { PVCAccessModes.READ_WRITE_ONCE }, claim.getAccessModes().toArray());
+    }
 
-	@Test
-	public void testSetRequestedStorage() {
-		claim.setRequestedStorage("1Gi");
-		assertEquals("1Gi", claim.getRequestedStorage());
-	}
-	
-	@Test
-	public void testGetVolumeName() {
-		assertEquals("pv02", claim.getVolumeName());
-	}
+    @Test
+    public void testSetAccessModes() {
+        claim.setAccessModes(Collections.singleton(PVCAccessModes.READ_WRITE_MANY));
+        assertArrayEquals(new String[] { PVCAccessModes.READ_WRITE_MANY }, claim.getAccessModes().toArray());
+    }
+
+    @Test
+    public void testGetStatus() {
+        assertEquals("Pending", claim.getStatus());
+    }
+
+    @Test
+    public void testGetRequestedStorage() {
+        assertEquals("15m", claim.getRequestedStorage());
+    }
+
+    @Test
+    public void testSetRequestedStorage() {
+        claim.setRequestedStorage("1Gi");
+        assertEquals("1Gi", claim.getRequestedStorage());
+    }
+
+    @Test
+    public void testGetVolumeName() {
+        assertEquals("pv02", claim.getVolumeName());
+    }
 
 }

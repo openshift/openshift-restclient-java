@@ -6,45 +6,49 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IResource;
 
 /**
- * Retrieve the associated resource from the given
- * resource's annotation
+ * Retrieve the associated resource from the given resource's annotation
  * 
- * @author Jeff Cantrill
  */
-public abstract class AssociationCapability extends AnnotationCapability{
+public abstract class AssociationCapability extends AnnotationCapability {
 
-	private IClient client;
+    private IClient client;
 
-	public AssociationCapability(String name, IResource resource, IClient client) {
-		super(name, resource);
-		this.client = client;
-	}
-	
-	protected IClient getClient(){
-		return client;
-	}
-	
-	@Override
-	public boolean isSupported() {
-		if(client == null) return false;
-		return super.isSupported();
-	}
-	
-	/**
-	 * Get the associated resource of the given kind using the
-	 * name from the annotation key;
-	 * @param kind
-	 * @return
-	 */
-	protected <T extends IResource> T getAssociatedResource(String kind){
-		if(!isSupported()) return null;
-		String name = getResource().getAnnotation(getAnnotationKey());
-		return getClient().get(kind, name, getResource().getNamespaceName());
-	}
+    public AssociationCapability(String name, IResource resource, IClient client) {
+        super(name, resource);
+        this.client = client;
+    }
+
+    protected IClient getClient() {
+        return client;
+    }
+
+    @Override
+    public boolean isSupported() {
+        if (client == null) {
+            return false;
+        }
+        return super.isSupported();
+    }
+
+    /**
+     * Get the associated resource of the given kind using the name from the
+     * annotation key;
+     * 
+     * @param kind The kind
+     * @return the resource
+     */
+    protected <T extends IResource> T getAssociatedResource(String kind) {
+        if (!isSupported()) {
+            return null;
+        }
+        String name = getResource().getAnnotation(getAnnotationKey());
+        return getClient().get(kind, name, getResource().getNamespaceName());
+    }
 }

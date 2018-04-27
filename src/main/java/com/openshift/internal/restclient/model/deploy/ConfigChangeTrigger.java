@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.deploy;
 
 import java.util.Map;
@@ -18,8 +19,8 @@ import com.openshift.restclient.model.deploy.IDeploymentConfigChangeTrigger;
 
 public class ConfigChangeTrigger extends DeploymentTrigger implements IDeploymentConfigChangeTrigger {
 
-	public ConfigChangeTrigger(ModelNode node, Map<String, String[]> propertyKeys) {
-		super(node, propertyKeys);
-	}
+    public ConfigChangeTrigger(ModelNode node, Map<String, String[]> propertyKeys) {
+        super(node, propertyKeys);
+    }
 
 }

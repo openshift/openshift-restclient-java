@@ -6,22 +6,22 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
 /**
- * The build strategies supported
- * by OpenShift
+ * The build strategies supported by OpenShift
  */
 
 public interface BuildStrategyType {
-	
-	static final String DOCKER = "Docker";
-	
-	@Deprecated
-	static final String STI = "STI";
-	
-	static final String SOURCE = "Source";
-	static final String CUSTOM = "Custom";
-	static final String JENKINS_PIPELINE = "JenkinsPipeline";
+
+    static final String DOCKER = "Docker";
+
+    @Deprecated
+    static final String STI = "STI";
+
+    static final String SOURCE = "Source";
+    static final String CUSTOM = "Custom";
+    static final String JENKINS_PIPELINE = "JenkinsPipeline";
 
 }

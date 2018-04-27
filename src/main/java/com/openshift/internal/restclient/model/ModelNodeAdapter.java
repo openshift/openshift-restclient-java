@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model;
 
 import java.util.Map;
@@ -18,44 +19,39 @@ import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.model.JSONSerializeable;
 
 /**
- * Adapter class between what we want 
- * and the backing DMR json store
- * @author Jeff Cantrill
+ * Adapter class between what we want and the backing DMR json store
  *
  */
 public class ModelNodeAdapter implements JSONSerializeable {
-	
-	private ModelNode node;
-	private Map<String, String []> propertyKeys;
 
+    private ModelNode node;
+    private Map<String, String[]> propertyKeys;
 
-	protected ModelNodeAdapter(ModelNode node, Map<String, String []> propertyKeys) {
-		this.node = node;
-		this.propertyKeys = propertyKeys;
-	}
+    protected ModelNodeAdapter(ModelNode node, Map<String, String[]> propertyKeys) {
+        this.node = node;
+        this.propertyKeys = propertyKeys;
+    }
 
-	protected ModelNode getNode(){
-		return node;
-	}
-	
-	@Override
-	public String toJson() {
-		return toJson(false);
-	}
+    protected ModelNode getNode() {
+        return node;
+    }
 
-	public String toJson(boolean compact) {
-		return JBossDmrExtentions.toJsonString(node, compact);
-	}
+    @Override
+    public String toJson() {
+        return toJson(false);
+    }
 
-	protected Map<String, String []> getPropertyKeys() {
-		return propertyKeys;
-	}
+    public String toJson(boolean compact) {
+        return JBossDmrExtentions.toJsonString(node, compact);
+    }
 
+    protected Map<String, String[]> getPropertyKeys() {
+        return propertyKeys;
+    }
 
-
-	@Override
-	public String toString() {
-		return toJson(false);
-	}
+    @Override
+    public String toString() {
+        return toJson(false);
+    }
 
 }

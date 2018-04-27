@@ -8,9 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,51 +21,43 @@ import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync.Optio
 
 public class IPodLogRetrievalAsyncOptionsTest {
 
-	private Options options = new Options();
-	@Before
-	public void setUp() throws Exception {
-	}
+    private Options options = new Options();
 
-	@Test
-	public void testFollowDoesNotOverrideParameter() {
-		assertEquals("false", options
-		.follow()
-		.parameter("follow", "false")
-		.getMap().get("follow"));
-		
-	}
-	
-	@Test
-	public void testFollowIsAddedWhenTrue() {
-		assertEquals("true", options.follow().getMap().get("follow"));
-	}
+    @Before
+    public void setUp() throws Exception {
+    }
 
-	@Test
-	public void testFollowIsNotAddedWhenFalse() {
-		assertNull(options.follow(false).getMap().get("follow"));
-	}
-	
-	@Test
-	public void testContainerDoesNotOverrideParameter() {
-		assertEquals("foo", options
-		.container("bar")
-		.parameter("container", "foo")
-		.getMap().get("container"));
-		
-	}
+    @Test
+    public void testFollowDoesNotOverrideParameter() {
+        assertEquals("false", options.follow().parameter("follow", "false").getMap().get("follow"));
 
-	@Test
-	public void testContainerAddedWhenNotEmpty() {
-		assertEquals("bar", options
-				.container("bar")
-				.getMap().get("container"));
-		
-	}
-	@Test
-	public void testContainerNotAddedWhenEmpty() {
-		assertNull(options
-				.container(" ")
-				.getMap().get("container"));
-		
-	}
+    }
+
+    @Test
+    public void testFollowIsAddedWhenTrue() {
+        assertEquals("true", options.follow().getMap().get("follow"));
+    }
+
+    @Test
+    public void testFollowIsNotAddedWhenFalse() {
+        assertNull(options.follow(false).getMap().get("follow"));
+    }
+
+    @Test
+    public void testContainerDoesNotOverrideParameter() {
+        assertEquals("foo", options.container("bar").parameter("container", "foo").getMap().get("container"));
+
+    }
+
+    @Test
+    public void testContainerAddedWhenNotEmpty() {
+        assertEquals("bar", options.container("bar").getMap().get("container"));
+
+    }
+
+    @Test
+    public void testContainerNotAddedWhenEmpty() {
+        assertNull(options.container(" ").getMap().get("container"));
+
+    }
 }

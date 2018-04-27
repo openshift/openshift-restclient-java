@@ -8,21 +8,22 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
 import com.openshift.restclient.images.DockerImageURI;
 
 public interface IBuildStatus {
-	
-	String getPhase();
-	
-	String getStartTime();
-	
-	/**
-	 * The duration of the build in nanoseconds
-	 * @return
-	 */
-	long getDuration();
-	
-	DockerImageURI getOutputDockerImage();
+
+    String getPhase();
+
+    String getStartTime();
+
+    /**
+     * The duration of the build in nanoseconds
+     * 
+     */
+    long getDuration();
+
+    DockerImageURI getOutputDockerImage();
 }

@@ -8,6 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.internal.restclient.model.oauth;
 
 import java.util.Map;
@@ -20,9 +21,8 @@ import com.openshift.restclient.model.oauth.IOAuthClientAuthorization;
 
 public class OAuthClientAuthorization extends KubernetesResource implements IOAuthClientAuthorization {
 
-	public OAuthClientAuthorization(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
-		super(node, client, propertyKeys);
-		// TODO Auto-generated constructor stub
-	}
+    public OAuthClientAuthorization(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+        super(node, client, propertyKeys);
+    }
 
 }

@@ -6,24 +6,23 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.capability.resources;
 
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.IReplicationController;
 
 /**
- * Trace the source of what caused a resource
- * to be deployed
+ * Trace the source of what caused a resource to be deployed
  * 
- * @author Jeff Cantrill
  */
 public interface IDeploymentTraceability extends ICapability {
 
-	/**
-	 * Get the deployment of a resource.  The value returned when
-	 * the capability is not supported is not guaranteed.
-	 * 
-	 * @return IReplicationController if the capability is supported.  
-	 */
-	IReplicationController getDeployment();
+    /**
+     * Get the deployment of a resource. The value returned when the capability is
+     * not supported is not guaranteed.
+     * 
+     * @return IReplicationController if the capability is supported.
+     */
+    IReplicationController getDeployment();
 }

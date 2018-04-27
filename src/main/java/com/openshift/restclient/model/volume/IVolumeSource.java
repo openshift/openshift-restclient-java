@@ -8,17 +8,17 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model.volume;
 
 /**
  * Persisent storage found on a pod
- * @author jeff.cantrill
  *
  */
 public interface IVolumeSource {
-	String getName();
+    String getName();
 
-	void setName(String name);
+    void setName(String name);
 
-	String toJSONString();
+    String toJSONString();
 }

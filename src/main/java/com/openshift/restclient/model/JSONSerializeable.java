@@ -8,27 +8,28 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 /**
  * Something that can be serialized to JSON
- * @author jeff.cantrill
  *
  */
 public interface JSONSerializeable {
-	
-	/**
-	 * The JSON representation
-	 * @return
-	 */
-	String toJson();
-	
-	/**
-	 * The JSON representation
-	 * @param compact true if it should be compact; false otherwise
-	 * @return
-	 */
-	default String toJson(boolean compact) {
-		return toJson();
-	}
+
+    /**
+     * The JSON representation
+     * 
+     */
+    String toJson();
+
+    /**
+     * The JSON representation
+     * 
+     * @param compact
+     *            true if it should be compact; false otherwise
+     */
+    default String toJson(boolean compact) {
+        return toJson();
+    }
 }

@@ -6,28 +6,25 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model.build;
 
 import com.openshift.restclient.images.DockerImageURI;
 
-/**
- * @author Jeff Cantrill
- */
 public interface IImageChangeTrigger extends IBuildTrigger {
-	
-	
-	DockerImageURI getImage();
-	
-	/**
-	 * Returns the name of the docker image repo to watch
-	 * @return
-	 */
-	DockerImageURI getFrom();
-	
-	/**
-	 * Returns the tag to watch in the image repository
-	 * @return
-	 */
-	String getTag();
-	
+
+    DockerImageURI getImage();
+
+    /**
+     * Returns the name of the docker image repo to watch
+     * 
+     */
+    DockerImageURI getFrom();
+
+    /**
+     * Returns the tag to watch in the image repository
+     * 
+     */
+    String getTag();
+
 }

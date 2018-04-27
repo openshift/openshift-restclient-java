@@ -8,13 +8,15 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package com.openshift.internal.restclient.model;
 
-import com.openshift.restclient.model.IExecAction;
-import org.jboss.dmr.ModelNode;
+package com.openshift.internal.restclient.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import org.jboss.dmr.ModelNode;
+
+import com.openshift.restclient.model.IExecAction;
 
 /**
  * @author Ulf Lilleengen

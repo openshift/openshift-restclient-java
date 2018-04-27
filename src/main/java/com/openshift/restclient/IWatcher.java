@@ -8,9 +8,10 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient;
 
 public interface IWatcher {
-	
-	void stop();
+
+    void stop();
 }

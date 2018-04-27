@@ -6,40 +6,40 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.internal.restclient.capability.resources;
 
 import com.openshift.restclient.capability.resources.ITemplateTraceability;
 import com.openshift.restclient.model.IResource;
 
 /**
- * Capability of resource tracing the template from which
- * it was generated
- * 
- * @author Jeff Cantrill
+ * Capability of resource tracing the template from which it was generated
  */
-public class TemplateTraceability implements	ITemplateTraceability {
+public class TemplateTraceability implements ITemplateTraceability {
 
-	private static final String TEMPLATE_ANNOTATION = "template";
-	private IResource resource;
+    private static final String TEMPLATE_ANNOTATION = "template";
+    private IResource resource;
 
-	public TemplateTraceability(IResource resource) {
-		this.resource = resource;
-	}
+    public TemplateTraceability(IResource resource) {
+        this.resource = resource;
+    }
 
-	@Override
-	public String getTemplateName() {
-		if(!isSupported()) return "";
-		return resource.getAnnotation(TEMPLATE_ANNOTATION);
-	}
+    @Override
+    public String getTemplateName() {
+        if (!isSupported()) {
+            return "";
+        }
+        return resource.getAnnotation(TEMPLATE_ANNOTATION);
+    }
 
-	@Override
-	public boolean isSupported() {
-		return resource.isAnnotatedWith(TEMPLATE_ANNOTATION);
-	}
+    @Override
+    public boolean isSupported() {
+        return resource.isAnnotatedWith(TEMPLATE_ANNOTATION);
+    }
 
-	@Override
-	public String getName() {
-		return TemplateTraceability.class.getSimpleName();
-	}
+    @Override
+    public String getName() {
+        return TemplateTraceability.class.getSimpleName();
+    }
 
 }

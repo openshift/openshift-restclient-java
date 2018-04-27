@@ -6,12 +6,12 @@
  * 
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient.model;
 
 /**
  * A Config which is a list of resources.
  * 
- * @author Jeff Cantrill
  * @deprecated ??? in later model versions in favor of List?
  */
 @Deprecated
