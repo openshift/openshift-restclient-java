@@ -12,6 +12,8 @@
 package com.openshift.restclient;
 
 import java.io.IOException;
+import java.net.Proxy;
+import java.net.ProxySelector;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -62,6 +64,9 @@ public class ClientBuilder {
     private String token;
     private String password;
     private String userAgentPrefix;
+
+    private Proxy proxy;
+    private ProxySelector proxySelector;
     private Authenticator proxyAuthenticator;
 
     private int maxRequests = 64;
@@ -143,7 +148,7 @@ public class ClientBuilder {
     /**
      * The connect timeout parameter used for establishing the connection to a
      * remote server
-     * 
+     *
      * @param connectInMillis
      *            A value in milliseconds
      */
@@ -151,7 +156,7 @@ public class ClientBuilder {
         this.connectTimeout = connectInMillis;
         return this;
     }
-    
+
     public ClientBuilder withReadTimeout(int timeout, TimeUnit unit) {
         this.readTimeout = timeout;
         this.readTimeoutUnit = unit;
@@ -164,6 +169,17 @@ public class ClientBuilder {
         return this;
     }
 
+    public ClientBuilder proxy(Proxy proxy) {
+        this.proxy = proxy;
+        return this;
+    }
+
+    public ClientBuilder proxySelector(ProxySelector proxySelector) {
+        this.proxySelector = proxySelector;
+        return this;
+    }
+
+
     public ClientBuilder proxyAuthenticator(Authenticator proxyAuthenticator) {
         this.proxyAuthenticator = proxyAuthenticator;
         return this;
@@ -172,7 +188,7 @@ public class ClientBuilder {
 
     /**
      * The maximum concurrent requests for this client.
-     * 
+     *
      * @param maxRequests
      *            the maximum number of concurrent requests
      * @return the client builder
@@ -184,7 +200,7 @@ public class ClientBuilder {
 
     /**
      * The maximum concurrent request for this client for a single host.
-     * 
+     *
      * @param maxRequestsPerHost
      *            the maximum number of concurrent requests for a single host
      * @return the client builder
@@ -196,7 +212,7 @@ public class ClientBuilder {
 
     /**
      * Build a client
-     * 
+     *
      * @throws KeyManagementException an exception
      */
     public IClient build() {
@@ -230,6 +246,14 @@ public class ClientBuilder {
 
             if (!this.sslCertCallbackWithDefaultHostnameVerifier) {
                 builder.hostnameVerifier(sslCertificateCallback);
+            }
+
+            if (proxy != null) {
+                builder.proxy(proxy);
+            }
+
+            if (proxySelector != null) {
+                builder.proxySelector(proxySelector);
             }
 
             if (proxyAuthenticator != null) {
