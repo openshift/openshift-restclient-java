@@ -48,4 +48,9 @@ public class ProjectTest {
     public void testGetDescription() {
         assertEquals("This is an example project to demonstrate OpenShift v3", project.getDescription());
     }
+    
+    @Test
+    public void testGetStatus() {
+        assertEquals("Active", project.getStatus());
+    }
 }
