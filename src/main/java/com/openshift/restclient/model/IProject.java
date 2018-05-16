@@ -28,5 +28,7 @@ public interface IProject extends IResource {
     String getDescription();
 
     void setDescription(String value);
+    
+    String getStatus();
 
 }

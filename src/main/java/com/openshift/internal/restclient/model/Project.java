@@ -29,6 +29,9 @@ public class Project extends KubernetesResource implements IProject {
 
     private static final String ANNOTATION_DISPLAY_NAME = "openshift.io/display-name";
     private static final String ANNOTATION_DESCRIPTION = "openshift.io/description";
+    
+    private static final String PROJECT_STATUS = "status";
+    private static final String PROJECT_STATUS_PHASE = "phase";
 
     public Project(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
         super(node, client, propertyKeys);
@@ -73,5 +76,10 @@ public class Project extends KubernetesResource implements IProject {
             return new ArrayList<T>();
         }
         return getClient().list(kind, getName());
+    }
+    
+    @Override
+    public String getStatus() {
+        return getNode().get(PROJECT_STATUS, PROJECT_STATUS_PHASE).asString();
     }
 }
