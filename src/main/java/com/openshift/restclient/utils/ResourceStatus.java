@@ -1,23 +1,8 @@
 package com.openshift.restclient.utils;
 
-public enum ResourceStatus {
+public interface ResourceStatus {
     
-    ACTIVE("Active"),
-    TERMINATING("Terminating");
-    
-    private String value;
-    
-    private ResourceStatus(String value) {
-        this.value = value;
-    }
-    
-    public String getValue() {
-        return this.value;
-    }
-    
-    @Override
-    public String toString() {
-        return this.value;
-    }
+    public static final String ACTIVE = "Active";
+    public static final String TERMINATING = "Terminating";
     
 }

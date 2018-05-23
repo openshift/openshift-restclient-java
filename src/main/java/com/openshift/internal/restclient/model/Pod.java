@@ -88,7 +88,7 @@ public class Pod extends KubernetesResource implements IPod {
     @Override
     public String getStatus() {
         if (has(POD_DELETION_TIMESTAMP)) {
-            return ResourceStatus.TERMINATING.getValue();
+            return ResourceStatus.TERMINATING;
         }
         ModelNode node = get(POD_STATUS_CONTAINER_STATUSES);
         if (node.getType() == ModelType.LIST) {
