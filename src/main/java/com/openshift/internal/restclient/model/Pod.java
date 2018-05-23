@@ -29,6 +29,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IPort;
+import com.openshift.restclient.utils.ResourceStatus;
 
 public class Pod extends KubernetesResource implements IPod {
 
@@ -87,7 +88,7 @@ public class Pod extends KubernetesResource implements IPod {
     @Override
     public String getStatus() {
         if (has(POD_DELETION_TIMESTAMP)) {
-            return "Terminating";
+            return ResourceStatus.TERMINATING;
         }
         ModelNode node = get(POD_STATUS_CONTAINER_STATUSES);
         if (node.getType() == ModelType.LIST) {
