@@ -3,7 +3,7 @@
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
 
@@ -12,24 +12,31 @@ package com.openshift.internal.restclient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.openshift.internal.restclient.model.KubernetesResource;
-import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
-import com.openshift.restclient.*;
-import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
-import com.openshift.restclient.model.IResource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.restclient.model.KubernetesResource;
+import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
+import com.openshift.restclient.DefaultResourceKindRegistry;
+import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
+import com.openshift.restclient.IClient;
+import com.openshift.restclient.IResourceFactory;
+import com.openshift.restclient.ResourceFactoryException;
+import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.ResourceKindRegistry;
+import com.openshift.restclient.UnsupportedVersionException;
+import com.openshift.restclient.model.IResource;
+
 /**
  * ResourceFactory creates a list of resources from a json string
- * 
+ *
  */
 public class ResourceFactory implements IResourceFactory {
 
@@ -64,7 +71,8 @@ public class ResourceFactory implements IResourceFactory {
         }
     }
 
-    private List<IResource> buildList(final String version, List<ModelNode> items, String kind) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private List<IResource> buildList(final String version, List<ModelNode> items, String kind)
+            throws SecurityException, IllegalArgumentException {
         List<IResource> resources = new ArrayList<IResource>(items.size());
         for (ModelNode item : items) {
             resources.add(create(item, version, kind));
@@ -104,7 +112,7 @@ public class ResourceFactory implements IResourceFactory {
     public <T extends IResource> T create(String version, String kind) {
         return (T) create(new ModelNode(), version, kind);
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public <T extends IResource> T create(String version, String kind, String name) {
@@ -153,12 +161,12 @@ public class ResourceFactory implements IResourceFactory {
             IVersionedApiResource endpoint = mapper.getEndpointFor(version, kind);
             String extension = "";
             switch (endpoint.getPrefix()) {
-                case IApiTypeMapper.KUBE_API:
-                case IApiTypeMapper.OS_API:
-                    break;
-                default:
-                    String extPlusVersion = endpoint.getApiGroupName();
-                    extension = StringUtils.split(extPlusVersion, IApiTypeMapper.FWD_SLASH)[0];
+            case IApiTypeMapper.KUBE_API:
+            case IApiTypeMapper.OS_API:
+                break;
+            default:
+                String extPlusVersion = endpoint.getApiGroupName();
+                extension = StringUtils.split(extPlusVersion, IApiTypeMapper.FWD_SLASH)[0];
             }
             try {
                 String classname = String.format("com.openshift.internal.restclient.%s%s.models.%s",
@@ -190,7 +198,7 @@ public class ResourceFactory implements IResourceFactory {
     public <T extends IResource> T stub(String kind, String name) {
         return stub(kind, name, null);
     }
-    
+
     @Override
     public Object stubKind(String kind, Optional<String> name, Optional<String> namespace) {
         return stub(kind, name.get(), namespace.get());

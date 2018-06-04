@@ -51,7 +51,7 @@ public class URLBuilderTest extends TypeMapperFixture {
                 .build().toString();
         assertEquals(
                 String.format("%s/api/v1/namespaces/foo/services?watch=true&resourceVersion=123&foo=bar", BASE_URL),
-				url);
+                url);
     }
 
     @Test

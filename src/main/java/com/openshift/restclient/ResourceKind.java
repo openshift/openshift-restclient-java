@@ -11,8 +11,9 @@ package com.openshift.restclient;
 
 import java.util.Optional;
 
-import com.openshift.restclient.model.IResource;
 import org.apache.commons.lang.StringUtils;
+
+import com.openshift.restclient.model.IResource;
 
 /**
  * ResourceKind are the various types of Kubernetes resources that are of

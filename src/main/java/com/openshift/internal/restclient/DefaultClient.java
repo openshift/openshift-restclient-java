@@ -239,8 +239,9 @@ public class DefaultClient implements IClient, IHttpConstants {
             params = Collections.emptyMap();
         }
 
-        if (PredefinedResourceKind.LIST.equals(kind))
+        if (PredefinedResourceKind.LIST.equals(kind)) {
             throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
+        }
         final URL endpoint = new URLBuilder(this.baseUrl, typeMapper, getResourceKindRegistry()).kind(kind).name(name).namespace(namespace)
                 .subresource(subresource).subContext(subContext).addParameters(params).build();
 

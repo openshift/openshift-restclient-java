@@ -6,9 +6,27 @@
  *
  * Contributors: Red Hat, Inc.
  ******************************************************************************/
+
 package com.openshift.restclient;
 
-import com.openshift.internal.restclient.model.*;
+import java.util.Optional;
+
+import com.openshift.internal.restclient.model.Build;
+import com.openshift.internal.restclient.model.BuildConfig;
+import com.openshift.internal.restclient.model.ConfigMap;
+import com.openshift.internal.restclient.model.DeploymentConfig;
+import com.openshift.internal.restclient.model.ImageStream;
+import com.openshift.internal.restclient.model.KubernetesEvent;
+import com.openshift.internal.restclient.model.LimitRange;
+import com.openshift.internal.restclient.model.Namespace;
+import com.openshift.internal.restclient.model.Pod;
+import com.openshift.internal.restclient.model.Project;
+import com.openshift.internal.restclient.model.ReplicationController;
+import com.openshift.internal.restclient.model.ResourceQuota;
+import com.openshift.internal.restclient.model.Route;
+import com.openshift.internal.restclient.model.Secret;
+import com.openshift.internal.restclient.model.Service;
+import com.openshift.internal.restclient.model.ServiceAccount;
 import com.openshift.internal.restclient.model.authorization.OpenshiftPolicy;
 import com.openshift.internal.restclient.model.authorization.OpenshiftRole;
 import com.openshift.internal.restclient.model.authorization.PolicyBinding;
@@ -25,9 +43,6 @@ import com.openshift.internal.restclient.model.user.OpenShiftUser;
 import com.openshift.internal.restclient.model.volume.PersistentVolume;
 import com.openshift.internal.restclient.model.volume.PersistentVolumeClaim;
 import com.openshift.restclient.model.IResource;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.Optional;
 
 /**
  * Predfined resource kinds which are used

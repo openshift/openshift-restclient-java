@@ -41,10 +41,10 @@ public class WatchClientIntegrationTest {
     private IClient client;
     private IResource project;
     public static final String[] KINDS = new String[] { PredefinedResourceKind.BUILD_CONFIG.getIdentifier(),
-			PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier(), PredefinedResourceKind.SERVICE.getIdentifier(),
-			PredefinedResourceKind.POD.getIdentifier(), PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(),
-			PredefinedResourceKind.BUILD.getIdentifier(), PredefinedResourceKind.IMAGE_STREAM.getIdentifier(),
-			PredefinedResourceKind.ROUTE.getIdentifier() };
+            PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier(), PredefinedResourceKind.SERVICE.getIdentifier(),
+            PredefinedResourceKind.POD.getIdentifier(), PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(),
+            PredefinedResourceKind.BUILD.getIdentifier(), PredefinedResourceKind.IMAGE_STREAM.getIdentifier(),
+            PredefinedResourceKind.ROUTE.getIdentifier() };
 
     private ExecutorService service;
     private boolean isError;
@@ -101,7 +101,7 @@ public class WatchClientIntegrationTest {
             latch.await();
             assertFalse("Expected connection without error", isError);
             IService service = client.getResourceFactory().stub(PredefinedResourceKind.SERVICE.getIdentifier(), "hello-world",
-					project.getName());
+                    project.getName());
             service.addPort(8080, 8080);
             service = client.create(service);
             service.addLabel("foo", "bar");

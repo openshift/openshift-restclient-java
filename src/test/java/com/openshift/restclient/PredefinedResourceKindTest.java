@@ -8,11 +8,12 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
 package com.openshift.restclient;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * @author jeff.cantrill

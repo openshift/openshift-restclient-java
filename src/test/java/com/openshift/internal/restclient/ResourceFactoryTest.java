@@ -45,9 +45,9 @@ public class ResourceFactoryTest {
     public void testV1Beta3Implementations() {
         List<String> v1beta3Exlusions = Arrays
                 .asList(new String[] { PredefinedResourceKind.CONFIG.getIdentifier(),
-						PredefinedResourceKind.PROCESSED_TEMPLATES.getIdentifier() });
+                        PredefinedResourceKind.PROCESSED_TEMPLATES.getIdentifier() });
         final String version = OpenShiftAPIVersion.v1beta3.toString();
-        Stream.of(PredefinedResourceKind.values()).map(ResourceKind::getIdentifier).forEach( kind -> {
+        Stream.of(PredefinedResourceKind.values()).map(ResourceKind::getIdentifier).forEach(kind -> {
             if (!v1beta3Exlusions.contains(kind)) {
                 factory.create(version, kind);
             }
