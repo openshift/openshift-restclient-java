@@ -96,4 +96,8 @@ public interface IResourceFactory extends ITypeFactory {
      */
     void setClient(IClient client);
 
+    /**
+     * @return a resource kind factory to be used to obtain descriptors
+     */
+    ResourceKindRegistry getResourceKindRegistry();
 }

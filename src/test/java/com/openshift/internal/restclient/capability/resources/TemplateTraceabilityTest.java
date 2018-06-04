@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IResource;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,7 +37,7 @@ public class TemplateTraceabilityTest {
     public void setUp() {
         capability = new TemplateTraceability(resource);
         when(resource.getNamespaceName()).thenReturn("mynamespace");
-        when(resource.getKind()).thenReturn(ResourceKind.TEMPLATE);
+        when(resource.getKind()).thenReturn(PredefinedResourceKind.TEMPLATE.getIdentifier());
     }
 
     @Test

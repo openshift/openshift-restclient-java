@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.OpenShiftException;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.resources.IDeployCapability;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IDeploymentConfig;
@@ -55,7 +55,7 @@ public class DeployCapability implements IDeployCapability {
             final String deploymentName = getLatestDeploymentName();
             LOG.debug("Attempting to deploy latest deployment for config %s.  Loading deployment: %s", config.getName(),
                     deploymentName);
-            IReplicationController deployment = client.get(ResourceKind.REPLICATION_CONTROLLER, deploymentName,
+            IReplicationController deployment = client.get(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(), deploymentName,
                     config.getNamespaceName());
             final String status = getStatusFor(deployment);
             if (!COMPLETED_STATES.contains(status)) {

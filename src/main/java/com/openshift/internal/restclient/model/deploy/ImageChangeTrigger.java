@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.deploy.IDeploymentImageChangeTrigger;
 
@@ -48,7 +48,7 @@ public class ImageChangeTrigger extends DeploymentTrigger implements IDeployment
     @Override
     public void setFrom(DockerImageURI fromImage) {
         if (StringUtils.isBlank(asString(getNode(), getPropertyKeys(), DEPLOYMENTCONFIG_TRIGGER_FROM_KIND))) {
-            setKind(ResourceKind.IMAGE_STREAM_TAG);
+            setKind(PredefinedResourceKind.IMAGE_STREAM_TAG.getIdentifier());
         }
         set(getNode(), getPropertyKeys(), DEPLOYMENTCONFIG_TRIGGER_FROM, fromImage.getAbsoluteUri());
     }

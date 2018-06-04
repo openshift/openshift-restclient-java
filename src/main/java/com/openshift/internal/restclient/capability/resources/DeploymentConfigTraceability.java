@@ -10,7 +10,7 @@
 package com.openshift.internal.restclient.capability.resources;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.resources.IDeploymentConfigTraceability;
 import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IResource;
@@ -27,7 +27,7 @@ public class DeploymentConfigTraceability extends AssociationCapability implemen
 
     @Override
     public IDeploymentConfig getDeploymentConfig() {
-        return getAssociatedResource(ResourceKind.DEPLOYMENT_CONFIG);
+        return getAssociatedResource(PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier());
     }
 
     @Override

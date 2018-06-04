@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import com.openshift.internal.restclient.capability.AbstractCapability;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.capability.resources.IDeployCapability;
 import com.openshift.restclient.capability.resources.IDeploymentTriggerable;
@@ -71,7 +71,7 @@ public class DeploymentTrigger extends AbstractCapability implements IDeployment
         } else {
             IDeployCapability deployer = config.getCapability(IDeployCapability.class);
             deployer.deploy();
-            return client.get(ResourceKind.DEPLOYMENT_CONFIG, config.getName(), config.getNamespaceName());
+            return client.get(PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier(), config.getName(), config.getNamespaceName());
         }
     }
 

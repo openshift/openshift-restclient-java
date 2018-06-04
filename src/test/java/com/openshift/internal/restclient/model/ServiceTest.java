@@ -29,7 +29,7 @@ import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IService;
 import com.openshift.restclient.model.IServicePort;
@@ -45,7 +45,7 @@ public class ServiceTest {
         when(client.getOpenShiftAPIVersion()).thenReturn(OpenShiftAPIVersion.v1.name());
         IResourceFactory factory = new ResourceFactory(client) {
         };
-        service = factory.stub(ResourceKind.SERVICE, OpenShiftAPIVersion.v1.name());
+        service = factory.stub(PredefinedResourceKind.SERVICE.getIdentifier(), OpenShiftAPIVersion.v1.name());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ServiceTest {
         service.getPods();
 
         // confirm called with selector and not something else
-        verify(client, times(1)).list(eq(ResourceKind.POD), anyString(), eq(service.getSelector()));
+        verify(client, times(1)).list(eq(PredefinedResourceKind.POD.getIdentifier()), anyString(), eq(service.getSelector()));
     }
 
 }

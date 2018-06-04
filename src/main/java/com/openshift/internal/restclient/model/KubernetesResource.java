@@ -22,7 +22,7 @@ import org.jboss.dmr.ModelType;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.ICapability;
 import com.openshift.restclient.model.INamespace;
@@ -99,7 +99,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
     @Override
     public IProject getProject() {
         if (this.project == null) {
-            this.project = client.get(ResourceKind.PROJECT, getNamespaceName(), "");
+            this.project = client.get(PredefinedResourceKind.PROJECT.getIdentifier(), getNamespaceName(), "");
         }
         return this.project;
     }
@@ -107,7 +107,7 @@ public class KubernetesResource implements IResource, ResourcePropertyKeys {
     @Override
     public INamespace getNamespace() {
         if (this.namespace == null) {
-            this.namespace = client.get(ResourceKind.NAMESPACE, getNamespaceName(), "");
+            this.namespace = client.get(PredefinedResourceKind.NAMESPACE.getIdentifier(), getNamespaceName(), "");
         }
         return this.namespace;
     }

@@ -23,7 +23,7 @@ import org.junit.Test;
 import com.openshift.internal.restclient.model.Secret;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.secret.ISecret;
 import com.openshift.restclient.utils.Samples;
 
@@ -42,7 +42,7 @@ public class SecretTest {
     public void setUp() {
         IClient client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(sample.getContentAsString());
-        secret = new Secret(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.SECRET));
+        secret = new Secret(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.SECRET.getIdentifier()));
     }
 
     @Test

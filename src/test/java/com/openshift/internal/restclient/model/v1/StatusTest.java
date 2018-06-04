@@ -19,7 +19,7 @@ import org.junit.Test;
 import com.openshift.internal.restclient.model.Status;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IStatus;
 import com.openshift.restclient.utils.Samples;
 
@@ -35,7 +35,7 @@ public class StatusTest {
     public static void setUp() {
         IClient client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_Status.getContentAsString());
-        status = new Status(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.STATUS));
+        status = new Status(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.STATUS.getIdentifier()));
     }
 
     @Test

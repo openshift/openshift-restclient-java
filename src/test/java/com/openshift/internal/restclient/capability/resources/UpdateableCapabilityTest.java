@@ -22,7 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.resources.IUpdatable;
 import com.openshift.restclient.model.IService;
@@ -39,13 +39,13 @@ public class UpdateableCapabilityTest {
     public void setup() {
         when(client.getOpenShiftAPIVersion()).thenReturn("v1");
         factory = new ResourceFactory(client);
-        service = factory.stub(ResourceKind.SERVICE, "foo", "default");
+        service = factory.stub(PredefinedResourceKind.SERVICE.getIdentifier(), "foo", "default");
         service.setAnnotation("foo", "bar");
     }
 
     @Test
     public void testUpdateCapability() {
-        IService target = factory.stub(ResourceKind.SERVICE, "foo", "default");
+        IService target = factory.stub(PredefinedResourceKind.SERVICE.getIdentifier(), "foo", "default");
         target.setAnnotation("foo", "xyz");
 
         service.accept(new CapabilityVisitor<IUpdatable, IService>() {

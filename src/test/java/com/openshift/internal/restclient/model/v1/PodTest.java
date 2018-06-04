@@ -30,7 +30,7 @@ import com.openshift.internal.restclient.model.Pod;
 import com.openshift.internal.restclient.model.Port;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IContainer;
 import com.openshift.restclient.model.IExecAction;
 import com.openshift.restclient.model.IPod;
@@ -47,7 +47,7 @@ public class PodTest {
     public void setup() {
         IClient client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_POD.getContentAsString());
-        this.pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.POD));
+        this.pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.POD.getIdentifier()));
         this.container1 = pod.getContainers().stream().findFirst().orElse(null);
     }
 

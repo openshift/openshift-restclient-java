@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IService;
 import com.openshift.restclient.model.IServicePort;
@@ -160,7 +160,7 @@ public class Service extends KubernetesResource implements IService {
         if (getClient() == null) {
             return new ArrayList<IPod>();
         }
-        return getClient().list(ResourceKind.POD, getNamespaceName(), getSelector());
+        return getClient().list(PredefinedResourceKind.POD.getIdentifier(), getNamespaceName(), getSelector());
     }
 
     @Override

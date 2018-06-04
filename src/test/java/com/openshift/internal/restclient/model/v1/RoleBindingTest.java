@@ -25,7 +25,7 @@ import com.openshift.internal.restclient.model.ObjectReference;
 import com.openshift.internal.restclient.model.authorization.RoleBinding;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IObjectReference;
 import com.openshift.restclient.model.authorization.IRoleBinding;
 import com.openshift.restclient.utils.Samples;
@@ -40,7 +40,7 @@ public class RoleBindingTest {
         IClient client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_ROLE_BINDING.getContentAsString());
         binding = new RoleBinding(node, client,
-                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROLE_BINDING));
+                ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.ROLE_BINDING.getIdentifier()));
     }
 
     @Test

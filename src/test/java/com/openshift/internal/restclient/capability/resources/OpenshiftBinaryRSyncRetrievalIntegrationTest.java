@@ -35,7 +35,7 @@ import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.api.capabilities.PodExecIntegrationTest;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.api.capabilities.IPodExec;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
@@ -78,7 +78,7 @@ public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
         System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
         client = helper.createClientForBasicAuth();
 
-        List<IResource> pods = client.list(ResourceKind.POD, "default");
+        List<IResource> pods = client.list(PredefinedResourceKind.POD.getIdentifier(), "default");
         pod = (Pod) pods.stream().filter(p -> p.getName().startsWith("docker-registry")).findFirst().orElse(null);
         assertNotNull("Did not find the registry pod to which to rsync", pod);
     }

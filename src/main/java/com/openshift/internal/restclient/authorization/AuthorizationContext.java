@@ -12,7 +12,7 @@ package com.openshift.internal.restclient.authorization;
 import org.apache.commons.lang.StringUtils;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.authorization.IAuthorizationDetails;
 import com.openshift.restclient.model.user.IUser;
@@ -60,7 +60,7 @@ public class AuthorizationContext implements IAuthorizationContext {
     public boolean isAuthorized() {
         if (user == null) {
             synchronized (this) {
-                user = client.get(ResourceKind.USER, "~", "");
+                user = client.get(PredefinedResourceKind.USER.getIdentifier(), "~", "");
             }
         }
         return StringUtils.isNotEmpty(token);

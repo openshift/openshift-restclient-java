@@ -14,58 +14,18 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.openshift.internal.restclient.model.KubernetesResource;
+import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
+import com.openshift.restclient.*;
+import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
+import com.openshift.restclient.model.IResource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
-
-import com.openshift.internal.restclient.model.Build;
-import com.openshift.internal.restclient.model.BuildConfig;
-import com.openshift.internal.restclient.model.ConfigMap;
-import com.openshift.internal.restclient.model.DeploymentConfig;
-import com.openshift.internal.restclient.model.ImageStream;
-import com.openshift.internal.restclient.model.KubernetesEvent;
-import com.openshift.internal.restclient.model.KubernetesResource;
-import com.openshift.internal.restclient.model.LimitRange;
-import com.openshift.internal.restclient.model.Namespace;
-import com.openshift.internal.restclient.model.Pod;
-import com.openshift.internal.restclient.model.Project;
-import com.openshift.internal.restclient.model.ReplicationController;
-import com.openshift.internal.restclient.model.ResourceQuota;
-import com.openshift.internal.restclient.model.Route;
-import com.openshift.internal.restclient.model.Secret;
-import com.openshift.internal.restclient.model.Service;
-import com.openshift.internal.restclient.model.ServiceAccount;
-import com.openshift.internal.restclient.model.Status;
-import com.openshift.internal.restclient.model.authorization.OpenshiftPolicy;
-import com.openshift.internal.restclient.model.authorization.OpenshiftRole;
-import com.openshift.internal.restclient.model.authorization.PolicyBinding;
-import com.openshift.internal.restclient.model.authorization.RoleBinding;
-import com.openshift.internal.restclient.model.build.BuildRequest;
-import com.openshift.internal.restclient.model.image.ImageStreamImport;
-import com.openshift.internal.restclient.model.oauth.OAuthAccessToken;
-import com.openshift.internal.restclient.model.oauth.OAuthAuthorizeToken;
-import com.openshift.internal.restclient.model.oauth.OAuthClient;
-import com.openshift.internal.restclient.model.oauth.OAuthClientAuthorization;
-import com.openshift.internal.restclient.model.project.OpenshiftProjectRequest;
-import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
-import com.openshift.internal.restclient.model.template.Template;
-import com.openshift.internal.restclient.model.user.OpenShiftUser;
-import com.openshift.internal.restclient.model.volume.PersistentVolume;
-import com.openshift.internal.restclient.model.volume.PersistentVolumeClaim;
-import com.openshift.restclient.IApiTypeMapper;
-import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
-import com.openshift.restclient.IClient;
-import com.openshift.restclient.IResourceFactory;
-import com.openshift.restclient.ResourceFactoryException;
-import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.UnsupportedVersionException;
-import com.openshift.restclient.model.IResource;
 
 /**
  * ResourceFactory creates a list of resources from a json string
@@ -75,67 +35,25 @@ public class ResourceFactory implements IResourceFactory {
 
     private static final String KIND = "kind";
     private static final String APIVERSION = "apiVersion";
-    private static final Map<String, Class<? extends IResource>> IMPL_MAP = new HashMap<>();
 
-    static {
-        // OpenShift kinds
-        IMPL_MAP.put(ResourceKind.BUILD, Build.class);
-        IMPL_MAP.put(ResourceKind.BUILD_CONFIG, BuildConfig.class);
-        IMPL_MAP.put(ResourceKind.BUILD_REQUEST, BuildRequest.class);
-        IMPL_MAP.put(ResourceKind.DEPLOYMENT_CONFIG, DeploymentConfig.class);
-        IMPL_MAP.put(ResourceKind.IMAGE_STREAM, ImageStream.class);
-        IMPL_MAP.put(ResourceKind.IMAGE_STREAM_IMPORT, ImageStreamImport.class);
-        IMPL_MAP.put(ResourceKind.LIST, com.openshift.internal.restclient.model.List.class);
-        IMPL_MAP.put(ResourceKind.NAMESPACE, Namespace.class);
-        IMPL_MAP.put(ResourceKind.OAUTH_ACCESS_TOKEN, OAuthAccessToken.class);
-        IMPL_MAP.put(ResourceKind.OAUTH_AUTHORIZE_TOKEN, OAuthAuthorizeToken.class);
-        IMPL_MAP.put(ResourceKind.OAUTH_CLIENT, OAuthClient.class);
-        IMPL_MAP.put(ResourceKind.OAUTH_CLIENT_AUTHORIZATION, OAuthClientAuthorization.class);
-        IMPL_MAP.put(ResourceKind.PROJECT, Project.class);
-        IMPL_MAP.put(ResourceKind.PROJECT_REQUEST, OpenshiftProjectRequest.class);
-        IMPL_MAP.put(ResourceKind.POLICY, OpenshiftPolicy.class);
-        IMPL_MAP.put(ResourceKind.POLICY_BINDING, PolicyBinding.class);
-        IMPL_MAP.put(ResourceKind.ROLE, OpenshiftRole.class);
-        IMPL_MAP.put(ResourceKind.ROLE_BINDING, RoleBinding.class);
-        IMPL_MAP.put(ResourceKind.ROUTE, Route.class);
-        IMPL_MAP.put(ResourceKind.TEMPLATE, Template.class);
-        IMPL_MAP.put(ResourceKind.USER, OpenShiftUser.class);
-
-        // Kubernetes Kinds
-        IMPL_MAP.put(ResourceKind.EVENT, KubernetesEvent.class);
-        IMPL_MAP.put(ResourceKind.LIMIT_RANGE, LimitRange.class);
-        IMPL_MAP.put(ResourceKind.POD, Pod.class);
-        IMPL_MAP.put(ResourceKind.PVC, PersistentVolumeClaim.class);
-        IMPL_MAP.put(ResourceKind.PERSISTENT_VOLUME, PersistentVolume.class);
-        IMPL_MAP.put(ResourceKind.RESOURCE_QUOTA, ResourceQuota.class);
-        IMPL_MAP.put(ResourceKind.REPLICATION_CONTROLLER, ReplicationController.class);
-        IMPL_MAP.put(ResourceKind.STATUS, Status.class);
-        IMPL_MAP.put(ResourceKind.SERVICE, Service.class);
-        IMPL_MAP.put(ResourceKind.SECRET, Secret.class);
-        IMPL_MAP.put(ResourceKind.SERVICE_ACCOUNT, ServiceAccount.class);
-        IMPL_MAP.put(ResourceKind.CONFIG_MAP, ConfigMap.class);
-
-        // fallback
-        IMPL_MAP.put(ResourceKind.UNRECOGNIZED, KubernetesResource.class);
-
-    }
-    
     private IClient client;
+    private final ResourceKindRegistry resourceKindRegistry;
 
-    public ResourceFactory(IClient client) {
+    public ResourceFactory(final IClient client) {
+        this(client, null);
+    }
+
+    public ResourceFactory(final IClient client, final ResourceKindRegistry resourceKindRegistry) {
         this.client = client;
+        this.resourceKindRegistry = Optional.ofNullable(resourceKindRegistry).orElseGet(DefaultResourceKindRegistry::new);
     }
 
-    public static Map<String, Class<? extends IResource>> getImplMap() {
-        return Collections.unmodifiableMap(IMPL_MAP);
-    }
-
+    @Override
     public List<IResource> createList(String json, String kind) {
         ModelNode data = ModelNode.fromJSONString(json);
         final String dataKind = data.get(KIND).asString();
-        if (!(kind.toString() + "List").equals(dataKind)) {
-            throw new RuntimeException(
-                    String.format("Unexpected container type '%s' for desired kind: %s", dataKind, kind));
+        if (!(kind + "List").equals(dataKind)) {
+            throw new RuntimeException(String.format("Unexpected container type '%s' for desired kind: %s", dataKind, kind));
         }
 
         try {
@@ -146,9 +64,7 @@ public class ResourceFactory implements IResourceFactory {
         }
     }
 
-    private List<IResource> buildList(final String version, List<ModelNode> items, String kind)
-            throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
+    private List<IResource> buildList(final String version, List<ModelNode> items, String kind) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         List<IResource> resources = new ArrayList<IResource>(items.size());
         for (ModelNode item : items) {
             resources.add(create(item, version, kind));
@@ -223,23 +139,26 @@ public class ResourceFactory implements IResourceFactory {
     public Object createInstanceFrom(String response) {
         return create(response);
     }
-    
+
     @SuppressWarnings("unchecked")
     private Class<? extends IResource> getResourceClass(String version, String kind) {
-        if (IMPL_MAP.containsKey(kind)) {
-            return IMPL_MAP.get(kind);
-        }
+        return resourceKindRegistry.find(kind) // First try to get the resource kind from that registration map
+                .flatMap(ResourceKind::getImplementationClass) // Use the implementation class if present
+                .orElseGet(() -> this.getResourceClassViaMapper(version, kind)); // Fall back to that mapper
+    }
+
+    private Class<? extends IResource> getResourceClassViaMapper(final String version, final String kind) {
         IApiTypeMapper mapper = this.client.adapt(IApiTypeMapper.class);
         if (mapper != null) {
             IVersionedApiResource endpoint = mapper.getEndpointFor(version, kind);
             String extension = "";
             switch (endpoint.getPrefix()) {
-            case IApiTypeMapper.KUBE_API:
-            case IApiTypeMapper.OS_API:
-                break;
-            default:
-                String extPlusVersion = endpoint.getApiGroupName();
-                extension = StringUtils.split(extPlusVersion, IApiTypeMapper.FWD_SLASH)[0];
+                case IApiTypeMapper.KUBE_API:
+                case IApiTypeMapper.OS_API:
+                    break;
+                default:
+                    String extPlusVersion = endpoint.getApiGroupName();
+                    extension = StringUtils.split(extPlusVersion, IApiTypeMapper.FWD_SLASH)[0];
             }
             try {
                 String classname = String.format("com.openshift.internal.restclient.%s%s.models.%s",
@@ -280,6 +199,11 @@ public class ResourceFactory implements IResourceFactory {
     @Override
     public void setClient(IClient client) {
         this.client = client;
+    }
+
+    @Override
+    public ResourceKindRegistry getResourceKindRegistry() {
+        return this.resourceKindRegistry;
     }
 
 }

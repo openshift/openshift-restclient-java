@@ -40,9 +40,11 @@ public class WatchClientIntegrationTest {
     private IntegrationTestHelper helper = new IntegrationTestHelper();
     private IClient client;
     private IResource project;
-    public static final String[] KINDS = new String[] { ResourceKind.BUILD_CONFIG, ResourceKind.DEPLOYMENT_CONFIG,
-        ResourceKind.SERVICE, ResourceKind.POD, ResourceKind.REPLICATION_CONTROLLER, ResourceKind.BUILD,
-        ResourceKind.IMAGE_STREAM, ResourceKind.ROUTE };
+    public static final String[] KINDS = new String[] { PredefinedResourceKind.BUILD_CONFIG.getIdentifier(),
+			PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier(), PredefinedResourceKind.SERVICE.getIdentifier(),
+			PredefinedResourceKind.POD.getIdentifier(), PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(),
+			PredefinedResourceKind.BUILD.getIdentifier(), PredefinedResourceKind.IMAGE_STREAM.getIdentifier(),
+			PredefinedResourceKind.ROUTE.getIdentifier() };
 
     private ExecutorService service;
     private boolean isError;
@@ -51,7 +53,7 @@ public class WatchClientIntegrationTest {
     public void setup() {
         service = Executors.newSingleThreadScheduledExecutor();
         client = helper.createClientForBasicAuth();
-        IResource projRequest = client.getResourceFactory().stub(ResourceKind.PROJECT_REQUEST,
+        IResource projRequest = client.getResourceFactory().stub(PredefinedResourceKind.PROJECT_REQUEST.getIdentifier(),
                 helper.generateNamespace());
         project = client.create(projRequest);
     }
@@ -98,7 +100,8 @@ public class WatchClientIntegrationTest {
             watcher = client.watch(project.getName(), listener, KINDS);
             latch.await();
             assertFalse("Expected connection without error", isError);
-            IService service = client.getResourceFactory().stub(ResourceKind.SERVICE, "hello-world", project.getName());
+            IService service = client.getResourceFactory().stub(PredefinedResourceKind.SERVICE.getIdentifier(), "hello-world",
+					project.getName());
             service.addPort(8080, 8080);
             service = client.create(service);
             service.addLabel("foo", "bar");

@@ -85,8 +85,9 @@ public class WatchClient implements IWatcher, IHttpConstants {
                     WatchEndpoint socket = new WatchEndpoint(client, listener, kind);
                     final String resourceVersion = getResourceVersion(kind, namespace, socket);
 
-                    final String endpoint = new URLBuilder(client.getBaseURL(), this.typeMappings).kind(kind)
-                            .namespace(namespace).watch()
+                    final String endpoint = new URLBuilder(client.getBaseURL(), this.typeMappings,
+                            client.getResourceFactory().getResourceKindRegistry())
+                            .kind(kind).namespace(namespace).watch()
                             .addParmeter(ResourcePropertyKeys.RESOURCE_VERSION, resourceVersion).websocket();
                     Request request = client.newRequestBuilderTo(endpoint)
                             .header(PROPERTY_ORIGIN, client.getBaseURL().toString())

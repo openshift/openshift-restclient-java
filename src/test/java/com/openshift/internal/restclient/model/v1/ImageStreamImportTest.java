@@ -25,7 +25,7 @@ import org.junit.Test;
 import com.openshift.internal.restclient.model.image.ImageStreamImport;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IStatus;
 import com.openshift.restclient.model.image.IImageStreamImport;
 import com.openshift.restclient.utils.Samples;
@@ -40,7 +40,7 @@ public class ImageStreamImportTest {
         client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM_IMPORT.getContentAsString());
         stream = new ImageStreamImport(node, client,
-                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM_IMPORT));
+                ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.IMAGE_STREAM_IMPORT.getIdentifier()));
     }
 
     @Test

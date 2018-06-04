@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.authorization.IRole;
 
 public class AuthorizationKindsIntegrationTest {
@@ -33,18 +33,18 @@ public class AuthorizationKindsIntegrationTest {
 
     @Test
     public void testListRolesAssumingClusterAdmin() {
-        List<IRole> roles = client.list(ResourceKind.ROLE, "default");
+        List<IRole> roles = client.list(PredefinedResourceKind.ROLE.getIdentifier(), "default");
         assertThat(roles).isNotEmpty();
     }
 
     @Test
     public void testListPoliciesAssumingClusterAdmin() {
-        client.list(ResourceKind.POLICY, "default");
+        client.list(PredefinedResourceKind.POLICY.getIdentifier(), "default");
     }
 
     @Test
     public void testListPolicyBindingsAssumingClusterAdmin() {
-        client.list(ResourceKind.POLICY_BINDING, "default");
+        client.list(PredefinedResourceKind.POLICY_BINDING.getIdentifier(), "default");
     }
 
 }

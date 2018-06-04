@@ -78,6 +78,7 @@ public class ClientBuilder {
     private TimeUnit connectTimeoutUnit = TimeUnit.MILLISECONDS;
     private int writeTimeout = IHttpConstants.DEFAULT_READ_TIMEOUT;
     private TimeUnit writeTimeoutUnit = TimeUnit.MILLISECONDS;
+    private ResourceKindRegistry resourceKindRegistry;
 
     public ClientBuilder() {
         this(null);
@@ -262,7 +263,7 @@ public class ClientBuilder {
 
             OkHttpClient okClient = builder.build();
 
-            IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
+            IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null, resourceKindRegistry));
             AuthorizationContext authContext = new AuthorizationContext(token, userName, password);
             DefaultClient client = new DefaultClient(new URL(this.baseUrl), okClient, factory, null, authContext);
 

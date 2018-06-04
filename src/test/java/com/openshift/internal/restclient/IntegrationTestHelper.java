@@ -30,7 +30,7 @@ import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.ClientBuilder;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.NotFoundException;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IPod;
@@ -79,19 +79,19 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
     }
 
     public IProject generateProject(IClient client) {
-        IResource request = client.getResourceFactory().stub(ResourceKind.PROJECT_REQUEST, generateNamespace());
+        IResource request = client.getResourceFactory().stub(PredefinedResourceKind.PROJECT_REQUEST.getIdentifier(), generateNamespace());
         return (IProject) client.create(request);
     }
 
     /**
      * Stub a pod definition to the openshift/hello-openshift image for purposes of
      * testing.
-     * 
+     *
      * @return a pod definition that needs to be further created using the client
      */
     public static IPod stubPod(IClient client, IProject project) {
         // cluster shouldnt allow us to create pods directly
-        ModelNode builder = new ModelNodeBuilder().set(ResourcePropertyKeys.KIND, ResourceKind.POD)
+        ModelNode builder = new ModelNodeBuilder().set(ResourcePropertyKeys.KIND, PredefinedResourceKind.POD.getIdentifier())
                 .set(ResourcePropertyKeys.METADATA_NAME, "hello-openshift")
                 .set(ResourcePropertyKeys.METADATA_NAMESPACE, project.getName())
                 .add("spec.containers",
@@ -103,7 +103,7 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
     }
 
     public static IDeploymentConfig stubDeploymentConfig(IClient client, IProject project) {
-        IDeploymentConfig dc = new ResourceFactory(client).create("v1", ResourceKind.DEPLOYMENT_CONFIG);
+        IDeploymentConfig dc = new ResourceFactory(client).create("v1", PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier());
         ((DeploymentConfig) dc).setName("hello-openshift");
         ((DeploymentConfig) dc).setNamespace(project.getName());
         dc.setReplicas(1);
@@ -115,7 +115,7 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
     }
 
     public static IReplicationController stubReplicationController(IClient client, IProject project) {
-        IReplicationController rc = new ResourceFactory(client).create("v1", ResourceKind.REPLICATION_CONTROLLER);
+        IReplicationController rc = new ResourceFactory(client).create("v1", PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier());
         ((ReplicationController) rc).setName("hello-openshift-rc");
         ((ReplicationController) rc).setNamespace(project.getName());
         rc.setReplicas(1);

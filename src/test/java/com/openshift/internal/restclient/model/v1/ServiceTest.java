@@ -24,7 +24,7 @@ import com.openshift.internal.restclient.model.PortFactory;
 import com.openshift.internal.restclient.model.Service;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IService;
 import com.openshift.restclient.model.IServicePort;
 import com.openshift.restclient.utils.Samples;
@@ -42,7 +42,7 @@ public class ServiceTest {
         IClient client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_SERVICE.getContentAsString());
         service = new Service(node, client,
-                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.SERVICE));
+                ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.SERVICE.getIdentifier()));
     }
 
     @Test

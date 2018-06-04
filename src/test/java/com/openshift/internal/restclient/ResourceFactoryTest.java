@@ -17,11 +17,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IService;
 
@@ -42,25 +44,26 @@ public class ResourceFactoryTest {
     @Test
     public void testV1Beta3Implementations() {
         List<String> v1beta3Exlusions = Arrays
-                .asList(new String[] { ResourceKind.CONFIG, ResourceKind.PROCESSED_TEMPLATES });
+                .asList(new String[] { PredefinedResourceKind.CONFIG.getIdentifier(),
+						PredefinedResourceKind.PROCESSED_TEMPLATES.getIdentifier() });
         final String version = OpenShiftAPIVersion.v1beta3.toString();
-        for (String kind : ResourceKind.values()) {
+        Stream.of(PredefinedResourceKind.values()).map(ResourceKind::getIdentifier).forEach( kind -> {
             if (!v1beta3Exlusions.contains(kind)) {
                 factory.create(version, kind);
             }
-        }
+        });
     }
 
     @Test
     public void testStubWithNamespace() {
-        IService service = factory.stub(ResourceKind.SERVICE, "foo", "bar");
+        IService service = factory.stub(PredefinedResourceKind.SERVICE.getIdentifier(), "foo", "bar");
         assertEquals("foo", service.getName());
         assertEquals("bar", service.getNamespaceName());
     }
 
     @Test
     public void testCreateWithKindAndName() {
-        IService service = factory.create("v1", ResourceKind.SERVICE, "foo");
+        IService service = factory.create("v1", PredefinedResourceKind.SERVICE.getIdentifier(), "foo");
         assertEquals("foo", service.getName());
     }
 

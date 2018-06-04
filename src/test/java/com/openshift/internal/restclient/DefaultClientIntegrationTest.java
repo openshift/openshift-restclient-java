@@ -29,7 +29,7 @@ import com.openshift.internal.restclient.model.project.OpenshiftProjectRequest;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.authorization.UnauthorizedException;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IProject;
@@ -70,7 +70,7 @@ public class DefaultClientIntegrationTest {
     }
 
     public void testListprojects() {
-        assertTrue(client.list(ResourceKind.PROJECT, "default").size() > 0);
+        assertTrue(client.list(PredefinedResourceKind.PROJECT.getIdentifier(), "default").size() > 0);
     }
 
     @Test
@@ -84,17 +84,17 @@ public class DefaultClientIntegrationTest {
         IProject project = null;
 
         try {
-            OpenshiftProjectRequest projectRequest = factory.create(VERSION, ResourceKind.PROJECT_REQUEST);
+            OpenshiftProjectRequest projectRequest = factory.create(VERSION, PredefinedResourceKind.PROJECT_REQUEST.getIdentifier());
             projectRequest.setName(helper.generateNamespace());
-            template = factory.stub(ResourceKind.TEMPLATE, "mytemplate");
+            template = factory.stub(PredefinedResourceKind.TEMPLATE.getIdentifier(), "mytemplate");
 
             project = (IProject) client.create(projectRequest);
             template = client.create(template, project.getNamespaceName());
 
-            assertNotNull("Exp. the template to be found but was not", waitForResource(client, ResourceKind.TEMPLATE,
+            assertNotNull("Exp. the template to be found but was not", waitForResource(client, PredefinedResourceKind.TEMPLATE.getIdentifier(),
                     project.getName(), template.getName(), 5 * MILLISECONDS_PER_SECOND));
 
-            List<ITemplate> list = client.list(ResourceKind.TEMPLATE, project.getName());
+            List<ITemplate> list = client.list(PredefinedResourceKind.TEMPLATE.getIdentifier(), project.getName());
             assertEquals(1, list.size());
             for (ITemplate t : list) {
                 LOG.debug(t.toString());
@@ -108,15 +108,15 @@ public class DefaultClientIntegrationTest {
     @Test
     public void testResourceLifeCycle() {
 
-        IProjectRequest projectRequest = factory.create(VERSION, ResourceKind.PROJECT_REQUEST);
+        IProjectRequest projectRequest = factory.create(VERSION, PredefinedResourceKind.PROJECT_REQUEST.getIdentifier());
         ((OpenshiftProjectRequest) projectRequest).setName(helper.generateNamespace());
         LOG.debug(String.format("Stubbing project request: %s", projectRequest));
 
-        IProjectRequest otherProjectRequest = factory.create(VERSION, ResourceKind.PROJECT_REQUEST);
+        IProjectRequest otherProjectRequest = factory.create(VERSION, PredefinedResourceKind.PROJECT_REQUEST.getIdentifier());
         ((OpenshiftProjectRequest) otherProjectRequest).setName(helper.generateNamespace());
         LOG.debug(String.format("Stubbing project request: %s", otherProjectRequest));
 
-        Service service = factory.create(VERSION, ResourceKind.SERVICE);
+        Service service = factory.create(VERSION, PredefinedResourceKind.SERVICE.getIdentifier());
         service.setNamespace(projectRequest.getName()); // this will be the project's namespace
         service.setName("some-service");
         service.setTargetPort(6767);
@@ -124,7 +124,7 @@ public class DefaultClientIntegrationTest {
         service.setSelector("name", "barpod");
         LOG.debug(String.format("Stubbing service: %s", service));
 
-        Service otherService = factory.create(VERSION, ResourceKind.SERVICE);
+        Service otherService = factory.create(VERSION, PredefinedResourceKind.SERVICE.getIdentifier());
         otherService.setNamespace(otherProjectRequest.getName()); // this will be the project's namespace
         otherService.setName("some-other-service");
         otherService.setTargetPort(8787);
@@ -151,15 +151,15 @@ public class DefaultClientIntegrationTest {
             LOG.debug(String.format("Created service: %s", otherService));
 
             LOG.debug("Listing projects");
-            List<Project> projects = client.list(ResourceKind.PROJECT);
+            List<Project> projects = client.list(PredefinedResourceKind.PROJECT.getIdentifier());
             LOG.debug(String.format("Listed projects: %s", projects));
 
             LOG.debug(String.format("Listing services with namespace: %s", project.getNamespaceName()));
-            List<Service> services = client.list(ResourceKind.SERVICE, project.getNamespaceName());
+            List<Service> services = client.list(PredefinedResourceKind.SERVICE.getIdentifier(), project.getNamespaceName());
             LOG.debug(String.format("Listed services: %s", services));
 
             LOG.debug(String.format("Getting service: %s", otherService.getName()));
-            Service s = client.get(ResourceKind.SERVICE, otherService.getName(), otherService.getNamespaceName());
+            Service s = client.get(PredefinedResourceKind.SERVICE.getIdentifier(), otherService.getName(), otherService.getNamespaceName());
             LOG.debug(String.format("Retrieved service: %s", s.getName()));
 
             assertEquals("Expected there to be only one service returned", 1, services.size());

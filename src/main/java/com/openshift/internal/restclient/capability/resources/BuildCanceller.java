@@ -1,7 +1,7 @@
 package com.openshift.internal.restclient.capability.resources;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.resources.IBuildCancelable;
 import com.openshift.restclient.model.IBuild;
 
@@ -17,7 +17,7 @@ public class BuildCanceller implements IBuildCancelable {
 
     @Override
     public boolean isSupported() {
-        return build != null && client != null && ResourceKind.BUILD.equals(build.getKind());
+        return build != null && client != null && PredefinedResourceKind.BUILD.equals(build.getKind());
     }
 
     @Override

@@ -11,7 +11,7 @@ package com.openshift.internal.restclient.capability.server;
 
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.template.ITemplate;
 
@@ -27,7 +27,7 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
     public boolean isSupported() {
         IApiTypeMapper mapper = client.adapt(IApiTypeMapper.class);
         if (mapper != null) {
-            return mapper.isSupported(ResourceKind.PROCESSED_TEMPLATES);
+            return mapper.isSupported(PredefinedResourceKind.PROCESSED_TEMPLATES.getIdentifier());
         }
         return false;
     }
@@ -39,7 +39,7 @@ public class ServerTemplateProcessing implements ITemplateProcessing {
 
     @Override
     public ITemplate process(ITemplate template, String namespace) {
-        return client.execute("POST", ResourceKind.PROCESSED_TEMPLATES, namespace, null, null, template);
+        return client.execute("POST", PredefinedResourceKind.PROCESSED_TEMPLATES.getIdentifier(), namespace, null, null, template);
 
     }
 

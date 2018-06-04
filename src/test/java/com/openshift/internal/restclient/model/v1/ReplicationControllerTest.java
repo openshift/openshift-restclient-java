@@ -42,7 +42,7 @@ import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegi
 import com.openshift.internal.restclient.model.volume.EmptyDirVolumeSource;
 import com.openshift.internal.restclient.model.volume.SecretVolumeSource;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IConfigMapKeySelector;
 import com.openshift.restclient.model.IContainer;
@@ -69,7 +69,7 @@ public class ReplicationControllerTest {
         client = mock(IClient.class);
         node = ModelNode.fromJSONString(Samples.V1_REPLICATION_CONTROLLER.getContentAsString());
         rc = new ReplicationController(node, client,
-                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
+                ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier()));
     }
 
     public void testGetEnvironmentVariablesWithValueFrom() {

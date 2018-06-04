@@ -18,7 +18,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.resources.IBuildTriggerable;
 import com.openshift.restclient.model.IBuild;
 import com.openshift.restclient.model.IBuildConfig;
@@ -52,8 +52,8 @@ public class BuildTrigger implements IBuildTriggerable {
 
     @Override
     public boolean isSupported() {
-        return resource != null && client != null && (ResourceKind.BUILD.equals(resource.getKind())
-                || ResourceKind.BUILD_CONFIG.equals(resource.getKind()));
+        return resource != null && client != null && (PredefinedResourceKind.BUILD.equals(resource.getKind())
+                || PredefinedResourceKind.BUILD_CONFIG.equals(resource.getKind()));
     }
 
     @Override
@@ -63,7 +63,7 @@ public class BuildTrigger implements IBuildTriggerable {
 
     @Override
     public IBuild trigger() {
-        IBuildRequest request = client.getResourceFactory().stub(ResourceKind.BUILD_REQUEST, resource.getName());
+        IBuildRequest request = client.getResourceFactory().stub(PredefinedResourceKind.BUILD_REQUEST.getIdentifier(), resource.getName());
         if (StringUtils.isNotEmpty(commitId)) {
             request.setCommitId(commitId);
         }
@@ -75,7 +75,7 @@ public class BuildTrigger implements IBuildTriggerable {
     @Override
     @Deprecated
     public IBuild trigger(String commitId) {
-        IBuildRequest request = client.getResourceFactory().stub(ResourceKind.BUILD_REQUEST, resource.getName());
+        IBuildRequest request = client.getResourceFactory().stub(PredefinedResourceKind.BUILD_REQUEST.getIdentifier(), resource.getName());
         request.setCommitId(commitId);
         return client.create(resource.getKind(), resource.getNamespaceName(), resource.getName(), subresource, request);
     }

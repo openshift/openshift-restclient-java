@@ -10,7 +10,7 @@
 package com.openshift.internal.restclient.capability.resources;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.resources.IDeploymentTraceability;
 import com.openshift.restclient.model.IReplicationController;
 import com.openshift.restclient.model.IResource;
@@ -29,7 +29,7 @@ public class DeploymentTraceability extends AssociationCapability implements IDe
 
     @Override
     public IReplicationController getDeployment() {
-        return getAssociatedResource(ResourceKind.REPLICATION_CONTROLLER);
+        return getAssociatedResource(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier());
     }
 
     @Override

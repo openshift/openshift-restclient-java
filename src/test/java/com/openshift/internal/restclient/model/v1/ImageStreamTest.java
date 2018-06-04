@@ -25,7 +25,7 @@ import org.junit.Test;
 import com.openshift.internal.restclient.model.ImageStream;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IImageStream;
 import com.openshift.restclient.model.image.ITagReference;
@@ -42,7 +42,7 @@ public class ImageStreamTest {
         client = mock(IClient.class);
         node = ModelNode.fromJSONString(Samples.V1_IMAGE_STREAM.getContentAsString());
         stream = new ImageStream(node, client,
-                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.IMAGE_STREAM));
+                ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.IMAGE_STREAM.getIdentifier()));
     }
 
     @Test
@@ -53,7 +53,7 @@ public class ImageStreamTest {
 
     @Test
     public void testAddTag() {
-        ITagReference tag = stream.addTag("1234", ResourceKind.IMAGE_STREAM_TAG, "foo/bar");
+        ITagReference tag = stream.addTag("1234", PredefinedResourceKind.IMAGE_STREAM_TAG.getIdentifier(), "foo/bar");
         Optional<ITagReference> actTag = stream.getTags().stream().filter(t -> "1234".equals(t.getName())).findFirst();
         assertTrue("Exp. the tag to have been added", actTag.isPresent());
         assertEquals(tag.toJson(), actTag.get().toJson());
@@ -61,7 +61,7 @@ public class ImageStreamTest {
 
     @Test
     public void testAddTagWithNamespace() {
-        ITagReference tag = stream.addTag("1234", ResourceKind.IMAGE_STREAM_TAG, "foo/bar", "fromNmspc");
+        ITagReference tag = stream.addTag("1234", PredefinedResourceKind.IMAGE_STREAM_TAG.getIdentifier(), "foo/bar", "fromNmspc");
         Optional<ITagReference> actTag = stream.getTags().stream().filter(t -> "1234".equals(t.getName())).findFirst();
         assertTrue("Exp. the tag to have been added", actTag.isPresent());
         assertEquals(tag.toJson(), actTag.get().toJson());

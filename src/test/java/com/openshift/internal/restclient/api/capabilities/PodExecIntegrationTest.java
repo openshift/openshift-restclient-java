@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.api.capabilities.IPodExec;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IStoppable;
@@ -101,7 +101,7 @@ public class PodExecIntegrationTest {
     @Before
     public void setUp() throws Exception {
         IClient client = helper.createClientForBasicAuth();
-        List<IResource> pods = client.list(ResourceKind.POD, "default");
+        List<IResource> pods = client.list(PredefinedResourceKind.POD.getIdentifier(), "default");
         pod = (IPod) pods.stream().filter(p -> p.getName().startsWith("docker-registry")).findFirst().orElse(null);
         assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
     }

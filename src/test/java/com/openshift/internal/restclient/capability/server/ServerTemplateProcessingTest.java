@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 
 public class ServerTemplateProcessingTest {
@@ -38,7 +38,7 @@ public class ServerTemplateProcessingTest {
 
     @Test
     public void testIsSupportedWhenApiEndpointExists() {
-        when(mapper.isSupported(ResourceKind.PROCESSED_TEMPLATES)).thenReturn(true);
+        when(mapper.isSupported(PredefinedResourceKind.PROCESSED_TEMPLATES.getIdentifier())).thenReturn(true);
         when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
 
         assertTrue("Exp. endpoint to be supported when processedtemplates is supported", cap.isSupported());
@@ -46,7 +46,7 @@ public class ServerTemplateProcessingTest {
 
     @Test
     public void testIsSupportedWhenApiEndpointDoesNotExists() {
-        when(mapper.isSupported(ResourceKind.PROCESSED_TEMPLATES)).thenReturn(false);
+        when(mapper.isSupported(PredefinedResourceKind.PROCESSED_TEMPLATES.getIdentifier())).thenReturn(false);
         when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
 
         assertFalse("Exp. endpoint to not be supported when processedtemplates does not exist", cap.isSupported());

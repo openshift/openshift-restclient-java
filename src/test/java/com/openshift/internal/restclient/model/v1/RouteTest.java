@@ -21,7 +21,7 @@ import org.junit.Test;
 import com.openshift.internal.restclient.model.Route;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.route.IRoute;
 import com.openshift.restclient.model.route.ITLSConfig;
 import com.openshift.restclient.model.route.ITargetPort;
@@ -42,13 +42,13 @@ public class RouteTest {
     public void setUp() {
         client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(sample.getContentAsString());
-        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
+        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.ROUTE.getIdentifier()));
     }
 
     @Test
     public void getTLSConfigWhenUndefined() {
         ModelNode node = ModelNode.fromJSONString(Samples.V1_ROUTE_WO_TLS.getContentAsString());
-        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
+        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.ROUTE.getIdentifier()));
         ITLSConfig tlsConfig = route.getTLSConfig();
         assertNull(tlsConfig);
     }
@@ -56,7 +56,7 @@ public class RouteTest {
     @Test
     public void createTLSConfigWhenUndefined() {
         ModelNode node = ModelNode.fromJSONString(Samples.V1_ROUTE_WO_TLS.getContentAsString());
-        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
+        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.ROUTE.getIdentifier()));
         ITLSConfig tls = route.createTLSConfig();
         assertNotNull(tls);
         assertEquals("", tls.getTerminationType());
@@ -68,7 +68,7 @@ public class RouteTest {
     @Test
     public void getPortWhenUndefined() {
         ModelNode node = ModelNode.fromJSONString(Samples.V1_ROUTE_WO_TLS.getContentAsString());
-        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
+        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.ROUTE.getIdentifier()));
         ITargetPort port = route.getPort();
         assertNull(port);
     }
@@ -76,7 +76,7 @@ public class RouteTest {
     @Test
     public void createPortWhenUndefined() {
         ModelNode node = ModelNode.fromJSONString(Samples.V1_ROUTE_WO_TLS.getContentAsString());
-        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
+        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.ROUTE.getIdentifier()));
         ITargetPort port = route.createPort();
         assertNotNull(port);
         assertEquals("", port.getTargetPortName());
@@ -86,7 +86,7 @@ public class RouteTest {
     @Test
     public void getNumericPortWhenDefined() {
         ModelNode node = ModelNode.fromJSONString(Samples.V1_ROUTE_PORT_NUMERIC.getContentAsString());
-        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
+        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.ROUTE.getIdentifier()));
         ITargetPort port = route.getPort();
         assertNotNull(port);
         assertEquals(8080, port.getTargetPort().intValue());
@@ -95,7 +95,7 @@ public class RouteTest {
     @Test
     public void getNamePortWhenDefined() {
         ModelNode node = ModelNode.fromJSONString(Samples.V1_ROUTE_PORT_NAME.getContentAsString());
-        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
+        route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.ROUTE.getIdentifier()));
         ITargetPort port = route.getPort();
         assertNotNull(port);
         assertEquals("http-8080", port.getTargetPortName());

@@ -9,11 +9,9 @@
 
 package com.openshift.restclient;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Optional;
 
+import com.openshift.restclient.model.IResource;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -21,70 +19,23 @@ import org.apache.commons.lang.StringUtils;
  * interest
  *
  */
-public final class ResourceKind {
-
-    // OpenShift Kinds
-    public static final String BUILD = "Build";
-    public static final String BUILD_CONFIG = "BuildConfig";
-    public static final String DEPLOYMENT_CONFIG = "DeploymentConfig";
-    public static final String IMAGE_STREAM = "ImageStream";
-    public static final String IMAGE_STREAM_TAG = "ImageStreamTag";
-    public static final String IMAGE_STREAM_IMPORT = "ImageStreamImport";
-    public static final String NAMESPACE = "Namespace";
-    public static final String OAUTH_ACCESS_TOKEN = "OAuthAccessToken";
-    public static final String OAUTH_AUTHORIZE_TOKEN = "OAuthAuthorizeToken";
-    public static final String OAUTH_CLIENT = "OAuthClient";
-    public static final String OAUTH_CLIENT_AUTHORIZATION = "OAuthClientAuthorization";
-    public static final String POLICY = "Policy";
-    public static final String POLICY_BINDING = "PolicyBinding";
-    public static final String PROJECT = "Project";
-    public static final String PROJECT_REQUEST = "ProjectRequest";
-    public static final String ROLE = "Role";
-    public static final String ROLE_BINDING = "RoleBinding";
-    public static final String ROUTE = "Route";
-    public static final String TEMPLATE = "Template";
-    public static final String USER = "User";
-
-    // Kubernetes Kinds
-    public static final String ENDPOINTS = "Endpoints";
-    public static final String EVENT = "Event";
-    public static final String LIMIT_RANGE = "LimitRange";
-    public static final String POD = "Pod";
-    public static final String PVC = "PersistentVolumeClaim";
-    public static final String PERSISTENT_VOLUME = "PersistentVolume";
-    public static final String REPLICATION_CONTROLLER = "ReplicationController";
-    public static final String RESOURCE_QUOTA = "ResourceQuota";
-    public static final String SERVICE = "Service";
-    public static final String SECRET = "Secret";
-    public static final String SERVICE_ACCOUNT = "ServiceAccount";
-    public static final String CONFIG_MAP = "ConfigMap";
-    /*
-     * These are not true resources that can be used (mostly) in RESTful operations
-     */
-    public static final String BUILD_REQUEST = "BuildRequest";
-
-    @Deprecated
-    public static final String CONFIG = "Config";// not rest resource;
-    public static final String LIST = "List";
-    public static final String STATUS = "Status";// not rest resource
-    public static final String PROCESSED_TEMPLATES = "ProcessedTemplates";// mechanism for processing templates
+public interface ResourceKind {
 
     /**
-     * The default if we haven't implemented the kind yet
+     * @return the identifier for the resource kind
      */
-    public static final String UNRECOGNIZED = "Unrecognized";
+    String getIdentifier();
 
-    private static final Collection<String> values;
+    /**
+     * @return the implementation class to be used for this resource kind
+     */
+    Optional<Class<? extends IResource>> getImplementationClass();
 
-    public static Collection<String> values() {
-        return values;
-    }
-
-    public static String pluralize(String kind) {
+    static String pluralize(String kind) {
         return pluralize(kind, false, false);
     }
 
-    public static String pluralize(String kind, boolean lowercase, boolean uncapitalize) {
+    static String pluralize(String kind, boolean lowercase, boolean uncapitalize) {
         if (StringUtils.isBlank(kind)) {
             return "";
         }
@@ -102,53 +53,4 @@ public final class ResourceKind {
         return kind;
     }
 
-    static {
-        Set<String> set = new HashSet<String>();
-        // OpenShift Kinds
-        set.add(BUILD);
-        set.add(BUILD_CONFIG);
-        set.add(DEPLOYMENT_CONFIG);
-        set.add(IMAGE_STREAM);
-        set.add(IMAGE_STREAM_TAG);
-        set.add(IMAGE_STREAM_IMPORT);
-        set.add(OAUTH_ACCESS_TOKEN);
-        set.add(OAUTH_AUTHORIZE_TOKEN);
-        set.add(OAUTH_CLIENT);
-        set.add(OAUTH_CLIENT_AUTHORIZATION);
-        set.add(POLICY);
-        set.add(POLICY_BINDING);
-        set.add(PROJECT);
-        set.add(PROJECT_REQUEST);
-        set.add(ROLE);
-        set.add(ROLE_BINDING);
-        set.add(ROUTE);
-        set.add(TEMPLATE);
-        set.add(USER);
-
-        // Kubernetes Kinds
-        set.add(EVENT);
-        set.add(LIMIT_RANGE);
-        set.add(POD);
-        set.add(PVC);
-        set.add(PERSISTENT_VOLUME);
-        set.add(REPLICATION_CONTROLLER);
-        set.add(RESOURCE_QUOTA);
-        set.add(SERVICE);
-        set.add(SECRET);
-        set.add(SERVICE_ACCOUNT);
-        set.add(CONFIG_MAP);
-
-        /*
-         * These are not true resources that can be used (mostly) in RESTful operations
-         */
-        set.add(BUILD_REQUEST);
-        set.add(CONFIG);
-        set.add(LIST);
-        set.add(STATUS);
-        set.add("ProcessedTemplates");
-        values = Collections.unmodifiableCollection(set);
-    }
-
-    private ResourceKind() {
-    }
 }

@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import com.openshift.internal.restclient.capability.AbstractCapability;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.api.capabilities.IScalable;
 import com.openshift.restclient.apis.autoscaling.models.IScale;
@@ -35,8 +35,8 @@ public class ScaleCapability extends AbstractCapability implements IScalable {
     private static final Map<String, String> ARG_KINDS = new HashMap<>();
 
     static {
-        ARG_KINDS.put(ResourceKind.DEPLOYMENT_CONFIG, "extensions/v1beta1.Scale");
-        ARG_KINDS.put(ResourceKind.REPLICATION_CONTROLLER, "autoscaling/v1.Scale");
+        ARG_KINDS.put(PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier(), "extensions/v1beta1.Scale");
+        ARG_KINDS.put(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(), "autoscaling/v1.Scale");
     }
 
     private static final int MIN_VALUE = 0;

@@ -8,14 +8,16 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-
 package com.openshift.restclient;
-
-import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class ResourceKindTest {
+import static org.junit.Assert.assertEquals;
+
+/**
+ * @author jeff.cantrill
+ */
+public class PredefinedResourceKindTest {
 
     @Test
     public void testPluralizeWhenNull() {
@@ -54,8 +56,7 @@ public class ResourceKindTest {
 
     @Test
     public void testPluralizeCamelCaseKindUncapitalize() {
-        assertEquals("replicationControllers",
-                ResourceKind.pluralize(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(), false, true));
+        assertEquals("replicationControllers", ResourceKind.pluralize(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(), false, true));
     }
 
 }

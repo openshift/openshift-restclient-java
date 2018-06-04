@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
 import com.openshift.restclient.OpenShiftException;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
+import com.openshift.restclient.ResourceKindRegistry;
 import com.openshift.restclient.UnsupportedEndpointException;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IResource;
@@ -43,6 +44,7 @@ public class URLBuilder {
     private String name;
     private ArrayList<AbstractMap.SimpleEntry<String, String>> params = new ArrayList<>();
     private final IApiTypeMapper typeMappings;
+    private final ResourceKindRegistry resourceKindRegistry;
 
     private String apiVersion;
     private String namespace;
@@ -56,8 +58,8 @@ public class URLBuilder {
      *            the map of kinds to endpoint
      * @param resource the resource to use for building
      */
-    URLBuilder(URL baseUrl, IApiTypeMapper typeMappings, IResource resource) {
-        this(baseUrl, typeMappings);
+    URLBuilder(URL baseUrl, IApiTypeMapper typeMappings, IResource resource, ResourceKindRegistry resourceKindRegistry) {
+        this(baseUrl, typeMappings, resourceKindRegistry);
         resource(resource);
     }
 
@@ -66,9 +68,10 @@ public class URLBuilder {
      * @param typeMappings
      *            the map of kinds to endpoint
      */
-    public URLBuilder(URL baseUrl, IApiTypeMapper typeMappings) {
+    public URLBuilder(URL baseUrl, IApiTypeMapper typeMappings, ResourceKindRegistry resourceKindRegistry) {
         this.baseUrl = baseUrl.toString().replaceAll("/*$", "");
         this.typeMappings = typeMappings;
+        this.resourceKindRegistry = resourceKindRegistry;
     }
 
     public URLBuilder apiVersion(String apiVersion) {
@@ -90,7 +93,7 @@ public class URLBuilder {
     }
 
     public URLBuilder kind(String kind) {
-        if (!ResourceKind.values().contains(kind)) {
+        if (!resourceKindRegistry.find(kind).isPresent()) {
             LOG.warn(String.format("There kind '%s' is not recognized by this client; this operation may fail.", kind));
         }
         this.kind = kind;
@@ -156,7 +159,7 @@ public class URLBuilder {
                     "The api endpoint for kind '{}' requires a namespace but none was provided. Will only work for priviledged user.",
                     kind);
         }
-        if (!ResourceKind.PROJECT.equals(kind) && namespace != null) {
+        if (!PredefinedResourceKind.PROJECT.getIdentifier().equals(kind) && namespace != null) {
             url.append("/namespaces/").append(namespace);
         }
         url.append("/").append(apiResource.getName());

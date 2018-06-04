@@ -25,7 +25,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.DefaultResourceKindRegistry;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IResource;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,12 +37,12 @@ public class URLBuilderTest extends TypeMapperFixture {
 
     @Before
     public void setup() throws MalformedURLException {
-        builder = new URLBuilder(new URL(BASE_URL), mapper);
+        builder = new URLBuilder(new URL(BASE_URL), mapper, new DefaultResourceKindRegistry());;
     }
 
     @Test
     public void testBuildingURLForAWatchService() throws Exception {
-        IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1, "foo");
+        IResource resource = givenAResource(PredefinedResourceKind.SERVICE.getIdentifier(), KubernetesAPIVersion.v1, "foo");
 
         Map<String, String> params = new HashMap<>();
         params.put("foo", "bar");
@@ -50,12 +51,12 @@ public class URLBuilderTest extends TypeMapperFixture {
                 .build().toString();
         assertEquals(
                 String.format("%s/api/v1/namespaces/foo/services?watch=true&resourceVersion=123&foo=bar", BASE_URL),
-                url.toString());
+				url);
     }
 
     @Test
     public void testDuplicateParameters() throws Exception {
-        IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1, "foo");
+        IResource resource = givenAResource(PredefinedResourceKind.SERVICE.getIdentifier(), KubernetesAPIVersion.v1, "foo");
         String url = builder.resource(resource).watch().addParmeter("resourceVersion", "123").addParmeter("x", "1")
                 .addParmeter("x", "2").build().toString();
         assertEquals(
@@ -65,7 +66,7 @@ public class URLBuilderTest extends TypeMapperFixture {
 
     @Test
     public void testBuildingURLForAProjectUsingResource() throws Exception {
-        IResource resource = givenAResource(ResourceKind.PROJECT, KubernetesAPIVersion.v1, "foo");
+        IResource resource = givenAResource(PredefinedResourceKind.PROJECT.getIdentifier(), KubernetesAPIVersion.v1, "foo");
 
         String url = builder.resource(resource).name("foo").build().toString();
         assertEquals(String.format("%s/oapi/v1/projects/foo", BASE_URL), url.toString());
@@ -73,8 +74,8 @@ public class URLBuilderTest extends TypeMapperFixture {
 
     @Test
     public void testBaseURLWithTrailingSlash() throws Exception {
-        builder = new URLBuilder(new URL(BASE_URL + "///"), mapper);
-        IResource resource = givenAResource(ResourceKind.SERVICE, KubernetesAPIVersion.v1, "foo");
+        builder = new URLBuilder(new URL(BASE_URL + "///"), mapper, new DefaultResourceKindRegistry());
+        IResource resource = givenAResource(PredefinedResourceKind.SERVICE.getIdentifier(), KubernetesAPIVersion.v1, "foo");
 
         String url = whenBuildingTheURLFor(resource, "foo");
         assertEquals(String.format("%s/api/v1/namespaces/foo/services/bar", BASE_URL), url.toString());
@@ -82,7 +83,7 @@ public class URLBuilderTest extends TypeMapperFixture {
 
     @Test
     public void testAddingASubResource() {
-        IResource resource = givenAResource(ResourceKind.REPLICATION_CONTROLLER, KubernetesAPIVersion.v1, "foo");
+        IResource resource = givenAResource(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier(), KubernetesAPIVersion.v1, "foo");
         String url = builder.resource(resource).name("bar").subresource("status").build().toString();
         assertEquals(String.format("%s/api/v1/namespaces/foo/replicationcontrollers/bar/status", BASE_URL),
                 url.toString());
@@ -90,7 +91,7 @@ public class URLBuilderTest extends TypeMapperFixture {
 
     @Test
     public void testAddingASubContext() {
-        IResource resource = givenAResource(ResourceKind.POD, KubernetesAPIVersion.v1, "https:demo-app-8-3gehi:8778");
+        IResource resource = givenAResource(PredefinedResourceKind.POD.getIdentifier(), KubernetesAPIVersion.v1, "https:demo-app-8-3gehi:8778");
         String url = builder.resource(resource).name("bar").subresource("proxy")
                 .subContext("jolokia/exec/java.util.logging:type=Logging/getLoggerLevel/abc").build().toString();
         assertEquals(String.format(

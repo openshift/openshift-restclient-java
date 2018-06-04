@@ -22,7 +22,7 @@ import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.ConfigMap;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IConfigMap;
 import com.openshift.restclient.utils.Samples;
 
@@ -40,7 +40,7 @@ public class ConfigMapTest {
         client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_CONFIG_MAP.getContentAsString());
         configMap = new ConfigMap(node, client,
-                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.CONFIG_MAP));
+                ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.CONFIG_MAP.getIdentifier()));
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.openshift.internal.restclient;
 
 import static com.openshift.internal.restclient.IntegrationTestHelper.cleanUpResource;
-import static com.openshift.restclient.ResourceKind.BUILD_CONFIG;
+import static com.openshift.restclient.PredefinedResourceKind.BUILD_CONFIG;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -20,7 +20,7 @@ import com.openshift.internal.restclient.model.build.BuildConfigBuilder;
 import com.openshift.internal.restclient.model.project.OpenshiftProjectRequest;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IResource;
@@ -44,7 +44,7 @@ public class DefaultClientFilterIntegrationTest {
 
         client = helper.createClientForBasicAuth();
         factory = new ResourceFactory(client);
-        OpenshiftProjectRequest projectRequest = factory.create(VERSION, ResourceKind.PROJECT_REQUEST);
+        OpenshiftProjectRequest projectRequest = factory.create(VERSION, PredefinedResourceKind.PROJECT_REQUEST.getIdentifier());
         projectRequest.setName(helper.generateNamespace());
         project = (IProject) client.create(projectRequest);
 
@@ -82,7 +82,7 @@ public class DefaultClientFilterIntegrationTest {
 
     @Test
     public void testFilteringWithOneLabel() {
-        List<IBuildConfig> list = client.list(BUILD_CONFIG, project.getNamespaceName(), new HashMap<String, String>() {
+        List<IBuildConfig> list = client.list(BUILD_CONFIG.getIdentifier(), project.getNamespaceName(), new HashMap<String, String>() {
             {
                 put("foo", "yes");
             }
@@ -97,7 +97,7 @@ public class DefaultClientFilterIntegrationTest {
 
     @Test
     public void testFilteringWithTwoLabel() {
-        List<IBuildConfig> list = client.list(BUILD_CONFIG, project.getNamespaceName(), new HashMap<String, String>() {
+        List<IBuildConfig> list = client.list(BUILD_CONFIG.getIdentifier(), project.getNamespaceName(), new HashMap<String, String>() {
             {
                 put("foo", "yes");
                 put("bar", "no");
@@ -111,7 +111,7 @@ public class DefaultClientFilterIntegrationTest {
 
     @Test
     public void testFilteringWithLabelExist() {
-        List<IBuildConfig> list = client.list(BUILD_CONFIG, project.getNamespaceName(), "baz");
+        List<IBuildConfig> list = client.list(BUILD_CONFIG.getIdentifier(), project.getNamespaceName(), "baz");
 
         assertEquals(1, list.size());
         IBuildConfig bc = list.get(0);
@@ -120,7 +120,7 @@ public class DefaultClientFilterIntegrationTest {
 
     @Test
     public void testFilteringWithLabelNotExist() {
-        List<IBuildConfig> list = client.list(BUILD_CONFIG, project.getNamespaceName(), "!baz");
+        List<IBuildConfig> list = client.list(BUILD_CONFIG.getIdentifier(), project.getNamespaceName(), "!baz");
 
         Set<String> names = list.stream().map(IResource::getName).collect(Collectors.toSet());
 
@@ -133,7 +133,7 @@ public class DefaultClientFilterIntegrationTest {
 
     @Test
     public void testFilteringWithLabelNotEqualTo() {
-        List<IBuildConfig> list = client.list(BUILD_CONFIG, project.getNamespaceName(), "foo != yes");
+        List<IBuildConfig> list = client.list(BUILD_CONFIG.getIdentifier(), project.getNamespaceName(), "foo != yes");
 
         Set<String> names = list.stream().map(IResource::getName).collect(Collectors.toSet());
 
@@ -144,7 +144,7 @@ public class DefaultClientFilterIntegrationTest {
 
     @Test
     public void testFilteringWithLabelCombinedLabelQuery() {
-        List<IBuildConfig> list = client.list(BUILD_CONFIG, project.getNamespaceName(), "foo,bar=no");
+        List<IBuildConfig> list = client.list(BUILD_CONFIG.getIdentifier(), project.getNamespaceName(), "foo,bar=no");
 
         assertEquals(1, list.size());
         IBuildConfig bc = list.get(0);

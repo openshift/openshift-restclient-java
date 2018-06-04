@@ -28,7 +28,7 @@ import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.okhttp.WatchClient.WatchEndpoint;
 import com.openshift.restclient.IOpenShiftWatchListener;
 import com.openshift.restclient.IOpenShiftWatchListener.ChangeType;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.http.IHttpConstants;
 
 import okhttp3.Protocol;
@@ -46,7 +46,7 @@ public class WatchClientTest {
 
         IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
 
-        WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
+        WatchEndpoint endpoint = new WatchEndpoint(client, listener, PredefinedResourceKind.BUILD.getIdentifier());
         endpoint.onFailure(new IOException(), null);
         verify(listener).error(any(Throwable.class));
     }
@@ -56,7 +56,7 @@ public class WatchClientTest {
         DefaultClient client = mock(DefaultClient.class);
         IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
 
-        WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
+        WatchEndpoint endpoint = new WatchEndpoint(client, listener, PredefinedResourceKind.BUILD.getIdentifier());
         Response.Builder responseBuilder = new Response.Builder();
         responseBuilder.code(IHttpConstants.STATUS_OK).protocol(Protocol.HTTP_2)
                 .request(new Request.Builder().url("http://localhost").build());

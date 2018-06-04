@@ -12,7 +12,7 @@ package com.openshift.internal.restclient.capability.resources;
 import java.util.Collection;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.resources.IProjectTemplateList;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.template.ITemplate;
@@ -40,7 +40,7 @@ public class ProjectTemplateListCapability implements IProjectTemplateList {
 
     @Override
     public Collection<ITemplate> getTemplates() {
-        return client.<ITemplate>list(ResourceKind.TEMPLATE, project.getNamespaceName());
+        return client.<ITemplate>list(PredefinedResourceKind.TEMPLATE.getIdentifier(), project.getNamespaceName());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ProjectTemplateListCapability implements IProjectTemplateList {
 
     @Override
     public Collection<ITemplate> getCommonTemplates(String clusterNamespace) {
-        return client.<ITemplate>list(ResourceKind.TEMPLATE,
+        return client.<ITemplate>list(PredefinedResourceKind.TEMPLATE.getIdentifier(),
                 clusterNamespace == null ? COMMON_NAMESPACE : clusterNamespace);
     }
 

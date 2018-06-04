@@ -30,7 +30,7 @@ import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.resources.IImageStreamImportCapability;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.images.DockerImageURI;
@@ -242,7 +242,7 @@ public class DockerRegistryImageStreamImportCapability
     }
 
     private ImageStreamImport buildImageStreamImport(DockerImageURI uri, ModelNode node) {
-        ImageStreamImport isImport = (ImageStreamImport) factory.stub(ResourceKind.IMAGE_STREAM_IMPORT, uri.getName(),
+        ImageStreamImport isImport = factory.stub(PredefinedResourceKind.IMAGE_STREAM_IMPORT.getIdentifier(), uri.getName(),
                 this.project.getName());
         ModelNode root = isImport.getNode();
         ModelNode images = JBossDmrExtentions.get(root, null, ImageStreamImport.STATUS_IMAGES);

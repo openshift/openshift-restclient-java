@@ -24,7 +24,7 @@ import org.junit.Test;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.model.List;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.utils.Samples;
@@ -53,7 +53,7 @@ public class ListTest {
         Collection<IResource> items = resource.getItems();
         assertTrue("Expected to be entries in the list", items.size() > 0);
         IResource bc = items.iterator().next();
-        assertEquals(ResourceKind.BUILD_CONFIG, bc.getKind());
+        assertEquals(PredefinedResourceKind.BUILD_CONFIG.getIdentifier(), bc.getKind());
         assertEquals("v1", bc.getApiVersion());
     }
 

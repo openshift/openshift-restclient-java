@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IProject;
@@ -46,8 +46,8 @@ public class ServerTemplateProcessingIntegrationTest {
     public void setup() throws MalformedURLException {
         client = helper.createClientForBasicAuth();
         String namespace = helper.generateNamespace();
-        client.create(client.getResourceFactory().stub(ResourceKind.PROJECT_REQUEST, namespace));
-        project = client.get(ResourceKind.PROJECT, namespace, "");
+        client.create(client.getResourceFactory().stub(PredefinedResourceKind.PROJECT_REQUEST.getIdentifier(), namespace));
+        project = client.get(PredefinedResourceKind.PROJECT.getIdentifier(), namespace, "");
     }
 
     @Test

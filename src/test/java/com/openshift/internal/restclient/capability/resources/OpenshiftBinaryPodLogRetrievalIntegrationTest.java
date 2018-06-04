@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.IBinaryCapability.SkipTlsVerify;
@@ -40,7 +40,7 @@ public class OpenshiftBinaryPodLogRetrievalIntegrationTest {
     public void testLogRetrieval() {
         System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
         IClient client = helper.createClientForBasicAuth();
-        List<IResource> pods = client.list(ResourceKind.POD, "default");
+        List<IResource> pods = client.list(PredefinedResourceKind.POD.getIdentifier(), "default");
         IPod pod = (IPod) pods.stream().filter(p -> p.getName().startsWith("docker-registry")).findFirst().orElse(null);
         assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
 

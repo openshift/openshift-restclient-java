@@ -20,7 +20,7 @@ import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IEnvironmentVariable;
@@ -80,7 +80,7 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 
     @Override
     public IBuildConfig build() {
-        BuildConfig bc = client.getResourceFactory().stub(ResourceKind.BUILD_CONFIG, this.name, this.namespace);
+        BuildConfig bc = client.getResourceFactory().stub(PredefinedResourceKind.BUILD_CONFIG.getIdentifier(), this.name, this.namespace);
 
         if (sourceStrategyBuilder != null) {
             bc.setBuildStrategy(sourceStrategyBuilder.build(bc.getPropertyKeys()));
@@ -100,7 +100,7 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 
         DockerImageURI uri = new DockerImageURI(imageStreamTagOutput);
         IObjectReference outRef = bc.getBuildOutputReference();
-        outRef.setKind(ResourceKind.IMAGE_STREAM_TAG);
+        outRef.setKind(PredefinedResourceKind.IMAGE_STREAM_TAG.getIdentifier());
         outRef.setName(uri.getNameAndTag());
         if (StringUtils.isNotBlank(uri.getUserName())) {
             outRef.setNamespace(uri.getUserName());
@@ -231,7 +231,7 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
         @Override
         public ISourceStrategyBuilder fromImageStreamTag(String tag) {
             this.tag = tag;
-            this.fromKind = ResourceKind.IMAGE_STREAM_TAG;
+            this.fromKind = PredefinedResourceKind.IMAGE_STREAM_TAG.getIdentifier();
             return this;
         }
 

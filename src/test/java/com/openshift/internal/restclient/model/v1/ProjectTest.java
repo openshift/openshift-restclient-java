@@ -19,7 +19,7 @@ import org.junit.Test;
 import com.openshift.internal.restclient.model.Project;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.utils.Samples;
 
@@ -36,7 +36,7 @@ public class ProjectTest {
         IClient client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_PROJECT.getContentAsString());
         project = new Project(node, client,
-                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT));
+                ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.PROJECT.getIdentifier()));
     }
 
     @Test

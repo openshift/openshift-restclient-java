@@ -31,7 +31,7 @@ import com.openshift.internal.restclient.model.ModelNodeBuilder;
 import com.openshift.internal.restclient.model.build.BuildConfigBuilder;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IEnvironmentVariable;
 import com.openshift.restclient.model.build.BuildStrategyType;
@@ -82,7 +82,7 @@ public class PipelineBuildConfigTest {
 
     private IResourceFactory createResourceFactoryFor(IBuildConfig bc) {
         IResourceFactory factory = mock(IResourceFactory.class);
-        when(factory.stub(eq(ResourceKind.BUILD_CONFIG), anyString(), anyString())).thenReturn(bc);
+        when(factory.stub(eq(PredefinedResourceKind.BUILD_CONFIG.getIdentifier()), anyString(), anyString())).thenReturn(bc);
         return factory;
     }
 

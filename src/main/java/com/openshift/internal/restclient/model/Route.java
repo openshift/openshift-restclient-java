@@ -14,7 +14,7 @@ import java.util.Map;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.route.IRoute;
 import com.openshift.restclient.model.route.ITLSConfig;
 import com.openshift.restclient.model.route.ITargetPort;
@@ -67,7 +67,7 @@ public class Route extends KubernetesResource implements IRoute {
     @Override
     public void setServiceName(String serviceName) {
         get(ROUTE_SERVICE_NAME).set(serviceName);
-        get(ROUTE_KIND).set(ResourceKind.SERVICE);
+        get(ROUTE_KIND).set(PredefinedResourceKind.SERVICE.getIdentifier());
     }
 
     @Override

@@ -20,7 +20,7 @@ import org.junit.Test;
 
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.internal.util.JBossDmrExtentions;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 
 /**
  * Tests that have logic and not specific to a particular api version
@@ -33,7 +33,7 @@ public class StatusTest {
     @Before
     public void setup() {
         ModelNode root = new ModelNode();
-        JBossDmrExtentions.set(root, JBossDmrExtentions.getPath(ResourcePropertyKeys.KIND), ResourceKind.STATUS);
+        JBossDmrExtentions.set(root, JBossDmrExtentions.getPath(ResourcePropertyKeys.KIND), PredefinedResourceKind.STATUS.getIdentifier());
         status = spy(new Status(root, null, null));
     }
 

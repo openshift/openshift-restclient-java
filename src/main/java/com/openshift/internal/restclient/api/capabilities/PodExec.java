@@ -87,8 +87,8 @@ public class PodExec extends AbstractCapability implements IPodExec {
 
         OkHttpClient okClient = client.adapt(OkHttpClient.class);
 
-        URLBuilder urlBuilder = new URLBuilder(client.getBaseURL(), mapper).resource(pod).subresource(CAPABILITY)
-                .addParameters(parameters);
+        URLBuilder urlBuilder = new URLBuilder(client.getBaseURL(), mapper, client.getResourceFactory().getResourceKindRegistry())
+                .resource(pod).subresource(CAPABILITY).addParameters(parameters);
 
         // The main command and all arguments are specified as 'command' parameters
         for (String command : commands) {

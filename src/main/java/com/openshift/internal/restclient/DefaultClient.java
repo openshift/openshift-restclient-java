@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -31,13 +32,15 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
 import com.openshift.internal.restclient.okhttp.WatchClient;
+import com.openshift.restclient.DefaultResourceKindRegistry;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.IWatcher;
 import com.openshift.restclient.OpenShiftException;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
+import com.openshift.restclient.ResourceKindRegistry;
 import com.openshift.restclient.UnsupportedOperationException;
 import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.authorization.IAuthorizationContext;
@@ -118,7 +121,7 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     @Override
     public String getResourceURI(IResource resource) {
-        return new URLBuilder(getBaseURL(), typeMapper, resource).build().toString();
+        return new URLBuilder(getBaseURL(), typeMapper, resource, getResourceKindRegistry()).build().toString();
     }
 
     @Override
@@ -236,10 +239,9 @@ public class DefaultClient implements IClient, IHttpConstants {
             params = Collections.emptyMap();
         }
 
-        if (ResourceKind.LIST.equals(kind)) {
+        if (PredefinedResourceKind.LIST.equals(kind))
             throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
-        }
-        final URL endpoint = new URLBuilder(this.baseUrl, typeMapper).kind(kind).name(name).namespace(namespace)
+        final URL endpoint = new URLBuilder(this.baseUrl, typeMapper, getResourceKindRegistry()).kind(kind).name(name).namespace(namespace)
                 .subresource(subresource).subContext(subContext).addParameters(params).build();
 
         try {
@@ -494,4 +496,9 @@ public class DefaultClient implements IClient, IHttpConstants {
         return null;
     }
 
+    protected ResourceKindRegistry getResourceKindRegistry() {
+        return Optional.ofNullable(factory)
+                .map(IResourceFactory::getResourceKindRegistry)
+                .orElseGet(DefaultResourceKindRegistry::new);
+    }
 }

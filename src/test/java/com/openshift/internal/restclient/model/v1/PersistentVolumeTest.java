@@ -28,7 +28,7 @@ import com.openshift.internal.restclient.model.volume.PersistentVolume;
 import com.openshift.internal.restclient.model.volume.property.HostPathVolumeProperties;
 import com.openshift.internal.restclient.model.volume.property.NfsVolumeProperties;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.volume.IPersistentVolume;
 import com.openshift.restclient.model.volume.property.IHostPathVolumeProperties;
 import com.openshift.restclient.model.volume.property.INfsVolumeProperties;
@@ -47,7 +47,7 @@ public class PersistentVolumeTest {
         client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(sample.getContentAsString());
         pv = new PersistentVolume(node, client,
-                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PERSISTENT_VOLUME));
+                ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.PERSISTENT_VOLUME.getIdentifier()));
     }
 
     @Test

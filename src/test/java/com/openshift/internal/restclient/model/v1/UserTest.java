@@ -19,7 +19,7 @@ import org.junit.Test;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.user.OpenShiftUser;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.user.IUser;
 import com.openshift.restclient.utils.Samples;
 
@@ -36,7 +36,7 @@ public class UserTest {
         IClient client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_USER.getContentAsString());
         user = new OpenShiftUser(node, client,
-                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.USER));
+                ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.USER.getIdentifier()));
     }
 
     @Test

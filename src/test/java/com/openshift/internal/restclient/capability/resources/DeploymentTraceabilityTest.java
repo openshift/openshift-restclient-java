@@ -22,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IReplicationController;
 
@@ -44,7 +44,7 @@ public class DeploymentTraceabilityTest {
 
         when(resource.getNamespaceName()).thenReturn("mynamespace");
 
-        when(client.get(eq(ResourceKind.REPLICATION_CONTROLLER), eq("foobar"), eq("mynamespace")))
+        when(client.get(eq(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier()), eq("foobar"), eq("mynamespace")))
                 .thenReturn(deployment);
     }
 
@@ -55,7 +55,7 @@ public class DeploymentTraceabilityTest {
 
         assertEquals("Exp. to get the deployment", deployment, capability.getDeployment());
 
-        verify(client).get(eq(ResourceKind.REPLICATION_CONTROLLER), eq("foobar"), eq("mynamespace"));
+        verify(client).get(eq(PredefinedResourceKind.REPLICATION_CONTROLLER.getIdentifier()), eq("foobar"), eq("mynamespace"));
     }
 
     @Test

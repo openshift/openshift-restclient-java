@@ -32,7 +32,7 @@ import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
 import com.openshift.internal.restclient.model.build.SourceBuildStrategy;
 import com.openshift.internal.restclient.model.build.WebhookTrigger;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IEnvironmentVariable;
@@ -69,7 +69,7 @@ public class BuildConfigTest {
     @Test
     public void addBuildTriggers() {
         BuildConfig writeConfig = new ResourceFactory(client) {
-        }.create(VERSION, ResourceKind.BUILD_CONFIG);
+        }.create(VERSION, PredefinedResourceKind.BUILD_CONFIG.getIdentifier());
 
         writeConfig.addBuildTrigger(new WebhookTrigger(BuildTriggerType.GITHUB, "secret101", "https://localhost:8443"));
         writeConfig
@@ -98,7 +98,7 @@ public class BuildConfigTest {
     @Test
     public void setGitBuildSource() {
         BuildConfig writeConfig = new ResourceFactory(client) {
-        }.create(VERSION, ResourceKind.BUILD_CONFIG);
+        }.create(VERSION, PredefinedResourceKind.BUILD_CONFIG.getIdentifier());
 
         Map<String, String> env = new HashMap<String, String>();
         env.put("foo", "bar");
@@ -116,7 +116,7 @@ public class BuildConfigTest {
     @Test
     public void setSourceBuildStrategy() {
         BuildConfig writeConfig = new ResourceFactory(client) {
-        }.create(VERSION, ResourceKind.BUILD_CONFIG);
+        }.create(VERSION, PredefinedResourceKind.BUILD_CONFIG.getIdentifier());
 
         ModelNode node = new ModelNodeBuilder().set("type", BuildStrategyType.SOURCE)
                 .set(SourceBuildStrategy.FROM_IMAGE, "ruby-20-centos7:latest")

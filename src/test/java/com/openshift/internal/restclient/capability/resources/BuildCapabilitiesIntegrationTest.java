@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.resources.IBuildCancelable;
 import com.openshift.restclient.capability.resources.IBuildTriggerable;
@@ -45,7 +45,7 @@ public class BuildCapabilitiesIntegrationTest {
         project = helper.generateProject(client);
 
         // an output imagestream
-        IImageStream is = client.getResourceFactory().stub(ResourceKind.IMAGE_STREAM, "ruby-hello-world",
+        IImageStream is = client.getResourceFactory().stub(PredefinedResourceKind.IMAGE_STREAM.getIdentifier(), "ruby-hello-world",
                 project.getName());
         LOG.debug("Creating imagestream {}", is);
         is = client.create(is);

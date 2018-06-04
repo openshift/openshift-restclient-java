@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.UnsupportedEndpointException;
 import com.openshift.restclient.authorization.ResourceForbiddenException;
 import com.openshift.restclient.capability.resources.IImageStreamImportCapability;
@@ -39,7 +39,7 @@ public class ImageStreamImportCapability implements IImageStreamImportCapability
     public IImageStreamImport importImageMetadata(DockerImageURI uri) {
 
         LOG.debug("first trying imagestreamimport against OpenShift server...");
-        IImageStreamImport streamImport = client.getResourceFactory().stub(ResourceKind.IMAGE_STREAM_IMPORT,
+        IImageStreamImport streamImport = client.getResourceFactory().stub(PredefinedResourceKind.IMAGE_STREAM_IMPORT.getIdentifier(),
                 "jbosstools-openshift-deployimage", project.getName());
         streamImport.setImport(false);
         streamImport.addImage("DockerImage", uri);

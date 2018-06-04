@@ -22,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IDeploymentConfig;
 import com.openshift.restclient.model.IPod;
 
@@ -44,7 +44,8 @@ public class DeploymentConfigTraceabilityTest {
 
         when(resource.getNamespaceName()).thenReturn("mynamespace");
 
-        when(client.get(eq(ResourceKind.DEPLOYMENT_CONFIG), eq("foobar"), eq("mynamespace"))).thenReturn(config);
+        when(client.get(eq(PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier()), eq("foobar"), eq("mynamespace")))
+                .thenReturn(config);
     }
 
     @Test
@@ -54,7 +55,7 @@ public class DeploymentConfigTraceabilityTest {
 
         assertEquals("Exp. to get the deploymentConfig", config, capability.getDeploymentConfig());
 
-        verify(client).get(eq(ResourceKind.DEPLOYMENT_CONFIG), eq("foobar"), eq("mynamespace"));
+        verify(client).get(eq(PredefinedResourceKind.DEPLOYMENT_CONFIG.getIdentifier()), eq("foobar"), eq("mynamespace"));
     }
 
     @Test

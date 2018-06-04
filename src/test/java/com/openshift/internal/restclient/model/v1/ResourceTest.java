@@ -20,7 +20,7 @@ import com.openshift.internal.restclient.model.Build;
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.utils.Samples;
 
@@ -34,7 +34,7 @@ public class ResourceTest {
         IClient client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_SERVICE.getContentAsString());
         resource = new KubernetesResource(node, client,
-                ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.SERVICE)) {
+                ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.SERVICE.getIdentifier())) {
         };
     }
 
@@ -48,7 +48,7 @@ public class ResourceTest {
         IClient client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_SERVICE.getContentAsString());
         node.get("metadata").remove("namespace");
-        resource = new Build(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.PROJECT));
+        resource = new Build(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, PredefinedResourceKind.PROJECT.getIdentifier()));
         assertEquals("", resource.getNamespaceName());
     }
 

@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.model.ObjectReference;
-import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.PredefinedResourceKind;
 import com.openshift.restclient.model.IObjectReference;
 import com.openshift.restclient.utils.Samples;
 
@@ -39,8 +39,8 @@ public class ObjectRefTest {
 
     @Test
     public void testSetKind() {
-        objRef.setKind(ResourceKind.BUILD);
-        assertEquals(ResourceKind.BUILD, new ObjectReference(node.clone()).getKind());
+        objRef.setKind(PredefinedResourceKind.BUILD.getIdentifier());
+        assertEquals(PredefinedResourceKind.BUILD.getIdentifier(), new ObjectReference(node.clone()).getKind());
     }
 
     @Test
