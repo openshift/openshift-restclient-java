@@ -150,15 +150,8 @@ public class URLBuilder {
         }
         url.append("/");
         IVersionedApiResource apiResource = typeMappings.getEndpointFor(apiVersion, kind);
-        url.append(apiResource.getPrefix()).append("/").append(apiResource.getVersion());
-        if (namespace == null && apiResource.isNamespaced()) {
-            LOG.debug(
-                    "The api endpoint for kind '{}' requires a namespace but none was provided. Will only work for priviledged user.",
-                    kind);
-        }
-        if (!ResourceKind.PROJECT.equals(kind) && namespace != null) {
-            url.append("/namespaces/").append(namespace);
-        }
+        appendApiResource(url, apiResource);
+        appendNamespace(url);
         url.append("/").append(apiResource.getName());
         if (name != null) {
             url.append("/").append(name);
@@ -175,6 +168,20 @@ public class URLBuilder {
             url.append("/").append(subContext);
         }
         url = appendParameters(url);
+    }
+
+    private void appendApiResource(StringBuilder url, IVersionedApiResource apiResource) {
+        url.append(apiResource.getPrefix()).append("/");
+        if (!StringUtils.isEmpty(apiResource.getApiGroupName())) {
+            url.append(apiResource.getApiGroupName()).append("/");
+        }
+        url.append(apiResource.getVersion());
+    }
+
+    private void appendNamespace(StringBuilder url) {
+        if (!ResourceKind.PROJECT.equals(kind) && namespace != null) {
+            url.append("/namespaces/").append(namespace);
+        }
     }
 
     private StringBuilder appendParameters(StringBuilder url) {

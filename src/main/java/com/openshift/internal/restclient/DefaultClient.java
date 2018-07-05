@@ -239,11 +239,20 @@ public class DefaultClient implements IClient, IHttpConstants {
         if (ResourceKind.LIST.equals(kind)) {
             throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
         }
-        final URL endpoint = new URLBuilder(this.baseUrl, typeMapper).kind(kind).name(name).namespace(namespace)
-                .subresource(subresource).subContext(subContext).addParameters(params).build();
+        
+        final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
+                .apiVersion(getApiVersion(payload))
+                .kind(kind)
+                .name(name)
+                .namespace(namespace)
+                .subresource(subresource)
+                .subContext(subContext)
+                .addParameters(params)
+                .build();
 
         try {
-            Request request = newRequestBuilderTo(endpoint.toString()).method(method, getPayload(method, payload))
+            Request request = newRequestBuilderTo(endpoint.toString())
+                    .method(method, getPayload(method, payload))
                     .build();
             LOGGER.debug("About to make {} request: {}", request.method(), request);
             try (Response result = client.newCall(request).execute()) {
@@ -254,6 +263,14 @@ public class DefaultClient implements IClient, IHttpConstants {
         } catch (IOException e) {
             throw new OpenShiftException(e, "Unable to execute request to %s", endpoint);
         }
+    }
+
+    private String getApiVersion(JSONSerializeable payload) {
+        String apiVersion = null;
+        if (payload instanceof IResource) {
+            apiVersion = ((IResource) payload).getApiVersion();
+        }
+        return apiVersion;
     }
 
     private RequestBody getPayload(String method, JSONSerializeable payload) {
