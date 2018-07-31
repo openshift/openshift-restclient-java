@@ -40,7 +40,7 @@ public class OpenShiftBinaryPortForwarding extends AbstractOpenShiftBinaryCapabi
 
         @Override
         public void append(StringBuilder commandLine) {
-            commandLine.append(" -p ").append(pod.getName());
+            commandLine.append(' ').append(pod.getName());
         }
     }
 
