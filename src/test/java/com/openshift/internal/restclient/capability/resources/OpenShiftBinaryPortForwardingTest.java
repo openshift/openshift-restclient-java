@@ -76,7 +76,7 @@ public class OpenShiftBinaryPortForwardingTest {
         ProcessBuilder builder = processBuilderArgument.getValue();
         assertThat(builder.command())
                 .isEqualTo(Arrays.asList(OC_LOCATION, OpenShiftBinaryPortForwarding.PORT_FORWARD_COMMAND,
-                        "--token=" + TOKEN, "--server=" + SERVER_URL.toString(), "-n", POD_NAMESPACE, "-p", POD_NAME,
+                        "--token=" + TOKEN, "--server=" + SERVER_URL.toString(), "-n", POD_NAMESPACE, POD_NAME,
                         LOCAL_PORT2 + ":" + REMOTE_PORT2));
     }
 
@@ -94,6 +94,6 @@ public class OpenShiftBinaryPortForwardingTest {
         assertThat(builder.command()).isEqualTo(
                 Arrays.asList(OC_LOCATION, OpenShiftBinaryPortForwarding.PORT_FORWARD_COMMAND, "--token=" + TOKEN,
                         "--server=" + SERVER_URL.toString(), "--insecure-skip-tls-verify=true", "-n", POD_NAMESPACE,
-                        "-p", POD_NAME, LOCAL_PORT1 + ":" + REMOTE_PORT1, LOCAL_PORT2 + ":" + REMOTE_PORT2));
+                        POD_NAME, LOCAL_PORT1 + ":" + REMOTE_PORT1, LOCAL_PORT2 + ":" + REMOTE_PORT2));
     }
 }
