@@ -22,7 +22,8 @@ public interface IPersistentVolume extends IResource {
 
     /**
      * @param unit
-     *            the designated unit. One of "Ki", "Mi", "Gi", "Ti", "Pi", "Ei".
+     *            the designated unit. One of "B", "K", "Ki", "M", "Mi", "G", "Gi",
+     *            "T", "Ti", "P", "Pi", "E", "Ei".
      * @return 0, if conversion not possible. Otherwise the capacity in given units.
      * @see {@link PersistentVolume#convert(String, MemoryUnit)}
      * @throws IllegalArgumentException
@@ -32,8 +33,8 @@ public interface IPersistentVolume extends IResource {
 
     /**
      * @param unit
-     *            the designated unit. One of {@link MemoryUnit}'s Ki, Mi, Gi, Ti,
-     *            Pi, Ei.
+     *            the designated unit. One of {@link MemoryUnit}'s B, K, Ki, M, Mi,
+     *            G, Gi, T, Ti, P, Pi, E, Ei.
      * @return 0, if conversion not possible. Otherwise the capacity in given units.
      * @see {@link PersistentVolume#convert(String, MemoryUnit)}
      * @throws IllegalArgumentException

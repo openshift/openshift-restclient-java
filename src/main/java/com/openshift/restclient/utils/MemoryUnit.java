@@ -12,7 +12,21 @@
 package com.openshift.restclient.utils;
 
 public enum MemoryUnit {
+    B(1l), K(1000l), Ki(1024l), M(1000l*1000l), Mi(1024l*1024l), 
+        G(1000l*1000l*1000l), Gi(1024l*1024l*1024l), 
+        T(1000l*1000l*1000l*1000l), Ti(1024l*1024l*1024l*1024l),
+        P(1000l*1000l*1000l*1000l*1000l), 
+        Pi(1024l*1024l*1024l*1024l*1024l), 
+        E(1000l*1000l*1000l*1000l*1000l*1000l),
+        Ei(1024l*1024l*1024l*1024l*1024l*1024l);
 
-    Ki, Mi, Gi, Ti, Pi, Ei;
+    private final long factor;
 
+    private MemoryUnit(long factor) {
+        this.factor = factor;
+    }
+
+    public long getFactor() {
+        return factor;
+    }
 }

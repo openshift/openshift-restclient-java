@@ -49,7 +49,8 @@ public class PersistentVolume extends KubernetesResource implements IPersistentV
 
     /**
      * @param unit
-     *            the designated unit. One of "Ki", "Mi", "Gi", "Ti", "Pi", "Ei".
+     *            the designated unit. One of "B", "K", "Ki", "M", "Mi", "G", "Gi",
+     *            "T", "Ti", "P", "Pi", "E", "Ei".
      * @return 0, if conversion not possible. Otherwise the capacity in given units.
      * @see {@link PersistentVolume#convert(String, MemoryUnit)}
      * @throws IllegalArgumentException
@@ -57,14 +58,13 @@ public class PersistentVolume extends KubernetesResource implements IPersistentV
      */
     @Override
     public long getCapacity(String unit) {
-        String capacity = asString(PV_CAPACITY);
-        return convert(capacity, MemoryUnit.valueOf(unit));
+        return getCapacity(MemoryUnit.valueOf(unit));
     }
 
     /**
      * @param unit
-     *            the designated unit. One of {@link MemoryUnit}'s Ki, Mi, Gi, Ti,
-     *            Pi, Ei.
+     *            the designated unit. One of {@link MemoryUnit}'s B, K, Ki, M, Mi,
+     *            G, Gi, P, Pi, E, Ei.
      * @return 0, if conversion not possible. Otherwise the capacity in given units.
      * @see {@link PersistentVolume#convert(String, MemoryUnit)}
      * @throws IllegalArgumentException
@@ -82,7 +82,7 @@ public class PersistentVolume extends KubernetesResource implements IPersistentV
     @Override
     public long getCapacity() {
         String capacity = asString(PV_CAPACITY);
-        return Math.multiplyExact(convert(capacity, MemoryUnit.Ki), 1024L);
+        return convert(capacity, MemoryUnit.B);
     }
 
     /**
@@ -216,7 +216,7 @@ public class PersistentVolume extends KubernetesResource implements IPersistentV
      * following assumptions are used to compute values: One Ki = 2^10 One Mi = 2^20
      * One Gi = 2^30 One Ti = 2^40 One Pi = 2^50 One Ei = 2^60
      *
-     * Java's type long can contain max value of 2^64, enough for a few Exbibytes.
+     * Java's type long can contain max value of 2^63, enough for a few Exbibytes.
      * Following equation is used to convert values:
      *
      * kubernetesGivenNumber << (10 * i), where << is implicit multiplication by
@@ -227,40 +227,30 @@ public class PersistentVolume extends KubernetesResource implements IPersistentV
      *            the capacity string
      * @param designatedUnit
      *            the designated unit of type {@link MemoryUnit}. Possible values
-     *            'Ki, Mi, Gi, Ti, Pi, Ei'.
+     *            'B, K, Ki, M, Mi, G, Gi, T, Ti, P, Pi, E, Ei'.
      * @return 0 if conversion is not possible, otherwise the numeric representation
      *         converted to designatedUnit. Conversion is not possible when the
      *         designatedUnit cannot contain the unit given by Kubernetes in
      *         integral form.
+     * @throws ArithmeticException
+     *             if computation overflows
      */
     private static long convert(final String capacity, final MemoryUnit designatedUnit) {
         long number = parseCapacityValue(capacity);
         MemoryUnit currentUnit = parseCapacityUnit(capacity);
 
-        int operation = currentUnit.compareTo(designatedUnit);
-        if (operation == 0L) {
-            return number;
-        } else if (operation > 0L) {
-            return safeMultiplicationBy1024(number, operation); // number << (10 * operation);
-        } else {
-            return 0L;
+        long bytes = Math.multiplyExact(number, currentUnit.getFactor());
+        if ( bytes % designatedUnit.getFactor() == 0L ) {
+            return bytes / designatedUnit.getFactor();
         }
-    }
-
-    /**
-     * @throws ArithmeticException
-     *             if computation overflows
-     */
-    private static long safeMultiplicationBy1024(long value, long times) {
-        long multiplicand = (long) Math.pow(1024L, times);
-        return Math.multiplyExact(value, multiplicand);
+        return 0L;
     }
 
     private static long parseCapacityValue(String capacityString) {
         if (capacityString == null) {
             return 0L;
         }
-        Pattern pattern = Pattern.compile("(\\d+)(\\w{2})");
+        Pattern pattern = Pattern.compile("(\\d+)(\\w{1,2})");
         Matcher m = pattern.matcher(capacityString);
         if (!m.find()) {
             return 0L;
@@ -272,7 +262,7 @@ public class PersistentVolume extends KubernetesResource implements IPersistentV
         if (capacityString == null) {
             return null;
         }
-        Pattern pattern = Pattern.compile("(\\d+)(\\w{2})");
+        Pattern pattern = Pattern.compile("(\\d+)(\\w{1,2})");
         Matcher m = pattern.matcher(capacityString);
         if (!m.find()) {
             return null;
