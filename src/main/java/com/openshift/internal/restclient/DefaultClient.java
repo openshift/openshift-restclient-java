@@ -64,6 +64,8 @@ public class DefaultClient implements IClient, IHttpConstants {
     public static final String SYSTEM_PROP_K8E_API_VERSION = "osjc.k8e.apiversion";
     public static final String SYSTEM_PROP_OPENSHIFT_API_VERSION = "osjc.openshift.apiversion";
 
+    private static final String URL_HEALTH_CHECK = "healthz";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
     private URL baseUrl;
     private OkHttpClient client;
@@ -288,7 +290,7 @@ public class DefaultClient implements IClient, IHttpConstants {
     @Override
     public String getServerReadyStatus() {
         try {
-            Request request = new Request.Builder().url(new URL(this.baseUrl, "healthz/ready"))
+            Request request = new Request.Builder().url(new URL(this.baseUrl, URL_HEALTH_CHECK))
                     .header(PROPERTY_ACCEPT, "*/*").build();
             try (Response response = client.newCall(request).execute()) {
                 return response.body().string();
