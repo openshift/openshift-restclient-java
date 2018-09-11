@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -23,6 +23,7 @@ import com.openshift.restclient.capability.resources.IBuildTriggerable;
 import com.openshift.restclient.model.IBuild;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.build.IBinaryBuildSource;
 import com.openshift.restclient.model.build.IBuildRequest;
 
 public class BuildTrigger implements IBuildTriggerable {
@@ -52,8 +53,17 @@ public class BuildTrigger implements IBuildTriggerable {
 
     @Override
     public boolean isSupported() {
-        return resource != null && client != null && (ResourceKind.BUILD.equals(resource.getKind())
-                || ResourceKind.BUILD_CONFIG.equals(resource.getKind()));
+        return resource != null && client != null && (isSupportedBuild() || isSupportedBuildConfig());
+    }
+
+    private boolean isSupportedBuild() {
+        return ResourceKind.BUILD.equals(resource.getKind())
+                && !(((IBuild) resource).getBuildSource() instanceof IBinaryBuildSource);
+    }
+
+    private boolean isSupportedBuildConfig() {
+        return ResourceKind.BUILD_CONFIG.equals(resource.getKind())
+                && !(((IBuildConfig) resource).getBuildSource() instanceof IBinaryBuildSource);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -45,7 +45,8 @@ public interface IHttpConstants {
     public static final String MEDIATYPE_APPLICATION_JSON = "application/json";
     public static final String MEDIATYPE_APPLICATION_XML = "application/xml";
     public static final String MEDIATYPE_APPLICATION_FORMURLENCODED = "application/x-www-form-urlencoded";
-
+    public static final String MEDIATYPE_APPLICATION_OCTET_STREAM = "application/octet-stream";
+    
     public static final String AUTHORIZATION_BASIC = "Basic";
     public static final String AUTHORIZATION_BEARER = "Bearer";
 

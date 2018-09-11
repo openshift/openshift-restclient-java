@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Red Hat, Inc.
+ * Copyright (c) 2016-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -25,6 +25,8 @@ public interface IBuildConfigBuilder extends IResourceBuilder<IBuildConfig, IBui
     IJenkinsPipelineStrategyBuilder usingJenkinsPipelineStrategy();
 
     IGitSourceBuilder fromGitSource();
+    
+    IBinarySourceBuilder fromBinarySource();
 
     IBuildConfigBuilder toImageStreamTag(String tag);
 
@@ -34,16 +36,20 @@ public interface IBuildConfigBuilder extends IResourceBuilder<IBuildConfig, IBui
 
     IBuildConfigBuilder buildOnConfigChange(boolean onConfigChange);
 
-    interface IGitSourceBuilder extends Endable {
-
+    interface ISourceBuilder<T extends ISourceBuilder> extends Endable {
         IBuildConfigBuilder end();
-
+        
+        T inContextDir(String contextDir);
+    }
+    
+    interface IGitSourceBuilder extends ISourceBuilder<IGitSourceBuilder> {
         IGitSourceBuilder fromGitUrl(String url);
 
         IGitSourceBuilder usingGitReference(String ref);
-
-        IGitSourceBuilder inContextDir(String contextDir);
-
+    }
+    
+    interface IBinarySourceBuilder extends ISourceBuilder<IBinarySourceBuilder> {
+        IBinarySourceBuilder fromAsFile(String asFile);
     }
 
     interface ISourceStrategyBuilder extends Endable {

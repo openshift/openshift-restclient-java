@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -14,6 +14,7 @@ import java.util.Map;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.capability.CapabilityInitializer;
+import com.openshift.internal.restclient.model.build.BinaryBuildSource;
 import com.openshift.internal.restclient.model.build.BuildStatus;
 import com.openshift.internal.restclient.model.build.CustomBuildStrategy;
 import com.openshift.internal.restclient.model.build.DockerBuildStrategy;
@@ -91,7 +92,9 @@ public class Build extends KubernetesResource implements IBuild {
         switch (asString("spec.source.type")) {
         case BuildSourceType.GIT:
             return (T) new GitBuildSource(asString("spec.source.git.uri"), asString("spec.source.git.ref"),
-                    asString("spec.source.git.contextDir"));
+                    asString("spec.source.contextDir"));
+        case BuildSourceType.BINARY:
+            return (T) new BinaryBuildSource(asString("spec.source.binary.asFile"), asString("spec.source.contextDir"));
         default:
         }
         return null;

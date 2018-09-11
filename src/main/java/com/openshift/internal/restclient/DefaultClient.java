@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -13,6 +13,7 @@ import static com.openshift.internal.restclient.capability.CapabilityInitializer
 import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Source;
 
 /**
  * @author Jeff Cantrill
@@ -196,6 +200,16 @@ public class DefaultClient implements IClient, IHttpConstants {
         return execute(HttpMethod.POST, kind, namespace, name, subresource, payload);
     }
 
+    public <T extends IResource> T create(String kind, String version, String namespace, String name, String subresource,
+            InputStream payload) {
+        return create(kind, version, namespace, name, subresource, payload, Collections.emptyMap());
+    }
+
+    public <T extends IResource> T create(String kind, String version, String namespace, String name, String subresource,
+            InputStream payload, Map<String, String> parameters) {
+        return execute(HttpMethod.POST, kind, version, namespace, name, subresource, payload, parameters);
+    }
+
     enum HttpMethod {
         GET, PUT, POST, DELETE
     }
@@ -203,6 +217,11 @@ public class DefaultClient implements IClient, IHttpConstants {
     private <T extends IResource> T execute(HttpMethod method, String kind, String namespace, String name,
             String subresource, IResource payload) {
         return execute(method.toString(), kind, namespace, name, subresource, payload);
+    }
+
+    private <T extends IResource> T execute(HttpMethod method, String kind, String version, String namespace, String name,
+            String subresource, InputStream payload, Map<String, String> parameters) {
+        return execute(method.toString(), kind, version, namespace, name, subresource, payload, parameters);
     }
 
     @SuppressWarnings("unchecked")
@@ -218,6 +237,22 @@ public class DefaultClient implements IClient, IHttpConstants {
             String subresource, IResource payload) {
         return (T) execute(this.factory, method, kind, namespace, name, subresource, null, payload,
                 Collections.emptyMap());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends IResource> T execute(String method, String kind, String version, String namespace, String name,
+            String subresource, InputStream payload) {
+        return (T) execute(this.factory, method, kind, version, namespace, name, subresource, null, payload,
+                Collections.emptyMap());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends IResource> T execute(String method, String kind, String version, String namespace, String name,
+            String subresource, InputStream payload, Map<String, String> parameters) {
+        return (T) execute(this.factory, method, kind, version, namespace, name, subresource, null, payload,
+                parameters);
     }
 
     @Override
@@ -267,6 +302,46 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T execute(ITypeFactory factory, String method, String kind, String version, String namespace, String name,
+            String subresource, String subContext, InputStream payload, Map<String, String> params) {
+        if (factory == null) {
+            throw new OpenShiftException("ITypeFactory is null while trying to call IClient#execute");
+        }
+
+        if (params == null) {
+            params = Collections.emptyMap();
+        }
+
+        if (ResourceKind.LIST.equals(kind)) {
+            throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
+        }
+        
+        final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
+                .apiVersion(version)
+                .kind(kind)
+                .name(name)
+                .namespace(namespace)
+                .subresource(subresource)
+                .subContext(subContext)
+                .addParameters(params)
+                .build();
+
+        try {
+            Request request = newRequestBuilderTo(endpoint.toString())
+                    .method(method, getPayload(method, payload))
+                    .build();
+            LOGGER.debug("About to make {} request: {}", request.method(), request);
+            try (Response result = client.newCall(request).execute()) {
+                String response = result.body().string();
+                LOGGER.debug("Response: {}", response);
+                return (T) factory.createInstanceFrom(response);
+            }
+        } catch (IOException e) {
+            throw new OpenShiftException(e, "Unable to execute request to %s", endpoint);
+        }
+    }
+
     private String getApiVersion(JSONSerializeable payload) {
         String apiVersion = null;
         if (payload instanceof IResource) {
@@ -284,6 +359,29 @@ public class DefaultClient implements IClient, IHttpConstants {
             String json = payload == null ? "" : payload.toJson(true);
             LOGGER.debug("About to send payload: {}", json);
             return RequestBody.create(MediaType.parse(MEDIATYPE_APPLICATION_JSON), json);
+        }
+    }
+
+    private RequestBody getPayload(String method, InputStream payload) {
+        switch (method.toUpperCase()) {
+        case "GET":
+        case "DELETE":
+            return null;
+        default:
+            LOGGER.debug("About to send binary payload");
+            RequestBody requestBody = new RequestBody() {
+                @Override
+                public void writeTo(BufferedSink sink) throws IOException {
+                    Source source = Okio.source(payload);
+                    sink.writeAll(source);
+                }
+                
+                @Override
+                public MediaType contentType() {
+                    return MediaType.parse(MEDIATYPE_APPLICATION_OCTET_STREAM);
+                }
+            };
+            return requestBody;
         }
     }
 
@@ -331,12 +429,12 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     @Override
     public IList get(String kind, String namespace) {
-        return execute(HttpMethod.GET, kind, namespace, null, null, null);
+        return execute(HttpMethod.GET, kind, namespace, null, null, (IResource)null);
     }
 
     @Override
     public <T extends IResource> T get(String kind, String name, String namespace) {
-        return execute(HttpMethod.GET, kind, namespace, name, null, null);
+        return execute(HttpMethod.GET, kind, namespace, name, null, (IResource)null);
     }
 
     public synchronized void initializeCapabilities() {

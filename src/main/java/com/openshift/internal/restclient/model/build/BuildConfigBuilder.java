@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016-2017 Red Hat, Inc.
+ * Copyright (c) 2016-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -36,6 +36,7 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 
     private SourceStrategyBuilder sourceStrategyBuilder;
     private GitSourceBuilder gitSourceBuilder;
+    private BinarySourceBuilder binarySourceBuilder;
     private JenkinsPipelineStrategyBuilder jenkinsPipelineStrategyBuilder;
     private String imageStreamTagOutput;
     private boolean buildOnConfigChange;
@@ -90,6 +91,8 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
 
         if (gitSourceBuilder != null) {
             bc.setBuildSource(gitSourceBuilder.build());
+        } else if (binarySourceBuilder != null) {
+            bc.setBuildSource(binarySourceBuilder.build());
         }
 
         if (labels != null && !labels.isEmpty()) {
@@ -155,6 +158,12 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
         gitSourceBuilder = new GitSourceBuilder(this);
         return gitSourceBuilder;
     }
+    
+    @Override
+    public IBinarySourceBuilder fromBinarySource() {
+        binarySourceBuilder = new BinarySourceBuilder(this);
+        return binarySourceBuilder;
+    }
 
     @Override
     public IJenkinsPipelineStrategyBuilder usingJenkinsPipelineStrategy() {
@@ -162,24 +171,38 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
         return jenkinsPipelineStrategyBuilder;
     }
 
-    class GitSourceBuilder implements IGitSourceBuilder {
+    class SourceBuilder<T extends ISourceBuilder> implements ISourceBuilder<T> {
 
-        private IBuildConfigBuilder builder;
+        protected IBuildConfigBuilder builder;
+        protected String contextDir;
+
+        SourceBuilder(IBuildConfigBuilder builder) {
+            this.builder = builder;
+        }
+        
+        @Override
+        public IBuildConfigBuilder end() {
+            return builder;
+        }
+
+        @Override
+        public T inContextDir(String contextDir) {
+            this.contextDir = contextDir;
+            return (T) this;
+        }
+        
+    }
+    
+    class GitSourceBuilder extends SourceBuilder<IGitSourceBuilder> implements IGitSourceBuilder {
         private String url;
         private String ref;
-        private String contextDir;
 
         GitSourceBuilder(IBuildConfigBuilder builder) {
-            this.builder = builder;
+            super(builder);
         }
 
         private GitBuildSource build() {
             return new GitBuildSource(url, ref, contextDir);
-        }
-
-        @Override
-        public IBuildConfigBuilder end() {
-            return builder;
         }
 
         @Override
@@ -193,13 +216,24 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
             this.ref = ref;
             return this;
         }
+    }
 
-        @Override
-        public IGitSourceBuilder inContextDir(String contextDir) {
-            this.contextDir = contextDir;
-            return this;
+    class BinarySourceBuilder extends SourceBuilder<IBinarySourceBuilder> implements IBinarySourceBuilder {
+        private String asFile;
+
+        BinarySourceBuilder(IBuildConfigBuilder builder) {
+            super(builder);
         }
 
+        private BinaryBuildSource build() {
+            return new BinaryBuildSource(asFile, contextDir);
+        }
+
+        @Override
+        public BinarySourceBuilder fromAsFile(String asFile) {
+            this.asFile = asFile;
+            return this;
+        }
     }
 
     class SourceStrategyBuilder implements ISourceStrategyBuilder {

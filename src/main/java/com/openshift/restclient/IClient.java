@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -9,6 +9,7 @@
 
 package com.openshift.restclient;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -153,6 +154,33 @@ public interface IClient extends ICapable, Cloneable {
     <T extends IResource> T create(String kind, String namespace, String name, String subresource, IResource payload);
 
     /**
+     * Creates the given resource in the given namespace using the subresource
+     * 
+     * @param kind
+     * @param version
+     * @param namespace
+     * @param name
+     * @param subresource
+     * @param payload
+     * @return
+     */
+    <T extends IResource> T create(String kind, String version, String namespace, String name, String subresource, InputStream payload);
+
+    /**
+     * Creates the given resource in the given namespace using the subresource
+     * 
+     * @param kind
+     * @param version
+     * @param namespace
+     * @param name
+     * @param subresource
+     * @param payload
+     * @param parameters
+     * @return
+     */
+    <T extends IResource> T create(String kind, String version, String namespace, String name, String subresource, InputStream payload, Map<String, String> parameters);
+    
+    /**
      * Creates a list of resources in the given namespace
      * 
      * @param list
@@ -202,6 +230,11 @@ public interface IClient extends ICapable, Cloneable {
      */
     <T extends IResource> T execute(String httpMethod, String kind, String namespace, String name, String subresource,
             IResource payload);
+    
+    <T extends IResource> T execute(String method, String kind, String version, String namespace, String name, String subresource, InputStream payload);
+
+    <T extends IResource> T execute(String method, String kind, String version, String namespace, String name,
+            String subresource, InputStream payload, Map<String, String> parameters);
 
     /**
      * Raw execution of a request
@@ -240,6 +273,8 @@ public interface IClient extends ICapable, Cloneable {
      */
     <T extends IResource> T execute(String httpMethod, String kind, String namespace, String name, String subresource,
             IResource payload, String subcontext);
+    
+    
 
     /**
      * @param factory
@@ -323,4 +358,5 @@ public interface IClient extends ICapable, Cloneable {
     String getKubernetesMasterVersion();
 
     IClient clone();
+
 }
