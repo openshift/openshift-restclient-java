@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -14,6 +14,7 @@ import java.util.Map;
 import com.openshift.internal.restclient.api.capabilities.PodExec;
 import com.openshift.internal.restclient.api.capabilities.ScaleCapability;
 import com.openshift.internal.restclient.apis.TypeMetaFactory;
+import com.openshift.internal.restclient.capability.resources.BinaryBuildTrigger;
 import com.openshift.internal.restclient.capability.resources.BuildCanceller;
 import com.openshift.internal.restclient.capability.resources.BuildTrigger;
 import com.openshift.internal.restclient.capability.resources.ClientCapability;
@@ -39,6 +40,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.api.capabilities.IPodExec;
 import com.openshift.restclient.api.capabilities.IScalable;
 import com.openshift.restclient.capability.ICapability;
+import com.openshift.restclient.capability.resources.IBinaryBuildTriggerable;
 import com.openshift.restclient.capability.resources.IBuildCancelable;
 import com.openshift.restclient.capability.resources.IBuildTriggerable;
 import com.openshift.restclient.capability.resources.IClientCapability;
@@ -102,6 +104,7 @@ public class CapabilityInitializer {
     public static void initializeCapabilities(Map<Class<? extends ICapability>, ICapability> capabilities,
             IBuildConfig buildConfig, IClient client) {
         initializeCapability(capabilities, IBuildTriggerable.class, new BuildTrigger(buildConfig, client));
+        initializeCapability(capabilities, IBinaryBuildTriggerable.class, new BinaryBuildTrigger(buildConfig, client));
     }
 
     /**

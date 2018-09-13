@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.capability.CapabilityInitializer;
+import com.openshift.internal.restclient.model.build.BinaryBuildSource;
 import com.openshift.internal.restclient.model.build.CustomBuildStrategy;
 import com.openshift.internal.restclient.model.build.DockerBuildStrategy;
 import com.openshift.internal.restclient.model.build.GitBuildSource;
@@ -30,6 +31,7 @@ import com.openshift.restclient.model.IObjectReference;
 import com.openshift.restclient.model.build.BuildSourceType;
 import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.BuildTriggerType;
+import com.openshift.restclient.model.build.IBinaryBuildSource;
 import com.openshift.restclient.model.build.IBuildSource;
 import com.openshift.restclient.model.build.IBuildStrategy;
 import com.openshift.restclient.model.build.IBuildTrigger;
@@ -43,10 +45,11 @@ import com.openshift.restclient.model.build.IWebhookTrigger;
 
 public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
-    private static final String BUILDCONFIG_SOURCE_CONTEXTDIR = "spec.source.contextDir";
-    private static final String BUILDCONFIG_SOURCE_TYPE = "spec.source.type";
-    private static final String BUILDCONFIG_SOURCE_URI = "spec.source.git.uri";
-    private static final String BUILDCONFIG_SOURCE_REF = "spec.source.git.ref";
+    public static final String BUILDCONFIG_SOURCE_CONTEXTDIR = "spec.source.contextDir";
+    public static final String BUILDCONFIG_SOURCE_TYPE = "spec.source.type";
+    public static final String BUILDCONFIG_SOURCE_URI = "spec.source.git.uri";
+    public static final String BUILDCONFIG_SOURCE_REF = "spec.source.git.ref";
+    public static final String BUILDCONFIG_SOURCE_BINARY_ASFILE = "spec.source.binary.asFile";
 
     public static final String BUILDCONFIG_TYPE = "spec.strategy.type";
     private static final String BUILDCONFIG_CUSTOM_IMAGE = "spec.strategy.customStrategy.image";
@@ -167,6 +170,8 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
         case BuildSourceType.GIT:
             return (T) new GitBuildSource(asString(BUILDCONFIG_SOURCE_URI), asString(BUILDCONFIG_SOURCE_REF),
                     asString(BUILDCONFIG_SOURCE_CONTEXTDIR));
+        case BuildSourceType.BINARY:
+            return (T) new BinaryBuildSource(asString(BUILDCONFIG_SOURCE_BINARY_ASFILE), asString(BUILDCONFIG_SOURCE_CONTEXTDIR));
         default:
         }
         return null;
@@ -181,10 +186,17 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
             }
             IGitBuildSource git = (IGitBuildSource) source;
             set(BUILDCONFIG_SOURCE_REF, git.getRef());
+            set(BUILDCONFIG_SOURCE_URI, git.getURI());
+            break;
+        case BuildSourceType.BINARY:
+            if (!(source instanceof IBinaryBuildSource)) {
+                throw new IllegalArgumentException("IBuildSource of type Binary does not implement IBinaryBuildSource");
+            }
+            IBinaryBuildSource binary = (IBinaryBuildSource) source;
+            set(BUILDCONFIG_SOURCE_BINARY_ASFILE, binary.getAsFile());
             break;
         }
-        set(BUILDCONFIG_SOURCE_URI, source.getURI());
-        set(BUILDCONFIG_SOURCE_TYPE, source.getType().toString());
+        set(BUILDCONFIG_SOURCE_TYPE, source.getType());
         set(BUILDCONFIG_SOURCE_CONTEXTDIR, source.getContextDir());
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -21,7 +21,10 @@ import org.mockito.Mock;
 import com.openshift.internal.restclient.model.BuildConfig;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.images.DockerImageURI;
+import com.openshift.restclient.model.build.BuildSourceType;
 import com.openshift.restclient.model.build.BuildStrategyType;
+import com.openshift.restclient.model.build.IBinaryBuildSource;
+import com.openshift.restclient.model.build.IBuildSource;
 import com.openshift.restclient.model.build.IBuildStrategy;
 import com.openshift.restclient.model.build.ICustomBuildStrategy;
 import com.openshift.restclient.model.build.IDockerBuildStrategy;
@@ -71,6 +74,17 @@ public class BuildConfigTest {
         assertEquals("aContextDir", docker.getContextDir());
         assertTrue(docker.isNoCache());
         assertEquals(new DockerImageURI("thebaseImage"), docker.getBaseImage());
+    }
+    
+    @Test
+    public void testGetBinaryBuildSource() {
+        node.get(getPath(BuildConfig.BUILDCONFIG_SOURCE_TYPE)).set("Binary");
+        node.get(getPath(BuildConfig.BUILDCONFIG_SOURCE_CONTEXTDIR)).set("aContextDir");
+
+        IBuildSource source = config.getBuildSource();
+        assertEquals(BuildSourceType.BINARY, source.getType());
+        IBinaryBuildSource binary = (IBinaryBuildSource) source;
+        assertEquals("aContextDir", binary.getContextDir());
     }
 
 }

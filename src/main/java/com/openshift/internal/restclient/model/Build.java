@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -9,11 +9,17 @@
 
 package com.openshift.internal.restclient.model;
 
+import static com.openshift.internal.restclient.model.BuildConfig.BUILDCONFIG_SOURCE_BINARY_ASFILE;
+import static com.openshift.internal.restclient.model.BuildConfig.BUILDCONFIG_SOURCE_CONTEXTDIR;
+import static com.openshift.internal.restclient.model.BuildConfig.BUILDCONFIG_SOURCE_REF;
+import static com.openshift.internal.restclient.model.BuildConfig.BUILDCONFIG_SOURCE_URI;
+
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
 
 import com.openshift.internal.restclient.capability.CapabilityInitializer;
+import com.openshift.internal.restclient.model.build.BinaryBuildSource;
 import com.openshift.internal.restclient.model.build.BuildStatus;
 import com.openshift.internal.restclient.model.build.CustomBuildStrategy;
 import com.openshift.internal.restclient.model.build.DockerBuildStrategy;
@@ -90,8 +96,10 @@ public class Build extends KubernetesResource implements IBuild {
     public <T extends IBuildSource> T getBuildSource() {
         switch (asString("spec.source.type")) {
         case BuildSourceType.GIT:
-            return (T) new GitBuildSource(asString("spec.source.git.uri"), asString("spec.source.git.ref"),
-                    asString("spec.source.git.contextDir"));
+            return (T) new GitBuildSource(asString(BUILDCONFIG_SOURCE_URI), asString(BUILDCONFIG_SOURCE_REF),
+                    asString(BUILDCONFIG_SOURCE_CONTEXTDIR));
+        case BuildSourceType.BINARY:
+            return (T) new BinaryBuildSource(asString(BUILDCONFIG_SOURCE_BINARY_ASFILE), asString(BUILDCONFIG_SOURCE_CONTEXTDIR));
         default:
         }
         return null;
