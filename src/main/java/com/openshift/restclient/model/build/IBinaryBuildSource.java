@@ -11,9 +11,5 @@ package com.openshift.restclient.model.build;
 
 public interface IBinaryBuildSource extends IBuildSource {
 
-    /**
-     * The asFile
-     * 
-     */
     String getAsFile();
 }

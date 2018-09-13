@@ -230,7 +230,7 @@ public class BuildConfigBuilder implements IBuildConfigBuilder {
         }
 
         @Override
-        public BinarySourceBuilder fromAsFile(String asFile) {
+        public IBinarySourceBuilder fromAsFile(String asFile) {
             this.asFile = asFile;
             return this;
         }

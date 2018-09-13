@@ -263,48 +263,20 @@ public class DefaultClient implements IClient, IHttpConstants {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T execute(ITypeFactory factory, String method, String kind, String namespace, String name,
-            String subresource, String subContext, JSONSerializeable payload, Map<String, String> params) {
-        if (factory == null) {
-            throw new OpenShiftException("ITypeFactory is null while trying to call IClient#execute");
-        }
-
-        if (params == null) {
-            params = Collections.emptyMap();
-        }
-
-        if (ResourceKind.LIST.equals(kind)) {
-            throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
-        }
-        
-        final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
-                .apiVersion(getApiVersion(payload))
-                .kind(kind)
-                .name(name)
-                .namespace(namespace)
-                .subresource(subresource)
-                .subContext(subContext)
-                .addParameters(params)
-                .build();
-
-        try {
-            Request request = newRequestBuilderTo(endpoint.toString())
-                    .method(method, getPayload(method, payload))
-                    .build();
-            LOGGER.debug("About to make {} request: {}", request.method(), request);
-            try (Response result = client.newCall(request).execute()) {
-                String response = result.body().string();
-                LOGGER.debug("Response: {}", response);
-                return (T) factory.createInstanceFrom(response);
-            }
-        } catch (IOException e) {
-            throw new OpenShiftException(e, "Unable to execute request to %s", endpoint);
-        }
+    public <T> T execute(ITypeFactory factory, String method, String kind, String version, String namespace, String name,
+            String subresource, String subContext, InputStream payload, Map<String, String> params) {
+        return execute(factory, method, kind, version, namespace, name, subresource, subContext, getPayload(method, payload), params);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T execute(ITypeFactory factory, String method, String kind, String version, String namespace, String name,
-            String subresource, String subContext, InputStream payload, Map<String, String> params) {
+    public <T> T execute(ITypeFactory factory, String method, String kind, String namespace, String name,
+            String subresource, String subContext, JSONSerializeable payload, Map<String, String> params) {
+        return execute(factory, method, kind, getApiVersion(payload), namespace, name, subresource, subContext,
+                getPayload(method, payload), params);
+    }
+
+    private <T> T execute(ITypeFactory factory, String method, String kind, String version, String namespace,
+            String name, String subresource, String subContext, RequestBody requestBody, Map<String, String> params) {
         if (factory == null) {
             throw new OpenShiftException("ITypeFactory is null while trying to call IClient#execute");
         }
@@ -316,21 +288,12 @@ public class DefaultClient implements IClient, IHttpConstants {
         if (ResourceKind.LIST.equals(kind)) {
             throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
         }
-        
-        final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
-                .apiVersion(version)
-                .kind(kind)
-                .name(name)
-                .namespace(namespace)
-                .subresource(subresource)
-                .subContext(subContext)
-                .addParameters(params)
-                .build();
+
+        final URL endpoint = new URLBuilder(this.baseUrl, typeMapper).apiVersion(version).kind(kind).name(name)
+                .namespace(namespace).subresource(subresource).subContext(subContext).addParameters(params).build();
 
         try {
-            Request request = newRequestBuilderTo(endpoint.toString())
-                    .method(method, getPayload(method, payload))
-                    .build();
+            Request request = newRequestBuilderTo(endpoint.toString()).method(method, requestBody).build();
             LOGGER.debug("About to make {} request: {}", request.method(), request);
             try (Response result = client.newCall(request).execute()) {
                 String response = result.body().string();
@@ -341,7 +304,6 @@ public class DefaultClient implements IClient, IHttpConstants {
             throw new OpenShiftException(e, "Unable to execute request to %s", endpoint);
         }
     }
-
     private String getApiVersion(JSONSerializeable payload) {
         String apiVersion = null;
         if (payload instanceof IResource) {

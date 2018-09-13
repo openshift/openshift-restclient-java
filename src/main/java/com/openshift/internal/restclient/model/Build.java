@@ -9,6 +9,11 @@
 
 package com.openshift.internal.restclient.model;
 
+import static com.openshift.internal.restclient.model.BuildConfig.BUILDCONFIG_SOURCE_BINARY_ASFILE;
+import static com.openshift.internal.restclient.model.BuildConfig.BUILDCONFIG_SOURCE_CONTEXTDIR;
+import static com.openshift.internal.restclient.model.BuildConfig.BUILDCONFIG_SOURCE_REF;
+import static com.openshift.internal.restclient.model.BuildConfig.BUILDCONFIG_SOURCE_URI;
+
 import java.util.Map;
 
 import org.jboss.dmr.ModelNode;
@@ -91,10 +96,10 @@ public class Build extends KubernetesResource implements IBuild {
     public <T extends IBuildSource> T getBuildSource() {
         switch (asString("spec.source.type")) {
         case BuildSourceType.GIT:
-            return (T) new GitBuildSource(asString("spec.source.git.uri"), asString("spec.source.git.ref"),
-                    asString("spec.source.contextDir"));
+            return (T) new GitBuildSource(asString(BUILDCONFIG_SOURCE_URI), asString(BUILDCONFIG_SOURCE_REF),
+                    asString(BUILDCONFIG_SOURCE_CONTEXTDIR));
         case BuildSourceType.BINARY:
-            return (T) new BinaryBuildSource(asString("spec.source.binary.asFile"), asString("spec.source.contextDir"));
+            return (T) new BinaryBuildSource(asString(BUILDCONFIG_SOURCE_BINARY_ASFILE), asString(BUILDCONFIG_SOURCE_CONTEXTDIR));
         default:
         }
         return null;

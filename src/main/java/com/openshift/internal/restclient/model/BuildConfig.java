@@ -47,9 +47,9 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
     public static final String BUILDCONFIG_SOURCE_CONTEXTDIR = "spec.source.contextDir";
     public static final String BUILDCONFIG_SOURCE_TYPE = "spec.source.type";
-    private static final String BUILDCONFIG_SOURCE_URI = "spec.source.git.uri";
-    private static final String BUILDCONFIG_SOURCE_REF = "spec.source.git.ref";
-    private static final String BUILDCONFIG_SOURCE_BINARY_ASFILE = "spec.source.binary.asFile";
+    public static final String BUILDCONFIG_SOURCE_URI = "spec.source.git.uri";
+    public static final String BUILDCONFIG_SOURCE_REF = "spec.source.git.ref";
+    public static final String BUILDCONFIG_SOURCE_BINARY_ASFILE = "spec.source.binary.asFile";
 
     public static final String BUILDCONFIG_TYPE = "spec.strategy.type";
     private static final String BUILDCONFIG_CUSTOM_IMAGE = "spec.strategy.customStrategy.image";
