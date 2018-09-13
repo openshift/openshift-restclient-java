@@ -304,6 +304,7 @@ public class DefaultClient implements IClient, IHttpConstants {
             throw new OpenShiftException(e, "Unable to execute request to %s", endpoint);
         }
     }
+    
     private String getApiVersion(JSONSerializeable payload) {
         String apiVersion = null;
         if (payload instanceof IResource) {
