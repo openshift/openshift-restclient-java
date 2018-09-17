@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -47,7 +47,7 @@ public class WatchClientTest {
         IOpenShiftWatchListener listener = mock(IOpenShiftWatchListener.class);
 
         WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
-        endpoint.onFailure(new IOException(), null);
+        endpoint.onFailure(null, new IOException(), null);
         verify(listener).error(any(Throwable.class));
     }
 
@@ -58,9 +58,9 @@ public class WatchClientTest {
 
         WatchEndpoint endpoint = new WatchEndpoint(client, listener, ResourceKind.BUILD);
         Response.Builder responseBuilder = new Response.Builder();
-        responseBuilder.code(IHttpConstants.STATUS_OK).protocol(Protocol.HTTP_2)
+        responseBuilder.code(IHttpConstants.STATUS_OK).message("").protocol(Protocol.HTTP_2)
                 .request(new Request.Builder().url("http://localhost").build());
-        endpoint.onFailure(new ProtocolException(), responseBuilder.build());
+        endpoint.onFailure(null, new ProtocolException(), responseBuilder.build());
         verify(listener, never()).error(any());
     }
 

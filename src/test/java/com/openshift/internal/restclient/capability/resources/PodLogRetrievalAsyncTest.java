@@ -38,7 +38,7 @@ import com.openshift.restclient.model.MocksFactory;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
+import okhttp3.WebSocket;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PodLogRetrievalAsyncTest extends TypeMapperFixture {
@@ -81,12 +81,11 @@ public class PodLogRetrievalAsyncTest extends TypeMapperFixture {
         adapter.onOpen(null, null);
         verify(listener).onOpen();
 
-        ResponseBody body = ResponseBody.create(MediaType.parse("text"), "a body");
-        adapter.onMessage(body);
+        adapter.onMessage(null, "a body");
         verify(listener).onMessage("a body");
 
-        adapter.onClose(1986, "the reason");
-        adapter.onClose(1986, "the reason");
+        adapter.onClosed(null, 1986, "the reason");
+        adapter.onClosed(null, 1986, "the reason");
         verify(listener).onClose(1986, "the reason");
     }
 

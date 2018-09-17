@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,7 +11,6 @@
 
 package com.openshift.internal.restclient.api.capabilities;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -22,7 +21,6 @@ import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.URLBuilder;
 import com.openshift.internal.restclient.capability.AbstractCapability;
 import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
-import com.openshift.internal.restclient.okhttp.WebSocketAdapter;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.api.capabilities.IPodExec;
@@ -33,9 +31,9 @@ import com.openshift.restclient.model.IPod;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
-import okhttp3.ws.WebSocketCall;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 public class PodExec extends AbstractCapability implements IPodExec {
 
@@ -104,44 +102,51 @@ public class PodExec extends AbstractCapability implements IPodExec {
                 .tag(new ResponseCodeInterceptor.Ignore() {
                 }).build();
 
-        WebSocketCall call = WebSocketCall.create(okClient, request);
-        ExecOutputListenerAdapter adapter = new ExecOutputListenerAdapter(call, listener);
-        call.enqueue(adapter);
+        ExecOutputListenerAdapter adapter = new ExecOutputListenerAdapter(listener);
+        okClient.newWebSocket(request, adapter);
         return adapter;
     }
 
-    static class ExecOutputListenerAdapter extends WebSocketAdapter implements IStoppable {
+    static class ExecOutputListenerAdapter extends WebSocketListener implements IStoppable {
 
         private final IPodExecOutputListener listener;
-        private final WebSocketCall call;
+        private WebSocket call;
         private AtomicBoolean open = new AtomicBoolean(false);
+        private boolean shouldStop = false;
 
-        public ExecOutputListenerAdapter(WebSocketCall call, IPodExecOutputListener listener) {
-            this.call = call;
+        public ExecOutputListenerAdapter(IPodExecOutputListener listener) {
             this.listener = listener;
         }
 
         @Override
         public void stop() {
-            call.cancel();
+            if (call != null) {
+                call.cancel();
+            } else {
+                shouldStop = true;
+            }
         }
 
         @Override
         public void onOpen(WebSocket webSocket, Response response) {
             if (open.compareAndSet(false, true)) {
+                this.call = webSocket;
                 listener.onOpen();
+                if (shouldStop) {
+                    webSocket.cancel();
+                }
             }
         }
 
         @Override
-        public void onClose(int code, String reason) {
+        public void onClosing(WebSocket socket, int code, String reason) {
             if (open.compareAndSet(true, false)) {
                 listener.onClose(code, reason);
             }
         }
 
         @Override
-        public void onFailure(IOException e, Response response) {
+        public void onFailure(WebSocket socket, Throwable e, Response response) {
             listener.onFailure(e);
         }
 
@@ -162,7 +167,12 @@ public class PodExec extends AbstractCapability implements IPodExec {
         }
 
         @Override
-        public void onMessage(ResponseBody message) throws IOException {
+        public void onMessage(WebSocket webSocket, String text) {
+            throw new IllegalStateException("Should not receive text message on pod exec sockets");
+        }
+
+        @Override
+        public void onMessage(WebSocket socket, ByteString message) {
 
             /**
              * https://godoc.org/k8s.io/kubernetes/pkg/util/wsstream The Websocket
@@ -175,8 +185,8 @@ public class PodExec extends AbstractCapability implements IPodExec {
              * - writes are sent as they are received by the server.
              */
 
-            int channel = message.byteStream().read();
-            String msg = message.string();
+            int channel = message.getByte(0);
+            String msg = message.substring(1).utf8();
             deliver(channel, msg);
         }
 

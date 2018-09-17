@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2018 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -25,6 +25,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.TypeMapperFixture;
+import com.openshift.internal.restclient.api.capabilities.PodExec.ExecOutputListenerAdapter;
 import com.openshift.internal.restclient.capability.resources.PodLogRetrievalAsync;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.api.capabilities.IPodExec;
@@ -50,7 +51,7 @@ public class PodExecTest extends TypeMapperFixture {
         client = new DefaultClient(null, getHttpClient(), null, getApiTypeMapper(), null);
         pod = new MocksFactory().mock(IPod.class);
         capability = new PodLogRetrievalAsync(pod, client);
-        adapter = new PodExec.ExecOutputListenerAdapter(null, listener);
+        adapter = new PodExec.ExecOutputListenerAdapter(listener);
     }
 
     @Test
@@ -79,8 +80,8 @@ public class PodExecTest extends TypeMapperFixture {
         verify(listener).onStdErr("ImStdErr");
         verify(listener).onExecErr("ImExecErr");
 
-        adapter.onClose(1986, "the reason");
-        adapter.onClose(1986, "the reason");
+        adapter.onClosed(null, 1986, "the reason");
+        adapter.onClosed(null, 1986, "the reason");
         verify(listener).onClose(1986, "the reason");
     }
 

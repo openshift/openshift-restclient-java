@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2018 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -14,7 +14,6 @@ package com.openshift.internal.restclient.capability.resources;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -75,8 +74,8 @@ public class PodLogRetrievalAsyncIntegrationTest {
                     }
 
                     @Override
-                    public void onFailure(IOException e) {
-                        LOG.error("Unexpected websocket failure", e);
+                    public void onFailure(Throwable t) {
+                        LOG.error("Unexpected websocket failure", t);
                         fail("Unexpected websocket failure");
                     }
 

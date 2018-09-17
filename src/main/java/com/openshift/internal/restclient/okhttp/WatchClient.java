@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2018 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -42,11 +42,8 @@ import com.openshift.restclient.model.IResource;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
-import okhttp3.ws.WebSocketCall;
-import okhttp3.ws.WebSocketListener;
-import okio.Buffer;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 
 public class WatchClient implements IWatcher, IHttpConstants {
 
@@ -91,10 +88,8 @@ public class WatchClient implements IWatcher, IHttpConstants {
                     Request request = client.newRequestBuilderTo(endpoint)
                             .header(PROPERTY_ORIGIN, client.getBaseURL().toString())
                             .header(PROPERTY_USER_AGENT, "openshift-restclient-java").build();
-                    WebSocketCall call = WebSocketCall.create(okClient.newBuilder().build(), request);
-                    socket.setCall(call);
+                    okClient.newWebSocket(request, socket);
                     endpointMap.put(kind, socket);
-                    call.enqueue(socket);
                 }
                 status.set(Status.Started);
             } catch (Exception e) {
@@ -121,14 +116,13 @@ public class WatchClient implements IWatcher, IHttpConstants {
         return list.getResourceVersion();
     }
 
-    static class WatchEndpoint implements WebSocketListener {
+    static class WatchEndpoint extends WebSocketListener {
 
         private IOpenShiftWatchListener listener;
         private List<IResource> resources;
         private final String kind;
         private final IClient client;
         private WebSocket wsClient;
-        private WebSocketCall call;
 
         public WatchEndpoint(IClient client, IOpenShiftWatchListener listener, String kind) {
             this.listener = listener;
@@ -136,18 +130,11 @@ public class WatchClient implements IWatcher, IHttpConstants {
             this.client = client;
         }
 
-        public void setCall(WebSocketCall call) {
-            this.call = call;
-        }
-
         void close() {
             try {
                 if (wsClient != null) {
                     wsClient.close(STATUS_NORMAL_STOP, "Client was asked to stop.");
                     wsClient = null;
-                }
-                if (call != null) {
-                    call.cancel();
                 }
                 listener.disconnected();
             } catch (Exception e) {
@@ -162,14 +149,14 @@ public class WatchClient implements IWatcher, IHttpConstants {
         }
 
         @Override
-        public void onClose(int statusCode, String reason) {
+        public void onClosing(WebSocket socket, int statusCode, String reason) {
             LOGGER.debug("WatchSocket closed for kind: {}, code: {}, reason: {}",
                     new Object[] { kind, statusCode, reason });
             listener.disconnected();
         }
 
         @Override
-        public void onFailure(IOException err, Response response) {
+        public void onFailure(WebSocket socket, Throwable err, Response response) {
             LOGGER.debug("WatchSocket Error for kind {}: {}", kind, err);
             try {
                 if (response == null) {
@@ -191,10 +178,9 @@ public class WatchClient implements IWatcher, IHttpConstants {
         }
 
         @Override
-        public void onMessage(ResponseBody body) throws IOException {
-            String message = body.string();
-            LOGGER.debug(message);
-            ModelNode node = ModelNode.fromJSONString(message);
+        public void onMessage(WebSocket socket, String body) {
+            LOGGER.debug(body);
+            ModelNode node = ModelNode.fromJSONString(body);
             IOpenShiftWatchListener.ChangeType event = new ChangeType(node.get("type").asString());
             IResource resource = client.getResourceFactory().create(node.get("object").toJSONString(true));
             if (StringUtils.isEmpty(resource.getKind())) {
@@ -209,11 +195,5 @@ public class WatchClient implements IWatcher, IHttpConstants {
             wsClient = socket;
             listener.connected(resources);
         }
-
-        @Override
-        public void onPong(Buffer buffer) {
-        }
-
     }
-
 }

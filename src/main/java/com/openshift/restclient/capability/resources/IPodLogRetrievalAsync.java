@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2018 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -11,7 +11,6 @@
 
 package com.openshift.restclient.capability.resources;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,10 +76,10 @@ public interface IPodLogRetrievalAsync extends ICapability {
         /**
          * Callback received when the web socket connection fails
          * 
-         * @param e
+         * @param t
          *            the exception which occurred
          */
-        void onFailure(IOException e);
+        void onFailure(Throwable t);
 
     }
 

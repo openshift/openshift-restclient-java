@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2018 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -11,7 +11,6 @@
 
 package com.openshift.internal.restclient.capability.resources;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.URLBuilder;
 import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
-import com.openshift.internal.restclient.okhttp.WebSocketAdapter;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.UnsupportedEndpointException;
@@ -34,9 +32,9 @@ import com.openshift.restclient.model.IPod;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
-import okhttp3.ws.WebSocketCall;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 /**
  * Impl of Pod log retrieval using websocket
@@ -89,13 +87,11 @@ public class PodLogRetrievalAsync implements IPodLogRetrievalAsync {
                 .websocket();
         Request request = client.newRequestBuilderTo(endpoint).tag(new ResponseCodeInterceptor.Ignore() {
         }).build();
-        WebSocketCall call = WebSocketCall.create(okClient, request);
-        call.enqueue(adapter);
-
+        okClient.newWebSocket(request, adapter);
         return adapter;
     }
 
-    static class PodLogListenerAdapter extends WebSocketAdapter implements IStoppable {
+    static class PodLogListenerAdapter extends WebSocketListener implements IStoppable {
 
         private final IPodLogListener listener;
         private WebSocket wsClient;
@@ -127,20 +123,25 @@ public class PodLogRetrievalAsync implements IPodLogRetrievalAsync {
         }
 
         @Override
-        public void onClose(int code, String reason) {
+        public void onClosing(WebSocket socket, int code, String reason) {
             if (open.compareAndSet(true, false)) {
                 listener.onClose(code, reason);
             }
         }
 
         @Override
-        public void onMessage(ResponseBody message) throws IOException {
-            listener.onMessage(message.string());
+        public void onMessage(WebSocket socket, String message) {
+            listener.onMessage(message);
         }
 
         @Override
-        public void onFailure(IOException e, Response response) {
-            listener.onFailure(e);
+        public void onMessage(WebSocket webSocket, ByteString bytes) {
+            listener.onMessage(bytes.utf8());
+        }
+
+        @Override
+        public void onFailure(WebSocket socket, Throwable t, Response response) {
+            listener.onFailure(t);
         }
 
     }
