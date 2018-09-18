@@ -80,8 +80,8 @@ public class PodExecTest extends TypeMapperFixture {
         verify(listener).onStdErr("ImStdErr");
         verify(listener).onExecErr("ImExecErr");
 
-        adapter.onClosed(null, 1986, "the reason");
-        adapter.onClosed(null, 1986, "the reason");
+        adapter.onClosing(null, 1986, "the reason");
+        adapter.onClosing(null, 1986, "the reason");
         verify(listener).onClose(1986, "the reason");
     }
 

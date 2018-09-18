@@ -84,8 +84,8 @@ public class PodLogRetrievalAsyncTest extends TypeMapperFixture {
         adapter.onMessage(null, "a body");
         verify(listener).onMessage("a body");
 
-        adapter.onClosed(null, 1986, "the reason");
-        adapter.onClosed(null, 1986, "the reason");
+        adapter.onClosing(null, 1986, "the reason");
+        adapter.onClosing(null, 1986, "the reason");
         verify(listener).onClose(1986, "the reason");
     }
 
