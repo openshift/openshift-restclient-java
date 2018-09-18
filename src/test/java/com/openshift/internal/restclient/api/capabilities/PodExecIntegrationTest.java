@@ -40,7 +40,6 @@ import com.openshift.restclient.model.IResource;
 public class PodExecIntegrationTest {
 
     private IntegrationTestHelper helper = new IntegrationTestHelper();
-    private Exception ex;
     private IPod pod;
 
     public static class TestExecListener implements IPodExec.IPodExecOutputListener {
@@ -63,7 +62,7 @@ public class PodExecIntegrationTest {
         public void onStdOut(String message) {
             LOG.debug("onStdOut: " + message);
             message = message.trim();
-            if (message.isEmpty() == false) { // Observing that actual output appears after empty newline
+            if (!message.isEmpty()) { // Observing that actual output appears after empty newline
                 messages.add(PodExec.CHANNEL_STDOUT + message);
             }
         }
@@ -72,7 +71,9 @@ public class PodExecIntegrationTest {
         public void onStdErr(String message) {
             LOG.debug("onStdErr: " + message);
             message = message.trim();
-            messages.add(PodExec.CHANNEL_STDERR + message);
+            if (!message.isEmpty()) {
+                messages.add(PodExec.CHANNEL_STDERR + message);
+            }
         }
 
         @Override
@@ -80,7 +81,9 @@ public class PodExecIntegrationTest {
             LOG.debug("onExecError: " + message);
             execErrCalled.set(true);
             message = message.trim();
-            messages.add(PodExec.CHANNEL_EXECERR + message);
+            if (!message.isEmpty()) {
+                messages.add(PodExec.CHANNEL_EXECERR + message);
+            }
         }
 
         @Override
