@@ -54,8 +54,8 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
     public Request authenticate(Route route, Response response) throws IOException {
         if (unauthorizedForCluster(response)) {
             String requestUrl = response.request().url().toString();
-            Request authRequest = new Request.Builder().addHeader(CSRF_TOKEN, "1").url(route.address().url().toString()
-                    + "oauth/authorize?response_type=token&client_id=openshift-challenging-client").build();
+            Request authRequest = new Request.Builder().addHeader(CSRF_TOKEN, "1").url(response.request().url().resolve(
+                    "/oauth/authorize?response_type=token&client_id=openshift-challenging-client").toString()).build();
             try (Response authResponse = tryAuth(authRequest)) {
                 if (authResponse.isSuccessful()) {
                     String token = extractAndSetAuthContextToken(authResponse);

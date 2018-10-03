@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2018 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -11,7 +11,6 @@
 
 package com.openshift.restclient.api.capabilities;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,10 +68,10 @@ public interface IPodExec extends ICapability {
         /**
          * Called by lower level errors
          * 
-         * @param e
+         * @param t
          *            Exception causing failure
          */
-        void onFailure(IOException e);
+        void onFailure(Throwable t);
 
         /**
          * Callback received when the connection to the pod is terminated from the

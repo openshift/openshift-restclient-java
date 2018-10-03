@@ -17,7 +17,7 @@
     <!-- Artifact Information -->
     <groupId>com.openshift</groupId>
     <artifactId>openshift-restclient-java</artifactId>
-    <version>6.1.4-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>OpenShift Java REST Client</name>
     <url>http://openshift.redhat.com</url>
@@ -161,12 +161,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>3.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp-ws</artifactId>
-            <version>3.3.1</version>
+            <version>3.11.0</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>

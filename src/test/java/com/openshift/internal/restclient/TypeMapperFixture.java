@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2018 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -91,7 +91,7 @@ public class TypeMapperFixture {
 
     protected static Response responseOf(String response) {
         return new Response.Builder().request(new Request.Builder().url("https://someurlfortesting").build())
-                .protocol(Protocol.HTTP_1_1).code(IHttpConstants.STATUS_OK).body(ResponseBody.create(null, response))
+                .protocol(Protocol.HTTP_1_1).code(IHttpConstants.STATUS_OK).message("").body(ResponseBody.create(null, response))
                 .build();
     }
 
