@@ -44,6 +44,7 @@ public final class ResourceKind {
     public static final String ROUTE = "Route";
     public static final String TEMPLATE = "Template";
     public static final String USER = "User";
+    public static final String IDENTITY = "Identity";
 
     // Kubernetes Kinds
     public static final String ENDPOINTS = "Endpoints";
@@ -124,6 +125,7 @@ public final class ResourceKind {
         set.add(ROUTE);
         set.add(TEMPLATE);
         set.add(USER);
+        set.add(IDENTITY);
 
         // Kubernetes Kinds
         set.add(EVENT);
