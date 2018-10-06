@@ -1,0 +1,14 @@
+{
+  "apiVersion": "user.openshift.io/v1",
+  "kind": "Group",
+  "metadata": {
+    "creationTimestamp": "2018-10-06T16:31:50Z",
+    "name": "test-group",
+    "resourceVersion": "33097",
+    "selfLink": "/apis/user.openshift.io/v1/groups/clusteradmins",
+    "uid": "5374bc7a-c985-11e8-8799-525400d45cd2"
+  },
+  "users": [
+    "test-admin"
+  ]
+}

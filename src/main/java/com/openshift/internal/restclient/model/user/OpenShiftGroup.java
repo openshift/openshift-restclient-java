@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2018 Red Hat, Inc.
+ *
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +8,7 @@
  *
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
+ *     Roland T. Lichti - implementation of user.openshift.io/v1/groups
  ******************************************************************************/
 
 package com.openshift.internal.restclient.model.user;
@@ -16,21 +18,16 @@ import java.util.Set;
 
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.model.user.IUser;
+import com.openshift.restclient.model.user.IGroup;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
-public class OpenShiftUser extends KubernetesResource implements IUser {
+public class OpenShiftGroup extends KubernetesResource implements IGroup {
 
-    private static final String USER_FULLNAME = "fullName";
+    private static final String USERS = "users";
 
-    public OpenShiftUser(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
+    public OpenShiftGroup(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
         super(node, client, propertyKeys);
-    }
-
-    @Override
-    public String getFullName() {
-        return asString(USER_FULLNAME);
     }
 
     @Override
@@ -39,12 +36,8 @@ public class OpenShiftUser extends KubernetesResource implements IUser {
     }
 
     @Override
-    public Set<String> getGroups() {
-        return asSet("groups", ModelType.STRING);
-    }
-
-    @Override
-    public Set<String> getIdentities() {
-        return asSet("identities", ModelType.STRING);
+    public Set<String> getUsers() {
+        //noinspection unchecked
+        return (Set<String>) asSet(USERS, ModelType.STRING);
     }
 }
