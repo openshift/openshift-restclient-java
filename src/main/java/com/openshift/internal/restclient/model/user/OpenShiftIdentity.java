@@ -15,12 +15,13 @@ package com.openshift.internal.restclient.model.user;
 
 import java.util.Map;
 
+import org.jboss.dmr.ModelNode;
+
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.ObjectReference;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IObjectReference;
 import com.openshift.restclient.model.user.IIdentity;
-import org.jboss.dmr.ModelNode;
 
 public class OpenShiftIdentity extends KubernetesResource implements IIdentity {
 

@@ -13,18 +13,19 @@
 
 package com.openshift.internal.restclient.model.v1;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
+import org.jboss.dmr.ModelNode;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.user.OpenShiftIdentity;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.user.IIdentity;
 import com.openshift.restclient.utils.Samples;
-import org.jboss.dmr.ModelNode;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 /**
  * Test to validate the lookup paths are correct for the version

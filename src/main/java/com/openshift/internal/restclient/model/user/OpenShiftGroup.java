@@ -16,11 +16,12 @@ package com.openshift.internal.restclient.model.user;
 import java.util.Map;
 import java.util.Set;
 
+import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
+
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.user.IGroup;
-import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
 
 public class OpenShiftGroup extends KubernetesResource implements IGroup {
 
