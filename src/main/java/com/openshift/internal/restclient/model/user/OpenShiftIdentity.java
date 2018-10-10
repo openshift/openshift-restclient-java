@@ -41,7 +41,7 @@ public class OpenShiftIdentity extends KubernetesResource implements IIdentity {
 
     @Override
     public String getUID() {
-        return asString("metadata.uid");
+        return asString(METADATA_UID);
     }
 
     @Override

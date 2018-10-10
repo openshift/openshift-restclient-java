@@ -33,7 +33,7 @@ public class OpenShiftGroup extends KubernetesResource implements IGroup {
 
     @Override
     public String getUID() {
-        return asString("metadata.uid");
+        return asString(METADATA_UID);
     }
 
     @Override

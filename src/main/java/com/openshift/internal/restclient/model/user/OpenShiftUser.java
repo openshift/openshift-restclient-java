@@ -24,6 +24,8 @@ import com.openshift.restclient.model.user.IUser;
 public class OpenShiftUser extends KubernetesResource implements IUser {
 
     private static final String USER_FULLNAME = "fullName";
+    private static final String GROUPS = "groups";
+    private static final String IDENTITES = "identities";
 
     public OpenShiftUser(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
         super(node, client, propertyKeys);
@@ -36,16 +38,16 @@ public class OpenShiftUser extends KubernetesResource implements IUser {
 
     @Override
     public String getUID() {
-        return asString("metadata.uid");
+        return asString(METADATA_UID);
     }
 
     @Override
     public Set<String> getGroups() {
-        return asSet("groups", ModelType.STRING);
+        return asSet(GROUPS, ModelType.STRING);
     }
 
     @Override
     public Set<String> getIdentities() {
-        return asSet("identities", ModelType.STRING);
+        return asSet(IDENTITES, ModelType.STRING);
     }
 }
