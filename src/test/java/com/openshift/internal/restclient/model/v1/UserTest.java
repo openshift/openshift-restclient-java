@@ -12,6 +12,8 @@ package com.openshift.internal.restclient.model.v1;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.util.HashSet;
+
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,4 +51,19 @@ public class UserTest {
         assertEquals("94b42e96-0faa-11e5-9467-080027893417", user.getUID());
     }
 
+    @Test
+    public void testIdentities() {
+        HashSet<String> identities = new HashSet<>(1);
+        identities.add("anypassword:test-admin");
+
+        assertEquals(identities, user.getIdentities());
+    }
+
+    @Test
+    public void testGroups() {
+        HashSet<String> groups = new HashSet<>(1);
+        groups.add("test-group");
+        
+        assertEquals(groups, user.getGroups());
+    }
 }

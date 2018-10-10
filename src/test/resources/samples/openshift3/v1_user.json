@@ -12,5 +12,7 @@
     "identities": [
         "anypassword:test-admin"
     ],
-    "groups": null
+    "groups": [
+        "test-group"
+    ]
 }

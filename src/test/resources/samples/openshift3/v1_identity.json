@@ -1,0 +1,17 @@
+{
+  "kind": "Identity",
+  "apiVersion": "user.openshift.io/v1",
+  "metadata": {
+    "creationTimestamp": "2018-10-06T13:13:14Z",
+    "name": "anypassword:test-admin",
+    "resourceVersion": "13524",
+    "selfLink": "/apis/user.openshift.io/v1/identities/anypassword%3Atest-admin",
+    "uid": "94b42e96-0faa-11e5-9467-080027893417"
+  },
+  "providerName": "anypassword",
+  "providerUserName": "test-admin",
+  "user": {
+    "name": "test-admin",
+    "uid": "94b42e96-0faa-11e5-9467-080027893417"
+  }
+}

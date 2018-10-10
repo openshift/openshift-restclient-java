@@ -24,6 +24,7 @@ public interface ResourcePropertyKeys {
     static final String METADATA_NAME = "metadata.name";
     static final String METADATA_RESOURCE_VERSION = "metadata.resourceVersion";
     static final String METADATA_NAMESPACE = "metadata.namespace";
+    static final String METADATA_UID = "metadata.uid";
 
     static final String FROM = "from";
     static final String NAME = "name";

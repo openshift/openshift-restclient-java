@@ -60,6 +60,8 @@ public enum Samples {
     V1_Status("openshift3/v1_status.json"),
     V1_TEMPLATE("openshift3/v1_template.json"), 
     V1_USER("openshift3/v1_user.json"),
+    V1_IDENTITY("openshift3/v1_identity.json"),
+    V1_GROUP("openshift3/v1_group.json"),
     V1_SECRET("openshift3/v1_secret.json"),
     V1_UNRECOGNIZED("openshift3/v1_unrecognized.json"),
     V1_CONFIG_MAP("openshift3/v1_config_map.json"),
