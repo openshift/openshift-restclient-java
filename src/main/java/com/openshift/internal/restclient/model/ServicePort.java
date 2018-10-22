@@ -28,6 +28,7 @@ public class ServicePort extends ModelNodeAdapter implements IServicePort {
     private static final String PROPERTY_PORT = "port";
     private static final String PROPERTY_PROTOCOL = "protocol";
     private static final String PROPERTY_TARGET_PORT = "targetPort";
+    private static final String PROPERTY_NODE_PORT = "nodePort";
     private static final Map<String, String[]> KEY_MAP = new HashMap<>();
 
     static {
@@ -35,6 +36,7 @@ public class ServicePort extends ModelNodeAdapter implements IServicePort {
         KEY_MAP.put(PROPERTY_PORT, new String[] { PROPERTY_PORT });
         KEY_MAP.put(PROPERTY_PROTOCOL, new String[] { PROPERTY_PROTOCOL });
         KEY_MAP.put(PROPERTY_TARGET_PORT, new String[] { PROPERTY_TARGET_PORT });
+        KEY_MAP.put(PROPERTY_NODE_PORT, new String[] { PROPERTY_NODE_PORT });
     }
 
     public ServicePort(ModelNode node) {
@@ -53,6 +55,7 @@ public class ServicePort extends ModelNodeAdapter implements IServicePort {
         setPort(port.getPort());
         setProtocol(port.getProtocol());
         setTargetPort(port.getTargetPort());
+        setNodePort(port.getNodePort());
     }
 
     @Override
@@ -104,6 +107,16 @@ public class ServicePort extends ModelNodeAdapter implements IServicePort {
     }
 
     @Override
+    public String getNodePort() {
+        return asString(getNode(), KEY_MAP, PROPERTY_NODE_PORT);
+    }
+
+    @Override
+    public void setNodePort(String nodePort) {
+        set(getNode(), KEY_MAP, PROPERTY_NODE_PORT, nodePort);
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -148,6 +161,13 @@ public class ServicePort extends ModelNodeAdapter implements IServicePort {
                 return false;
             }
         } else if (!getProtocol().equals(other.getProtocol())) {
+            return false;
+        }
+        if (getNodePort() == null) {
+            if (other.getNodePort() != null) {
+                return false;
+            }
+        } else if (!getNodePort().equals(other.getNodePort())) {
             return false;
         }
         return true;

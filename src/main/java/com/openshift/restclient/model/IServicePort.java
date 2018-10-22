@@ -48,4 +48,12 @@ public interface IServicePort {
     String getProtocol();
 
     void setProtocol(String proto);
+
+    /**
+     * External service port
+     */
+
+    String getNodePort();
+
+    void setNodePort(String nodePort);
 }
