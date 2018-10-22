@@ -121,13 +121,13 @@ public class ServiceTest {
     public void testGetPorts() {
         IServicePort[] ports = service.getPorts().toArray(new IServicePort[] {});
         assertEquals(2, ports.length);
-        assertEquals(PortFactory.createServicePort("db", "TCP", 5434, 3306), ports[0]);
-        assertEquals(PortFactory.createServicePort("other", "TCP", 9999, 8888), ports[1]);
+        assertEquals(PortFactory.createServicePort("db", "TCP", 5434, 3306,45678), ports[0]);
+        assertEquals(PortFactory.createServicePort("other", "TCP", 9999, 8888,56789), ports[1]);
     }
 
     @Test
     public void testSetPorts() {
-        IServicePort port = PortFactory.createServicePort("newport", "TCP", 4444, 5555);
+        IServicePort port = PortFactory.createServicePort("newport", "TCP", 4444, 5555,6666);
         service.setPorts(Arrays.asList(port));
         IServicePort[] ports = service.getPorts().toArray(new IServicePort[] {});
         assertEquals(1, service.getPorts().size());
