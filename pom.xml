@@ -17,7 +17,7 @@
     <!-- Artifact Information -->
     <groupId>com.openshift</groupId>
     <artifactId>openshift-restclient-java</artifactId>
-    <version>7.0.0.Final</version>
+    <version>7.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>OpenShift Java REST Client</name>
     <url>http://openshift.redhat.com</url>
