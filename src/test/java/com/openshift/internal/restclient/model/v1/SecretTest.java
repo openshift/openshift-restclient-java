@@ -52,7 +52,7 @@ public class SecretTest {
 
     @Test
     public void testGetData() {
-        assertTrue(StringUtils.isNotBlank(new String(secret.getData(".dockercfg"))));
+        assertEquals("value-1", new String(secret.getData(".dockercfg")));
     }
 
     @Test
