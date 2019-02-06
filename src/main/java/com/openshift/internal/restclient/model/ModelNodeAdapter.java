@@ -41,6 +41,7 @@ public class ModelNodeAdapter implements JSONSerializeable {
         return toJson(false);
     }
 
+    @Override
     public String toJson(boolean compact) {
         return JBossDmrExtentions.toJsonString(node, compact);
     }
