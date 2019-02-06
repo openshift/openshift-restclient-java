@@ -74,7 +74,7 @@ public class DefaultClient implements IClient, IHttpConstants {
     private URL baseUrl;
     private OkHttpClient client;
     private IResourceFactory factory;
-    private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<Class<? extends ICapability>, ICapability>();
+    private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<>();
     private boolean capabilitiesInitialized = false;
 
     private static final String OS_API_ENDPOINT = "oapi";
@@ -169,7 +169,7 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     @Override
     public Collection<IResource> create(IList list, String namespace) {
-        List<IResource> results = new ArrayList<IResource>(list.getItems().size());
+        List<IResource> results = new ArrayList<>(list.getItems().size());
         for (IResource resource : list.getItems()) {
             try {
                 results.add(create(resource, namespace));
@@ -224,51 +224,44 @@ public class DefaultClient implements IClient, IHttpConstants {
         return execute(method.toString(), kind, version, namespace, name, subresource, payload, parameters);
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends IResource> T execute(String method, String kind, String namespace, String name,
             String subresource, IResource payload, String subContext) {
-        return (T) execute(this.factory, method, kind, namespace, name, subresource, subContext, payload,
+        return execute(this.factory, method, kind, namespace, name, subresource, subContext, payload,
                 Collections.emptyMap());
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends IResource> T execute(String method, String kind, String namespace, String name,
             String subresource, IResource payload) {
-        return (T) execute(this.factory, method, kind, namespace, name, subresource, null, payload,
+        return execute(this.factory, method, kind, namespace, name, subresource, null, payload,
                 Collections.emptyMap());
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends IResource> T execute(String method, String kind, String version, String namespace, String name,
             String subresource, InputStream payload) {
-        return (T) execute(this.factory, method, kind, version, namespace, name, subresource, null, payload,
+        return execute(this.factory, method, kind, version, namespace, name, subresource, null, payload,
                 Collections.emptyMap());
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends IResource> T execute(String method, String kind, String version, String namespace, String name,
             String subresource, InputStream payload, Map<String, String> parameters) {
-        return (T) execute(this.factory, method, kind, version, namespace, name, subresource, null, payload,
+        return execute(this.factory, method, kind, version, namespace, name, subresource, null, payload,
                 parameters);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends IResource> T execute(String method, String kind, String namespace, String name,
             String subresource, IResource payload, Map<String, String> params) {
-        return (T) execute(this.factory, method, kind, namespace, name, subresource, null, payload, params);
+        return execute(this.factory, method, kind, namespace, name, subresource, null, payload, params);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T execute(ITypeFactory factory, String method, String kind, String version, String namespace, String name,
             String subresource, String subContext, InputStream payload, Map<String, String> params) {
         return execute(factory, method, kind, version, namespace, name, subresource, subContext, getPayload(method, payload), params);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T execute(ITypeFactory factory, String method, String kind, String namespace, String name,
             String subresource, String subContext, JSONSerializeable payload, Map<String, String> params) {
         return execute(factory, method, kind, getApiVersion(payload), namespace, name, subresource, subContext,
@@ -317,7 +310,6 @@ public class DefaultClient implements IClient, IHttpConstants {
         switch (method.toUpperCase()) {
         case "GET":
         case "DELETE":
-            return null;
         default:
             String json = payload == null ? "" : payload.toJson(true);
             LOGGER.debug("About to send payload: {}", json);
@@ -329,7 +321,6 @@ public class DefaultClient implements IClient, IHttpConstants {
         switch (method.toUpperCase()) {
         case "GET":
         case "DELETE":
-            return null;
         default:
             LOGGER.debug("About to send binary payload");
             RequestBody requestBody = new RequestBody() {
@@ -367,7 +358,7 @@ public class DefaultClient implements IClient, IHttpConstants {
     }
 
     public Request.Builder newRequestBuilderTo(String endpoint, String acceptMediaType) {
-        Request.Builder builder = new Request.Builder().url(endpoint.toString()).header(PROPERTY_ACCEPT,
+        Request.Builder builder = new Request.Builder().url(endpoint).header(PROPERTY_ACCEPT,
                 acceptMediaType);
 
         String token = null;
@@ -430,7 +421,7 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
         if (capabilities.containsKey(visitor.getCapabilityType())) {
             T capability = (T) capabilities.get(visitor.getCapabilityType());
-            return (R) visitor.visit(capability);
+            return visitor.visit(capability);
         }
         return unsupportedCapabililityValue;
     }
