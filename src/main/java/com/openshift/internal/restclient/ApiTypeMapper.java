@@ -101,7 +101,7 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
                     .map(api -> formatEndpointFor(api, (split.length == 0 ? preferedVersion.get(api) : split[0]), kind))
                     .filter(e -> resourceEndpoints.contains(e)).findFirst();
         } else {
-            result = Optional.of(formatEndpointFor(API_GROUPS_API, version, ResourceKind.pluralize(kind, true, true)));
+            result = Optional.of(formatEndpointFor(API_GROUPS_API, version, kind));
         }
         if (result.isPresent()) {
             int index = resourceEndpoints.indexOf(result.get());
