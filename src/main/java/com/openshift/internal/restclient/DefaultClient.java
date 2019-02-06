@@ -211,7 +211,7 @@ public class DefaultClient implements IClient, IHttpConstants {
     }
 
     enum HttpMethod {
-        GET, PUT, POST, DELETE
+        GET, PUT, POST, DELETE, HEAD
     }
 
     private <T extends IResource> T execute(HttpMethod method, String kind, String namespace, String name,
@@ -259,13 +259,14 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     public <T> T execute(ITypeFactory factory, String method, String kind, String version, String namespace, String name,
             String subresource, String subContext, InputStream payload, Map<String, String> params) {
-        return execute(factory, method, kind, version, namespace, name, subresource, subContext, getPayload(method, payload), params);
+        return execute(factory, method, kind, version, namespace, name, subresource, subContext, 
+                getPayload(payload, method), params);
     }
 
     public <T> T execute(ITypeFactory factory, String method, String kind, String namespace, String name,
             String subresource, String subContext, JSONSerializeable payload, Map<String, String> params) {
         return execute(factory, method, kind, getApiVersion(payload), namespace, name, subresource, subContext,
-                getPayload(method, payload), params);
+                getPayload(payload, method), params);
     }
 
     private <T> T execute(ITypeFactory factory, String method, String kind, String version, String namespace,
@@ -286,7 +287,9 @@ public class DefaultClient implements IClient, IHttpConstants {
                 .namespace(namespace).subresource(subresource).subContext(subContext).addParameters(params).build();
 
         try {
-            Request request = newRequestBuilderTo(endpoint.toString()).method(method, requestBody).build();
+            Request request = newRequestBuilderTo(endpoint.toString())
+                    .method(method, requestBody)
+                    .build();
             LOGGER.debug("About to make {} request: {}", request.method(), request);
             try (Response result = client.newCall(request).execute()) {
                 String response = result.body().string();
@@ -306,44 +309,48 @@ public class DefaultClient implements IClient, IHttpConstants {
         return apiVersion;
     }
 
-    private RequestBody getPayload(String method, JSONSerializeable payload) {
-        switch (method.toUpperCase()) {
-        case "GET":
-        case "DELETE":
-        default:
-            String json = payload == null ? "" : payload.toJson(true);
-            LOGGER.debug("About to send payload: {}", json);
-            return RequestBody.create(MediaType.parse(MEDIATYPE_APPLICATION_JSON), json);
+    private RequestBody getPayload(JSONSerializeable payload, String method) {
+        if(isPayloadlessMethod(method)) {
+            return null;
         }
+        String json = payload == null ? "" : payload.toJson(true);
+        LOGGER.debug("About to send payload: {}", json);
+        return RequestBody.create(MediaType.parse(MEDIATYPE_APPLICATION_JSON), json);
     }
 
-    private RequestBody getPayload(String method, InputStream payload) {
-        switch (method.toUpperCase()) {
-        case "GET":
-        case "DELETE":
-        default:
-            LOGGER.debug("About to send binary payload");
-            RequestBody requestBody = new RequestBody() {
-                @Override
-                public void writeTo(BufferedSink sink) throws IOException {
-                    Source source = Okio.source(payload);
-                    sink.writeAll(source);
-                }
-                
-                @Override
-                public MediaType contentType() {
-                    return MediaType.parse(MEDIATYPE_APPLICATION_OCTET_STREAM);
-                }
-            };
-            return requestBody;
+
+    private RequestBody getPayload(InputStream payload, String method) {
+        if(isPayloadlessMethod(method)) {
+            return null;
         }
+        LOGGER.debug("About to send binary payload");
+        return new RequestBody() {
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException {
+                Source source = Okio.source(payload);
+                sink.writeAll(source);
+            }
+            
+            @Override
+            public MediaType contentType() {
+                return MediaType.parse(MEDIATYPE_APPLICATION_OCTET_STREAM);
+            }
+        };
+    }
+
+    private boolean isPayloadlessMethod(String method) {
+        String uppercaseMethod = StringUtils.upperCase(method);
+        return HttpMethod.GET.name().equals(uppercaseMethod) 
+                || HttpMethod.HEAD.name().equals(uppercaseMethod);
     }
 
     @Override
     public String getServerReadyStatus() {
         try {
-            Request request = new Request.Builder().url(new URL(this.baseUrl, URL_HEALTH_CHECK))
-                    .header(PROPERTY_ACCEPT, "*/*").build();
+            Request request = new Request.Builder()
+                    .url(new URL(this.baseUrl, URL_HEALTH_CHECK))
+                    .header(PROPERTY_ACCEPT, "*/*")
+                    .build();
             try (Response response = client.newCall(request).execute()) {
                 return response.body().string();
             }
