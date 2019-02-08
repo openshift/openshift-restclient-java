@@ -64,21 +64,21 @@ public class PodTest {
     @Test
     public void testGetStatusDeletion() {
         ((Pod) pod).getNode().get("metadata", "deletionTimestamp").set("2016-11-02T16:31:55Z");
-        assertEquals(pod.getStatus(), "Terminating");
+        assertEquals("Terminating", pod.getStatus());
     }
 
     @Test
     public void testGetStatusWaitingReason() {
         ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("waiting",
                 new ModelNode().set("reason", "ReasonNotToWork"));
-        assertEquals(pod.getStatus(), "ReasonNotToWork");
+        assertEquals("ReasonNotToWork", pod.getStatus());
     }
 
     @Test
     public void testGetStatusTerminateReason() {
         ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated",
                 new ModelNode().set("reason", "ReasonToTerminate"));
-        assertEquals(pod.getStatus(), "ReasonToTerminate");
+        assertEquals("ReasonToTerminate", pod.getStatus());
     }
 
     /**
@@ -90,14 +90,14 @@ public class PodTest {
         node.get("reason").set("ReasonToTerminate");
         node.get("exitCode").set("Let's go! Time to exit!");
         ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated", node);
-        assertEquals(pod.getStatus(), "ReasonToTerminate");
+        assertEquals("ReasonToTerminate", pod.getStatus());
     }
 
     @Test
     public void testGetStatusTerminatedSignal() {
         ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated",
                 new ModelNode().set("signal", "Alarm! Terminate!"));
-        assertEquals(pod.getStatus(), "Signal: Alarm! Terminate!");
+        assertEquals("Signal: Alarm! Terminate!", pod.getStatus());
     }
 
     /**
@@ -109,14 +109,14 @@ public class PodTest {
         node.get("signal").set("Alarm! Terminate!");
         node.get("exitCode").set("Let's go! Time to exit!");
         ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated", node);
-        assertEquals(pod.getStatus(), "Signal: Alarm! Terminate!");
+        assertEquals("Signal: Alarm! Terminate!", pod.getStatus());
     }
 
     @Test
     public void testGetStatusTerminatedExit() {
         ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated",
                 new ModelNode().set("exitCode", "Let's go! Time to exit!"));
-        assertEquals(pod.getStatus(), "Exit Code: Let's go! Time to exit!");
+        assertEquals("Exit Code: Let's go! Time to exit!", pod.getStatus());
     }
 
     @Test
@@ -163,9 +163,9 @@ public class PodTest {
     public void getContainerCommands() {
         List<String> cmd = container1.getCommand();
         List<String> cmdArgs = container1.getCommandArgs();
-        assertEquals(cmd.get(0), "/bin/sh");
-        assertEquals(cmdArgs.get(0), "-c");
-        assertEquals(cmdArgs.get(1), "echo 'hello'");
+        assertEquals("/bin/sh", cmd.get(0));
+        assertEquals("-c", cmdArgs.get(0));
+        assertEquals("echo 'hello'", cmdArgs.get(1));
     }
 
     @Test
