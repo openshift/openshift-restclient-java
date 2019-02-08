@@ -9,6 +9,7 @@
 
 package com.openshift.internal.restclient.model.v1;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -40,45 +41,52 @@ import com.openshift.restclient.utils.Samples;
 public class PodTest {
 
     private static final String VERSION = "v1";
-    private IPod pod;
-    private IContainer container1;
+
+    private IClient client;
+    private IPod pod1;
+    private IContainer pod1container1;
+
+    private IPod pod2;
 
     @Before
     public void setup() {
-        IClient client = mock(IClient.class);
+        this.client = mock(IClient.class);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_POD.getContentAsString());
-        this.pod = new Pod(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.POD));
-        this.container1 = pod.getContainers().stream().findFirst().orElse(null);
+        this.pod1 = createPod(node);
+        this.pod1container1 = pod1.getContainers().stream().findFirst().orElse(null);
+
+        node = ModelNode.fromJSONString(Samples.V1_POD_MULTICONTAINER_READY.getContentAsString());
+        this.pod2 = createPod(node);
     }
 
     @Test
     public void testGetHost() {
-        assertEquals("127.0.0.1", pod.getHost());
+        assertEquals("127.0.0.1", pod1.getHost());
     }
 
     @Test
     public void testGetStatusPhase() {
-        assertEquals("Running", pod.getStatus());
+        assertEquals("Running", pod1.getStatus());
     }
 
     @Test
     public void testGetStatusDeletion() {
-        ((Pod) pod).getNode().get("metadata", "deletionTimestamp").set("2016-11-02T16:31:55Z");
-        assertEquals("Terminating", pod.getStatus());
+        ((Pod) pod1).getNode().get("metadata", "deletionTimestamp").set("2016-11-02T16:31:55Z");
+        assertEquals("Terminating", pod1.getStatus());
     }
 
     @Test
     public void testGetStatusWaitingReason() {
-        ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("waiting",
+        ((Pod) pod1).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("waiting",
                 new ModelNode().set("reason", "ReasonNotToWork"));
-        assertEquals("ReasonNotToWork", pod.getStatus());
+        assertEquals("ReasonNotToWork", pod1.getStatus());
     }
 
     @Test
     public void testGetStatusTerminateReason() {
-        ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated",
+        ((Pod) pod1).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated",
                 new ModelNode().set("reason", "ReasonToTerminate"));
-        assertEquals("ReasonToTerminate", pod.getStatus());
+        assertEquals("ReasonToTerminate", pod1.getStatus());
     }
 
     /**
@@ -89,15 +97,15 @@ public class PodTest {
         ModelNode node = new ModelNode();
         node.get("reason").set("ReasonToTerminate");
         node.get("exitCode").set("Let's go! Time to exit!");
-        ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated", node);
-        assertEquals("ReasonToTerminate", pod.getStatus());
+        ((Pod) pod1).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated", node);
+        assertEquals("ReasonToTerminate", pod1.getStatus());
     }
 
     @Test
     public void testGetStatusTerminatedSignal() {
-        ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated",
+        ((Pod) pod1).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated",
                 new ModelNode().set("signal", "Alarm! Terminate!"));
-        assertEquals("Signal: Alarm! Terminate!", pod.getStatus());
+        assertEquals("Signal: Alarm! Terminate!", pod1.getStatus());
     }
 
     /**
@@ -108,26 +116,26 @@ public class PodTest {
         ModelNode node = new ModelNode();
         node.get("signal").set("Alarm! Terminate!");
         node.get("exitCode").set("Let's go! Time to exit!");
-        ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated", node);
-        assertEquals("Signal: Alarm! Terminate!", pod.getStatus());
+        ((Pod) pod1).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated", node);
+        assertEquals("Signal: Alarm! Terminate!", pod1.getStatus());
     }
 
     @Test
     public void testGetStatusTerminatedExit() {
-        ((Pod) pod).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated",
+        ((Pod) pod1).getNode().get("status", "containerStatuses").asList().get(0).get("state").set("terminated",
                 new ModelNode().set("exitCode", "Let's go! Time to exit!"));
-        assertEquals("Exit Code: Let's go! Time to exit!", pod.getStatus());
+        assertEquals("Exit Code: Let's go! Time to exit!", pod1.getStatus());
     }
 
     @Test
     public void testGetImages() {
         String[] exp = new String[] { "openshift/origin-deployer:v0.6" };
-        assertArrayEquals(exp, pod.getImages().toArray());
+        assertArrayEquals(exp, pod1.getImages().toArray());
     }
 
     @Test
     public void getIP() {
-        assertEquals("1.2.3.4", pod.getIP());
+        assertEquals("1.2.3.4", pod1.getIP());
     }
 
     @Test
@@ -138,18 +146,18 @@ public class PodTest {
         port.setContainerPort(8080);
         Set<IPort> ports = new HashSet<>();
         ports.add(port);
-        assertEquals(ports, pod.getContainerPorts());
+        assertEquals(ports, pod1.getContainerPorts());
     }
 
     @Test
     public void testAddContainer() {
-        Collection<IContainer> initial = pod.getContainers();
-        IContainer foo = pod.addContainer("foo");
+        Collection<IContainer> initial = pod1.getContainers();
+        IContainer foo = pod1.addContainer("foo");
 
         foo.setLifecycle(new Lifecycle.Builder()
                 .preStop(new ExecAction.Builder().command("cmd1").command("cmd2").build()).build());
 
-        Collection<IContainer> containers = pod.getContainers();
+        Collection<IContainer> containers = pod1.getContainers();
         assertEquals(initial.size() + 1, containers.size());
 
         Optional<IContainer> container = containers.stream()
@@ -161,8 +169,8 @@ public class PodTest {
 
     @Test
     public void getContainerCommands() {
-        List<String> cmd = container1.getCommand();
-        List<String> cmdArgs = container1.getCommandArgs();
+        List<String> cmd = pod1container1.getCommand();
+        List<String> cmdArgs = pod1container1.getCommandArgs();
         assertEquals("/bin/sh", cmd.get(0));
         assertEquals("-c", cmdArgs.get(0));
         assertEquals("echo 'hello'", cmdArgs.get(1));
@@ -170,21 +178,49 @@ public class PodTest {
 
     @Test
     public void getContainerResourceRequirements() {
-        assertEquals("1", container1.getRequestsCPU());
-        assertEquals("128Mi", container1.getRequestsMemory());
-        assertEquals("4", container1.getLimitsCPU());
-        assertEquals("1Gi", container1.getLimitsMemory());
+        assertEquals("1", pod1container1.getRequestsCPU());
+        assertEquals("128Mi", pod1container1.getRequestsMemory());
+        assertEquals("4", pod1container1.getLimitsCPU());
+        assertEquals("1Gi", pod1container1.getLimitsMemory());
     }
 
     @Test
     public void resetContainerResourceRequirements() {
-        container1.setRequestsMemory(null);
-        container1.setRequestsCPU(null);
-        container1.setLimitsMemory(null);
-        container1.setLimitsCPU(null);
-        assertEquals("", container1.getRequestsCPU());
-        assertEquals("", container1.getRequestsMemory());
-        assertEquals("", container1.getLimitsCPU());
-        assertEquals("", container1.getLimitsMemory());
+        pod1container1.setRequestsMemory(null);
+        pod1container1.setRequestsCPU(null);
+        pod1container1.setLimitsMemory(null);
+        pod1container1.setLimitsCPU(null);
+        assertEquals("", pod1container1.getRequestsCPU());
+        assertEquals("", pod1container1.getRequestsMemory());
+        assertEquals("", pod1container1.getLimitsCPU());
+        assertEquals("", pod1container1.getLimitsMemory());
+    }
+    
+    @Test
+    public void shouldBeReadyIfAllContainersAreReady() {
+        assertThat(pod2.isReady()).isTrue();
+    }
+
+    @Test
+    public void shouldNotBeReadyIfAtLeast1ContainerIsNotReady() {
+        IPod nonReadyPod = setContainerReady(1, false, pod2, client);
+        
+        assertThat(nonReadyPod.isReady()).isFalse();
+    }
+
+    private IPod setContainerReady(int index, boolean ready, IPod pod, IClient client) {
+        ModelNode node = ModelNode.fromJSONString(pod.toJson());
+        ModelNode podStatusNode = node.get("status");
+        ModelNode allContainerStatusNode = podStatusNode.get("containerStatuses");
+        assertThat(allContainerStatusNode.isDefined()).isTrue();
+        assertThat(allContainerStatusNode.get(index).isDefined()).isTrue();;
+        ModelNode statusNode = allContainerStatusNode.get(index);
+        ModelNode readyNode = statusNode.get("ready");
+        readyNode.set(ready);
+        return createPod(node);
+    }
+  
+    private Pod createPod(ModelNode node) {
+        return new Pod(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.POD));
     }
 }

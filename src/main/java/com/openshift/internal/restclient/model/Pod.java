@@ -42,6 +42,7 @@ public class Pod extends KubernetesResource implements IPod {
     private static final String POD_STATUS_PHASE = "status.phase";
     private static final String POD_STATUS_REASON = "status.reason";
     private static final String POD_STATUS_CONTAINER_STATUSES = "status.containerStatuses";
+    private static final String CONTAINER_STATUS_READY = "ready";
 
     // container reasons fields and corresponding status prefixes
     private static final List<String[]> POD_STATUS_CONTAINER_STATES = Arrays.asList(
@@ -148,4 +149,17 @@ public class Pod extends KubernetesResource implements IPod {
         return Collections.emptyList();
     }
 
+    @Override
+    public boolean isReady() {
+        ModelNode node = get(POD_STATUS_CONTAINER_STATUSES);
+        if (node.getType() != ModelType.LIST) {
+            return false;
+        }
+        boolean allContainersReady = true;
+        for (ModelNode containerStatus : node.asList()) {
+            String ready = containerStatus.get(CONTAINER_STATUS_READY).asString();
+            allContainersReady &= Boolean.parseBoolean(ready);
+        }
+        return allContainersReady;
+    }
 }

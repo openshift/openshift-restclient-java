@@ -1,0 +1,392 @@
+{
+    "kind" : "Pod",
+    "apiVersion" : "v1",
+    "metadata" : {
+        "name" : "nodejs-mongo-persistent-1-g4vbs",
+        "generateName" : "nodejs-mongo-persistent-1-",
+        "namespace" : "jbide25000-2",
+        "selfLink" : "/api/v1/namespaces/jbide25000-2/pods/nodejs-mongo-persistent-1-g4vbs",
+        "uid" : "5a44638d-2b8b-11e9-9384-06d3e3320f22",
+        "resourceVersion" : "442694201",
+        "creationTimestamp" : "2019-02-08T10:21:52Z",
+        "deletionTimestamp" : "2019-02-08T10:23:52Z",
+        "deletionGracePeriodSeconds" : 0,
+        "labels" : {
+            "deployment" : "nodejs-mongo-persistent-1",
+            "deploymentconfig" : "nodejs-mongo-persistent",
+            "name" : "nodejs-mongo-persistent"
+        },
+        "annotations" : {
+            "kubernetes.io/limit-ranger" : "LimitRanger plugin set: cpu request for container nodejs-mongo-persistent; cpu limit for container nodejs-mongo-persistent",
+            "openshift.io/deployment-config.latest-version" : "1",
+            "openshift.io/deployment-config.name" : "nodejs-mongo-persistent",
+            "openshift.io/deployment.name" : "nodejs-mongo-persistent-1",
+            "openshift.io/scc" : "restricted"
+        },
+        "ownerReferences" : [{
+            "apiVersion" : "v1",
+            "kind" : "ReplicationController",
+            "name" : "nodejs-mongo-persistent-1",
+            "uid" : "5641d4f6-2b8b-11e9-a209-02dd5d026c14",
+            "controller" : true,
+            "blockOwnerDeletion" : true
+        }]
+    },
+    "spec" : {
+        "volumes" : [{
+            "name" : "default-token-xv9r6",
+            "secret" : {
+                "secretName" : "default-token-xv9r6",
+                "defaultMode" : 420
+            }
+        }],
+        "containers" : [{
+            "name" : "nodejs-mongo-persistent",
+            "image" : "docker-registry.default.svc:5000/jbide25000-2/nodejs-mongo-persistent@sha256:4f2b1c1b85a61918ace38a90cd7e31f833891fb81cb84c104fbe43d5e1091103",
+            "ports" : [{
+                "containerPort" : 8080,
+                "protocol" : "TCP"
+            }],
+            "env" : [
+                {
+                    "name" : "DATABASE_SERVICE_NAME",
+                    "value" : "mongodb"
+                },
+                {
+                    "name" : "MONGODB_USER",
+                    "valueFrom" : {"secretKeyRef" : {
+                        "name" : "nodejs-mongo-persistent",
+                        "key" : "database-user"
+                    }}
+                },
+                {
+                    "name" : "MONGODB_PASSWORD",
+                    "valueFrom" : {"secretKeyRef" : {
+                        "name" : "nodejs-mongo-persistent",
+                        "key" : "database-password"
+                    }}
+                },
+                {
+                    "name" : "MONGODB_DATABASE",
+                    "value" : "sampledb"
+                },
+                {
+                    "name" : "MONGODB_ADMIN_PASSWORD",
+                    "valueFrom" : {"secretKeyRef" : {
+                        "name" : "nodejs-mongo-persistent",
+                        "key" : "database-admin-password"
+                    }}
+                }
+            ],
+            "resources" : {
+                "limits" : {
+                    "cpu" : "300m",
+                    "memory" : "512Mi"
+                },
+                "requests" : {
+                    "cpu" : "75m",
+                    "memory" : "512Mi"
+                }
+            },
+            "volumeMounts" : [{
+                "name" : "default-token-xv9r6",
+                "readOnly" : true,
+                "mountPath" : "/var/run/secrets/kubernetes.io/serviceaccount"
+            }],
+            "livenessProbe" : {
+                "httpGet" : {
+                    "path" : "/pagecount",
+                    "port" : 8080,
+                    "scheme" : "HTTP"
+                },
+                "initialDelaySeconds" : 30,
+                "timeoutSeconds" : 3,
+                "periodSeconds" : 10,
+                "successThreshold" : 1,
+                "failureThreshold" : 3
+            },
+            "readinessProbe" : {
+                "httpGet" : {
+                    "path" : "/pagecount",
+                    "port" : 8080,
+                    "scheme" : "HTTP"
+                },
+                "initialDelaySeconds" : 3,
+                "timeoutSeconds" : 3,
+                "periodSeconds" : 10,
+                "successThreshold" : 1,
+                "failureThreshold" : 3
+            },
+            "terminationMessagePath" : "/dev/termination-log",
+            "terminationMessagePolicy" : "File",
+            "imagePullPolicy" : "IfNotPresent",
+            "securityContext" : {
+                "capabilities" : {"drop" : [
+                    "KILL",
+                    "MKNOD",
+                    "SETGID",
+                    "SETUID"
+                ]},
+                "runAsUser" : 1003800000
+            }
+        },
+        {
+            "name" : "nodejs-mongo-persistent-2",
+            "image" : "docker-registry.default.svc:5000/jbide25000-2/nodejs-mongo-persistent@sha256:4f2b1c1b85a61918ace38a90cd7e31f833891fb81cb84c104fbe43d5e1091103",
+            "ports" : [{
+                "containerPort" : 8080,
+                "protocol" : "TCP"
+            }],
+            "env" : [
+                {
+                    "name" : "DATABASE_SERVICE_NAME",
+                    "value" : "mongodb"
+                },
+                {
+                    "name" : "MONGODB_USER",
+                    "valueFrom" : {"secretKeyRef" : {
+                        "name" : "nodejs-mongo-persistent",
+                        "key" : "database-user"
+                    }}
+                },
+                {
+                    "name" : "MONGODB_PASSWORD",
+                    "valueFrom" : {"secretKeyRef" : {
+                        "name" : "nodejs-mongo-persistent",
+                        "key" : "database-password"
+                    }}
+                },
+                {
+                    "name" : "MONGODB_DATABASE",
+                    "value" : "sampledb"
+                },
+                {
+                    "name" : "MONGODB_ADMIN_PASSWORD",
+                    "valueFrom" : {"secretKeyRef" : {
+                        "name" : "nodejs-mongo-persistent",
+                        "key" : "database-admin-password"
+                    }}
+                }
+            ],
+            "resources" : {
+                "limits" : {
+                    "cpu" : "300m",
+                    "memory" : "512Mi"
+                },
+                "requests" : {
+                    "cpu" : "75m",
+                    "memory" : "512Mi"
+                }
+            },
+            "volumeMounts" : [{
+                "name" : "default-token-xv9r6",
+                "readOnly" : true,
+                "mountPath" : "/var/run/secrets/kubernetes.io/serviceaccount"
+            }],
+            "livenessProbe" : {
+                "httpGet" : {
+                    "path" : "/pagecount",
+                    "port" : 8080,
+                    "scheme" : "HTTP"
+                },
+                "initialDelaySeconds" : 30,
+                "timeoutSeconds" : 3,
+                "periodSeconds" : 10,
+                "successThreshold" : 1,
+                "failureThreshold" : 3
+            },
+            "readinessProbe" : {
+                "httpGet" : {
+                    "path" : "/pagecount",
+                    "port" : 8080,
+                    "scheme" : "HTTP"
+                },
+                "initialDelaySeconds" : 3,
+                "timeoutSeconds" : 3,
+                "periodSeconds" : 10,
+                "successThreshold" : 1,
+                "failureThreshold" : 3
+            },
+            "terminationMessagePath" : "/dev/termination-log",
+            "terminationMessagePolicy" : "File",
+            "imagePullPolicy" : "IfNotPresent",
+            "securityContext" : {
+                "capabilities" : {"drop" : [
+                    "KILL",
+                    "MKNOD",
+                    "SETGID",
+                    "SETUID"
+                ]},
+                "runAsUser" : 1003800000
+            }
+        },
+        {
+            "name" : "nodejs-mongo-persistent-3",
+            "image" : "docker-registry.default.svc:5000/jbide25000-2/nodejs-mongo-persistent@sha256:4f2b1c1b85a61918ace38a90cd7e31f833891fb81cb84c104fbe43d5e1091103",
+            "ports" : [{
+                "containerPort" : 8080,
+                "protocol" : "TCP"
+            }],
+            "env" : [
+                {
+                    "name" : "DATABASE_SERVICE_NAME",
+                    "value" : "mongodb"
+                },
+                {
+                    "name" : "MONGODB_USER",
+                    "valueFrom" : {"secretKeyRef" : {
+                        "name" : "nodejs-mongo-persistent",
+                        "key" : "database-user"
+                    }}
+                },
+                {
+                    "name" : "MONGODB_PASSWORD",
+                    "valueFrom" : {"secretKeyRef" : {
+                        "name" : "nodejs-mongo-persistent",
+                        "key" : "database-password"
+                    }}
+                },
+                {
+                    "name" : "MONGODB_DATABASE",
+                    "value" : "sampledb"
+                },
+                {
+                    "name" : "MONGODB_ADMIN_PASSWORD",
+                    "valueFrom" : {"secretKeyRef" : {
+                        "name" : "nodejs-mongo-persistent",
+                        "key" : "database-admin-password"
+                    }}
+                }
+            ],
+            "resources" : {
+                "limits" : {
+                    "cpu" : "300m",
+                    "memory" : "512Mi"
+                },
+                "requests" : {
+                    "cpu" : "75m",
+                    "memory" : "512Mi"
+                }
+            },
+            "volumeMounts" : [{
+                "name" : "default-token-xv9r6",
+                "readOnly" : true,
+                "mountPath" : "/var/run/secrets/kubernetes.io/serviceaccount"
+            }],
+            "livenessProbe" : {
+                "httpGet" : {
+                    "path" : "/pagecount",
+                    "port" : 8080,
+                    "scheme" : "HTTP"
+                },
+                "initialDelaySeconds" : 30,
+                "timeoutSeconds" : 3,
+                "periodSeconds" : 10,
+                "successThreshold" : 1,
+                "failureThreshold" : 3
+            },
+            "readinessProbe" : {
+                "httpGet" : {
+                    "path" : "/pagecount",
+                    "port" : 8080,
+                    "scheme" : "HTTP"
+                },
+                "initialDelaySeconds" : 3,
+                "timeoutSeconds" : 3,
+                "periodSeconds" : 10,
+                "successThreshold" : 1,
+                "failureThreshold" : 3
+            },
+            "terminationMessagePath" : "/dev/termination-log",
+            "terminationMessagePolicy" : "File",
+            "imagePullPolicy" : "IfNotPresent",
+            "securityContext" : {
+                "capabilities" : {"drop" : [
+                    "KILL",
+                    "MKNOD",
+                    "SETGID",
+                    "SETUID"
+                ]},
+                "runAsUser" : 1003800000
+            }
+        }],
+        "restartPolicy" : "Always",
+        "terminationGracePeriodSeconds" : 30,
+        "dnsPolicy" : "ClusterFirst",
+        "nodeSelector" : {
+            "servicecomponent" : "nodeint",
+            "servicephase" : "hostedprod",
+            "vpc" : "vpc-8055ade5"
+        },
+        "serviceAccountName" : "default",
+        "serviceAccount" : "default",
+        "nodeName" : "opennode-66-103.hosted.a3.vary.redhat.com",
+        "securityContext" : {
+            "seLinuxOptions" : {"level" : "s0:c62,c9"},
+            "fsGroup" : 1003800000
+        },
+        "imagePullSecrets" : [{"name" : "default-dockercfg-jtlcb"}],
+        "schedulerName" : "default-scheduler",
+        "tolerations" : [{
+            "key" : "node.kubernetes.io/memory-pressure",
+            "operator" : "Exists",
+            "effect" : "NoSchedule"
+        }]
+    },
+    "status" : {
+        "phase" : "Running",
+        "conditions" : [
+            {
+                "type" : "Initialized",
+                "status" : "True",
+                "lastTransitionTime" : "2019-02-08T10:21:52Z"
+            },
+            {
+                "type" : "Ready",
+                "status" : "False",
+                "lastTransitionTime" : "2019-02-08T10:23:53Z",
+                "reason" : "ContainersNotReady",
+                "message" : "containers with unready status: [nodejs-mongo-persistent]"
+            },
+            {
+                "type" : "PodScheduled",
+                "status" : "True",
+                "lastTransitionTime" : "2019-02-08T10:21:52Z"
+            }
+        ],
+        "hostIP" : "10.29.66.103",
+        "podIP" : "172.20.68.204",
+        "startTime" : "2019-02-08T10:21:52Z",
+        "containerStatuses" : [{
+            "name" : "nodejs-mongo-persistent",
+            "state" : {"running" : {"startedAt" : "2019-02-08T10:23:59Z"}},
+            "lastState" : {},
+            "ready" : true,
+            "restartCount" : 0,
+            "image" : "docker-registry.default.svc:5000/jbide25000-2/nodejs-mongo-persistent@sha256:4f2b1c1b85a61918ace38a90cd7e31f833891fb81cb84c104fbe43d5e1091103",
+            "imageID" : "docker-pullable://docker-registry.default.svc:5000/jbide25000-2/nodejs-mongo-persistent@sha256:4f2b1c1b85a61918ace38a90cd7e31f833891fb81cb84c104fbe43d5e1091103",
+            "containerID" : "docker://dd892f0393cca8702553a2d4152fb848c98602687b1d9f21663b97ae800efb6a"
+        },
+        {
+            "name" : "nodejs-mongo-persistent-2",
+            "state" : {"running" : {"startedAt" : "2019-02-08T10:24:59Z"}},
+            "lastState" : {},
+            "ready" : true,
+            "restartCount" : 0,
+            "image" : "docker-registry.default.svc:5000/jbide25000-2/nodejs-mongo-persistent@sha256:4f2b1c1b85a61918ace38a90cd7e31f833891fb81cb84c104fbe43d5e1091103",
+            "imageID" : "docker-pullable://docker-registry.default.svc:5000/jbide25000-2/nodejs-mongo-persistent@sha256:4f2b1c1b85a61918ace38a90cd7e31f833891fb81cb84c104fbe43d5e1091103",
+            "containerID" : "docker://dd892f0393cca8702553a2d4152fb848c98602687b1d9f21663b97ae800efb6a"
+        },
+        {
+            "name" : "nodejs-mongo-persistent-3",
+            "state" : {"running" : {"startedAt" : "2019-02-08T10:25:59Z"}},
+            "lastState" : {},
+            "ready" : true,
+            "restartCount" : 0,
+            "image" : "docker-registry.default.svc:5000/jbide25000-2/nodejs-mongo-persistent@sha256:4f2b1c1b85a61918ace38a90cd7e31f833891fb81cb84c104fbe43d5e1091103",
+            "imageID" : "docker-pullable://docker-registry.default.svc:5000/jbide25000-2/nodejs-mongo-persistent@sha256:4f2b1c1b85a61918ace38a90cd7e31f833891fb81cb84c104fbe43d5e1091103",
+            "containerID" : "docker://fd892f0393cca8702553a2d4152fb848c98602687b1d9f21663b97ae800efb6a"
+        }],
+        "qosClass" : "Burstable"
+    }
+}

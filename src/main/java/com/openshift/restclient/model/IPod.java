@@ -75,4 +75,12 @@ public interface IPod extends IResource {
      * @return the containers for this pod.
      */
     Collection<IContainer> getContainers();
+    
+    /**
+     * Returns {@code true} if all containers of this pod are ready. {@code false}
+     * otherwise.
+     * 
+     * @return true if all containers are ready, false otherwise.
+     */
+    boolean isReady();
 }
