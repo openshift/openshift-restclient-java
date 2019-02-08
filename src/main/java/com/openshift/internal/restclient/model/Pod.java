@@ -12,6 +12,7 @@ package com.openshift.internal.restclient.model;
 import static com.openshift.internal.restclient.capability.CapabilityInitializer.initializeCapabilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,14 +44,11 @@ public class Pod extends KubernetesResource implements IPod {
     private static final String POD_STATUS_CONTAINER_STATUSES = "status.containerStatuses";
 
     // container reasons fields and corresponding status prefixes
-    private static final List<String[]> POD_STATUS_CONTAINER_STATES = new ArrayList<String[]>() {
-        {
-            add(new String[] { "state.waiting.reason", "" });
-            add(new String[] { "state.terminated.reason", "" });
-            add(new String[] { "state.terminated.signal", "Signal: " });
-            add(new String[] { "state.terminated.exitCode", "Exit Code: " });
-        }
-    };
+    private static final List<String[]> POD_STATUS_CONTAINER_STATES = Arrays.asList(
+            new String[] { "state.waiting.reason", "" },
+            new String[] { "state.terminated.reason", "" },
+            new String[] { "state.terminated.signal", "Signal: " },
+            new String[] { "state.terminated.exitCode", "Exit Code: " });
 
     public Pod(ModelNode node, IClient client, Map<String, String[]> propertyKeys) {
         super(node, client, propertyKeys);
@@ -69,7 +67,7 @@ public class Pod extends KubernetesResource implements IPod {
 
     @Override
     public Collection<String> getImages() {
-        Collection<String> images = new ArrayList<String>();
+        Collection<String> images = new ArrayList<>();
         ModelNode node = get(POD_CONTAINERS);
         if (node.getType() != ModelType.LIST) {
             return images;
@@ -84,7 +82,6 @@ public class Pod extends KubernetesResource implements IPod {
      * The logic of the method is a copied from 'podStatus' function of
      * [app/scripts/filters/resources.js] of [openshift/origin-web-console]
      */
-
     @Override
     public String getStatus() {
         if (has(POD_DELETION_TIMESTAMP)) {
@@ -94,6 +91,8 @@ public class Pod extends KubernetesResource implements IPod {
         if (node.getType() == ModelType.LIST) {
             for (ModelNode containerStatus : node.asList()) {
                 String status = getContainerStatusStringIfExist(containerStatus);
+                // TODO: take all containers into account
+                // -> fetch all status and merge them, currently we're returning the 1st one. 
                 if (status != null) {
                     return status;
                 }
@@ -116,7 +115,7 @@ public class Pod extends KubernetesResource implements IPod {
 
     @Override
     public Set<IPort> getContainerPorts() {
-        Set<IPort> ports = new HashSet<IPort>();
+        Set<IPort> ports = new HashSet<>();
         ModelNode node = get(POD_CONTAINERS);
         if (node.getType() == ModelType.LIST) {
             for (ModelNode container : node.asList()) {
