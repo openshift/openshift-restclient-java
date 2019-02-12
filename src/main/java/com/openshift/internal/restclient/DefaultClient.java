@@ -54,6 +54,7 @@ import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.BufferedSink;
@@ -272,7 +273,7 @@ public class DefaultClient implements IClient, IHttpConstants {
     private <T> T execute(ITypeFactory factory, String method, String kind, String version, String namespace,
             String name, String subresource, String subContext, RequestBody requestBody, Map<String, String> params) {
         if (factory == null) {
-            throw new OpenShiftException("ITypeFactory is null while trying to call IClient#execute");
+            throw new OpenShiftException(ITypeFactory.class.getSimpleName() + " is null while trying to call IClient#execute");
         }
 
         if (params == null) {
@@ -360,21 +361,25 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
     }
 
-    public Request.Builder newRequestBuilderTo(String endpoint) {
+    public Builder newRequestBuilderTo(String endpoint) {
         return newRequestBuilderTo(endpoint, MEDIATYPE_APPLICATION_JSON);
     }
 
-    public Request.Builder newRequestBuilderTo(String endpoint, String acceptMediaType) {
-        Request.Builder builder = new Request.Builder().url(endpoint).header(PROPERTY_ACCEPT,
-                acceptMediaType);
+    public Builder newRequestBuilderTo(String endpoint, String acceptMediaType) {
+        Builder builder = new Builder()
+                .url(endpoint)
+                .header(PROPERTY_ACCEPT, acceptMediaType);
+        addAuthorizationHeader(builder);
+        return builder;
+    }
 
+    private void addAuthorizationHeader(Builder builder) {
         String token = null;
         if (this.authContext != null && StringUtils.isNotBlank(this.authContext.getToken())) {
             token = this.authContext.getToken();
         }
         builder.header(IHttpConstants.PROPERTY_AUTHORIZATION,
                 String.format("%s %s", IHttpConstants.AUTHORIZATION_BEARER, token));
-        return builder;
     }
 
     @Override
@@ -385,7 +390,7 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     @Override
     public <T extends IResource> void delete(T resource) {
-        execute(HttpMethod.DELETE, resource.getKind(), resource.getNamespaceName(), resource.getName(), null, resource);
+        execute(HttpMethod.DELETE, resource.getKind(), resource.getNamespaceName(), resource.getName(), null, null);
     }
 
     @Override
@@ -440,7 +445,7 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     private void initMasterVersion(String versionInfoType, Callback callback) {
         try {
-            Request request = new Request.Builder().url(new URL(this.baseUrl, versionInfoType))
+            Request request = new Builder().url(new URL(this.baseUrl, versionInfoType))
                     .header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON).build();
             client.newCall(request).enqueue(callback);
         } catch (IOException e) {

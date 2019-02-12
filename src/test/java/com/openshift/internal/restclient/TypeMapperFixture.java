@@ -40,7 +40,7 @@ public class TypeMapperFixture {
 
     protected static final String VERSIONS = "{ \"versions\": [\"v1\"]}";
     protected static final String base = "https://localhost:8443";
-    private static final String ANY = "--any--";
+    protected static final String ANY_URL = "--any--";
     private TestOkHttpClient client = spy(new TestOkHttpClient());
 
     protected IApiTypeMapper mapper;
@@ -59,7 +59,7 @@ public class TypeMapperFixture {
 
     @Before
     public void setUp() throws Exception {
-        client.whenRequestTo(ANY).thenReturn(responseOf(""));
+        client.whenRequestTo(ANY_URL).thenReturn(responseOf(""));
         client.whenRequestTo(base + "/api").thenReturn(responseOf(VERSIONS));
         client.whenRequestTo(base + "/oapi").thenReturn(responseOf(VERSIONS));
         client.whenRequestTo(base + "/apis").thenReturn(responseOf(Samples.GROUP_ENDPONT_APIS.getContentAsString()));
@@ -90,8 +90,12 @@ public class TypeMapperFixture {
     }
 
     protected static Response responseOf(String response) {
-        return new Response.Builder().request(new Request.Builder().url("https://someurlfortesting").build())
-                .protocol(Protocol.HTTP_1_1).code(IHttpConstants.STATUS_OK).message("").body(ResponseBody.create(null, response))
+        return new Response.Builder()
+                .request(new Request.Builder().url("https://someurlfortesting").build())
+                .protocol(Protocol.HTTP_1_1)
+                .code(IHttpConstants.STATUS_OK)
+                .message("")
+                .body(ResponseBody.create(null, response))
                 .build();
     }
 
@@ -105,7 +109,7 @@ public class TypeMapperFixture {
 
         @Override
         public boolean matches(Object argument) {
-            if (ANY.equals(this.url)) {
+            if (ANY_URL.equals(this.url)) {
                 return true;
             }
             if (argument == null || !(argument instanceof Request)) {
