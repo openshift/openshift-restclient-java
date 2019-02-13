@@ -14,7 +14,7 @@ package com.openshift.internal.restclient;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -22,6 +22,9 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.jboss.dmr.ModelNode;
@@ -29,7 +32,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import com.openshift.internal.restclient.DefaultClient.HttpMethod;
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
@@ -39,7 +44,6 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.model.JSONSerializeable;
 
-import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import okio.Buffer;
@@ -59,48 +63,54 @@ public class DefaultClientTest extends TypeMapperFixture {
     private Pod podBackEnd;
     private IResourceFactory factory;
     private URL baseUrl;
+    private String podsResourceUrl = TypeMapperFixture.base + "/api/v1/namespaces/aNamespace/pods";
+    private String podFrontEndResourceUrl = TypeMapperFixture.base + "/api/v1/namespaces/aNamespace/pods/frontend";
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        this.baseUrl = new URL("http://myopenshift");
+        this.baseUrl = new URL(TypeMapperFixture.base);
         givenAClient();
-        givenAPodList();
-        getHttpClient().whenRequestTo(TypeMapperFixture.base + "/api/v1/namespaces/aNamespace/pods")
+        givenAPodListResponse();
+        getHttpClient().whenRequestTo(podsResourceUrl)
                 .thenReturn(responseOf(response.toJSONString(false)));
     }
 
     private void givenAClient() throws Exception {
-        factory = new ResourceFactory(null);
-        client = (DefaultClient) getIClient();
-        factory = client.getResourceFactory();
+        this.client = (DefaultClient) getIClient();
+        this.factory = client.getResourceFactory();
     }
 
-    private void givenAPodList() {
-        this.podFrontEnd = factory.create(VERSION, ResourceKind.POD);
-        podFrontEnd.setName("frontend");
-        podFrontEnd.setNamespace("aNamespace");
-        podFrontEnd.addLabel("name", "frontend");
-        podFrontEnd.addLabel("env", "production");
-
-        this.podBackEnd = factory.create(VERSION, ResourceKind.POD);
-        podBackEnd.setName("backend");
-        podBackEnd.setNamespace("aNamespace");
-        podBackEnd.addLabel("name", "backend");
-        podBackEnd.addLabel("env", "production");
-
-        Pod otherPod = factory.create(VERSION, ResourceKind.POD);
-        otherPod.setName("other");
-        otherPod.setNamespace("aNamespace");
-        otherPod.addLabel("env", "production");
-
+    private void givenAPodListResponse() {
         this.response = new ModelNode();
         response.get("apiVersion").set(VERSION);
         response.get("kind").set("PodList");
         ModelNode items = response.get("items");
+
+        this.podFrontEnd = givenAPod("frontend", "aNamespace", 
+                new AbstractMap.SimpleEntry<String, String>("name", "frontend"),
+                new AbstractMap.SimpleEntry<String, String>("env", "production"));
         items.add(podFrontEnd.getNode());
+
+        Pod otherPod = givenAPod("other", "aNamespace", 
+                new AbstractMap.SimpleEntry<String, String>("env", "production"));
         items.add(otherPod.getNode());
+
+        this.podBackEnd = givenAPod("backend", "aNamespace",
+                new AbstractMap.SimpleEntry<String, String>("name", "backend"),
+                new AbstractMap.SimpleEntry<String, String>("env", "production"));
         items.add(podBackEnd.getNode());
+    }
+
+    @SafeVarargs
+    private final Pod givenAPod(final String name, final String namespace, final Map.Entry<String, String>... labels) {
+        Pod pod = factory.create(VERSION, ResourceKind.POD);
+        pod.setName(name);
+        pod.setNamespace(namespace);
+        if (labels != null) {
+            Arrays.stream(labels).forEach(entry -> pod.addLabel(entry.getKey(), entry.getValue()));
+        }
+        return pod;
     }
 
     private DefaultClient givenClient(URL baseUrl, String token, String user) {
@@ -211,7 +221,7 @@ public class DefaultClientTest extends TypeMapperFixture {
         DefaultClient client = spy(this.client);
 
         Builder builder = givenRequestBuilder(client);
-        ArgumentCaptor<RequestBody> builderCaptor = ArgumentCaptor.forClass(RequestBody.class);
+        ArgumentCaptor<RequestBody> bodyCaptor = ArgumentCaptor.forClass(RequestBody.class);
 
         // when
         client.execute(givenTypeFactory(), HttpMethod.GET.toString(), 
@@ -219,8 +229,8 @@ public class DefaultClientTest extends TypeMapperFixture {
                 givenJsonPayload("{prop1:\"val1\"}"), null);
 
         // then
-        verify(builder).method(anyString(), builderCaptor.capture());
-        assertThat(builderCaptor.getValue()).isNull();
+        verify(builder).method(anyString(), bodyCaptor.capture());
+        assertThat(bodyCaptor.getValue()).isNull();
     }
 
     @Test
@@ -229,7 +239,7 @@ public class DefaultClientTest extends TypeMapperFixture {
         DefaultClient client = spy(this.client);
 
         Builder builder = givenRequestBuilder(client);
-        ArgumentCaptor<RequestBody> builderCaptor = ArgumentCaptor.forClass(RequestBody.class);
+        ArgumentCaptor<RequestBody> bodyCaptor = ArgumentCaptor.forClass(RequestBody.class);
 
         // when
         client.execute(givenTypeFactory(), HttpMethod.HEAD.toString(), 
@@ -237,10 +247,29 @@ public class DefaultClientTest extends TypeMapperFixture {
                 givenJsonPayload("{prop1:\"val1\"}"), null);
 
         // then
-        verify(builder).method(anyString(), builderCaptor.capture());
-        assertThat(builderCaptor.getValue()).isNull();
+        verify(builder).method(anyString(), bodyCaptor.capture());
+        assertThat(bodyCaptor.getValue()).isNull();
     }
 
+    @Test
+    public void should_not_send_resource_payload_when_deleting() throws IOException {
+        // given
+        DefaultClient client = spy(this.client);
+        getHttpClient()
+            .whenRequestTo(podFrontEndResourceUrl)
+            .thenReturn(responseOf(response.toJSONString(false)));
+        
+        Builder builder = givenRequestBuilder(client);
+        ArgumentCaptor<RequestBody> bodyCaptor = ArgumentCaptor.forClass(RequestBody.class);
+
+        // when
+        client.delete(this.podFrontEnd);
+
+        // then
+        verify(builder).method(anyString(), bodyCaptor.capture());
+        assertThat(bodyCaptor.getValue().contentLength()).isEqualTo(0);        
+    }
+    
     private String getPayload(Builder builder, ArgumentCaptor<RequestBody> builderCaptor) throws IOException {
         verify(builder).method(anyString(), builderCaptor.capture());
         RequestBody requestBody = builderCaptor.getValue();
@@ -249,13 +278,24 @@ public class DefaultClientTest extends TypeMapperFixture {
         requestBody.writeTo(buffer);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         buffer.copyTo(out);
-        String requestBodyPayload = new String(out.toByteArray());
-        return requestBodyPayload;
+        return new String(out.toByteArray());
     }
 
     private Builder givenRequestBuilder(DefaultClient client) {
-        Builder builder = spy(new Request.Builder().url(this.baseUrl));
-        doReturn(builder).when(client).newRequestBuilderTo(anyString(), anyString());
+        final Builder builder = spy(new Builder());
+        doAnswer(new Answer<Builder>() {
+
+            @Override
+            public Builder answer(InvocationOnMock invocation) throws Throwable {
+                assertThat(invocation.getArguments()).isNotNull().hasSize(2);
+
+                // set builder url that was given as parameter
+                String endpoint = (String) invocation.getArguments()[0];
+                builder.url(endpoint);
+                return builder;
+            }
+        })
+        .when(client).newRequestBuilderTo(anyString(), anyString());
         return builder;
     }
 
