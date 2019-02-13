@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Red Hat, Inc.
+ * Copyright (c) 2016-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -19,6 +19,7 @@ import java.io.StringReader;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.restclient.model.kubeclient.ICluster;
 import com.openshift.restclient.model.kubeclient.IContext;
 import com.openshift.restclient.model.kubeclient.IKubeClientConfig;
@@ -53,7 +54,7 @@ public class KubeClientConfigTest {
         assertEquals(4, config.getContexts().size());
         IContext context = config.getContexts().iterator().next();
         assertNotNull(context);
-        assertEquals("default", context.getNamespace());
+        assertEquals(IntegrationTestHelper.getDefaultNamespace(), context.getNamespace());
         assertEquals("10-3-9-15:8443", context.getCluster());
         assertEquals("jcantril@redhat.com/10-3-9-15:8443", context.getUser());
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,8 +11,7 @@
 
 package com.openshift.restclient;
 
-import static com.openshift.internal.restclient.IntegrationTestHelper.cleanUpResource;
-import static org.junit.Assert.assertArrayEquals;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -40,36 +39,41 @@ public class WatchClientIntegrationTest {
     private IntegrationTestHelper helper = new IntegrationTestHelper();
     private IClient client;
     private IResource project;
-    public static final String[] KINDS = new String[] { ResourceKind.BUILD_CONFIG, ResourceKind.DEPLOYMENT_CONFIG,
-        ResourceKind.SERVICE, ResourceKind.POD, ResourceKind.REPLICATION_CONTROLLER, ResourceKind.BUILD,
-        ResourceKind.IMAGE_STREAM, ResourceKind.ROUTE };
+    public static final String[] KINDS = new String[] { 
+        ResourceKind.BUILD_CONFIG,
+        ResourceKind.DEPLOYMENT_CONFIG,
+        ResourceKind.SERVICE,
+        ResourceKind.POD,
+        ResourceKind.REPLICATION_CONTROLLER, 
+        ResourceKind.BUILD,
+        ResourceKind.IMAGE_STREAM, 
+        ResourceKind.ROUTE
+        };
 
-    private ExecutorService service;
+    private ExecutorService executor;
     private boolean isError;
+
+    private IService service;
 
     @Before
     public void setup() {
-        service = Executors.newSingleThreadScheduledExecutor();
-        client = helper.createClientForBasicAuth();
-        IResource projRequest = client.getResourceFactory().stub(ResourceKind.PROJECT_REQUEST,
-                helper.generateNamespace());
-        project = client.create(projRequest);
+        this.executor = Executors.newSingleThreadScheduledExecutor();
+        this.client = helper.createClientForBasicAuth();
+        this.project = helper.getOrCreateIntegrationTestProject(client);
+        // kill existing service to avoid name clash
     }
 
     @After
     public void teardown() {
-        cleanUpResource(client, project);
-        service.shutdownNow();
+        executor.shutdownNow();
     }
 
-    @SuppressWarnings("rawtypes")
-    @Test(timeout = 60000)
+    @Test(timeout = IntegrationTestHelper.TEST_TIMEOUT)
     public void test() throws Exception {
-        List results = new ArrayList();
+        List<ChangeType> results = new ArrayList<>();
         CountDownLatch latch = new CountDownLatch(KINDS.length);
         IOpenShiftWatchListener listener = new IOpenShiftWatchListener() {
 
-            @SuppressWarnings("unchecked")
             @Override
             public void received(IResource resource, ChangeType change) {
                 results.add(change);
@@ -98,20 +102,23 @@ public class WatchClientIntegrationTest {
             watcher = client.watch(project.getName(), listener, KINDS);
             latch.await();
             assertFalse("Expected connection without error", isError);
-            IService service = client.getResourceFactory().stub(ResourceKind.SERVICE, "hello-world", project.getName());
-            service.addPort(8080, 8080);
-            service = client.create(service);
-            service.addLabel("foo", "bar");
-            service = client.update(service);
-            client.delete(service);
-            assertArrayEquals(new ChangeType[] { ChangeType.ADDED, ChangeType.MODIFIED, ChangeType.DELETED },
-                    results.toArray());
+            IService stub = helper.stubService(client,
+                    project.getNamespaceName(), 
+                    IntegrationTestHelper.appendRandom("hello-openshift"),
+                    8787, 8787, 
+                    "");
+            this.service = client.create(stub);
+            this.service.addLabel("foo", "bar");
+            this.service = client.update(service);
+            client.delete(stub);
+            this.service = null;
+            assertThat(results).containsExactly(
+                    ChangeType.ADDED, 
+                    ChangeType.MODIFIED, 
+                    ChangeType.DELETED);
             assertEquals(0, latch.getCount());
         } finally {
-            if (watcher != null) {
-                watcher.stop();
-            }
+            helper.stopWatcher(watcher);
         }
     }
-
 }

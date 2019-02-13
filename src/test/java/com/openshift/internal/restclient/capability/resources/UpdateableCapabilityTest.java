@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
@@ -38,14 +39,14 @@ public class UpdateableCapabilityTest {
     @Before
     public void setup() {
         when(client.getOpenShiftAPIVersion()).thenReturn("v1");
-        factory = new ResourceFactory(client);
-        service = factory.stub(ResourceKind.SERVICE, "foo", "default");
+        this.factory = new ResourceFactory(client);
+        this.service = factory.stub(ResourceKind.SERVICE, "foo", IntegrationTestHelper.getDefaultNamespace());
         service.setAnnotation("foo", "bar");
     }
 
     @Test
     public void testUpdateCapability() {
-        IService target = factory.stub(ResourceKind.SERVICE, "foo", "default");
+        IService target = factory.stub(ResourceKind.SERVICE, "foo", IntegrationTestHelper.getDefaultNamespace());
         target.setAnnotation("foo", "xyz");
 
         service.accept(new CapabilityVisitor<IUpdatable, IService>() {

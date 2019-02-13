@@ -1,6 +1,6 @@
 package com.openshift.internal.restclient.capability.resources;
 /*******************************************************************************
- * Copyright (c) 2015-2018 Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -33,19 +33,17 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.api.capabilities.PodExecIntegrationTest;
-import com.openshift.internal.restclient.model.Pod;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.api.capabilities.IPodExec;
 import com.openshift.restclient.capability.CapabilityVisitor;
-import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.IBinaryCapability.SkipTlsVerify;
 import com.openshift.restclient.capability.IStoppable;
 import com.openshift.restclient.capability.resources.IRSyncable;
 import com.openshift.restclient.capability.resources.IRSyncable.LocalPeer;
 import com.openshift.restclient.capability.resources.IRSyncable.Peer;
 import com.openshift.restclient.capability.resources.IRSyncable.PodPeer;
-import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.IPod;
 
 /**
  * 
@@ -53,9 +51,10 @@ import com.openshift.restclient.model.IResource;
  *
  */
 public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
-    private static final String TARGET_FOLDER_WITH_SPECIAL_CHARS = "/tmp/OpenshiftBinaryRSyncRetrievalIntegrationTest/with sp@cé/";
-    private static final String FILE_NAME_SPECIAL_CHARS = "test with spéci@l characters and spaces";
-    private static final String SOURCE_FOLDER_WITH_SPECIAL_CHARS = "with sp@cé in path";
+    // rsync now reports special characters as octal UTF-8: 'é' -> octal utf8: \\0303\\0251, hex utf8: \u00e9
+    private static final String TARGET_FOLDER_WITH_SPECIAL_CHARS = "/tmp/OpenshiftBinaryRSyncRetrievalIntegrationTest/with sp@ce/";
+    private static final String FILE_NAME_SPECIAL_CHARS = "test with speci@l characters and spaces";
+    private static final String SOURCE_FOLDER_WITH_SPECIAL_CHARS = "with sp@ce in path";
 
     private static final String NORMAL_TARGET_TMP = "/tmp/OpenshiftBinaryRSyncRetrievalIntegrationTest/withoutspace/";
     private static final String NORMAL_FILE_NAME = "normalFileName";
@@ -69,17 +68,16 @@ public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-    private Pod pod;
-    private String podFolderToClean = null;
+    private IPod pod;
+    private String podFolderToClean;
 
     @Before
     public void setUp() throws Exception {
         // given
-        System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
-        client = helper.createClientForBasicAuth();
-
-        List<IResource> pods = client.list(ResourceKind.POD, "default");
-        pod = (Pod) pods.stream().filter(p -> p.getName().startsWith("docker-registry")).findFirst().orElse(null);
+        this.helper.setOpenShiftBinarySystemProperty();
+        this.client = helper.createClientForBasicAuth();
+        List<IPod> allPods = client.list(ResourceKind.POD, IntegrationTestHelper.getDefaultNamespace());
+        this.pod = helper.getDockerRegistryPod(allPods);
         assertNotNull("Did not find the registry pod to which to rsync", pod);
     }
 

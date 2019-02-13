@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -31,7 +31,6 @@ import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync;
 import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync.IPodLogListener;
 import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync.Options;
 import com.openshift.restclient.model.IPod;
-import com.openshift.restclient.model.IResource;
 
 public class PodLogRetrievalAsyncIntegrationTest {
 
@@ -44,8 +43,8 @@ public class PodLogRetrievalAsyncIntegrationTest {
     public void testAsyncLogRetrieval() throws Exception {
         latch = new CountDownLatch(2);
         DefaultClient client = (DefaultClient) helper.createClientForBasicAuth();
-        List<IResource> pods = client.list(ResourceKind.POD, "default");
-        IPod pod = (IPod) pods.stream().filter(p -> p.getName().startsWith("docker-registry")).findFirst().orElse(null);
+        List<IPod> allPods = client.list(ResourceKind.POD, IntegrationTestHelper.getDefaultNamespace());
+        IPod pod = helper.getDockerRegistryPod(allPods);
         assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
 
         final String container = pod.getContainers().iterator().next().getName();

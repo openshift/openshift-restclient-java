@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -32,6 +32,7 @@ import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.api.capabilities.IScalable;
 import com.openshift.restclient.apis.autoscaling.models.IScale;
 import com.openshift.restclient.capability.CapabilityVisitor;
+import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IReplicationController;
 import com.openshift.restclient.model.IResource;
@@ -45,42 +46,40 @@ public class ScaleCapabilityIntegrationTest {
     private IWatcher watch;
     private CountDownLatch initializationLatch = new CountDownLatch(2);
     private CountDownLatch replicaLatch = new CountDownLatch(1);
-    private IReplicationController dc;
+    private IReplicationController rc;
     private AtomicBoolean foundFirstPod = new AtomicBoolean(false);
     private PodStatusRunningConditional conditional = new PodStatusRunningConditional();
 
     @Before
     public void setUp() throws Exception {
-        client = helper.createClientForBasicAuth();
-        project = helper.generateProject(client);
+        this.client = helper.createClientForBasicAuth();
+        this.project = helper.getOrCreateIntegrationTestProject(client);
     }
 
     @After
     public void teardown() throws Exception {
-        if (watch != null) {
-            try {
-                watch.stop();
-            } catch (Exception e) {
-                // swallow
-            }
-        }
-        IntegrationTestHelper.cleanUpResource(client, project);
+        helper.stopWatcher(watch);
+        helper.cleanUpResource(client, rc);
+        // remove all pods that were created by the rc/dc
+        helper.cleanUpResource(client, client.get(ResourceKind.POD, project.getNamespaceName()));
     }
 
-    @Test(timeout = 3 * 1000 * 60)
+    @Test(timeout = IntegrationTestHelper.TEST_LONG_TIMEOUT)
     public void testScalingReplicationController() throws Exception {
-        dc = client.create(IntegrationTestHelper.stubReplicationController(client, project));
+        this.rc = client.create(helper.stubReplicationController(client, 
+                project.getNamespaceName(), IntegrationTestHelper.appendRandom("test-rc")));
         runTest();
     }
 
-    @Test(timeout = 3 * 1000 * 60)
+    @Test(timeout = IntegrationTestHelper.TEST_LONG_TIMEOUT)
     public void testScalingDeploymentConfig() throws Exception {
-        dc = client.create(IntegrationTestHelper.stubDeploymentConfig(client, project));
+        this.rc = client.create(helper.stubDeploymentConfig(client,
+                project.getNamespaceName(), IntegrationTestHelper.appendRandom("test-dc")));
         runTest();
     }
 
     private void runTest() throws Exception {
-        watch = client.watch(project.getName(), new IOpenShiftWatchListener() {
+        this.watch = client.watch(project.getName(), new IOpenShiftWatchListener() {
 
             @Override
             public void connected(List<IResource> resources) {
@@ -89,12 +88,15 @@ public class ScaleCapabilityIntegrationTest {
 
             @Override
             public void disconnected() {
-
             }
 
             @Override
             public void received(IResource resource, ChangeType change) {
-                if (ChangeType.MODIFIED.equals(change) && !resource.getName().endsWith("deploy")
+                if (!(resource instanceof IPod)
+                        || helper.isDeployPod(((IPod) resource))) {
+                    return;
+                }
+                if (ChangeType.MODIFIED.equals(change) 
                         && conditional.isReady(resource)) {
                     if (foundFirstPod.get()) {
                         replicaLatch.countDown();
@@ -107,22 +109,19 @@ public class ScaleCapabilityIntegrationTest {
 
             @Override
             public void error(Throwable err) {
-
             }
 
         }, ResourceKind.POD);
 
         if (initializationLatch.await(1, TimeUnit.MINUTES)) {
             scaleTo(REPLICAS);
-            assertTrue("The pods either did not scale as expected or the test timed out",
+            assertTrue("The pods either did not scale to " + REPLICAS + " replicas or the test timed out",
                     replicaLatch.await(2, TimeUnit.MINUTES));
         }
-        ;
-
     }
 
     private void scaleTo(int replicas) {
-        IScale result = dc.accept(new CapabilityVisitor<IScalable, IScale>() {
+        IScale result = rc.accept(new CapabilityVisitor<IScalable, IScale>() {
 
             @Override
             public IScale visit(IScalable capability) {

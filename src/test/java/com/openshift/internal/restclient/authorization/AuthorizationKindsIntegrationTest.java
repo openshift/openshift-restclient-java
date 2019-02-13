@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2016 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+* Copyright (c) 2016-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
 * All rights reserved. This program is made available under the terms of the
 * Eclipse Public License v1.0 which accompanies this distribution, and is
 * available at http://www.eclipse.org/legal/epl-v10.html
@@ -33,18 +33,18 @@ public class AuthorizationKindsIntegrationTest {
 
     @Test
     public void testListRolesAssumingClusterAdmin() {
-        List<IRole> roles = client.list(ResourceKind.ROLE, "default");
+        List<IRole> roles = client.list(ResourceKind.ROLE, IntegrationTestHelper.getDefaultNamespace());
         assertThat(roles).isNotEmpty();
     }
 
     @Test
     public void testListPoliciesAssumingClusterAdmin() {
-        client.list(ResourceKind.POLICY, "default");
+        client.list(ResourceKind.POLICY, IntegrationTestHelper.getDefaultNamespace());
     }
 
     @Test
     public void testListPolicyBindingsAssumingClusterAdmin() {
-        client.list(ResourceKind.POLICY_BINDING, "default");
+        client.list(ResourceKind.POLICY_BINDING, IntegrationTestHelper.getDefaultNamespace());
     }
 
 }

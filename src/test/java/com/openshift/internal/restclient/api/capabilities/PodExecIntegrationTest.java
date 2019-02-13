@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -34,7 +34,6 @@ import com.openshift.restclient.api.capabilities.IPodExec;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IStoppable;
 import com.openshift.restclient.model.IPod;
-import com.openshift.restclient.model.IResource;
 
 public class PodExecIntegrationTest {
 
@@ -103,8 +102,8 @@ public class PodExecIntegrationTest {
     @Before
     public void setUp() throws Exception {
         IClient client = helper.createClientForBasicAuth();
-        List<IResource> pods = client.list(ResourceKind.POD, "default");
-        pod = (IPod) pods.stream().filter(p -> p.getName().startsWith("docker-registry")).findFirst().orElse(null);
+        List<IPod> allPods = client.list(ResourceKind.POD, IntegrationTestHelper.getDefaultNamespace());
+        this.pod = helper.getDockerRegistryPod(allPods);
         assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
     }
 
