@@ -14,6 +14,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
@@ -31,17 +32,20 @@ public class AuthorizationKindsIntegrationTest {
         client = helper.createClientForBasicAuth();
     }
 
+    @Ignore("Role endpoint was deprecated in v1")
     @Test
     public void testListRolesAssumingClusterAdmin() {
         List<IRole> roles = client.list(ResourceKind.ROLE, IntegrationTestHelper.getDefaultNamespace());
         assertThat(roles).isNotEmpty();
     }
 
+    @Ignore("Policy endpoint was deprecated in v1")
     @Test
     public void testListPoliciesAssumingClusterAdmin() {
         client.list(ResourceKind.POLICY, IntegrationTestHelper.getDefaultNamespace());
     }
 
+    @Ignore("PolicyBinding endpoint was deprecated in v1")
     @Test
     public void testListPolicyBindingsAssumingClusterAdmin() {
         client.list(ResourceKind.POLICY_BINDING, IntegrationTestHelper.getDefaultNamespace());
