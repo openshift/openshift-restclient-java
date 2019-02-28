@@ -145,7 +145,6 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     @Override
     public <T extends IResource> List<T> list(String kind, String namespace, Map<String, String> labels) {
-
         String labelQuery = "";
         if (labels != null && !labels.isEmpty()) {
             labelQuery = labels.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(joining(","));
@@ -156,7 +155,6 @@ public class DefaultClient implements IClient, IHttpConstants {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends IResource> List<T> list(String kind, String namespace, String labelQuery) {
-
         Map<String, String> params = new HashMap<>();
         if (labelQuery != null && !labelQuery.isEmpty()) {
             params.put("labelSelector", labelQuery);
@@ -390,7 +388,12 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     @Override
     public <T extends IResource> void delete(T resource) {
-        execute(HttpMethod.DELETE, resource.getKind(), resource.getNamespaceName(), resource.getName(), null, null);
+        delete(resource.getKind(), resource.getNamespaceName(), resource.getName());
+    }
+
+    @Override
+    public void delete(String resourceKind, String namespaceName, String name) {
+        execute(HttpMethod.DELETE, resourceKind, namespaceName, name, null, null);
     }
 
     @Override

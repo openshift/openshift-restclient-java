@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,6 +12,8 @@
 package com.openshift.internal.restclient.capability.resources;
 
 import static org.junit.Assert.assertNotNull;
+
+import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
@@ -34,42 +36,43 @@ import com.openshift.restclient.model.build.IBuildConfigBuilder;
 public class BuildCapabilitiesIntegrationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(BuildCapabilitiesIntegrationTest.class);
-    private IBuildConfig config;
+    private IBuildConfig bc;
+    private IImageStream is;
     private IntegrationTestHelper helper = new IntegrationTestHelper();
     private IProject project;
     private IClient client;
 
     @Before
     public void setUp() throws Exception {
-        client = helper.createClientForBasicAuth();
-        project = helper.generateProject(client);
+        this.client = helper.createClientForBasicAuth();
+        this.project = helper.getOrCreateIntegrationTestProject(client);
 
         // an output imagestream
-        IImageStream is = client.getResourceFactory().stub(ResourceKind.IMAGE_STREAM, "ruby-hello-world",
-                project.getName());
+        IImageStream is = client.getResourceFactory().stub(
+                ResourceKind.IMAGE_STREAM, IntegrationTestHelper.appendRandom("ruby-hello-world"), project.getName());
         LOG.debug("Creating imagestream {}", is);
-        is = client.create(is);
+        this.is = client.create(is);
         LOG.debug("Generated imagestream {}", is);
 
         // a buildconfig
         IBuildConfigBuilder builder = client.adapt(IBuildConfigBuilder.class);
         assertNotNull("Exp. the client to be able to use a buildconfigbuilder", builder);
-        config = builder.named("hello-openshift").inNamespace(project.getName()).fromGitSource()
-                .fromGitUrl("https://github.com/openshift/ruby-hello-world.git").end().usingSourceStrategy()
-                .fromDockerImage("centos/ruby-22-centos7:latest").end().toImageStreamTag("ruby-hello-world:latest")
-                .build();
-        LOG.debug("Creating BuildConfig {}", config);
-        config = client.create(config);
-        LOG.debug("Created BuildConfig {}", config);
-        assertNotNull(config);
+        LOG.debug("Creating BuildConfig {}", bc);
+        this.bc = client.create(
+                helper.stubBuildConfig(client, 
+                        project.getNamespaceName(),
+                        IntegrationTestHelper.appendRandom("test-bc"), 
+                        "https://github.com/openshift/ruby-hello-world.git", 
+                        Collections.emptyMap()));
+        LOG.debug("Created BuildConfig {}", bc);
+        assertNotNull(bc);
     }
 
     @Test
     public void testBuildActions() {
-
         // trigger the build
         LOG.debug("Triggering build from the buildconfig...");
-        IBuild build = config.accept(new CapabilityVisitor<IBuildTriggerable, IBuild>() {
+        IBuild build = bc.accept(new CapabilityVisitor<IBuildTriggerable, IBuild>() {
             @Override
             public IBuild visit(IBuildTriggerable capability) {
                 return capability.trigger();
@@ -116,7 +119,7 @@ public class BuildCapabilitiesIntegrationTest {
 
     @After
     public void tearDown() {
-        IntegrationTestHelper.cleanUpResource(client, project);
+        helper.cleanUpResources(client, bc, is);
     }
 
 }

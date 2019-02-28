@@ -60,11 +60,11 @@ public class ScaleCapability extends AbstractCapability implements IScalable {
     @Override
     public IScale scaleTo(int replicas) {
         replicas = replicas >= MIN_VALUE ? replicas : MIN_VALUE;
-        IScale arg = (IScale) factory.stubKind(ARG_KINDS.get(rc.getKind()), Optional.of(rc.getName()),
+        IScale scale = (IScale) factory.stubKind(ARG_KINDS.get(rc.getKind()), Optional.of(rc.getName()),
                 Optional.of(rc.getNamespaceName()));
-        arg.setSpecReplicas(replicas);
-        return (IScale) client.execute(factory, IHttpConstants.PUT, rc.getKind(), rc.getNamespaceName(), rc.getName(),
-                CAPABILITY, null, arg, Collections.emptyMap());
+        scale.setSpecReplicas(replicas);
+        return client.execute(factory, IHttpConstants.PUT, rc.getKind(), rc.getNamespaceName(), rc.getName(),
+                CAPABILITY, null, scale, Collections.emptyMap());
     }
 
 }

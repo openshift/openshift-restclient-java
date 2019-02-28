@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Red Hat, Inc.
+ * Copyright (c) 2016-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -36,34 +36,35 @@ public class ImageStreamImportCapabilityIntegrationTest {
     private IProject project;
     private IClient client;
     private IntegrationTestHelper helper = new IntegrationTestHelper();
+    private IImageStreamImport imageStreamImport;
 
     @Before
     public void setUp() throws Exception {
-        client = helper.createClientForBasicAuth();
-        project = helper.generateProject(client);
-        cap = new ImageStreamImportCapability(project, client);
+        this.client = helper.createClientForBasicAuth();
+        this.project = helper.getOrCreateIntegrationTestProject(client);
+        this.cap = new ImageStreamImportCapability(project, client);
     }
 
     @After
     public void tearDown() {
-        IntegrationTestHelper.cleanUpResource(client, project);
+        helper.cleanUpResource(client, imageStreamImport);
     }
 
     @Test
     public void testImportImageForExistingImage() {
         DockerImageURI image = new DockerImageURI("openshift/hello-openshift");
-        IImageStreamImport imported = cap.importImageMetadata(image);
-        assertNotNull(imported);
-        IStatus status = imported.getImageStatus().iterator().next();
+        this.imageStreamImport = cap.importImageMetadata(image);
+        assertNotNull(imageStreamImport);
+        IStatus status = imageStreamImport.getImageStatus().iterator().next();
         assertTrue(status.isSuccess());
     }
 
     @Test
     public void testImportImageForUnknownImage() {
         DockerImageURI image = new DockerImageURI("openshift/hello-openshifts");
-        IImageStreamImport imported = cap.importImageMetadata(image);
-        Assert.assertNotNull(imported);
-        IStatus status = imported.getImageStatus().iterator().next();
+        this.imageStreamImport = cap.importImageMetadata(image);
+        Assert.assertNotNull(imageStreamImport);
+        IStatus status = imageStreamImport.getImageStatus().iterator().next();
         assertEquals(IHttpConstants.STATUS_UNAUTHORIZED, status.getCode()); // exp code when image does not exist
     }
 

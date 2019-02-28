@@ -214,6 +214,17 @@ public interface IClient extends ICapable, Cloneable {
     <T extends IResource> void delete(T resource);
 
     /**
+     * Deletes a resource of  given name and kind in the given namespace.
+     * 
+     * @param kind the kind of resource
+     * @param namespace the namespace 
+     * @param name the name of the resource
+     * @throws UnsupportedOperationException
+     *             if the resource is a list
+     */
+    void delete(String kind, String namespace, String name);
+    
+    /**
      * Raw execution of a request
      * 
      * @param httpMethod

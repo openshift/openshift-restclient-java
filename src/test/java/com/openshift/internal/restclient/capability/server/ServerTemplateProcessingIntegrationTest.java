@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -15,17 +15,19 @@ import static org.junit.Assert.assertFalse;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.jboss.dmr.ModelNode;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
+import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IProject;
@@ -37,51 +39,57 @@ public class ServerTemplateProcessingIntegrationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServerTemplateProcessingIntegrationTest.class);
 
-    private IClient client;
     private IntegrationTestHelper helper = new IntegrationTestHelper();
-
+    private IClient client;
     private IProject project;
+    private Collection<IResource> resources = new ArrayList<IResource>();
 
     @Before
-    public void setup() throws MalformedURLException {
-        client = helper.createClientForBasicAuth();
-        String namespace = helper.generateNamespace();
-        client.create(client.getResourceFactory().stub(ResourceKind.PROJECT_REQUEST, namespace));
-        project = client.get(ResourceKind.PROJECT, namespace, "");
+    public void before() throws MalformedURLException {
+        this.client = helper.createClientForBasicAuth();
+        this.project = helper.getOrCreateIntegrationTestProject(client);
+    }
+
+    @After
+    public void after() {
+        helper.cleanUpResources(client, resources);
     }
 
     @Test
     public void testProcessAndApplyTemplate() throws Exception {
-        final Collection<IResource> results = new ArrayList<IResource>();
         ModelNode node = ModelNode.fromJSONString(Samples.V1_TEMPLATE.getContentAsString());
         final Template template = new Template(node, client, null);
         template.setNamespace(null);
-        try {
-            client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {
+        client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {
 
-                @Override
-                public Object visit(ITemplateProcessing capability) {
+            @Override
+            public Object visit(ITemplateProcessing capability) {
 
-                    LOG.debug("Processing template: {}", template.toJson());
-                    assertFalse("Exp. the template to have items for this test be interesting",
-                            template.getObjects().isEmpty());
-                    final int items = template.getObjects().size();
-                    ITemplate processedTemplate = capability.process(template, project.getName());
+                LOG.debug("Processing template: {}", template.toJson());
+                assertFalse("Exp. the template to have items for this test be interesting",
+                        template.getObjects().isEmpty());
+                final int items = template.getObjects().size();
+                ITemplate processedTemplate = capability.process(template, project.getName());
 
-                    LOG.debug("Applying template: {}", processedTemplate.toJson());
-                    LOG.debug("Applied template");
-                    assertEquals("Exp. the pre and post item count to be the same", items,
-                            template.getObjects().size());
-                    for (IResource resource : processedTemplate.getObjects()) {
-                        LOG.debug("creating: {}", resource);
-                        results.add(client.create(resource, project.getName()));
-                        LOG.debug("created: {}", resource.toJson());
-                    }
-                    return null;
-                }
-            }, new Object());
-        } finally {
-            IntegrationTestHelper.cleanUpResource(client, project);
-        }
+                LOG.debug("Applying template: {}", processedTemplate.toJson());
+                LOG.debug("Applied template");
+                assertEquals("Exp. the pre and post item count to be the same", 
+                        items,
+                        template.getObjects().size());
+                Collection<IResource> stubs = processedTemplate.getObjects();
+                ServerTemplateProcessingIntegrationTest.this.resources = 
+                        stubs.stream()
+                            .map(stub -> {
+                                // resources as in template dont have a namespace
+                                ((KubernetesResource) stub).setNamespace(project.getNamespaceName());
+                                LOG.debug("creating: {}", stub);
+                                IResource resource = client.create(stub);
+                                LOG.debug("created: {}", resource.toJson());
+                                return resource;
+                            })
+                            .collect(Collectors.toList());
+                return null;
+            }
+        }, new Object());
     }
 }

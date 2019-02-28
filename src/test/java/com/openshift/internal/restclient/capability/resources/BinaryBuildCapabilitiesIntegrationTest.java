@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Red Hat, Inc.
+ * Copyright (c) 2018-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -25,12 +25,10 @@ import org.slf4j.LoggerFactory;
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
-import com.openshift.restclient.IOpenShiftWatchListener.ChangeType;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.resources.IBinaryBuildTriggerable;
 import com.openshift.restclient.capability.resources.IBuildCancelable;
-import com.openshift.restclient.capability.resources.IBuildTriggerable;
 import com.openshift.restclient.model.IBuild;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IImageStream;
@@ -41,42 +39,47 @@ import com.openshift.restclient.model.build.IBuildConfigBuilder;
 public class BinaryBuildCapabilitiesIntegrationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(BinaryBuildCapabilitiesIntegrationTest.class);
-    private IBuildConfig config;
     private IntegrationTestHelper helper = new IntegrationTestHelper();
-    private IProject project;
     private IClient client;
+    private IProject project;
+    private IImageStream is;
+    private IBuildConfig bc;
+    private IBuild build;
 
     @Before
     public void setUp() throws Exception {
         client = helper.createClientForBasicAuth();
-        project = helper.generateProject(client);
+        project = helper.getOrCreateIntegrationTestProject(client);
 
         // an output imagestream
         IImageStream is = client.getResourceFactory().stub(ResourceKind.IMAGE_STREAM, "rest-spring-boot",
                 project.getName());
         LOG.debug("Creating imagestream {}", is);
-        is = client.create(is);
+        this.is = client.create(is);
         LOG.debug("Generated imagestream {}", is);
 
         // a buildconfig
         IBuildConfigBuilder builder = client.adapt(IBuildConfigBuilder.class);
         assertNotNull("Exp. the client to be able to use a buildconfigbuilder", builder);
-        config = builder.named("rest-spring-boot").inNamespace(project.getName()).fromBinarySource().end()
+        IBuildConfig bcStup = builder.named(IntegrationTestHelper.appendRandom("rest-spring-boot"))
+                .inNamespace(project.getName())
+                .fromBinarySource()
+                .end()
                 .usingSourceStrategy()
                 .fromDockerImage("registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift").end()
-                .toImageStreamTag("rest-spring-boot:latest").build();
-        LOG.debug("Creating BuildConfig {}", config);
-        config = client.create(config);
-        LOG.debug("Created BuildConfig {}", config);
-        assertNotNull(config);
+                .toImageStreamTag("rest-spring-boot:latest")
+                .build();
+        LOG.debug("Creating BuildConfig {}", bcStup);
+        this.bc = client.create(bcStup);
+        LOG.debug("Created BuildConfig {}", bc);
+        assertNotNull(bc);
     }
 
     @Test
     public void testBuildActions() throws InterruptedException {
-
         // trigger the build
         LOG.debug("Triggering build from the buildconfig...");
-        IBuild build = config.accept(new CapabilityVisitor<IBinaryBuildTriggerable, IBuild>() {
+        IBuild build = bc.accept(new CapabilityVisitor<IBinaryBuildTriggerable, IBuild>() {
             @Override
             public IBuild visit(IBinaryBuildTriggerable capability) {
                 return capability.triggerBinary(
@@ -99,7 +102,7 @@ public class BinaryBuildCapabilitiesIntegrationTest {
         LOG.debug("Canceled build {}", build);
 
         // trigger a new build and wait for completion
-        build = config.accept(new CapabilityVisitor<IBinaryBuildTriggerable, IBuild>() {
+        this.build = bc.accept(new CapabilityVisitor<IBinaryBuildTriggerable, IBuild>() {
             @Override
             public IBuild visit(IBinaryBuildTriggerable capability) {
                 return capability.triggerBinary(
@@ -123,7 +126,7 @@ public class BinaryBuildCapabilitiesIntegrationTest {
 
     @After
     public void tearDown() {
-        IntegrationTestHelper.cleanUpResource(client, project);
+        helper.cleanUpResources(client, build, bc, is);
     }
 
 }

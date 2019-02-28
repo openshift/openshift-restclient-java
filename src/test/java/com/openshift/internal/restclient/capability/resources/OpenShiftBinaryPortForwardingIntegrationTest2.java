@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.PodStatusRunningConditional;
-import com.openshift.internal.restclient.model.Pod;
 import com.openshift.internal.restclient.model.Port;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.IClient;
@@ -34,33 +33,37 @@ import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.capability.IBinaryCapability.SkipTlsVerify;
 import com.openshift.restclient.capability.resources.IPortForwardable;
 import com.openshift.restclient.capability.resources.IPortForwardable.PortPair;
+import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.IProject;
 
-public class OpenshiftBinaryPortForwardingIntegrationTest implements ResourcePropertyKeys {
+public class OpenShiftBinaryPortForwardingIntegrationTest2 implements ResourcePropertyKeys {
 
     private IntegrationTestHelper helper = new IntegrationTestHelper();
     private IClient client;
     private IProject project;
+    private IPod pod;
 
     @Before
     public void setUp() throws Exception {
         System.setProperty(IBinaryCapability.OPENSHIFT_BINARY_LOCATION, helper.getOpenShiftLocation());
-        client = helper.createClientForBasicAuth();
-        project = helper.generateProject(client);
+        this.client = helper.createClientForBasicAuth();
+        this.project = helper.getOrCreateIntegrationTestProject(client);
+        IPod pod = helper.createPod(client, project.getNamespaceName(), IntegrationTestHelper.appendRandom("test-pod"));
+        this.pod = helper.waitForResource(
+                client, 
+                pod,
+                5 * IntegrationTestHelper.MILLISECONDS_PER_MIN, 
+                new PodStatusRunningConditional());
+
     }
 
     @After
     public void teardown() throws Exception {
-        IntegrationTestHelper.cleanUpResource(client, project);
+        helper.cleanUpResource(client, pod);
     }
 
     @Test
     public void testPortForwarding() {
-        Pod pod = (Pod) IntegrationTestHelper.stubPod(client, project);
-        pod = (Pod) client.create(pod);
-        pod = (Pod) IntegrationTestHelper.waitForResource(client, pod.getKind(), pod.getNamespaceName(), pod.getName(),
-                5 * IntegrationTestHelper.MILLISECONDS_PER_MIN, new PodStatusRunningConditional());
-
         assertNotNull("The test timed out before the pod was in a running state", pod);
 
         final Port port = new Port(new ModelNode());
