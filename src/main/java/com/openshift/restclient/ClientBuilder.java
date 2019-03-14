@@ -78,6 +78,8 @@ public class ClientBuilder {
     private TimeUnit connectTimeoutUnit = TimeUnit.MILLISECONDS;
     private int writeTimeout = IHttpConstants.DEFAULT_READ_TIMEOUT;
     private TimeUnit writeTimeoutUnit = TimeUnit.MILLISECONDS;
+    private int pingInterval = 0;
+    private TimeUnit pingIntervalUnit = TimeUnit.MILLISECONDS;
 
     public ClientBuilder() {
         this(null);
@@ -169,6 +171,12 @@ public class ClientBuilder {
         return this;
     }
 
+    public ClientBuilder withPingInterval(int pingInterval, TimeUnit unit) {
+        this.pingInterval = pingInterval;
+        this.pingIntervalUnit = unit;
+        return this;
+    }
+
     public ClientBuilder proxy(Proxy proxy) {
         this.proxy = proxy;
         return this;
@@ -242,6 +250,7 @@ public class ClientBuilder {
                         }
                     }).authenticator(authenticator).dispatcher(dispatcher).readTimeout(readTimeout, readTimeoutUnit)
                     .writeTimeout(writeTimeout, writeTimeoutUnit).connectTimeout(connectTimeout, connectTimeoutUnit)
+                    .pingInterval(pingInterval, pingIntervalUnit)
                     .sslSocketFactory(sslContext.getSocketFactory(), trustManager);
 
             if (!this.sslCertCallbackWithDefaultHostnameVerifier) {
