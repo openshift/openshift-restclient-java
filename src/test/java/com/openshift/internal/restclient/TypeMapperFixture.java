@@ -12,6 +12,7 @@
 package com.openshift.internal.restclient;
 
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -19,8 +20,10 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.function.Supplier;
 
 import org.junit.Before;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.stubbing.OngoingStubbing;
 
@@ -30,6 +33,7 @@ import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.utils.Samples;
 
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Request;
@@ -69,9 +73,10 @@ public class TypeMapperFixture {
                 .thenReturn(responseOf(Samples.GROUP_ENDPONT_OAPI_V1.getContentAsString()));
         client.whenRequestTo(base + "/apis/extensions/v1beta1")
                 .thenReturn(responseOf(Samples.GROUP_ENDPONT_APIS_EXTENSIONS.getContentAsString()));
-        client.whenRequestTo(base + "/version").thenReturn(responseOf(Samples.KUBERNETES_VERSION.getContentAsString()));
-        client.whenRequestTo(base + "/version/openshift")
-                .thenReturn(responseOf(Samples.OPENSHIFT_VERSION.getContentAsString()));
+        client.mockAsyncRequest(base + "/version",
+            () -> responseOf(Samples.KUBERNETES_VERSION.getContentAsString()));
+        client.mockAsyncRequest(base + "/version/openshift",
+            () -> responseOf(Samples.OPENSHIFT_VERSION.getContentAsString()));
         mapper = new ApiTypeMapper(base, client);
     }
 
@@ -83,6 +88,17 @@ public class TypeMapperFixture {
             return when(call.execute());
         }
 
+        void mockAsyncRequest(String url, Supplier<Response> response) throws IOException {
+            Call call = mock(Call.class);
+            doReturn(call).when(this).newCall(requestTo(url));
+
+            ArgumentCaptor<Callback> argumentCaptor = ArgumentCaptor.forClass(Callback.class);
+            doAnswer(invocation -> {
+                Callback callback = argumentCaptor.getValue();
+                callback.onResponse(call, response.get());
+                return null;
+            }).when(call).enqueue(argumentCaptor.capture());
+        }
     }
 
     static Request requestTo(String url) {
@@ -90,10 +106,14 @@ public class TypeMapperFixture {
     }
 
     protected static Response responseOf(String response) {
+        return responseOf(IHttpConstants.STATUS_OK, response);
+    }
+
+    protected static Response responseOf(int statusCode, String response) {
         return new Response.Builder()
                 .request(new Request.Builder().url("https://someurlfortesting").build())
                 .protocol(Protocol.HTTP_1_1)
-                .code(IHttpConstants.STATUS_OK)
+                .code(statusCode)
                 .message("")
                 .body(ResponseBody.create(null, response))
                 .build();

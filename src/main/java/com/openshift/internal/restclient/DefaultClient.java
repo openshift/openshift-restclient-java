@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
+import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.internal.restclient.okhttp.WatchClient;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
@@ -93,8 +94,8 @@ public class DefaultClient implements IClient, IHttpConstants {
         if (this.factory != null) {
             this.factory.setClient(this);
         }
-        initMasterVersion("version/openshift", new VersionCallback(version -> this.openShiftVersion = version));
-        initMasterVersion("version", new VersionCallback(version -> this.kubernetesVersion = version));
+        initMasterVersion("version/openshift", new VersionCallback("OpenShift", version -> this.openShiftVersion = version));
+        initMasterVersion("version", new VersionCallback("Kubernetes", version -> this.kubernetesVersion = version));
         this.typeMapper = typeMapper != null ? typeMapper : new ApiTypeMapper(baseUrl.toString(), client);
         this.authContext = authContext;
     }
@@ -449,7 +450,9 @@ public class DefaultClient implements IClient, IHttpConstants {
     private void initMasterVersion(String versionInfoType, Callback callback) {
         try {
             Request request = new Builder().url(new URL(this.baseUrl, versionInfoType))
-                    .header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON).build();
+                    .header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON)
+                    .tag(new ResponseCodeInterceptor.Ignore() {})
+                    .build();
             client.newCall(request).enqueue(callback);
         } catch (IOException e) {
             LOGGER.warn("Exception while trying to determine master version of openshift and kubernetes", e);
@@ -457,22 +460,29 @@ public class DefaultClient implements IClient, IHttpConstants {
     }
 
     private class VersionCallback implements Callback {
+        String description;
         Consumer<String> versionSetter;
 
-        public VersionCallback(Consumer<String> versionSetter) {
+        public VersionCallback(String description, Consumer<String> versionSetter) {
+            this.description = description;
             this.versionSetter = versionSetter;
         }
 
         @Override
         public void onFailure(Call call, IOException e) {
             versionSetter.accept("");
-            LOGGER.warn("Exception while trying to determine master version of openshift and kubernetes", e);
+            LOGGER.warn("Exception while trying to determine " + description + " master version", e);
         }
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
             try {
-                versionSetter.accept(ModelNode.fromJSONString(response.body().string()).get("gitVersion").asString());
+                if (response.isSuccessful()) {
+                    versionSetter.accept(ModelNode.fromJSONString(response.body().string()).get("gitVersion").asString());
+                } else {
+                    versionSetter.accept("");
+                    LOGGER.warn("Failed to determine " + description + " master version: got " + response.code());
+                }
             } finally {
                 response.close();
             }
