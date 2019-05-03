@@ -45,6 +45,7 @@ public enum Samples {
     V1_OBJECT_REF("openshift3/v1_objectref.json"),
     V1_NAMESPACE("openshift3/v1_namespace.json"),
     V1_POD("openshift3/v1_pod.json"), 
+    V1_POD_MULTICONTAINER_READY("openshift3/v1_pod_multiContainer_ready.json"), 
     V1_PROJECT("openshift3/v1_project.json"), 
     V1_PROJECT_REQUEST("openshift3/v1_project_request.json"), 
     V1_PVC("openshift3/v1_pvc.json"),
