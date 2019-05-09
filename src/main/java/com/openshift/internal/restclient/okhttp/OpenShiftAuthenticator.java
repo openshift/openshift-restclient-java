@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -12,6 +12,7 @@
 package com.openshift.internal.restclient.okhttp;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -54,8 +55,8 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
     public Request authenticate(Route route, Response response) throws IOException {
         if (unauthorizedForCluster(response)) {
             String requestUrl = response.request().url().toString();
-            Request authRequest = new Request.Builder().addHeader(CSRF_TOKEN, "1").url(response.request().url().resolve(
-                    "/oauth/authorize?response_type=token&client_id=openshift-challenging-client").toString()).build();
+            Request authRequest = new Request.Builder().addHeader(CSRF_TOKEN, "1").url(new URL(client.getAuthorizationEndpoint().toExternalForm() +
+                    "?response_type=token&client_id=openshift-challenging-client").toString()).build();
             try (Response authResponse = tryAuth(authRequest)) {
                 if (authResponse.isSuccessful()) {
                     String token = extractAndSetAuthContextToken(authResponse);
