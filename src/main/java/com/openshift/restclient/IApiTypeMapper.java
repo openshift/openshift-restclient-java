@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -25,6 +25,7 @@ public interface IApiTypeMapper {
     static final String OS_API = "oapi";
     static final String API_GROUPS_API = "apis";
     static final String FWD_SLASH = "/";
+    static final char   DOT = '.';
 
     String getPreferedVersionFor(String endpoint);
 
@@ -66,6 +67,15 @@ public interface IApiTypeMapper {
      * @return true if supported; false otherwise
      */
     boolean isSupported(String version, String kind);
+    
+    /**
+     * Get the type information best matching the version and kind arguments
+     * 
+     * @param apiVersion the optional version (with or without group)
+     * @param kind the type kind
+     * @return the registered type or null
+     */
+    IVersionedType getType(String apiVersion, String kind);
 
     /**
      * The api group for a given set of resources and the versions it supports.
@@ -156,5 +166,42 @@ public interface IApiTypeMapper {
          */
         boolean isSupported(String capability);
 
+    }
+    
+    interface IVersionedType {
+        /**
+         * The prefix of the resource type (e.g. extensions of extensions/v1beta1)
+         * 
+         */
+        String getPrefix();
+        
+        /**
+         * The groupname of the resource type (e.g. extensions of extensions/v1beta1)
+         * 
+         */
+        String getApiGroupName();
+
+        /**
+         * The version of the resource type (e.g. v1)
+         * 
+         */
+        String getVersion();
+        
+        /**
+         * The optional groupname and version of the resource type (e.g. extensions of extensions/v1beta1)
+         * 
+         */
+        default String getApiGroupNameAndVersion() {
+            if (getApiGroupName() != null) {
+                return getApiGroupName() + IApiTypeMapper.FWD_SLASH + getVersion();
+            }
+            return getVersion();
+        }
+        
+        /**
+         * the kind used with this resource type
+         * 
+         */
+        String getKind();
     }
 }

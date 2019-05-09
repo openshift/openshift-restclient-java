@@ -658,6 +658,9 @@ public class DefaultClient implements IClient, IHttpConstants {
         if (ICapability.class.isAssignableFrom(klass) && this.supports((Class<? extends ICapability>) klass)) {
             return (T) getCapability((Class<? extends ICapability>) klass);
         }
+        if (IResourceFactory.class.equals(klass)) {
+            return (T) this.factory;
+        }
         return null;
     }
 

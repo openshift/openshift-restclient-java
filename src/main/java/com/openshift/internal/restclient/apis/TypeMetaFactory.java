@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -12,19 +12,18 @@
 package com.openshift.internal.restclient.apis;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
+import com.openshift.internal.restclient.TypeRegistry;
 import com.openshift.internal.restclient.api.models.TypeMeta;
-import com.openshift.internal.restclient.apis.autoscaling.models.Scale;
-import com.openshift.internal.restclient.model.deploy.DeploymentRequest;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.internal.util.JBossDmrExtentions;
+import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceFactoryException;
 import com.openshift.restclient.UnsupportedVersionException;
@@ -36,14 +35,7 @@ import com.openshift.restclient.api.models.ITypeMeta;
 public class TypeMetaFactory implements ITypeFactory, ResourcePropertyKeys {
 
     private static final String DELIMITER = ".";
-    private static final Map<String, Class<? extends ITypeMeta>> IMPL_MAP = new HashMap<>();
-
-    static {
-        IMPL_MAP.put("Scale", Scale.class);
-        // its own factory?
-        IMPL_MAP.put("DeploymentRequest", DeploymentRequest.class);
-    }
-
+    
     @Override
     public Object stubKind(String kind, Optional<String> name, Optional<String> namespace) {
         if (StringUtils.isEmpty(kind)) {
@@ -62,8 +54,9 @@ public class TypeMetaFactory implements ITypeFactory, ResourcePropertyKeys {
             JBossDmrExtentions.set(node, properyKeyMap, KIND, kind);
 
             ITypeMeta instance = null;
-            if (IMPL_MAP.containsKey(kind)) {
-                Constructor<? extends ITypeMeta> constructor = IMPL_MAP.get(kind).getConstructor(ModelNode.class,
+            Class<? extends ITypeMeta> clazz = (Class<? extends ITypeMeta>) TypeRegistry.getInstance().getRegisteredType(version + IApiTypeMapper.DOT + kind);
+            if (clazz != null) {
+                Constructor<? extends ITypeMeta> constructor = clazz.getConstructor(ModelNode.class,
                         Map.class);
                 instance = constructor.newInstance(node, properyKeyMap);
             } else {
@@ -93,8 +86,10 @@ public class TypeMetaFactory implements ITypeFactory, ResourcePropertyKeys {
             String kind = node.get(KIND).asString();
 
             Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind);
-            if (IMPL_MAP.containsKey(kind)) {
-                Constructor<? extends ITypeMeta> constructor = IMPL_MAP.get(kind).getConstructor(ModelNode.class,
+            Class<? extends ITypeMeta> clazz = (Class<? extends ITypeMeta>) TypeRegistry.getInstance().getRegisteredType(version + IApiTypeMapper.DOT + kind);
+                    
+            if (clazz != null) {
+                Constructor<? extends ITypeMeta> constructor = clazz.getConstructor(ModelNode.class,
                         Map.class);
                 return constructor.newInstance(node, properyKeyMap);
             }

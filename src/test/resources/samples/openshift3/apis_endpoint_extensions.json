@@ -4,88 +4,214 @@
   "resources": [
     {
       "name": "daemonsets",
+      "singularName": "",
       "namespaced": true,
-      "kind": "DaemonSet"
+      "kind": "DaemonSet",
+      "verbs": [
+        "create",
+        "delete",
+        "deletecollection",
+        "get",
+        "list",
+        "patch",
+        "update",
+        "watch"
+      ],
+      "shortNames": [
+        "ds"
+      ]
     },
     {
       "name": "daemonsets/status",
+      "singularName": "",
       "namespaced": true,
-      "kind": "DaemonSet"
+      "kind": "DaemonSet",
+      "verbs": [
+        "get",
+        "patch",
+        "update"
+      ]
     },
     {
       "name": "deployments",
+      "singularName": "",
       "namespaced": true,
-      "kind": "Deployment"
+      "kind": "Deployment",
+      "verbs": [
+        "create",
+        "delete",
+        "deletecollection",
+        "get",
+        "list",
+        "patch",
+        "update",
+        "watch"
+      ],
+      "shortNames": [
+        "deploy"
+      ]
     },
     {
       "name": "deployments/rollback",
+      "singularName": "",
       "namespaced": true,
-      "kind": "DeploymentRollback"
+      "kind": "DeploymentRollback",
+      "verbs": [
+        "create"
+      ]
     },
     {
       "name": "deployments/scale",
+      "singularName": "",
       "namespaced": true,
-      "kind": "Scale"
+      "group": "extensions",
+      "version": "v1beta1",
+      "kind": "Scale",
+      "verbs": [
+        "get",
+        "patch",
+        "update"
+      ]
     },
     {
       "name": "deployments/status",
+      "singularName": "",
       "namespaced": true,
-      "kind": "Deployment"
-    },
-    {
-      "name": "horizontalpodautoscalers",
-      "namespaced": true,
-      "kind": "HorizontalPodAutoscaler"
-    },
-    {
-      "name": "horizontalpodautoscalers/status",
-      "namespaced": true,
-      "kind": "HorizontalPodAutoscaler"
+      "kind": "Deployment",
+      "verbs": [
+        "get",
+        "patch",
+        "update"
+      ]
     },
     {
       "name": "ingresses",
+      "singularName": "",
       "namespaced": true,
-      "kind": "Ingress"
+      "kind": "Ingress",
+      "verbs": [
+        "create",
+        "delete",
+        "deletecollection",
+        "get",
+        "list",
+        "patch",
+        "update",
+        "watch"
+      ],
+      "shortNames": [
+        "ing"
+      ]
     },
     {
       "name": "ingresses/status",
+      "singularName": "",
       "namespaced": true,
-      "kind": "Ingress"
+      "kind": "Ingress",
+      "verbs": [
+        "get",
+        "patch",
+        "update"
+      ]
     },
     {
-      "name": "jobs",
+      "name": "networkpolicies",
+      "singularName": "",
       "namespaced": true,
-      "kind": "Job"
+      "kind": "NetworkPolicy",
+      "verbs": [
+        "create",
+        "delete",
+        "deletecollection",
+        "get",
+        "list",
+        "patch",
+        "update",
+        "watch"
+      ],
+      "shortNames": [
+        "netpol"
+      ]
     },
     {
-      "name": "jobs/status",
-      "namespaced": true,
-      "kind": "Job"
+      "name": "podsecuritypolicies",
+      "singularName": "",
+      "namespaced": false,
+      "kind": "PodSecurityPolicy",
+      "verbs": [
+        "create",
+        "delete",
+        "deletecollection",
+        "get",
+        "list",
+        "patch",
+        "update",
+        "watch"
+      ],
+      "shortNames": [
+        "psp"
+      ]
     },
     {
       "name": "replicasets",
+      "singularName": "",
       "namespaced": true,
-      "kind": "ReplicaSet"
+      "kind": "ReplicaSet",
+      "verbs": [
+        "create",
+        "delete",
+        "deletecollection",
+        "get",
+        "list",
+        "patch",
+        "update",
+        "watch"
+      ],
+      "shortNames": [
+        "rs"
+      ]
     },
     {
       "name": "replicasets/scale",
+      "singularName": "",
       "namespaced": true,
-      "kind": "Scale"
+      "group": "extensions",
+      "version": "v1beta1",
+      "kind": "Scale",
+      "verbs": [
+        "get",
+        "patch",
+        "update"
+      ]
     },
     {
       "name": "replicasets/status",
+      "singularName": "",
       "namespaced": true,
-      "kind": "ReplicaSet"
+      "kind": "ReplicaSet",
+      "verbs": [
+        "get",
+        "patch",
+        "update"
+      ]
     },
     {
       "name": "replicationcontrollers",
+      "singularName": "",
       "namespaced": true,
-      "kind": "ReplicationControllerDummy"
+      "kind": "ReplicationControllerDummy",
+      "verbs": []
     },
     {
       "name": "replicationcontrollers/scale",
+      "singularName": "",
       "namespaced": true,
-      "kind": "Scale"
+      "kind": "Scale",
+      "verbs": [
+        "get",
+        "patch",
+        "update"
+      ]
     }
   ]
 }

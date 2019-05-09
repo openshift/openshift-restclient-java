@@ -263,6 +263,8 @@ public class ClientBuilder {
 
             if (proxySelector != null) {
                 builder.proxySelector(proxySelector);
+            } else {
+            	builder.proxySelector(ProxySelector.getDefault());
             }
 
             if (proxyAuthenticator != null) {
@@ -279,7 +281,7 @@ public class ClientBuilder {
             responseCodeInterceptor.setClient(client);
             authenticator.setClient(client);
             authenticator.setOkClient(okClient);
-
+            factory.setClient(client);
             return client;
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException | CertificateException
                 | IOException e) {

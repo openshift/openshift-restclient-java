@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2014-2015 Red Hat, Inc. 
+ * Copyright (c) 2014-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -59,7 +59,8 @@ public enum Samples {
     V1_SERVICE("openshift3/v1_service.json"),
     V1_SERVICE_ACCOUNT("openshift3/v1_service_account.json"),
     V1_Status("openshift3/v1_status.json"),
-    V1_TEMPLATE("openshift3/v1_template.json"), 
+    V1_TEMPLATE("openshift3/v1_template.json"),
+    GROUP_TEMPLATE("openshift3/group_template.json"),
     V1_USER("openshift3/v1_user.json"),
     V1_IDENTITY("openshift3/v1_identity.json"),
     V1_GROUP("openshift3/v1_group.json"),

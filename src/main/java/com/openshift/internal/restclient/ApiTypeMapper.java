@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -19,9 +19,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
@@ -52,6 +52,7 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
     private final String baseUrl;
     private final OkHttpClient client;
     private List<VersionedApiResource> resourceEndpoints;
+    private List<IVersionedType> types;
     private final Map<String, String> preferedVersion = new HashMap<>(2);
     private boolean initialized = false;
 
@@ -95,11 +96,14 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
 
     private IVersionedApiResource endpointFor(String version, String kind) {
         String[] split = StringUtils.isBlank(version) ? new String[] {} : version.split(FWD_SLASH);
-        Optional<IVersionedApiResource> result = null;
+        Optional<? extends IVersionedApiResource> result = null;
         if (split.length <= 1) {
-            result = Stream.of(KUBE_API, OS_API)
-                    .map(api -> formatEndpointFor(api, (split.length == 0 ? preferedVersion.get(api) : split[0]), kind))
-                    .filter(e -> resourceEndpoints.contains(e)).findFirst();
+            result = resourceEndpoints.stream().filter(e -> {
+                return e.getName().equals(ResourceKind.pluralize(kind, true, true))
+                        && (split.length == 0 || e.getVersion().equals(split[split.length - 1]))
+                        && (split.length < 2 || e.getApiGroupName().equals(split[0]));
+
+            }).findFirst();
         } else {
             result = Optional.of(formatEndpointFor(API_GROUPS_API, version, kind));
         }
@@ -116,25 +120,48 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
         return new VersionedApiResource(prefix, version, ResourceKind.pluralize(kind, true, true));
     }
 
+    @Override
+    public IVersionedType getType(String apiVersion, String kind) {
+        init();
+        IVersionedType type = typeFor(apiVersion, kind);
+        if (type == null) {
+            throw new UnsupportedEndpointException("No endpoint found for %s, version %s", kind, apiVersion);
+        }
+        return type;
+    }
+
+    private IVersionedType typeFor(String version, String kind) {
+        String[] split = StringUtils.isBlank(version) ? new String[] {} : version.split(FWD_SLASH);
+        Optional<? extends IVersionedType> result = null;
+        result = types.stream().filter(e -> {
+            return e.getKind().equals(kind) && (split.length == 0 || split[split.length - 1].equals(e.getVersion()))
+                    && (split.length < 2 || split[0].equals(e.getApiGroupName()));
+
+        }).findFirst();
+        return result.orElse(null);
+    }
+
     private synchronized void init() {
         if (!this.initialized) {
             List<VersionedApiResource> resourceEndpoints = new ArrayList<>();
+            List<IVersionedType> types = new ArrayList<>();
             Collection<ApiGroup> groups = getLegacyGroups();
             groups.addAll(getApiGroups());
             groups.forEach(g -> {
                 Collection<String> versions = g.getVersions();
                 versions.forEach(v -> {
                     Collection<ModelNode> resources = getResources(g, v);
-                    addEndpoints(resourceEndpoints, g.getPrefix(), g.getName(), v, resources);
+                    addEndpoints(resourceEndpoints, types, g.getPrefix(), g.getName(), v, resources);
                 });
             });
             this.resourceEndpoints = resourceEndpoints;
+            this.types = types;
             this.initialized = true;
         }
     }
 
-    private void addEndpoints(List<VersionedApiResource> endpoints, final String prefix, final String apiGroupName,
-            final String version, final Collection<ModelNode> nodes) {
+    private void addEndpoints(List<VersionedApiResource> endpoints, List<IVersionedType> types, final String prefix,
+            final String apiGroupName, final String version, final Collection<ModelNode> nodes) {
         for (ModelNode node : nodes) {
             String name = node.get(NAME).asString();
             String capability = null;
@@ -143,15 +170,27 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
                 capability = name.substring(first + 1);
                 name = name.substring(0, first);
             }
+            String kind = node.get(KIND).asString();
+            String typeApiGroupName = node.has(GROUP) ? node.get(GROUP).asString() : null;
+            String typeVersion = node.has(VERSION) ? node.get(VERSION).asString() : null;
             boolean namespaced = node.get("namespaced").asBoolean();
-            VersionedApiResource resource = new VersionedApiResource(prefix, apiGroupName, version, name,
-                    node.get(KIND).asString(), namespaced);
-            if (!endpoints.contains(resource)) {
-                endpoints.add(resource);
+            VersionedApiResource resource = new VersionedApiResource(prefix, apiGroupName, version, name, kind,
+                    namespaced);
+            VersionedType type = new VersionedType(prefix, typeApiGroupName != null ? typeApiGroupName : apiGroupName,
+                    typeVersion != null ? typeVersion : version, kind);
+            if (capability == null && node.has(VERBS) && !node.get(VERBS).asList().isEmpty()) {
+                if (!endpoints.contains(resource)) {
+                    endpoints.add(resource);
+                }
+            }
+            if (!types.contains(type)) {
+                types.add(type);
             }
             if (capability != null) {
                 int index = endpoints.indexOf(resource);
-                endpoints.get(index).addCapability(capability);
+                if (index != (-1)) {
+                    endpoints.get(index).addCapability(capability);
+                }
             }
         }
     }
@@ -163,20 +202,29 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
     }
 
     private Collection<ModelNode> getResources(IApiGroup group, String version) {
-        String json = readEndpoint(group.pathFor(version));
-        if (StringUtils.isBlank(json)) {
+        try {
+            String json = readEndpoint(group.pathFor(version));
+            if (StringUtils.isBlank(json)) {
+                return new ArrayList<>();
+            }
+            ModelNode node = ModelNode.fromJSONString(json);
+            return node.get("resources").asList();
+        } catch (Exception e) {
+            LOGGER.error("Can't load api group {}", group.pathFor(version));
             return new ArrayList<>();
         }
-        ModelNode node = ModelNode.fromJSONString(json);
-        return node.get("resources").asList();
     }
 
     private Collection<ApiGroup> getLegacyGroups() {
         Collection<ApiGroup> groups = new ArrayList<>();
         for (String e : Arrays.asList(KUBE_API, OS_API)) {
-            String json = readEndpoint(e);
-            ModelNode n = ModelNode.fromJSONString(json);
-            groups.add(new LegacyApiGroup(e, n));
+            try {
+                String json = readEndpoint(e);
+                ModelNode n = ModelNode.fromJSONString(json);
+                groups.add(new LegacyApiGroup(e, n));
+            } catch (Exception ex) {
+                LOGGER.error("Can't access legacy endpoint {}", e);
+            }
         }
         return groups;
     }
@@ -400,5 +448,60 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
             return true;
         }
 
+    }
+
+    static class VersionedType implements IVersionedType {
+        private String prefix;
+        private String apiGroupName;
+        private String version;
+        private String kind;
+
+        VersionedType(String prefix, String apiGroupName, String version, String kind) {
+            this.prefix = prefix;
+            this.apiGroupName = apiGroupName;
+            this.version = version;
+            this.kind = kind;
+        }
+
+        @Override
+        public String getPrefix() {
+            return prefix;
+        }
+
+        @Override
+        public String getApiGroupName() {
+            return apiGroupName;
+        }
+
+        @Override
+        public String getVersion() {
+            return version;
+        }
+
+        @Override
+        public String getKind() {
+            return kind;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(apiGroupName, kind, version);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof VersionedType)) {
+                return false;
+            }
+            VersionedType other = (VersionedType) obj;
+            return Objects.equals(apiGroupName, other.apiGroupName) && Objects.equals(kind, other.kind)
+                    && Objects.equals(version, other.version);
+        }
     }
 }
