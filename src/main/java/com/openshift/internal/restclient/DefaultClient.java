@@ -498,14 +498,14 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     private class AuthorizationCallback implements Callback {
 
-		private void setDefaults() {
-			DefaultClient.this.authorizationEndpoint.complete(DefaultClient.this.getDefaultAuthorizationEndpoint());
-        	DefaultClient.this.tokenEndpoint.complete(DefaultClient.this.getDefaultTokenEndpoint());
-		}
+        private void setDefaults() {
+            DefaultClient.this.authorizationEndpoint.complete(DefaultClient.this.getDefaultAuthorizationEndpoint());
+            DefaultClient.this.tokenEndpoint.complete(DefaultClient.this.getDefaultTokenEndpoint());
+        }
 
-		@Override
+        @Override
         public void onFailure(Call call, IOException e) {
-        	setDefaults();
+            setDefaults();
             LOGGER.warn("Exception while trying to get authorization endpoint", e);
         }
 
@@ -513,11 +513,11 @@ public class DefaultClient implements IClient, IHttpConstants {
         public void onResponse(Call call, Response response) throws IOException {
             try {
                 if (response.isSuccessful()) {
-                	ModelNode node = ModelNode.fromJSONString(response.body().string());
-                	DefaultClient.this.authorizationEndpoint.complete(new URL(node.get("authorization_endpoint").asString()));
-                	DefaultClient.this.tokenEndpoint.complete(new URL(node.get("token_endpoint").asString()));
+                    ModelNode node = ModelNode.fromJSONString(response.body().string());
+                    DefaultClient.this.authorizationEndpoint.complete(new URL(node.get("authorization_endpoint").asString()));
+                    DefaultClient.this.tokenEndpoint.complete(new URL(node.get("token_endpoint").asString()));
                 } else {
-                	setDefaults();
+                    setDefaults();
                     LOGGER.warn("Failed to determine authorization endpoint: got " + response.code());
                 }
             } finally {
@@ -542,40 +542,40 @@ public class DefaultClient implements IClient, IHttpConstants {
     }
 
     @Override
-	public URL getAuthorizationEndpoint() {
-		try {
-			return authorizationEndpoint.get();
-		} catch (InterruptedException | ExecutionException e) {
-			throw new OpenShiftException(e, e.getLocalizedMessage());
-		}
-	}
+    public URL getAuthorizationEndpoint() {
+        try {
+            return authorizationEndpoint.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new OpenShiftException(e, e.getLocalizedMessage());
+        }
+    }
     
-	protected URL getDefaultAuthorizationEndpoint() {
-		try {
-			return new URL(getBaseURL(), "oauth/authorize");
-		} catch (MalformedURLException e) {
-			throw new OpenShiftException(e, e.getLocalizedMessage());
-		}
-	}
+    protected URL getDefaultAuthorizationEndpoint() {
+        try {
+            return new URL(getBaseURL(), "oauth/authorize");
+        } catch (MalformedURLException e) {
+            throw new OpenShiftException(e, e.getLocalizedMessage());
+        }
+    }
 
     @Override
-	public URL getTokenEndpoint() {
-		try {
-			return tokenEndpoint.get();
-		} catch (InterruptedException | ExecutionException e) {
-			throw new OpenShiftException(e, e.getLocalizedMessage());
-		}
-	}
+    public URL getTokenEndpoint() {
+        try {
+            return tokenEndpoint.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new OpenShiftException(e, e.getLocalizedMessage());
+        }
+    }
     
-	protected URL getDefaultTokenEndpoint() {
-		try {
-			return new URL(getBaseURL(), "oauth/token");
-		} catch (MalformedURLException e) {
-			throw new OpenShiftException(e, e.getLocalizedMessage());
-		}
-	}
+    protected URL getDefaultTokenEndpoint() {
+        try {
+            return new URL(getBaseURL(), "oauth/token");
+        } catch (MalformedURLException e) {
+            throw new OpenShiftException(e, e.getLocalizedMessage());
+        }
+    }
 
-	@Override
+    @Override
     public IAuthorizationContext getAuthorizationContext() {
         return this.authContext;
     }
