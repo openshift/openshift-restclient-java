@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -14,6 +14,7 @@ import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -74,6 +77,9 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
     private URL baseUrl;
+    private CompletableFuture<URL> authorizationEndpoint = new CompletableFuture<>();
+    private CompletableFuture<URL> tokenEndpoint = new CompletableFuture<>();
+    
     private OkHttpClient client;
     private IResourceFactory factory;
     private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<>();
@@ -96,6 +102,7 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
         initMasterVersion("version/openshift", new VersionCallback("OpenShift", version -> this.openShiftVersion = version));
         initMasterVersion("version", new VersionCallback("Kubernetes", version -> this.kubernetesVersion = version));
+        initMasterVersion(".well-known/oauth-authorization-server", new AuthorizationCallback());
         this.typeMapper = typeMapper != null ? typeMapper : new ApiTypeMapper(baseUrl.toString(), client);
         this.authContext = authContext;
     }
@@ -489,6 +496,36 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
     }
 
+    private class AuthorizationCallback implements Callback {
+
+        private void setDefaults() {
+            DefaultClient.this.authorizationEndpoint.complete(DefaultClient.this.getDefaultAuthorizationEndpoint());
+            DefaultClient.this.tokenEndpoint.complete(DefaultClient.this.getDefaultTokenEndpoint());
+        }
+
+        @Override
+        public void onFailure(Call call, IOException e) {
+            setDefaults();
+            LOGGER.warn("Exception while trying to get authorization endpoint", e);
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            try {
+                if (response.isSuccessful()) {
+                    ModelNode node = ModelNode.fromJSONString(response.body().string());
+                    DefaultClient.this.authorizationEndpoint.complete(new URL(node.get("authorization_endpoint").asString()));
+                    DefaultClient.this.tokenEndpoint.complete(new URL(node.get("token_endpoint").asString()));
+                } else {
+                    setDefaults();
+                    LOGGER.warn("Failed to determine authorization endpoint: got " + response.code());
+                }
+            } finally {
+                response.close();
+            }
+        }
+    }
+
     @Override
     public String getOpenshiftMasterVersion() {
         return this.openShiftVersion;
@@ -502,6 +539,40 @@ public class DefaultClient implements IClient, IHttpConstants {
     @Override
     public URL getBaseURL() {
         return this.baseUrl;
+    }
+
+    @Override
+    public URL getAuthorizationEndpoint() {
+        try {
+            return authorizationEndpoint.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new OpenShiftException(e, e.getLocalizedMessage());
+        }
+    }
+    
+    protected URL getDefaultAuthorizationEndpoint() {
+        try {
+            return new URL(getBaseURL(), "oauth/authorize");
+        } catch (MalformedURLException e) {
+            throw new OpenShiftException(e, e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public URL getTokenEndpoint() {
+        try {
+            return tokenEndpoint.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new OpenShiftException(e, e.getLocalizedMessage());
+        }
+    }
+    
+    protected URL getDefaultTokenEndpoint() {
+        try {
+            return new URL(getBaseURL(), "oauth/token");
+        } catch (MalformedURLException e) {
+            throw new OpenShiftException(e, e.getLocalizedMessage());
+        }
     }
 
     @Override
