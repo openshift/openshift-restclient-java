@@ -263,8 +263,6 @@ public class ClientBuilder {
 
             if (proxySelector != null) {
                 builder.proxySelector(proxySelector);
-            } else {
-            	builder.proxySelector(ProxySelector.getDefault());
             }
 
             if (proxyAuthenticator != null) {
