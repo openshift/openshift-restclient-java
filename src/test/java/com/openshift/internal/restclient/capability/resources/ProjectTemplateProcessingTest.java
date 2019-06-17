@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -28,7 +28,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.internal.restclient.ResourceFactory;
+import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IApiTypeMapper.IVersionedApiResource;
+import com.openshift.restclient.IApiTypeMapper.IVersionedType;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.resources.IProjectTemplateProcessing;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IList;
@@ -93,6 +97,91 @@ public class ProjectTemplateProcessingTest {
         when(client.create(any(IList.class), anyString())).thenReturn(resources);
         when(client.getResourceFactory()).thenReturn(new ResourceFactory(client) {
         });
+        IApiTypeMapper mapper = mock(IApiTypeMapper.class);
+        when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
+        when(mapper.getType(anyString(), eq(ResourceKind.TEMPLATE))).thenReturn(new IVersionedType() {
+            
+            @Override
+            public String getVersion() {
+                return "v1";
+            }
+            
+            @Override
+            public String getPrefix() {
+                return null;
+            }
+            
+            @Override
+            public String getKind() {
+                return ResourceKind.TEMPLATE;
+            }
+            
+            @Override
+            public String getApiGroupName() {
+                return null;
+            }
+        });
+        when(mapper.getType(anyString(), eq(ResourceKind.DEPLOYMENT_CONFIG))).thenReturn(new IVersionedType() {
+            
+            @Override
+            public String getVersion() {
+                return "v1";
+            }
+            
+            @Override
+            public String getPrefix() {
+                return null;
+            }
+            
+            @Override
+            public String getKind() {
+                return ResourceKind.DEPLOYMENT_CONFIG;
+            }
+            
+            @Override
+            public String getApiGroupName() {
+                return null;
+            }
+        });
+        when(mapper.getEndpointFor(anyString(), eq(ResourceKind.DEPLOYMENT_CONFIG))).thenReturn(new IVersionedApiResource() {
+            
+            @Override
+            public boolean isSupported(String capability) {
+                return true;
+            }
+            
+            @Override
+            public boolean isNamespaced() {
+                return true;
+            }
+            
+            @Override
+            public String getVersion() {
+                return "v1";
+            }
+            
+            @Override
+            public String getPrefix() {
+                return null;
+            }
+            
+            @Override
+            public String getName() {                // TODO Auto-generated method stub
+                return null;
+            }
+            
+            @Override
+            public String getKind() {
+                return ResourceKind.DEPLOYMENT_CONFIG;
+            }
+            
+            @Override
+            public String getApiGroupName() {
+                return "v1";
+            }
+        });
+
+        
         ITemplate template = new ResourceFactory(client) {
         }.create(Samples.V1_TEMPLATE.getContentAsString());
 

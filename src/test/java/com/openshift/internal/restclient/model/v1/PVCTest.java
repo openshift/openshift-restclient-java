@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -11,7 +11,10 @@ package com.openshift.internal.restclient.model.v1;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
@@ -19,7 +22,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.openshift.internal.restclient.ResourceFactory;
+import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IApiTypeMapper.IVersionedType;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.volume.IPersistentVolumeClaim;
 import com.openshift.restclient.model.volume.PVCAccessModes;
 import com.openshift.restclient.utils.Samples;
@@ -32,6 +38,30 @@ public class PVCTest {
     @Before
     public void setup() {
         IClient client = mock(IClient.class);
+        IApiTypeMapper mapper = mock(IApiTypeMapper.class);
+        when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
+        when(mapper.getType(anyString(), eq(ResourceKind.PVC))).thenReturn(new IVersionedType() {
+            
+            @Override
+            public String getVersion() {
+                return "v1";
+            }
+            
+            @Override
+            public String getPrefix() {
+                return null;
+            }
+            
+            @Override
+            public String getKind() {
+                return ResourceKind.PVC;
+            }
+            
+            @Override
+            public String getApiGroupName() {
+                return null;
+            }
+        });
         claim = new ResourceFactory(client).create(Samples.V1_PVC.getContentAsString());
         assertEquals(V1, claim.getApiVersion());
     }

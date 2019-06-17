@@ -88,13 +88,16 @@ public class TypeMetaFactory implements ITypeFactory, ResourcePropertyKeys {
             Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind);
             Class<? extends ITypeMeta> clazz = (Class<? extends ITypeMeta>) TypeRegistry.getInstance().getRegisteredType(version + IApiTypeMapper.DOT + kind);
                     
-            if (clazz != null) {
-                Constructor<? extends ITypeMeta> constructor = clazz.getConstructor(ModelNode.class,
-                        Map.class);
-                return constructor.newInstance(node, properyKeyMap);
+            try {
+                if (clazz != null) {
+                    Constructor<? extends ITypeMeta> constructor = clazz.getConstructor(ModelNode.class,
+                            Map.class);
+                    return constructor.newInstance(node, properyKeyMap);
+                }
+            } catch (Exception e) {
+                return new TypeMeta(node, properyKeyMap);
             }
             return new TypeMeta(node, properyKeyMap);
-
         } catch (UnsupportedVersionException e) {
             throw e;
         } catch (Exception e) {
