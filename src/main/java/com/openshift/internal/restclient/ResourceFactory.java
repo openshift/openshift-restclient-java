@@ -169,7 +169,7 @@ public class ResourceFactory implements IResourceFactory {
         String[] elements = ResourceKind.parse(kind);
         IVersionedType type = client.adapt(IApiTypeMapper.class).getType(elements[0], elements[1]);
         if (type != null) {
-            KubernetesResource resource = (KubernetesResource) create(type.getApiGroupNameAndVersion(), elements[1]);
+            KubernetesResource resource = create(type.getApiGroupNameAndVersion(), elements[1]);
             resource.setName(name);
             resource.setNamespace(namespace);
             if (StringUtils.isNotEmpty(namespace)) {

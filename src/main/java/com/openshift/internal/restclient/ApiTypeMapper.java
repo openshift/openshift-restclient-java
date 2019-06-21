@@ -94,16 +94,21 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
         return apiresource;
     }
 
+    private boolean isResourceCompatible(String kind, String[] apiGroupNameAndVersion,
+            VersionedApiResource versionedResource) {
+        return versionedResource.getName().equals(ResourceKind.pluralize(kind, true, true))
+                && (apiGroupNameAndVersion.length == 0 || versionedResource.getVersion().equals(apiGroupNameAndVersion[apiGroupNameAndVersion.length - 1]))
+                && (apiGroupNameAndVersion.length < 2 || versionedResource.getApiGroupName().equals(apiGroupNameAndVersion[0]));
+    }
+
     private IVersionedApiResource endpointFor(String version, String kind) {
         String[] split = StringUtils.isBlank(version) ? new String[] {} : version.split(FWD_SLASH);
         Optional<? extends IVersionedApiResource> result = null;
         if (split.length <= 1) {
-            result = resourceEndpoints.stream().filter(e -> {
-                return e.getName().equals(ResourceKind.pluralize(kind, true, true))
-                        && (split.length == 0 || e.getVersion().equals(split[split.length - 1]))
-                        && (split.length < 2 || e.getApiGroupName().equals(split[0]));
+            result = resourceEndpoints.stream().filter(e -> 
+                isResourceCompatible(kind, split, e)
 
-            }).findFirst();
+            ).findFirst();
         } else {
             result = Optional.of(formatEndpointFor(API_GROUPS_API, version, kind));
         }
@@ -163,34 +168,49 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
     private void addEndpoints(List<VersionedApiResource> endpoints, List<IVersionedType> types, final String prefix,
             final String apiGroupName, final String version, final Collection<ModelNode> nodes) {
         for (ModelNode node : nodes) {
-            String name = node.get(NAME).asString();
-            String capability = null;
-            if (name.contains(FWD_SLASH)) {
-                int first = name.indexOf(FWD_SLASH);
-                capability = name.substring(first + 1);
-                name = name.substring(0, first);
-            }
-            String kind = node.get(KIND).asString();
-            String typeApiGroupName = node.has(GROUP) ? node.get(GROUP).asString() : null;
-            String typeVersion = node.has(VERSION) ? node.get(VERSION).asString() : null;
-            boolean namespaced = node.get("namespaced").asBoolean();
-            VersionedApiResource resource = new VersionedApiResource(prefix, apiGroupName, version, name, kind,
-                    namespaced);
-            VersionedType type = new VersionedType(prefix, typeApiGroupName != null ? typeApiGroupName : apiGroupName,
-                    typeVersion != null ? typeVersion : version, kind);
-            if (capability == null && node.has(VERBS) && !node.get(VERBS).asList().isEmpty()) {
-                if (!endpoints.contains(resource)) {
-                    endpoints.add(resource);
-                }
-            }
-            if (!types.contains(type)) {
-                types.add(type);
-            }
-            if (capability != null) {
-                int index = endpoints.indexOf(resource);
-                if (index != (-1)) {
-                    endpoints.get(index).addCapability(capability);
-                }
+            addEndpoint(endpoints, types, prefix, apiGroupName, version, node);
+        }
+    }
+
+    private void addEndpoint(List<VersionedApiResource> endpoints, List<IVersionedType> types, final String prefix,
+            final String apiGroupName, final String version, ModelNode node) {
+        String[] nameAndCapability = getNameAndCapability(node);
+        String name = nameAndCapability[0];
+        String capability = nameAndCapability[1];
+        String kind = node.get(KIND).asString();
+        String typeApiGroupName = node.has(GROUP) ? node.get(GROUP).asString() : null;
+        String typeVersion = node.has(VERSION) ? node.get(VERSION).asString() : null;
+        boolean namespaced = node.get("namespaced").asBoolean();
+        VersionedApiResource resource = new VersionedApiResource(prefix, apiGroupName, version, name, kind, namespaced);
+        VersionedType type = new VersionedType(prefix, typeApiGroupName != null ? typeApiGroupName : apiGroupName,
+                typeVersion != null ? typeVersion : version, kind);
+        if (capability == null && node.has(VERBS) && !node.get(VERBS).asList().isEmpty()
+                && !endpoints.contains(resource)) {
+            endpoints.add(resource);
+        }
+        if (!types.contains(type)) {
+            types.add(type);
+        }
+        addEndpointCapability(endpoints, capability, resource);
+    }
+
+    public String[] getNameAndCapability(ModelNode node) {
+        String name = node.get(NAME).asString();
+        String capability = null;
+        if (name.contains(FWD_SLASH)) {
+            int first = name.indexOf(FWD_SLASH);
+            capability = name.substring(first + 1);
+            name = name.substring(0, first);
+        }
+        return new String[] { name, capability };
+    }
+
+    private void addEndpointCapability(List<VersionedApiResource> endpoints, String capability,
+            VersionedApiResource resource) {
+        if (capability != null) {
+            int index = endpoints.indexOf(resource);
+            if (index != -1) {
+                endpoints.get(index).addCapability(capability);
             }
         }
     }
