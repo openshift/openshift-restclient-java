@@ -1,4 +1,3 @@
-package com.openshift.internal.restclient.capability.resources;
 /*******************************************************************************
  * Copyright (c) 2015-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
@@ -9,6 +8,8 @@ package com.openshift.internal.restclient.capability.resources;
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+
+package com.openshift.internal.restclient.capability.resources;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -34,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.api.capabilities.PodExecIntegrationTest;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.api.capabilities.IPodExec;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IBinaryCapability.SkipTlsVerify;
@@ -76,8 +76,7 @@ public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
         // given
         this.helper.setOpenShiftBinarySystemProperty();
         this.client = helper.createClientForBasicAuth();
-        List<IPod> allPods = client.list(ResourceKind.POD, IntegrationTestHelper.getDefaultNamespace());
-        this.pod = helper.getDockerRegistryPod(allPods);
+        this.pod = helper.getDockerRegistryPod(client);
         assertNotNull("Did not find the registry pod to which to rsync", pod);
     }
 

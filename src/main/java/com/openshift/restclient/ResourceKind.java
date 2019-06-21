@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -154,5 +154,25 @@ public final class ResourceKind {
     }
 
     private ResourceKind() {
+    }
+
+    public static String[] parse(String kind) {
+        String[] result = new String[2];
+        result[0] = "";
+        if (kind.contains(IApiTypeMapper.FWD_SLASH)) {
+            result[0] = kind.substring(0, kind.indexOf(IApiTypeMapper.FWD_SLASH));
+            kind = kind.substring(kind.indexOf(IApiTypeMapper.FWD_SLASH) + 1);
+        }
+        if (kind.indexOf(IApiTypeMapper.DOT) != (-1)) {
+            String version = kind.substring(0, kind.indexOf(IApiTypeMapper.DOT));
+            if (!result[0].isEmpty()) {
+                result[0] += IApiTypeMapper.FWD_SLASH + version;
+            } else {
+                result[0] = version;
+            }
+            kind = kind.substring(kind.indexOf(IApiTypeMapper.DOT) + 1);
+        }
+        result[1] = kind;
+        return result;
     }
 }

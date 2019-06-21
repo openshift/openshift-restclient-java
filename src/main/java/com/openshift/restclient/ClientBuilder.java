@@ -279,7 +279,7 @@ public class ClientBuilder {
             responseCodeInterceptor.setClient(client);
             authenticator.setClient(client);
             authenticator.setOkClient(okClient);
-
+            factory.setClient(client);
             return client;
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException | CertificateException
                 | IOException e) {

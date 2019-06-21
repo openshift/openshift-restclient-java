@@ -68,7 +68,7 @@ public class WatchClientIntegrationTest {
         executor.shutdownNow();
     }
 
-    @Test(timeout = IntegrationTestHelper.TEST_TIMEOUT)
+    @Test(timeout = IntegrationTestHelper.TEST_LONG_TIMEOUT)
     public void test() throws Exception {
         List<ChangeType> results = new ArrayList<>();
         CountDownLatch latch = new CountDownLatch(KINDS.length);

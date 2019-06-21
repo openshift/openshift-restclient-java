@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -12,6 +12,8 @@ package com.openshift.internal.restclient.model.v1;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +33,8 @@ import com.openshift.internal.restclient.model.build.GitBuildSource;
 import com.openshift.internal.restclient.model.build.ImageChangeTrigger;
 import com.openshift.internal.restclient.model.build.SourceBuildStrategy;
 import com.openshift.internal.restclient.model.build.WebhookTrigger;
+import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IApiTypeMapper.IVersionedType;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.images.DockerImageURI;
@@ -55,6 +59,30 @@ public class BuildConfigTest {
     @BeforeClass
     public static void setup() throws Exception {
         client = mock(IClient.class);
+        IApiTypeMapper mapper = mock(IApiTypeMapper.class);
+        when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
+        when(mapper.getType(anyString(), eq(ResourceKind.PVC))).thenReturn(new IVersionedType() {
+            
+            @Override
+            public String getVersion() {
+                return "v1";
+            }
+            
+            @Override
+            public String getPrefix() {
+                return null;
+            }
+            
+            @Override
+            public String getKind() {
+                return ResourceKind.BUILD_CONFIG;
+            }
+            
+            @Override
+            public String getApiGroupName() {
+                return null;
+            }
+        });
         when(client.getBaseURL()).thenReturn(new URL("https://localhost:8443"));
         when(client.getOpenShiftAPIVersion()).thenReturn(VERSION);
         ModelNode node = ModelNode.fromJSONString(Samples.V1_BUILD_CONFIG.getContentAsString());

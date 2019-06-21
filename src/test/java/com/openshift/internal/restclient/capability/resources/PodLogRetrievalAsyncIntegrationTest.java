@@ -14,7 +14,6 @@ package com.openshift.internal.restclient.capability.resources;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.IntegrationTestHelper;
-import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IStoppable;
 import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync;
@@ -43,8 +41,7 @@ public class PodLogRetrievalAsyncIntegrationTest {
     public void testAsyncLogRetrieval() throws Exception {
         latch = new CountDownLatch(2);
         DefaultClient client = (DefaultClient) helper.createClientForBasicAuth();
-        List<IPod> allPods = client.list(ResourceKind.POD, IntegrationTestHelper.getDefaultNamespace());
-        IPod pod = helper.getDockerRegistryPod(allPods);
+        IPod pod = helper.getDockerRegistryPod(client);
         assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
 
         final String container = pod.getContainers().iterator().next().getName();

@@ -16,7 +16,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -28,7 +30,6 @@ import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.openshift.internal.restclient.model.DeploymentConfig;
 import com.openshift.internal.restclient.model.ModelNodeBuilder;
 import com.openshift.internal.restclient.model.Pod;
 import com.openshift.internal.restclient.model.ReplicationController;
@@ -71,6 +72,8 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
     private static final String POD_NAME_DEPLOY = "deploy";
     private static final String POD_DOCKER_REGISTRY = "docker-registry";
     private static final String DEFAULT_PROJECT = "default";
+    private static final String OPENSHIFT4_REGISTRY_PROJECT = "openshift-image-registry";
+    private static final String POD_IMAGE_REGISTRY = "image-registry";
     
     private final Properties prop;
 
@@ -132,16 +135,24 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
         return String.format("%s-%s", string, new Random().nextInt(9999));
     }
 
-    public static boolean isDockerRegistry(IPod pod) {
+    public static boolean isDockerRegistry(IPod pod, String podPrefix) {
         return pod != null
-                && pod.getName().startsWith(POD_DOCKER_REGISTRY);
+                && pod.getName().startsWith(podPrefix);
     }
     
-    public IPod getDockerRegistryPod(Collection<IPod> pods) {
+    private Optional<IPod> getDockerRegistryPod(IClient client, String project, String podPrefix) {
+        List<IPod> pods = client.list(ResourceKind.POD, project);
         return pods.stream()
-                .filter(p -> isDockerRegistry(p))
-                .findFirst()
-                .orElse(null);
+                .filter(p -> isDockerRegistry(p, podPrefix))
+                .findFirst();
+    }
+    
+    public IPod getDockerRegistryPod(IClient client) {
+        Optional<IPod> pod = getDockerRegistryPod(client, DEFAULT_PROJECT, POD_DOCKER_REGISTRY);
+        if (!pod.isPresent()) {
+            pod = getDockerRegistryPod(client, OPENSHIFT4_REGISTRY_PROJECT, POD_IMAGE_REGISTRY);
+        }
+        return pod.orElse(null);
     }
 
 
@@ -189,9 +200,7 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
     }
 
     public IDeploymentConfig stubDeploymentConfig(IClient client, String namespace, String name) {
-        IDeploymentConfig dc = new ResourceFactory(client).create("v1", ResourceKind.DEPLOYMENT_CONFIG);
-        ((DeploymentConfig) dc).setName(name);
-        ((DeploymentConfig) dc).setNamespace(namespace);
+        IDeploymentConfig dc = (IDeploymentConfig) new ResourceFactory(client).stubKind(ResourceKind.DEPLOYMENT_CONFIG, Optional.of(name), Optional.of(namespace));
         dc.setReplicas(1);
         dc.setReplicaSelector("foo", "bar");
         dc.addContainer(dc.getName(), 

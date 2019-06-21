@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -12,6 +12,7 @@ package com.openshift.internal.restclient.model;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +27,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.ResourceFactory;
+import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IApiTypeMapper.IVersionedType;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IService;
@@ -39,6 +42,30 @@ public class ProjectTest {
 
     @Before
     public void setup() {
+        IApiTypeMapper mapper = mock(IApiTypeMapper.class);
+        when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
+        when(mapper.getType(anyString(), eq(ResourceKind.PROJECT))).thenReturn(new IVersionedType() {
+            
+            @Override
+            public String getVersion() {
+                return "v1";
+            }
+            
+            @Override
+            public String getPrefix() {
+                return null;
+            }
+            
+            @Override
+            public String getKind() {
+                return ResourceKind.PROJECT;
+            }
+            
+            @Override
+            public String getApiGroupName() {
+                return null;
+            }
+        });
         project = new ResourceFactory(client) {
         }.create(OpenShiftAPIVersion.v1.toString(), ResourceKind.PROJECT);
         project.setName("aprojectname");

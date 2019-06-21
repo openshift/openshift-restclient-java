@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -11,6 +11,8 @@
 
 package com.openshift.restclient.model;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
@@ -19,8 +21,11 @@ import org.mockito.Mockito;
 
 import com.openshift.internal.restclient.OpenShiftAPIVersion;
 import com.openshift.internal.restclient.ResourceFactory;
+import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IApiTypeMapper.IVersionedType;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
+import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.utils.Samples;
 
 public class MocksFactory {
@@ -35,6 +40,30 @@ public class MocksFactory {
     public MocksFactory(IClient client) {
         this.client = client;
         this.factory = new ResourceFactory(client);
+        IApiTypeMapper mapper = Mockito.mock(IApiTypeMapper.class);
+        when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
+        when(mapper.getType(anyString(), eq(ResourceKind.BUILD_CONFIG))).thenReturn(new IVersionedType() {
+            
+            @Override
+            public String getVersion() {
+                return "v1";
+            }
+            
+            @Override
+            public String getPrefix() {
+                return null;
+            }
+            
+            @Override
+            public String getKind() {
+                return ResourceKind.BUILD_CONFIG;
+            }
+            
+            @Override
+            public String getApiGroupName() {
+                return null;
+            }
+        });
     }
 
     public IClient getClient() {

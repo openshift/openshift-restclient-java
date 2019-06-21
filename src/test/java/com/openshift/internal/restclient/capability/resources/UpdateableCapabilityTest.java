@@ -11,6 +11,8 @@ package com.openshift.internal.restclient.capability.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -21,6 +23,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.ResourceFactory;
+import com.openshift.restclient.IApiTypeMapper;
+import com.openshift.restclient.IApiTypeMapper.IVersionedType;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
@@ -33,12 +37,37 @@ public class UpdateableCapabilityTest {
 
     @Mock
     private IClient client;
+    @Mock
+    private IApiTypeMapper mapper;
     private IService service;
     private IResourceFactory factory;
 
     @Before
     public void setup() {
         when(client.getOpenShiftAPIVersion()).thenReturn("v1");
+        when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
+        when(mapper.getType(anyString(), eq(ResourceKind.SERVICE))).thenReturn(new IVersionedType() {
+            
+            @Override
+            public String getVersion() {
+                return "v1";
+            }
+            
+            @Override
+            public String getPrefix() {
+                return null;
+            }
+            
+            @Override
+            public String getKind() {
+                return ResourceKind.SERVICE;
+            }
+            
+            @Override
+            public String getApiGroupName() {
+                return null;
+            }
+        });
         this.factory = new ResourceFactory(client);
         this.service = factory.stub(ResourceKind.SERVICE, "foo", IntegrationTestHelper.getDefaultNamespace());
         service.setAnnotation("foo", "bar");

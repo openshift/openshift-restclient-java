@@ -28,6 +28,7 @@ import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IProject;
@@ -59,37 +60,47 @@ public class ServerTemplateProcessingIntegrationTest {
     public void testProcessAndApplyTemplate() throws Exception {
         ModelNode node = ModelNode.fromJSONString(Samples.V1_TEMPLATE.getContentAsString());
         final Template template = new Template(node, client, null);
+        node = ModelNode.fromJSONString(Samples.GROUP_TEMPLATE.getContentAsString());
+        final Template groupTemplate = new Template(node, client, null);
         template.setNamespace(null);
         client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {
 
             @Override
             public Object visit(ITemplateProcessing capability) {
 
-                LOG.debug("Processing template: {}", template.toJson());
-                assertFalse("Exp. the template to have items for this test be interesting",
-                        template.getObjects().isEmpty());
-                final int items = template.getObjects().size();
-                ITemplate processedTemplate = capability.process(template, project.getName());
-
-                LOG.debug("Applying template: {}", processedTemplate.toJson());
-                LOG.debug("Applied template");
-                assertEquals("Exp. the pre and post item count to be the same", 
-                        items,
-                        template.getObjects().size());
-                Collection<IResource> stubs = processedTemplate.getObjects();
-                ServerTemplateProcessingIntegrationTest.this.resources = 
-                        stubs.stream()
-                            .map(stub -> {
-                                // resources as in template dont have a namespace
-                                ((KubernetesResource) stub).setNamespace(project.getNamespaceName());
-                                LOG.debug("creating: {}", stub);
-                                IResource resource = client.create(stub);
-                                LOG.debug("created: {}", resource.toJson());
-                                return resource;
-                            })
-                            .collect(Collectors.toList());
-                return null;
+                try {
+                    return processTemplate(template, capability);
+                } catch (OpenShiftException e) {
+                    return processTemplate(groupTemplate, capability);
+                }
             }
         }, new Object());
+    }
+
+    private Object processTemplate(final Template template, ITemplateProcessing capability) {
+        LOG.debug("Processing template: {}", template.toJson());
+        assertFalse("Exp. the template to have items for this test be interesting",
+                template.getObjects().isEmpty());
+        final int items = template.getObjects().size();
+        ITemplate processedTemplate = capability.process(template, project.getName());
+
+        LOG.debug("Applying template: {}", processedTemplate.toJson());
+        LOG.debug("Applied template");
+        assertEquals("Exp. the pre and post item count to be the same", 
+                items,
+                template.getObjects().size());
+        Collection<IResource> stubs = processedTemplate.getObjects();
+        ServerTemplateProcessingIntegrationTest.this.resources = 
+                stubs.stream()
+                    .map(stub -> {
+                        // resources as in template dont have a namespace
+                        ((KubernetesResource) stub).setNamespace(project.getNamespaceName());
+                        LOG.debug("creating: {}", stub);
+                        IResource resource = client.create(stub);
+                        LOG.debug("created: {}", resource.toJson());
+                        return resource;
+                    })
+                    .collect(Collectors.toList());
+        return null;
     }
 }

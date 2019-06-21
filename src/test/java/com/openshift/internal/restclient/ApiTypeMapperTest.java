@@ -38,7 +38,7 @@ public class ApiTypeMapperTest extends TypeMapperFixture {
         IService resource = factory.stub(ResourceKind.SERVICE);
         try {
             getHttpClient().whenRequestTo(TypeMapperFixture.base + "/api").thenThrow(new RuntimeException());
-            assertTrue("Exp. Kube support", mapper.isSupported(resource));
+            assertFalse("Exp. Kube support", mapper.isSupported(resource));
         } catch (RuntimeException e) {
             getHttpClient().whenRequestTo(TypeMapperFixture.base + "/api")
                     .thenReturn(responseOf(TypeMapperFixture.VERSIONS));
