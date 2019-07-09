@@ -31,7 +31,7 @@ import com.openshift.restclient.model.deploy.IDeploymentRequest;
  */
 public class DeploymentTrigger extends AbstractCapability implements IDeploymentTriggerable {
     private static final String DEPLOYMENT_ENDPOINT = "instantiate";
-    private static final String DEPLOYMENT_REQUEST = "DeploymentRequest";
+    private static final String DEPLOYMENT_REQUEST = "v1.DeploymentRequest";
 
     private IClient client;
     private IDeploymentConfig config;
