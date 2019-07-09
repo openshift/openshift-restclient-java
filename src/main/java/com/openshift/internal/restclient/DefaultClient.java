@@ -301,6 +301,9 @@ public class DefaultClient implements IClient, IHttpConstants {
             try (Response result = client.newCall(request).execute()) {
                 String response = result.body().string();
                 LOGGER.debug("Response: {}", response);
+                if (result.code() == 204) {
+                    return null;
+                }
                 return (T) factory.createInstanceFrom(response);
             }
         } catch (IOException e) {
