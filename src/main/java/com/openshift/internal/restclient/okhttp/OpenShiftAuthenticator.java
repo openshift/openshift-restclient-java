@@ -55,13 +55,17 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
     public Request authenticate(Route route, Response response) throws IOException {
         if (unauthorizedForCluster(response)) {
             String requestUrl = response.request().url().toString();
-            Request authRequest = new Request.Builder().addHeader(CSRF_TOKEN, "1").url(new URL(client.getAuthorizationEndpoint().toExternalForm()
-                    + "?response_type=token&client_id=openshift-challenging-client").toString()).build();
+            Request authRequest = new Request.Builder()
+                    .addHeader(CSRF_TOKEN, "1")
+                    .url(new URL(client.getAuthorizationEndpoint().toExternalForm() 
+                            + "?response_type=token&client_id=openshift-challenging-client").toString()).build();
             try (Response authResponse = tryAuth(authRequest)) {
                 if (authResponse.isSuccessful()) {
                     String token = extractAndSetAuthContextToken(authResponse);
-                    return response.request().newBuilder().header(IHttpConstants.PROPERTY_AUTHORIZATION,
-                            String.format("%s %s", IHttpConstants.AUTHORIZATION_BEARER, token)).build();
+                    return response.request().newBuilder()
+                            .header(IHttpConstants.PROPERTY_AUTHORIZATION,
+                                    String.format("%s %s", IHttpConstants.AUTHORIZATION_BEARER, token))
+                            .build();
                 }
             }
             throw new UnauthorizedException(captureAuthDetails(requestUrl),
@@ -78,24 +82,31 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
     }
 
     private Response tryAuth(Request authRequest) throws IOException {
-        return okClient.newBuilder().authenticator(new Authenticator() {
-
-            @Override
-            public Request authenticate(Route route, Response response) throws IOException {
-                if (StringUtils.isNotBlank(response.request().header(AUTH_ATTEMPTS))) {
-                    return null;
-                }
-                if (StringUtils.isNotBlank(response.header(IHttpConstants.PROPERTY_WWW_AUTHENTICATE))) {
-                    for (IChallangeHandler challangeHandler : challangeHandlers) {
-                        if (!challangeHandler.canHandle(response.headers())) {
-                            Builder requestBuilder = response.request().newBuilder().header(AUTH_ATTEMPTS, "1");
-                            return challangeHandler.handleChallange(requestBuilder).build();
+        return okClient.newBuilder()
+                .authenticator(new Authenticator() {
+        
+                    @Override
+                    public Request authenticate(Route route, Response response) throws IOException {
+                        if (StringUtils.isNotBlank(response.request().header(AUTH_ATTEMPTS))) {
+                            return null;
                         }
+                        if (StringUtils.isNotBlank(response.header(IHttpConstants.PROPERTY_WWW_AUTHENTICATE))) {
+                            for (IChallangeHandler challangeHandler : challangeHandlers) {
+                                if (!challangeHandler.canHandle(response.headers())) {
+                                    Builder requestBuilder = response.request().newBuilder()
+                                            .header(AUTH_ATTEMPTS, "1");
+                                    response.close();
+                                    return challangeHandler.handleChallange(requestBuilder).build();
+                                }
+                            }
+                        }
+                        return null;
                     }
-                }
-                return null;
-            }
-        }).followRedirects(false).followRedirects(false).build().newCall(authRequest).execute();
+                })
+                .followRedirects(false)
+                .build()
+                .newCall(authRequest)
+                .execute();
     }
 
     private IAuthorizationDetails captureAuthDetails(String url) {

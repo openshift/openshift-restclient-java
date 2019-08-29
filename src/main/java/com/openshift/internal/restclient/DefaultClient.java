@@ -290,21 +290,32 @@ public class DefaultClient implements IClient, IHttpConstants {
             throw new UnsupportedOperationException("Generic create operation not supported for resource type 'List'");
         }
 
-        final URL endpoint = new URLBuilder(this.baseUrl, typeMapper).apiVersion(version).kind(kind).name(name)
-                .namespace(namespace).subresource(subresource).subContext(subContext).addParameters(params).build();
-
+        final URL endpoint = new URLBuilder(this.baseUrl, typeMapper)
+                .apiVersion(version)
+                .kind(kind)
+                .name(name)
+                .namespace(namespace)
+                .subresource(subresource)
+                .subContext(subContext)
+                .addParameters(params)
+                .build();
+        Request request = newRequestBuilderTo(endpoint.toString())
+                .method(method, requestBody)
+                .build();
+        LOGGER.debug("About to make {} request: {}", request.method(), request);
         try {
-            Request request = newRequestBuilderTo(endpoint.toString())
-                    .method(method, requestBody)
-                    .build();
-            LOGGER.debug("About to make {} request: {}", request.method(), request);
-            try (Response result = client.newCall(request).execute()) {
-                String response = result.body().string();
-                LOGGER.debug("Response: {}", response);
-                return (T) factory.createInstanceFrom(response);
-            }
+            String body = request(request);
+            return (T) factory.createInstanceFrom(body);
         } catch (IOException e) {
             throw new OpenShiftException(e, "Unable to execute request to %s", endpoint);
+        }
+    }
+
+    private String request(Request request) throws IOException {
+        try (Response response = client.newCall(request).execute()) {
+            String body = response.body().string() ;
+            LOGGER.debug("Response: {}", body);
+            return body;
         }
     }
     
@@ -358,9 +369,7 @@ public class DefaultClient implements IClient, IHttpConstants {
                     .url(new URL(this.baseUrl, URL_HEALTH_CHECK))
                     .header(PROPERTY_ACCEPT, "*/*")
                     .build();
-            try (Response response = client.newCall(request).execute()) {
-                return response.body().string();
-            }
+            return request(request);
         } catch (IOException e) {
             throw new OpenShiftException(e,
                     "Exception while trying to determine the health/ready response of the server");

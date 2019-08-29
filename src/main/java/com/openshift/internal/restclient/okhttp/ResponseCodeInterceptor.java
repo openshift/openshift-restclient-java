@@ -62,7 +62,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
                 response = makeSuccessIfAuthorized(response);
                 break;
             default:
-                if (response.request().tag() instanceof Ignore == false) {
+                if (!(response.request().tag() instanceof Ignore)) {
                     throw createOpenShiftException(client, response, null);
                 }
             }
@@ -70,14 +70,19 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
         return response;
     }
 
-    private Response makeSuccessIfAuthorized(Response response) {
+    private Response makeSuccessIfAuthorized(final Response response) {
+        Response returnedResponse = response;
         String location = response.header(PROPERTY_LOCATION);
         if (StringUtils.isNotBlank(location)
                 && URIUtils.splitFragment(location).containsKey(OpenShiftAuthenticator.ACCESS_TOKEN)) {
-            response = response.newBuilder().request(response.request()).code(STATUS_OK).headers(response.headers())
+            returnedResponse = response.newBuilder()
+                    .request(response.request())
+                    .code(STATUS_OK)
+                    .headers(response.headers())
                     .build();
+            response.close();
         }
-        return response;
+        return returnedResponse;
     }
 
     public void setClient(DefaultClient client) {
