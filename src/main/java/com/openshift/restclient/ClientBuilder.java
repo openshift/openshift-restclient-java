@@ -238,7 +238,7 @@ public class ClientBuilder {
             // if we need to really expose them.
             dispatcher.setMaxRequests(maxRequests);
             dispatcher.setMaxRequestsPerHost(maxRequestsPerHost);
-            String[] pieces = { this.userAgentPrefix, "openshift-restclient-java", Version.userAgent() };
+            String[] pieces = { this.userAgentPrefix, "openshift-restclient-java", Version.userAgent };
             String userAgent = StringUtils.join(pieces, "/");
 
             OkHttpClient.Builder builder = new OkHttpClient.Builder()
