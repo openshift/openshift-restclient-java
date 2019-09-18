@@ -11,9 +11,9 @@
 
 package com.openshift.restclient.model;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 
 import java.lang.reflect.Field;
 
@@ -41,8 +41,8 @@ public class MocksFactory {
         this.client = client;
         this.factory = new ResourceFactory(client);
         IApiTypeMapper mapper = Mockito.mock(IApiTypeMapper.class);
-        when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
-        when(mapper.getType(anyString(), eq(ResourceKind.BUILD_CONFIG))).thenReturn(new IVersionedType() {
+        lenient().when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
+        lenient().when(mapper.getType(anyString(), eq(ResourceKind.BUILD_CONFIG))).thenReturn(new IVersionedType() {
             
             @Override
             public String getVersion() {
@@ -72,8 +72,8 @@ public class MocksFactory {
 
     public <T extends IResource> T mock(Class<T> klass, String namespace, String name) {
         T mock = mock(klass);
-        when(mock.getNamespaceName()).thenReturn(namespace);
-        when(mock.getName()).thenReturn(name);
+        lenient().when(mock.getNamespaceName()).thenReturn(namespace);
+        lenient().when(mock.getName()).thenReturn(name);
         return mock;
     }
 
@@ -85,10 +85,10 @@ public class MocksFactory {
     public <T extends IResource> T mock(Class<T> klass) {
         final String version = OpenShiftAPIVersion.v1.toString();
         T mock = Mockito.mock(klass);
-        when(mock.getName()).thenReturn("a" + klass.getSimpleName());
-        when(mock.getApiVersion()).thenReturn(version);
-        when(mock.getNamespaceName()).thenReturn("aNamespace");
-        when(mock.getKind()).thenReturn(klass.getSimpleName().substring(1));
+        lenient().when(mock.getName()).thenReturn("a" + klass.getSimpleName());
+        lenient().when(mock.getApiVersion()).thenReturn(version);
+        lenient().when(mock.getNamespaceName()).thenReturn("aNamespace");
+        lenient().when(mock.getKind()).thenReturn(klass.getSimpleName().substring(1));
         return mock;
     }
 

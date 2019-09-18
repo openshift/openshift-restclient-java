@@ -10,9 +10,9 @@
 package com.openshift.internal.restclient.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,7 +32,7 @@ import com.openshift.restclient.IApiTypeMapper.IVersionedType;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
-import com.openshift.restclient.model.IPod;
+import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.IService;
 import com.openshift.restclient.model.IServicePort;
 
@@ -91,7 +91,7 @@ public class ServiceTest {
     @Test
     public void testGetPods() {
         // setup
-        when(client.list(anyString(), anyString(), anyMap())).thenReturn(new ArrayList<IPod>());
+        when(client.list(anyString(), anyString(), anyMap())).thenReturn(new ArrayList<IResource>());
 
         service.addLabel("bar", "foo");
         service.setSelector("foo", "bar");

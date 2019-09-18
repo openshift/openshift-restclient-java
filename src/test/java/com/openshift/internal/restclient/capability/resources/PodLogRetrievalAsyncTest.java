@@ -13,10 +13,8 @@ package com.openshift.internal.restclient.capability.resources;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.TypeMapperFixture;
@@ -36,8 +34,6 @@ import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IPod;
 import com.openshift.restclient.model.MocksFactory;
 
-import okhttp3.MediaType;
-import okhttp3.ResponseBody;
 import okhttp3.WebSocket;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -101,7 +97,6 @@ public class PodLogRetrievalAsyncTest extends TypeMapperFixture {
     @Test
     public void testStopSwallowsException() throws Exception {
         WebSocket socket = mock(WebSocket.class);
-        doThrow(Exception.class).when(socket).close(anyInt(), anyString());
         adapter.onOpen(socket, null);
 
         adapter.stop();
