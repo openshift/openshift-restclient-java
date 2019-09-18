@@ -11,6 +11,7 @@
 
 package com.openshift.internal.restclient.capability.resources;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Retrieve metadata directly from docker.
@@ -81,11 +83,12 @@ public class DockerRegistryImageStreamImportCapability
     private boolean registryExists(OkHttpClient client) throws Exception {
         Request req = new Request.Builder().url(DEFAULT_DOCKER_REGISTRY)
                 .header(ResponseCodeInterceptor.X_OPENSHIFT_IGNORE_RCI, "true").build();
-        Response response = client.newCall(req).execute();
-        if (response == null) {
-            return false;
+        try (Response response = client.newCall(req).execute()) {
+            if (response == null) {
+                return false;
+            }
+            return (response.code() == STATUS_UNAUTHORIZED || response.code() == STATUS_OK);
         }
-        return (response.code() == STATUS_UNAUTHORIZED || response.code() == STATUS_OK);
     }
 
     /**
@@ -96,26 +99,34 @@ public class DockerRegistryImageStreamImportCapability
             Map<String, String> auth = parseAuthDetails(details);
             if (auth.containsKey(REALM)) {
                 Request request = createAuthRequest(auth);
-                Response response = client.newCall(request).execute();
-                LOG.debug("Auth response: " + response.toString());
-                if (response.code() == STATUS_OK
-                        && MEDIATYPE_APPLICATION_JSON.equals(response.headers().get(PROPERTY_CONTENT_TYPE))) {
-                    ModelNode tokenNode = ModelNode.fromJSONString(response.body().string());
-                    if (tokenNode.hasDefined(TOKEN)) {
-                        return tokenNode.get(TOKEN).asString();
-                    } else {
-                        LOG.debug("No auth token was found on auth response: " + tokenNode.toJSONString(false));
-                    }
-                } else {
-                    LOG.info(
-                            "Unable to retrieve authentication token as response was not OK and/or unexpected content type");
-                }
+                return retrieveAuthToken(client, request);
             } else {
-                LOG.info("Unable to retrieve authentication token - 'realm' was not found in the authenticate header: "
-                        + auth.toString());
+                LOG.info("Unable to retrieve authentication token - 'realm' was not found in the authenticate header: {}",
+                        auth.toString());
             }
         }
         return null;
+    }
+
+    private String retrieveAuthToken(OkHttpClient client, Request request) throws IOException {
+        String token = null;
+        try (Response response = client.newCall(request).execute();
+                ResponseBody responseBody = response.body()) {
+            LOG.debug("Auth response: {}", responseBody.string());
+            if (response.code() == STATUS_OK
+                    && MEDIATYPE_APPLICATION_JSON.equals(response.headers().get(PROPERTY_CONTENT_TYPE))) {
+                ModelNode tokenNode = ModelNode.fromJSONString(responseBody.string());
+                if (tokenNode.hasDefined(TOKEN)) {
+                    token = tokenNode.get(TOKEN).asString();
+                } else {
+                    LOG.debug("No auth token was found on auth response: {}", tokenNode.toJSONString(false));
+                }
+            } else {
+                LOG.info(
+                        "Unable to retrieve authentication token as response was not OK and/or unexpected content type");
+            }
+        }
+        return token;
     }
 
     private Request createAuthRequest(Map<String, String> authParams) {
@@ -127,12 +138,12 @@ public class DockerRegistryImageStreamImportCapability
         }
         Request request = new Request.Builder().url(builder.build())
                 .header(ResponseCodeInterceptor.X_OPENSHIFT_IGNORE_RCI, "true").build();
-        LOG.debug("Auth request uri: " + request.url());
+        LOG.debug("Auth request uri: {}", request.url());
         return request;
     }
 
     private Map<String, String> parseAuthDetails(String auth) {
-        LOG.debug("Auth details header: " + auth);
+        LOG.debug("Auth details header: {}", auth);
         Map<String, String> map = new HashMap<>();
         String[] authAndValues = auth.split(" ");
         if (authAndValues.length == 2 && AUTHORIZATION_BEARER.equals(authAndValues[0])) {
@@ -156,18 +167,21 @@ public class DockerRegistryImageStreamImportCapability
             builder.header(PROPERTY_AUTHORIZATION, String.format("%s %s", AUTHORIZATION_BEARER, token));
 
         }
-        LOG.debug("retrieveMetaData uri: " + regUri);
-        Response response = client.newCall(builder.build()).execute();
-        LOG.debug("retrieveMetaData response: " + response.toString());
-        switch (response.code()) {
-        case STATUS_OK:
-            return new DockerResponse(DockerResponse.DATA, response.body().string());
-        case STATUS_UNAUTHORIZED:
-            return new DockerResponse(DockerResponse.AUTH,
-                    response.headers().get(IHttpConstants.PROPERTY_WWW_AUTHENTICATE));
+        LOG.debug("retrieveMetaData uri: {}", regUri);
+        try (Response response = client.newCall(builder.build()).execute();
+                ResponseBody responseBody = response.body()) {
+            LOG.debug("retrieveMetaData response: {}", responseBody.string());
+            switch (response.code()) {
+            case STATUS_OK:
+                return new DockerResponse(DockerResponse.DATA, responseBody.string());
+            case STATUS_UNAUTHORIZED:
+                return new DockerResponse(DockerResponse.AUTH,
+                        response.headers().get(IHttpConstants.PROPERTY_WWW_AUTHENTICATE));
+            default:
+                LOG.info("Unable to retrieve docker meta data: {}", responseBody.string());
+                return null;
+            }
         }
-        LOG.info("Unable to retrieve docker meta data: " + response.toString());
-        return null;
     }
 
     private static class DockerResponse {

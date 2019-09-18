@@ -238,18 +238,25 @@ public class ClientBuilder {
             // if we need to really expose them.
             dispatcher.setMaxRequests(maxRequests);
             dispatcher.setMaxRequestsPerHost(maxRequestsPerHost);
-            String[] pieces = { this.userAgentPrefix, "openshift-restclient-java", Version.userAgent() };
+            String[] pieces = { this.userAgentPrefix, "openshift-restclient-java", Version.userAgent };
             String userAgent = StringUtils.join(pieces, "/");
 
-            OkHttpClient.Builder builder = new OkHttpClient.Builder().addInterceptor(responseCodeInterceptor)
+            OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                    .addInterceptor(responseCodeInterceptor)
                     .addNetworkInterceptor(new Interceptor() {
                         @Override
                         public Response intercept(Chain chain) throws IOException {
-                            Request agent = chain.request().newBuilder().header("User-Agent", userAgent).build();
+                            Request agent = chain.request().newBuilder()
+                                    .header("User-Agent", userAgent)
+                                    .build();
                             return chain.proceed(agent);
                         }
-                    }).authenticator(authenticator).dispatcher(dispatcher).readTimeout(readTimeout, readTimeoutUnit)
-                    .writeTimeout(writeTimeout, writeTimeoutUnit).connectTimeout(connectTimeout, connectTimeoutUnit)
+                    })
+                    .authenticator(authenticator)
+                    .dispatcher(dispatcher)
+                    .readTimeout(readTimeout, readTimeoutUnit)
+                    .writeTimeout(writeTimeout, writeTimeoutUnit)
+                    .connectTimeout(connectTimeout, connectTimeoutUnit)
                     .pingInterval(pingInterval, pingIntervalUnit)
                     .sslSocketFactory(sslContext.getSocketFactory(), trustManager);
 

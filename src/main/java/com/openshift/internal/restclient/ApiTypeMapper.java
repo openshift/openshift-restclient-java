@@ -39,6 +39,7 @@ import com.openshift.restclient.model.IResource;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Typemapper to determine the endpoints for various openshift resources
@@ -253,11 +254,16 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
         try {
             final URL url = new URL(new URL(this.baseUrl), endpoint);
             LOGGER.debug(url.toString());
-            Request request = new Request.Builder().url(url).build();
-            Response response = client.newCall(request).execute();
-            return response.body().string();
+            return request(url);
         } catch (IOException e) {
             throw new OpenShiftException(e, "Unable to read endpoint %s/%s", this.baseUrl, endpoint);
+        }
+    }
+
+    private String request(final URL url) throws IOException {
+        Request request = new Request.Builder().url(url).build();
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
         }
     }
 
@@ -322,7 +328,8 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
         @Override
         public Collection<String> getVersions() {
             return JBossDmrExtentions.get(getNode(), new HashMap<>(), "versions").asList().stream()
-                    .map(n -> n.asString()).collect(Collectors.toList());
+                    .map(ModelNode::asString)
+                    .collect(Collectors.toList());
         }
 
         @Override
