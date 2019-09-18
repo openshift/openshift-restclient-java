@@ -12,6 +12,7 @@
 package com.openshift.internal.restclient;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +24,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.IResource;
@@ -104,7 +105,7 @@ public class URLBuilderTest extends TypeMapperFixture {
 
     private IResource givenAResource(String kind, KubernetesAPIVersion version, String namespace) {
         IResource resource = mock(IResource.class);
-        when(resource.getApiVersion()).thenReturn(version.toString());
+        lenient().when(resource.getApiVersion()).thenReturn(version.toString());
         when(resource.getKind()).thenReturn(kind);
         when(resource.getNamespaceName()).thenReturn(namespace);
         return resource;

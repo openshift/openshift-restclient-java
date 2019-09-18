@@ -11,9 +11,10 @@
 
 package com.openshift.internal.restclient;
 
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,8 @@ import java.util.function.Supplier;
 import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
+import org.mockito.quality.Strictness;
 import org.mockito.stubbing.OngoingStubbing;
 
 import com.openshift.restclient.IApiTypeMapper;
@@ -90,10 +93,10 @@ public class TypeMapperFixture {
 
         void mockAsyncRequest(String url, Supplier<Response> response) throws IOException {
             Call call = mock(Call.class);
-            doReturn(call).when(this).newCall(requestTo(url));
+            lenient().doReturn(call).when(this).newCall(requestTo(url));
 
             ArgumentCaptor<Callback> argumentCaptor = ArgumentCaptor.forClass(Callback.class);
-            doAnswer(invocation -> {
+            lenient().doAnswer(invocation -> {
                 Callback callback = argumentCaptor.getValue();
                 callback.onResponse(call, response.get());
                 return null;
@@ -119,7 +122,7 @@ public class TypeMapperFixture {
                 .build();
     }
 
-    static class RequestMatcher extends ArgumentMatcher<Request> {
+    static class RequestMatcher implements ArgumentMatcher<Request> {
 
         private final String url;
 
@@ -128,11 +131,11 @@ public class TypeMapperFixture {
         }
 
         @Override
-        public boolean matches(Object argument) {
+        public boolean matches(Request argument) {
             if (ANY_URL.equals(this.url)) {
                 return true;
             }
-            if (argument == null || !(argument instanceof Request)) {
+            if (argument == null) {
                 return false;
             }
             return ((Request) argument).url().toString().equals(url);

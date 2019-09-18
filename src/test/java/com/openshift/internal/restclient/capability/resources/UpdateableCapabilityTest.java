@@ -11,15 +11,16 @@ package com.openshift.internal.restclient.capability.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.openshift.internal.restclient.IntegrationTestHelper;
 import com.openshift.internal.restclient.ResourceFactory;
@@ -44,7 +45,7 @@ public class UpdateableCapabilityTest {
 
     @Before
     public void setup() {
-        when(client.getOpenShiftAPIVersion()).thenReturn("v1");
+        lenient().when(client.getOpenShiftAPIVersion()).thenReturn("v1");
         when(client.adapt(IApiTypeMapper.class)).thenReturn(mapper);
         when(mapper.getType(anyString(), eq(ResourceKind.SERVICE))).thenReturn(new IVersionedType() {
             
