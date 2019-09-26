@@ -17,7 +17,7 @@ import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.model.volume.property.INfsVolumeProperties;
 
-public class NfsVolumeProperties extends AbstractPersistentVolumeProperties implements INfsVolumeProperties {
+public class NfsVolumeProperties implements ISettablePersistentVolumeProperties, INfsVolumeProperties {
 
     private static final String PV_SPEC = "spec";
     private static final String PV_NFS = "nfs";

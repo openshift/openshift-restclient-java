@@ -20,7 +20,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
 import com.openshift.internal.restclient.model.KubernetesResource;
-import com.openshift.internal.restclient.model.volume.property.AbstractPersistentVolumeProperties;
+import com.openshift.internal.restclient.model.volume.property.ISettablePersistentVolumeProperties;
 import com.openshift.internal.restclient.model.volume.property.HostPathVolumeProperties;
 import com.openshift.internal.restclient.model.volume.property.NfsVolumeProperties;
 import com.openshift.restclient.IClient;
@@ -177,8 +177,8 @@ public class PersistentVolume extends KubernetesResource implements IPersistentV
      */
     @Override
     public void setPersistentVolumeProperties(IPersistentVolumeProperties properties) {
-        if (properties instanceof AbstractPersistentVolumeProperties) {
-            ((AbstractPersistentVolumeProperties) properties).setProperties(getNode());
+        if (properties instanceof ISettablePersistentVolumeProperties) {
+            ((ISettablePersistentVolumeProperties) properties).setProperties(getNode());
         }
     }
 

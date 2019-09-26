@@ -79,7 +79,7 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
     @Override
     public List<IBuildTrigger> getBuildTriggers() {
-        List<IBuildTrigger> triggers = new ArrayList<IBuildTrigger>();
+        List<IBuildTrigger> triggers = new ArrayList<>();
         if (has(BUILDCONFIG_TRIGGERS)) {
             List<ModelNode> list = get(BUILDCONFIG_TRIGGERS).asList();
             final String url = getClient() != null && StringUtils.isNotEmpty(getNamespaceName())

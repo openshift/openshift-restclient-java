@@ -487,7 +487,7 @@ public class DefaultClient implements IClient, IHttpConstants {
         @Override
         public void onFailure(Call call, IOException e) {
             versionSetter.accept("");
-            LOGGER.warn("Exception while trying to determine " + description + " master version", e);
+            LOGGER.warn("Exception while trying to determine {} master version", description, e);
         }
 
         @Override
@@ -497,7 +497,7 @@ public class DefaultClient implements IClient, IHttpConstants {
                     versionSetter.accept(ModelNode.fromJSONString(response.body().string()).get("gitVersion").asString());
                 } else {
                     versionSetter.accept("");
-                    LOGGER.warn("Failed to determine " + description + " master version: got " + response.code());
+                    LOGGER.warn("Failed to determine {} master version: got {}", description, response.code());
                 }
             } finally {
                 response.close();
@@ -527,7 +527,7 @@ public class DefaultClient implements IClient, IHttpConstants {
                     DefaultClient.this.tokenEndpoint.complete(new URL(node.get("token_endpoint").asString()));
                 } else {
                     setDefaults();
-                    LOGGER.warn("Failed to determine authorization endpoint: got " + response.code());
+                    LOGGER.warn("Failed to determine authorization endpoint: got {}", response.code());
                 }
             } finally {
                 response.close();

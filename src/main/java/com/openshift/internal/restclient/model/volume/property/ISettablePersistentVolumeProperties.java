@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,18 +8,14 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
+package com.openshift.internal.restclient.model.volume.property;
 
-package com.openshift.restclient.model;
+import org.jboss.dmr.ModelNode;
 
-import com.openshift.restclient.api.models.IAnnotatable;
+import com.openshift.restclient.model.volume.property.IPersistentVolumeProperties;
 
-/**
- * 
- * @author jeff.cantrill
- *
- * @deprecated
- * {@link IAnnotatable}
-*/
-@Deprecated
-public interface Annotatable extends IAnnotatable{
+public interface ISettablePersistentVolumeProperties extends IPersistentVolumeProperties {
+
+    void setProperties(ModelNode node);
+
 }

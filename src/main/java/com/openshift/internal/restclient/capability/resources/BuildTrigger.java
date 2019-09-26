@@ -35,7 +35,7 @@ public class BuildTrigger implements IBuildTriggerable {
     private final String subresource;
     private String commitId;
     private List<String> causes;
-    private HashMap<String, String> envVars = new HashMap<String, String>();
+    private HashMap<String, String> envVars = new HashMap<>();
 
     public BuildTrigger(IBuildConfig buildConfig, IClient client) {
         this.resource = buildConfig;
@@ -77,8 +77,8 @@ public class BuildTrigger implements IBuildTriggerable {
         if (StringUtils.isNotEmpty(commitId)) {
             request.setCommitId(commitId);
         }
-        causes.forEach(c -> request.addBuildCause(c));
-        envVars.forEach((name, value) -> request.setEnvironmentVariable(name, value));
+        causes.forEach(request::addBuildCause);
+        envVars.forEach(request::setEnvironmentVariable);
         return client.create(resource.getKind(), resource.getNamespaceName(), resource.getName(), subresource, request);
     }
 

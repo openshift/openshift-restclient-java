@@ -76,6 +76,9 @@ import com.openshift.restclient.model.build.IBuildConfigBuilder;
  */
 public class CapabilityInitializer {
 
+    private CapabilityInitializer() {
+    }
+
     /**
      * Registers the capability if it is supported
      * 

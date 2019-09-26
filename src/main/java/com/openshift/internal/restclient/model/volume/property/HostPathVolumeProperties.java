@@ -17,7 +17,7 @@ import org.jboss.dmr.ModelNode;
 
 import com.openshift.restclient.model.volume.property.IHostPathVolumeProperties;
 
-public class HostPathVolumeProperties extends AbstractPersistentVolumeProperties implements IHostPathVolumeProperties {
+public class HostPathVolumeProperties implements ISettablePersistentVolumeProperties, IHostPathVolumeProperties {
 
     private static final String PV_SPEC = "spec";
     private static final String PV_HOST_PATH = "hostPath";

@@ -256,7 +256,7 @@ public class DockerRegistryImageStreamImportCapability
     }
 
     private ImageStreamImport buildImageStreamImport(DockerImageURI uri, ModelNode node) {
-        ImageStreamImport isImport = (ImageStreamImport) factory.stub(ResourceKind.IMAGE_STREAM_IMPORT, uri.getName(),
+        ImageStreamImport isImport = factory.stub(ResourceKind.IMAGE_STREAM_IMPORT, uri.getName(),
                 this.project.getName());
         ModelNode root = isImport.getNode();
         ModelNode images = JBossDmrExtentions.get(root, null, ImageStreamImport.STATUS_IMAGES);

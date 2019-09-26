@@ -39,7 +39,6 @@ import com.openshift.restclient.model.IResource;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * Typemapper to determine the endpoints for various openshift resources
@@ -139,11 +138,12 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
     private IVersionedType typeFor(String version, String kind) {
         String[] split = StringUtils.isBlank(version) ? new String[] {} : version.split(FWD_SLASH);
         Optional<? extends IVersionedType> result = null;
-        result = types.stream().filter(e -> {
-            return e.getKind().equals(kind) && (split.length == 0 || split[split.length - 1].equals(e.getVersion()))
-                    && (split.length < 2 || split[0].equals(e.getApiGroupName()));
+        result = types.stream().filter(e -> 
+            e.getKind().equals(kind) 
+            		&& (split.length == 0 || split[split.length - 1].equals(e.getVersion()))
+                    && (split.length < 2 || split[0].equals(e.getApiGroupName()))
 
-        }).findFirst();
+        ).findFirst();
         return result.orElse(null);
     }
 

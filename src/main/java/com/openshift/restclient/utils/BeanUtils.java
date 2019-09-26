@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -33,7 +33,9 @@ public class BeanUtils {
      */
     public static String toCamelCase(String name, String delimiter) {
         String[] parts = name.split("-");
-        List<String> capitalized = Stream.of(parts).map(p -> StringUtils.capitalize(p)).collect(Collectors.toList());
+        List<String> capitalized = Stream.of(parts)
+        		.map(StringUtils::capitalize)
+        		.collect(Collectors.toList());
         return StringUtils.uncapitalize(StringUtils.join(capitalized, ""));
     }
 }

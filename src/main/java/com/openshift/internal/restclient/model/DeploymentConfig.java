@@ -59,7 +59,7 @@ public class DeploymentConfig extends ReplicationController implements IDeployme
 
     @Override
     public Collection<String> getTriggerTypes() {
-        List<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
         ModelNode triggers = get(DEPLOYMENTCONFIG_TRIGGERS);
         for (ModelNode node : triggers.asList()) {
             types.add(asString(node, TYPE));
@@ -87,7 +87,7 @@ public class DeploymentConfig extends ReplicationController implements IDeployme
 
     // FIXME
     public List<String> getImageNames() {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         List<ModelNode> containers = get(DEPLOYMENTCONFIG_CONTAINERS).asList();
         for (ModelNode container : containers) {
             names.add(container.get("image").asString());
@@ -130,7 +130,7 @@ public class DeploymentConfig extends ReplicationController implements IDeployme
         if (causes.getType() == ModelType.UNDEFINED || causes.getType() != ModelType.LIST) {
             return false;
         }
-        return causes.asList().size() > 0;
+        return !causes.asList().isEmpty();
     }
 
     @Override

@@ -158,7 +158,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
     }
 
     private void addShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
     /**
@@ -239,7 +239,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
             LOG.debug("OpenShiftBinaryCapability process exit code {}", exitValue);
             if (exitValue != 0) {
                 try {
-                    LOG.debug("OpenShiftBinaryCapability process error stream",
+                    LOG.debug("OpenShiftBinaryCapability process error stream: {}",
                             IOUtils.toString(process.getErrorStream()));
                 } catch (IOException e) {
                     LOG.debug("IOException trying to debug the process error stream", e);
