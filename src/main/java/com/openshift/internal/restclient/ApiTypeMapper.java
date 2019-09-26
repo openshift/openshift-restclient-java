@@ -140,7 +140,7 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
         Optional<? extends IVersionedType> result = null;
         result = types.stream().filter(e -> 
             e.getKind().equals(kind) 
-            		&& (split.length == 0 || split[split.length - 1].equals(e.getVersion()))
+                    && (split.length == 0 || split[split.length - 1].equals(e.getVersion()))
                     && (split.length < 2 || split[0].equals(e.getApiGroupName()))
 
         ).findFirst();

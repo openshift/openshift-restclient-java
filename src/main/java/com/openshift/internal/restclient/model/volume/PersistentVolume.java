@@ -20,8 +20,8 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
 import com.openshift.internal.restclient.model.KubernetesResource;
-import com.openshift.internal.restclient.model.volume.property.ISettablePersistentVolumeProperties;
 import com.openshift.internal.restclient.model.volume.property.HostPathVolumeProperties;
+import com.openshift.internal.restclient.model.volume.property.ISettablePersistentVolumeProperties;
 import com.openshift.internal.restclient.model.volume.property.NfsVolumeProperties;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.volume.IPersistentVolume;
