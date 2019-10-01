@@ -10,13 +10,16 @@
 package com.openshift.internal.restclient;
 
 import static com.openshift.internal.restclient.IntegrationTestHelper.MILLISECONDS_PER_SECOND;
+import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -35,7 +38,6 @@ import com.openshift.restclient.model.template.ITemplate;
 
 public class DefaultClientIntegrationTest {
 
-    private static final String VERSION = "v1";
     private static final Logger LOG = LoggerFactory.getLogger(DefaultClientIntegrationTest.class);
 
     private IntegrationTestHelper helper = new IntegrationTestHelper();
@@ -156,6 +158,44 @@ public class DefaultClientIntegrationTest {
         assertEquals(stub.getNamespace(), service.getNamespace());
         assertEquals(stub.getSelector(), service.getSelector());
         assertEquals(stub.getPort(), service.getPort());
+    }
+    
+    @Test
+    public void shouldHaveOpenShiftMasterVersion() {
+        // given
+        // when
+        int osMajorVersion = client.getOpenShiftMajorVersion();
+        // then
+        assertThat(osMajorVersion).isNotEqualTo(KubernetesVersion.NO_VERSION);
+    }
+
+    @Test
+    public void shouldDetectCorrectOpenShiftMasterVersion() {
+        // given
+        String osVersion = client.getOpenshiftMasterVersion();
+        String k8Version = client.getKubernetesMasterVersion();
+        // when
+        int osMajorVersion = client.getOpenShiftMajorVersion();
+        // then
+        assertOpenShiftVersion(osMajorVersion, osVersion, k8Version);
+    }
+
+    private void assertOpenShiftVersion(int osMajorVersion, String osVersion, String k8Version) {
+        if (StringUtils.length(osVersion) > 1) {
+            int guessedOSMajorVersion = Integer.parseInt(osVersion.charAt(1) + "");
+            assertThat(osMajorVersion).isEqualTo(guessedOSMajorVersion);
+        } else if (!StringUtils.isEmpty(k8Version)) {
+            int guessedOSMajorVersion = KubernetesVersion.NO_VERSION;
+            int guessedK8MinorVersion = Integer.parseInt(k8Version.split("\\.")[1]);
+            if (guessedK8MinorVersion <= 11) {
+                guessedOSMajorVersion = 3;
+            } else {
+                guessedOSMajorVersion = 4;
+            }
+            assertThat(osMajorVersion).isEqualTo(guessedOSMajorVersion);
+        } else {
+            fail("Could not guess OpenShift version, neither /version/openshift nor /version are available.");
+        }
     }
 
 }

@@ -12,6 +12,8 @@ package com.openshift.internal.restclient;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +25,11 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +46,7 @@ import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.restclient.ClientBuilder;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.IWatcher;
+import com.openshift.restclient.NoopSSLCertificateCallback;
 import com.openshift.restclient.NotFoundException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.authorization.ResourceForbiddenException;
@@ -52,6 +60,8 @@ import com.openshift.restclient.model.IReplicationController;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.IService;
 import com.openshift.restclient.model.deploy.DeploymentTriggerType;
+
+import okhttp3.OkHttpClient;
 
 public class IntegrationTestHelper implements ResourcePropertyKeys {
 
@@ -128,8 +138,8 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
             project = client.get(ResourceKind.PROJECT, name, "");
         } catch (NotFoundException | ResourceForbiddenException e) {
             // OS3: NotFoundException
-        	// OS4: ResourceForbiddenException
-        	project = createProject(name, client);
+            // OS4: ResourceForbiddenException
+            project = createProject(name, client);
         }
         return project;
     }
@@ -437,5 +447,40 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
 
     public boolean isDeployPod(IPod pod) {
         return pod.getName().endsWith(POD_NAME_DEPLOY);
+    }
+    
+    public OkHttpClient createTrustAllOkHttpClient() {
+        try {
+            TrustManager trustAllManager = new TrustAllTrustManager();
+            final TrustManager[] trustAllCerts = new TrustManager[] { trustAllManager  };
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+            return new OkHttpClient.Builder()
+                    .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllManager)
+                    .hostnameVerifier(new NoopSSLCertificateCallback())
+                    .build();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static class TrustAllTrustManager implements X509TrustManager {
+        @Override
+        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType)
+                throws CertificateException {
+        }
+
+        @Override
+        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType)
+                throws CertificateException {
+        }
+
+        @Override
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        } 
     }
 }

@@ -20,6 +20,7 @@ import org.jboss.dmr.ModelType;
 
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.model.volume.IPersistentVolumeClaim;
 
 public class PersistentVolumeClaim extends KubernetesResource implements IPersistentVolumeClaim {
@@ -61,6 +62,11 @@ public class PersistentVolumeClaim extends KubernetesResource implements IPersis
     @Override
     public void setRequestedStorage(String requestedStorage) {
         set(PVC_REQUESTED_STORAGE, requestedStorage);
+    }
+
+    @Override
+    public String getKind() {
+        return ResourceKind.PVC;
     }
 
     @Override

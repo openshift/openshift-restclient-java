@@ -91,6 +91,7 @@ public class DefaultClient implements IClient, IHttpConstants {
     private String kubernetesVersion;
     private AuthorizationContext authContext;
     private IApiTypeMapper typeMapper;
+    private OpenShiftMajorVersion openShiftMajorVersion;
 
     public DefaultClient(URL baseUrl, OkHttpClient client, IResourceFactory factory, IApiTypeMapper typeMapper,
             AuthorizationContext authContext) {
@@ -595,6 +596,14 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     public String getToken() {
         return getAuthorizationContext().getToken();
+    }
+
+    @Override
+    public int getOpenShiftMajorVersion() {
+        if (openShiftMajorVersion == null) {
+            this.openShiftMajorVersion = new OpenShiftMajorVersion(getOpenShiftAPIVersion(), getKubernetesMasterVersion());
+        }
+        return openShiftMajorVersion.get();
     }
 
     @Override

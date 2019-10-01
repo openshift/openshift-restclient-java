@@ -1,0 +1,18 @@
+{
+    "apiVersion": "v1",
+    "data": {
+        "consoleURL": "https://console-openshift-console.apps.crw.codereadyqe.com"
+    },
+    "kind": "ConfigMap",
+    "metadata": {
+        "annotations": {
+            "release.openshift.io/create-only": "true"
+        },
+        "creationTimestamp": "2019-09-24T11:13:17Z",
+        "name": "console-public",
+        "namespace": "openshift-config-managed",
+        "resourceVersion": "13313",
+        "selfLink": "/api/v1/namespaces/openshift-config-managed/configmaps/console-public",
+        "uid": "4f16131e-debc-11e9-a5c3-02ae3992b00c"
+    }
+}

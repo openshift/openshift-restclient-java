@@ -33,6 +33,7 @@ import com.openshift.internal.restclient.capability.resources.PropertyAccessCapa
 import com.openshift.internal.restclient.capability.resources.TagCapability;
 import com.openshift.internal.restclient.capability.resources.TemplateTraceability;
 import com.openshift.internal.restclient.capability.resources.UpdateableCapability;
+import com.openshift.internal.restclient.capability.server.Console;
 import com.openshift.internal.restclient.capability.server.ServerTemplateProcessing;
 import com.openshift.internal.restclient.model.Service;
 import com.openshift.internal.restclient.model.build.BuildConfigBuilder;
@@ -59,6 +60,7 @@ import com.openshift.restclient.capability.resources.IRSyncable;
 import com.openshift.restclient.capability.resources.ITags;
 import com.openshift.restclient.capability.resources.ITemplateTraceability;
 import com.openshift.restclient.capability.resources.IUpdatable;
+import com.openshift.restclient.capability.server.IConsole;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IBuild;
 import com.openshift.restclient.model.IBuildConfig;
@@ -169,5 +171,6 @@ public class CapabilityInitializer {
             IClient client) {
         initializeCapability(capabilities, ITemplateProcessing.class, new ServerTemplateProcessing(client));
         initializeCapability(capabilities, IBuildConfigBuilder.class, new BuildConfigBuilder(client));
+        initializeCapability(capabilities, IConsole.class, new Console(client));
     }
 }

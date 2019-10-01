@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.openshift.internal.restclient.KubernetesVersion;
+import com.openshift.internal.restclient.OpenShiftMajorVersion;
 import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.capability.ICapable;
@@ -379,5 +381,12 @@ public interface IClient extends ICapable, Cloneable {
     String getKubernetesMasterVersion();
 
     IClient clone();
-
+    
+    /**
+     * Returns the major version for OpenShift or
+     * {@link KubernetesVersion#NO_VERSION} if it could not be detected.
+     * 
+     * @return the major version of openshift that this client talks to.
+     */
+    int getOpenShiftMajorVersion();
 }
