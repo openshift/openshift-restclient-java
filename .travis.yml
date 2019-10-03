@@ -22,6 +22,10 @@ jobs:
     - stage: test
       script: mvn clean verify
     - stage: integration-test
+      env:
+      - OCP=3.9.101
+      - OCP=3.10.175
+      - OCP=3.11.146
       script: |
         curl https://mirror.openshift.com/pub/openshift-v3/$OCP/linux/oc.tar.gz --location --output oc-client.tgz
         tar -xzvf oc-client.tgz
