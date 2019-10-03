@@ -13,21 +13,18 @@ env:
   
 stages:
   - test
-  - integration-test
 
 sudo: false
 
 jobs:
   include:
     - stage: test
-      script: mvn clean verify
-    - stage: integration-test
       env:
       - OCP=3.9.101
       - OCP=3.10.175
       - OCP=3.11.146
       script: |
-        curl https://mirror.openshift.com/pub/openshift-v3/$OCP/linux/oc.tar.gz --location --output oc-client.tgz
+        curl https://mirror.openshift.com/pub/openshift-v3/${OCP}/linux/oc.tar.gz --location --output oc-client.tgz
         tar -xzvf oc-client.tgz
         cd openshift-origin-client*
         sudo echo '{"insecure-registries": ["172.30.0.0/16"]}' > daemon.json
