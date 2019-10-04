@@ -41,6 +41,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.IWatcher;
 import com.openshift.restclient.NotFoundException;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.authorization.ResourceForbiddenException;
 import com.openshift.restclient.capability.IBinaryCapability;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IBuildConfig;
@@ -125,8 +126,10 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
         IProject project = null;
         try {
             project = client.get(ResourceKind.PROJECT, name, "");
-        } catch (NotFoundException e ) {
-            project = createProject(name, client);
+        } catch (NotFoundException | ResourceForbiddenException e) {
+            // OS3: NotFoundException
+        	// OS4: ResourceForbiddenException
+        	project = createProject(name, client);
         }
         return project;
     }
