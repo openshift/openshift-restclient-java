@@ -6,31 +6,26 @@ jdk:
   - oraclejdk8
   - oraclejdk11
 
-env:
-  - OCP=3.9.101
-  - OCP=3.10.175
-  - OCP=3.11.146
-  
 stages:
   - test
+  - integration-test
 
 sudo: false
 
 jobs:
   include:
-    - stage: test
+    - stage: integration-test
       script: |
-        curl https://mirror.openshift.com/pub/openshift-v3/${OCP}/linux/oc.tar.gz --location --output oc-client.tgz
-        tar -xzvf oc-client.tgz
-        cd openshift-origin-client*
+        for OCP in 3.9.101 3.10.175 3.11.146;
+        do
+        curl https://mirror.openshift.com/pub/openshift-v3/${OCP}/linux/oc.tar.gz --location --output oc.tar.gz
+        gunzip oc.tar.gz
+        tar -xvf oc.tar
         sudo echo '{"insecure-registries": ["172.30.0.0/16"]}' > daemon.json
         sudo mv daemon.json /etc/docker
         sudo cat /etc/docker/daemon.json
         sudo service docker restart
         ./oc cluster up
-        cd ..
         mvn verify -Pintegration-tests
-        cd openshift-origin-client*
         ./oc cluster down
-        cd ..
-        rm -rf openshift-origin-client*
+        done
