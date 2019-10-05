@@ -16,17 +16,16 @@ jobs:
   include:
     - stage: integration-test
       script: |
-        for OCP in 3.9.101 3.10.175 3.11.146;
-        do
-        echo $OCP
-        curl https://mirror.openshift.com/pub/openshift-v3/$OCP/linux/oc.tar.gz --location --output oc.tar.gz
-        gunzip oc.tar.gz
-        tar -xvf oc.tar
         sudo echo '{"insecure-registries": ["172.30.0.0/16"]}' > daemon.json
         sudo mv daemon.json /etc/docker
         sudo cat /etc/docker/daemon.json
         sudo service docker restart
-        ./oc cluster up
+        ./startOCP.sh 3.9.101
         mvn verify -Pintegration-tests
         ./oc cluster down
-        done
+        ./startOCP.sh 3.10.175
+        mvn verify -Pintegration-tests
+        ./oc cluster down
+        ./startOCP 3.11.146
+        mvn verify -Pintegration-tests
+        ./oc cluster down
