@@ -20,12 +20,12 @@ jobs:
         sudo mv daemon.json /etc/docker
         sudo cat /etc/docker/daemon.json
         sudo service docker restart
-        ./startOCP.sh 3.9.101
+        ./startOCP.sh v3.9.0
         mvn verify -Pintegration-tests
         ./oc cluster down
-        ./startOCP.sh 3.10.175
+        ./startOCP.sh v3.10.0
         mvn verify -Pintegration-tests
         ./oc cluster down
-        ./startOCP 3.11.146
+        ./startOCP v3.11.0
         mvn verify -Pintegration-tests
         ./oc cluster down
