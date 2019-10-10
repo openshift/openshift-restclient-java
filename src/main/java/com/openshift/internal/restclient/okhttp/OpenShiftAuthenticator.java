@@ -19,10 +19,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.authorization.AuthorizationDetails;
 import com.openshift.internal.util.URIUtils;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.authorization.IAuthorizationDetails;
 import com.openshift.restclient.authorization.UnauthorizedException;
@@ -36,8 +36,7 @@ import okhttp3.Response;
 import okhttp3.Route;
 
 /**
- * OkHttp Authenticator implementations for OpenShift 3
- *
+ * Adds authentication means to okhttp requests for use in OpenShift
  */
 public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
 
@@ -48,40 +47,53 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
     private static final String ERROR_DETAILS = "error_details";
 
     private Collection<IChallangeHandler> challangeHandlers = new ArrayList<>();
-    private OkHttpClient okClient;
     private IClient client;
 
     @Override
     public Request authenticate(Route route, Response response) throws IOException {
-        if (unauthorizedForCluster(response)) {
-            String requestUrl = response.request().url().toString();
-            Request authRequest = new Request.Builder()
-                    .addHeader(CSRF_TOKEN, "1")
-                    .url(new URL(client.getAuthorizationEndpoint().toExternalForm() 
-                            + "?response_type=token&client_id=openshift-challenging-client").toString()).build();
-            try (Response authResponse = tryAuth(authRequest)) {
-                if (authResponse.isSuccessful()) {
-                    String token = extractAndSetAuthContextToken(authResponse);
-                    return response.request().newBuilder()
-                            .header(IHttpConstants.PROPERTY_AUTHORIZATION,
-                                    String.format("%s %s", IHttpConstants.AUTHORIZATION_BEARER, token))
-                            .build();
-                }
+        Request request = response.request();
+        if (!unauthorizedForCluster(response, request)) {
+            return null;
+        }
+        String requestUrl = request.url().toString();
+        try (Response authResponse = tryAuth()) {
+            if (authResponse == null
+                    || !authResponse.isSuccessful()) {
+                throw new UnauthorizedException(getAuthDetails(requestUrl),
+                        ResponseCodeInterceptor.getStatus(response.body().string()));
             }
-            throw new UnauthorizedException(captureAuthDetails(requestUrl),
+            String token = getToken(authResponse);
+            setToken(token, client.getAuthorizationContext());
+            return new OpenShiftRequestBuilder(request.newBuilder())
+                    .authorization(token)
+                    .build();
+        } catch(OpenShiftException e) {
+            throw new UnauthorizedException(getAuthDetails(requestUrl),
                     ResponseCodeInterceptor.getStatus(response.body().string()));
         }
-
-        return null;
     }
 
-    private boolean unauthorizedForCluster(Response response) {
-        String requestHost = response.request().url().host();
-        return response.code() == IHttpConstants.STATUS_UNAUTHORIZED
-                && client.getBaseURL().getHost().equals(requestHost);
+    private boolean unauthorizedForCluster(Response response, Request request) {
+        String requestHost = request.url().host();
+        switch (response.code()) {
+        case IHttpConstants.STATUS_UNAUTHORIZED:
+        case IHttpConstants.STATUS_FORBIDDEN:
+            return client.getBaseURL().getHost().equals(requestHost);
+        default:
+            return false;
+        }
     }
 
-    private Response tryAuth(Request authRequest) throws IOException {
+    private Response tryAuth() throws IOException {
+        OkHttpClient okClient = client.adapt(OkHttpClient.class);
+        if (okClient == null) {
+            return null;
+        }
+        Request authRequest = new Request.Builder()
+                .addHeader(CSRF_TOKEN, "1")
+                .url(new URL(client.getAuthorizationEndpoint().toExternalForm() 
+                        + "?response_type=token&client_id=openshift-challenging-client").toString())
+                .build();
         return okClient.newBuilder()
                 .authenticator(new Authenticator() {
         
@@ -96,7 +108,7 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
                                     Builder requestBuilder = response.request().newBuilder()
                                             .header(AUTH_ATTEMPTS, "1");
                                     response.close();
-                                    return challangeHandler.handleChallange(requestBuilder).build();
+                                    return challangeHandler.handleChallenge(requestBuilder).build();
                                 }
                             }
                         }
@@ -109,7 +121,7 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
                 .execute();
     }
 
-    private IAuthorizationDetails captureAuthDetails(String url) {
+    private IAuthorizationDetails getAuthDetails(String url) {
         IAuthorizationDetails details = null;
         Map<String, String> pairs = URIUtils.splitFragment(url);
         if (pairs.containsKey(ERROR)) {
@@ -118,27 +130,24 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
         return details;
     }
 
-    private String extractAndSetAuthContextToken(Response response) {
+    private String getToken(Response response) {
         String token = null;
         Map<String, String> pairs = URIUtils.splitFragment(response.header(PROPERTY_LOCATION));
         if (pairs.containsKey(ACCESS_TOKEN)) {
             token = pairs.get(ACCESS_TOKEN);
-            IAuthorizationContext authContext = client.getAuthorizationContext();
-            if (authContext != null) {
-                authContext.setToken(token);
-            }
         }
         return token;
     }
 
-    public void setOkClient(OkHttpClient okClient) {
-        this.okClient = okClient;
+    private void setToken(String token, IAuthorizationContext authorizationContext) {
+        if (authorizationContext != null) {
+            authorizationContext.setToken(token);
+        }
     }
 
-    public void setClient(DefaultClient client) {
+    public void setClient(IClient client) {
         this.client = client;
         challangeHandlers.clear();
         challangeHandlers.add(new BasicChallangeHandler(client.getAuthorizationContext()));
     }
-
 }

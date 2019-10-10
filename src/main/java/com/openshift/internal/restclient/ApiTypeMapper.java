@@ -29,11 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
+import com.openshift.internal.restclient.okhttp.OpenShiftRequestBuilder;
 import com.openshift.internal.util.JBossDmrExtentions;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.UnsupportedEndpointException;
+import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.model.IResource;
 
 import okhttp3.OkHttpClient;
@@ -51,14 +53,16 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiTypeMapper.class);
     private final String baseUrl;
     private final OkHttpClient client;
+    private IAuthorizationContext authorizationContext;
     private List<VersionedApiResource> resourceEndpoints;
     private List<IVersionedType> types;
     private final Map<String, String> preferedVersion = new HashMap<>(2);
     private boolean initialized = false;
 
-    public ApiTypeMapper(String baseUrl, OkHttpClient client) {
+    public ApiTypeMapper(String baseUrl, OkHttpClient client, IAuthorizationContext authorizationContext) {
         this.baseUrl = baseUrl;
         this.client = client;
+        this.authorizationContext = authorizationContext;
         preferedVersion.put(KUBE_API, KubernetesAPIVersion.v1.toString());
         preferedVersion.put(OS_API, OpenShiftAPIVersion.v1.toString());
     }
@@ -261,6 +265,12 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
     }
 
     private String request(final URL url) throws IOException {
+//        Request request = new OpenShiftRequestBuilder()
+//            .acceptJson()
+//            .authorization(authorizationContext)
+//            .builder()
+//            .url(url)
+//            .build();
         Request request = new Request.Builder().url(url).build();
         try (Response response = client.newCall(request).execute()) {
             return response.body().string();

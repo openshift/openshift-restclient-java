@@ -80,7 +80,7 @@ public class TypeMapperFixture {
             () -> responseOf(Samples.KUBERNETES_VERSION.getContentAsString()));
         client.mockAsyncRequest(base + "/version/openshift",
             () -> responseOf(Samples.OPENSHIFT_VERSION.getContentAsString()));
-        mapper = new ApiTypeMapper(base, client);
+        mapper = new ApiTypeMapper(base, client, null);
     }
 
     static class TestOkHttpClient extends OkHttpClient {

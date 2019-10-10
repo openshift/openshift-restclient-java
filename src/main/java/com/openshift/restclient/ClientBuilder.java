@@ -232,51 +232,10 @@ public class ClientBuilder {
 
             ResponseCodeInterceptor responseCodeInterceptor = new ResponseCodeInterceptor();
             OpenShiftAuthenticator authenticator = new OpenShiftAuthenticator();
-            Dispatcher dispatcher = new Dispatcher();
+            Dispatcher dispatcher = createDispatcher();
 
-            // hiding these for now to since not certain
-            // if we need to really expose them.
-            dispatcher.setMaxRequests(maxRequests);
-            dispatcher.setMaxRequestsPerHost(maxRequestsPerHost);
-            String[] pieces = { this.userAgentPrefix, "openshift-restclient-java", Version.userAgent };
-            String userAgent = StringUtils.join(pieces, "/");
-
-            OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                    .addInterceptor(responseCodeInterceptor)
-                    .addNetworkInterceptor(new Interceptor() {
-                        @Override
-                        public Response intercept(Chain chain) throws IOException {
-                            Request agent = chain.request().newBuilder()
-                                    .header("User-Agent", userAgent)
-                                    .build();
-                            return chain.proceed(agent);
-                        }
-                    })
-                    .authenticator(authenticator)
-                    .dispatcher(dispatcher)
-                    .readTimeout(readTimeout, readTimeoutUnit)
-                    .writeTimeout(writeTimeout, writeTimeoutUnit)
-                    .connectTimeout(connectTimeout, connectTimeoutUnit)
-                    .pingInterval(pingInterval, pingIntervalUnit)
-                    .sslSocketFactory(sslContext.getSocketFactory(), trustManager);
-
-            if (!this.sslCertCallbackWithDefaultHostnameVerifier) {
-                builder.hostnameVerifier(sslCertificateCallback);
-            }
-
-            if (proxy != null) {
-                builder.proxy(proxy);
-            }
-
-            if (proxySelector != null) {
-                builder.proxySelector(proxySelector);
-            }
-
-            if (proxyAuthenticator != null) {
-                builder.proxyAuthenticator(proxyAuthenticator);
-            }
-
-            OkHttpClient okClient = builder.build();
+            OkHttpClient okClient = createOkHttpClient(trustManager, sslContext, responseCodeInterceptor,
+                    authenticator, dispatcher);
 
             IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
             AuthorizationContext authContext = new AuthorizationContext(token, userName, password);
@@ -285,13 +244,55 @@ public class ClientBuilder {
             authContext.setClient(client);
             responseCodeInterceptor.setClient(client);
             authenticator.setClient(client);
-            authenticator.setOkClient(okClient);
             factory.setClient(client);
             return client;
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException | CertificateException
                 | IOException e) {
             throw new OpenShiftException(e, "Unable to initialize client");
         }
+    }
+
+    private Dispatcher createDispatcher() {
+        Dispatcher dispatcher = new Dispatcher();
+
+        // hiding these for now to since not certain
+        // if we need to really expose them.
+        dispatcher.setMaxRequests(maxRequests);
+        dispatcher.setMaxRequestsPerHost(maxRequestsPerHost);
+        return dispatcher;
+    }
+
+    private OkHttpClient createOkHttpClient(X509TrustManager trustManager, SSLContext sslContext,
+            ResponseCodeInterceptor responseCodeInterceptor, OpenShiftAuthenticator authenticator,
+            Dispatcher dispatcher) {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new UserAgentInterceptor(userAgentPrefix))
+                .addInterceptor(responseCodeInterceptor)
+                .authenticator(authenticator)
+                .dispatcher(dispatcher)
+                .readTimeout(readTimeout, readTimeoutUnit)
+                .writeTimeout(writeTimeout, writeTimeoutUnit)
+                .connectTimeout(connectTimeout, connectTimeoutUnit)
+                .pingInterval(pingInterval, pingIntervalUnit)
+                .sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+
+        if (!this.sslCertCallbackWithDefaultHostnameVerifier) {
+            builder.hostnameVerifier(sslCertificateCallback);
+        }
+
+        if (proxy != null) {
+            builder.proxy(proxy);
+        }
+
+        if (proxySelector != null) {
+            builder.proxySelector(proxySelector);
+        }
+
+        if (proxyAuthenticator != null) {
+            builder.proxyAuthenticator(proxyAuthenticator);
+        }
+
+        return builder.build();
     }
 
     private <T> T defaultIfNull(T value, T theDefault) {
@@ -378,6 +379,23 @@ public class ClientBuilder {
 
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
             trustManager.checkServerTrusted(chain, authType);
+        }
+    }
+
+    private static class UserAgentInterceptor implements Interceptor {
+        
+        private final String userAgent;
+        
+        public UserAgentInterceptor(String userAgentPrefix) {
+            this.userAgent = StringUtils.join(
+                    new String[]{ userAgentPrefix, "openshift-restclient-java", Version.userAgent }, "/");
+        }
+
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request agent = chain.request().newBuilder().header("User-Agent", userAgent).build();
+            return chain.proceed(agent);
         }
     }
 

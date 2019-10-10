@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.URLBuilder;
+import com.openshift.internal.restclient.okhttp.OpenShiftRequestBuilder;
 import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
@@ -85,8 +86,12 @@ public class PodLogRetrievalAsync implements IPodLogRetrievalAsync {
         final String endpoint = new URLBuilder(client.getBaseURL(), mapper).kind(pod.getKind())
                 .namespace(pod.getNamespaceName()).name(pod.getName()).subresource(CAPABILITY).addParameters(parameters)
                 .websocket();
-        Request request = client.newRequestBuilderTo(endpoint).tag(new ResponseCodeInterceptor.Ignore() {
-        }).build();
+        Request request = new OpenShiftRequestBuilder()
+                .url(endpoint)
+                .acceptJson()
+                .authorization(client.getAuthorizationContext())
+                .tag(new ResponseCodeInterceptor.Ignore() {})
+                .build();
         okClient.newWebSocket(request, adapter);
         return adapter;
     }

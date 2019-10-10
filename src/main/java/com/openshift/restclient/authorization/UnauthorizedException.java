@@ -18,9 +18,9 @@ public class UnauthorizedException extends OpenShiftException {
 
     private static final long serialVersionUID = -3999801367045252906L;
     private static final String MSG_BASE = "Unauthorized to access resource.";
-    private String message;
-    private IStatus status;
-    private IAuthorizationDetails details;
+    private final String message;
+    private final IStatus status;
+    private final IAuthorizationDetails details;
 
     public UnauthorizedException(IAuthorizationDetails details) {
         this(details, null);

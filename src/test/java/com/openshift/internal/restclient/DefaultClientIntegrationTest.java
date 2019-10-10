@@ -57,7 +57,7 @@ public class DefaultClientIntegrationTest {
         client = helper.createClient();
         client.getAuthorizationContext().setUserName(helper.getDefaultClusterAdminUser());
         client.getAuthorizationContext().setPassword(helper.getDefaultClusterAdminPassword());
-        client.getAuthorizationContext().isAuthorized();
+        assertThat(client.getAuthorizationContext().isAuthorized()).isTrue();
     }
 
     @Test(expected = UnauthorizedException.class)

@@ -35,5 +35,5 @@ interface IChallangeHandler {
      * @param builder
      * @return
      */
-    Request.Builder handleChallange(Builder builder);
+    Request.Builder handleChallenge(Builder builder);
 }

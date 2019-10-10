@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
+import com.openshift.internal.restclient.okhttp.OpenShiftRequestBuilder;
 import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.internal.restclient.okhttp.WatchClient;
 import com.openshift.restclient.IApiTypeMapper;
@@ -104,7 +105,7 @@ public class DefaultClient implements IClient, IHttpConstants {
         initMasterVersion("version/openshift", new VersionCallback("OpenShift", version -> this.openShiftVersion = version));
         initMasterVersion("version", new VersionCallback("Kubernetes", version -> this.kubernetesVersion = version));
         initMasterVersion(".well-known/oauth-authorization-server", new AuthorizationCallback());
-        this.typeMapper = typeMapper != null ? typeMapper : new ApiTypeMapper(baseUrl.toString(), client);
+        this.typeMapper = typeMapper != null ? typeMapper : new ApiTypeMapper(baseUrl.toString(), client, authContext);
         this.authContext = authContext;
     }
 
@@ -300,9 +301,13 @@ public class DefaultClient implements IClient, IHttpConstants {
                 .subContext(subContext)
                 .addParameters(params)
                 .build();
-        Request request = newRequestBuilderTo(endpoint.toString())
-                .method(method, requestBody)
-                .build();
+        Request request = new OpenShiftRequestBuilder()
+            .acceptJson()
+            .authorization(authContext)
+            .builder()
+            .method(method, requestBody)
+            .url(endpoint)
+            .build();
         LOGGER.debug("About to make {} request: {}", request.method(), request);
         try {
             String body = request(request);
@@ -680,6 +685,10 @@ public class DefaultClient implements IClient, IHttpConstants {
             return (T) this.factory;
         }
         return null;
+    }
+    
+    public OpenShiftRequestBuilder newRequestBuilder() {
+        return new OpenShiftRequestBuilder();
     }
 
 }
