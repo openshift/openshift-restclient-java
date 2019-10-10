@@ -28,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
@@ -302,12 +301,11 @@ public class DefaultClient implements IClient, IHttpConstants {
                 .subContext(subContext)
                 .addParameters(params)
                 .build();
-        Request request = new OpenShiftRequestBuilder()
+        Request request = newRequestBuilder()
+            .url(endpoint)
+            .method(method, requestBody)
             .acceptJson()
             .authorization(authContext)
-            .builder()
-            .method(method, requestBody)
-            .url(endpoint)
             .build();
         LOGGER.debug("About to make {} request: {}", request.method(), request);
         try {
@@ -383,25 +381,9 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
     }
 
-    public Builder newRequestBuilderTo(String endpoint) {
-        return newRequestBuilderTo(endpoint, MEDIATYPE_APPLICATION_JSON);
-    }
-
-    public Builder newRequestBuilderTo(String endpoint, String acceptMediaType) {
-        Builder builder = new Builder()
-                .url(endpoint)
-                .header(PROPERTY_ACCEPT, acceptMediaType);
-        addAuthorizationHeader(builder);
-        return builder;
-    }
-
-    private void addAuthorizationHeader(Builder builder) {
-        String token = null;
-        if (this.authContext != null && StringUtils.isNotBlank(this.authContext.getToken())) {
-            token = this.authContext.getToken();
-        }
-        builder.header(IHttpConstants.PROPERTY_AUTHORIZATION,
-                String.format("%s %s", IHttpConstants.AUTHORIZATION_BEARER, token));
+    /* for debugging purposes */
+    protected OpenShiftRequestBuilder newRequestBuilder() {
+        return new OpenShiftRequestBuilder();
     }
 
     @Override
@@ -687,9 +669,4 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
         return null;
     }
-    
-    public OpenShiftRequestBuilder newRequestBuilder() {
-        return new OpenShiftRequestBuilder();
-    }
-
 }

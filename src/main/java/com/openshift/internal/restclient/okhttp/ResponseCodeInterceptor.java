@@ -114,8 +114,8 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
         case STATUS_BAD_REQUEST:
             return new BadRequestException(e, status, response.request().url().toString());
         case STATUS_FORBIDDEN:
-            return new ResourceForbiddenException(status != null ? 
-                    status.getMessage() : "Resource Forbidden", status, e);
+            return new ResourceForbiddenException(
+                    status != null ? status.getMessage() : "Resource Forbidden", status, e);
         case STATUS_UNAUTHORIZED:
             String link = String.format("%s/oauth/token/request", client.getBaseURL());
             AuthorizationDetails details = new AuthorizationDetails(response.headers(), link);

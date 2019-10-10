@@ -81,15 +81,18 @@ public class WatchClient implements IWatcher, IHttpConstants {
                     WatchEndpoint socket = new WatchEndpoint(client, listener, kind);
                     final String resourceVersion = getResourceVersion(kind, namespace, socket);
 
-                    final String endpoint = new URLBuilder(client.getBaseURL(), this.typeMappings).kind(kind)
-                            .namespace(namespace).watch()
+                    final String endpoint = new URLBuilder(client.getBaseURL(), this.typeMappings)
+                            .kind(kind)
+                            .namespace(namespace)
+                            .watch()
                             .addParmeter(ResourcePropertyKeys.RESOURCE_VERSION, resourceVersion).websocket();
                     Request request = new OpenShiftRequestBuilder()
                             .url(endpoint)
                             .acceptJson()
                             .authorization(client.getAuthorizationContext())
                             .header(PROPERTY_ORIGIN, client.getBaseURL().toString())
-                            .header(PROPERTY_USER_AGENT, "openshift-restclient-java").build();
+                            .header(PROPERTY_USER_AGENT, "openshift-restclient-java")
+                            .build();
                     okClient.newWebSocket(request, socket);
                     endpointMap.put(kind, socket);
                 }
@@ -97,9 +100,9 @@ public class WatchClient implements IWatcher, IHttpConstants {
             } catch (Exception e) {
                 endpointMap.clear();
                 status.set(Status.Stopped);
-                    throw ResponseCodeInterceptor.createOpenShiftException(client, 0,
-                            String.format("Could not watch resources in namespace %s: %s", namespace, e.getMessage()),
-                            null, e);
+                throw ResponseCodeInterceptor.createOpenShiftException(client, 0,
+                        String.format("Could not watch resources in namespace %s: %s", namespace, e.getMessage()), null,
+                        e);
             }
         }
         return this;

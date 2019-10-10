@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014-2018 Red Hat, Inc.
+ * Copyright (c) 2014-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,9 +12,9 @@
 package com.openshift.internal.restclient;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -32,13 +32,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 import com.openshift.internal.restclient.DefaultClient.HttpMethod;
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
 import com.openshift.internal.restclient.model.Pod;
+import com.openshift.internal.restclient.okhttp.OpenShiftRequestBuilder;
 import com.openshift.restclient.IResourceFactory;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.api.ITypeFactory;
@@ -269,7 +268,7 @@ public class DefaultClientTest extends TypeMapperFixture {
         verify(builder).method(anyString(), bodyCaptor.capture());
         assertThat(bodyCaptor.getValue().contentLength()).isEqualTo(0);        
     }
-    
+
     private String getPayload(Builder builder, ArgumentCaptor<RequestBody> builderCaptor) throws IOException {
         verify(builder).method(anyString(), builderCaptor.capture());
         RequestBody requestBody = builderCaptor.getValue();
@@ -282,20 +281,9 @@ public class DefaultClientTest extends TypeMapperFixture {
     }
 
     private Builder givenRequestBuilder(DefaultClient client) {
-        final Builder builder = spy(new Builder());
-        doAnswer(new Answer<Builder>() {
-
-            @Override
-            public Builder answer(InvocationOnMock invocation) throws Throwable {
-                assertThat(invocation.getArguments()).isNotNull().hasSize(2);
-
-                // set builder url that was given as parameter
-                String endpoint = (String) invocation.getArguments()[0];
-                builder.url(endpoint);
-                return builder;
-            }
-        })
-        .when(client).newRequestBuilderTo(anyString(), anyString());
+        Builder builder = spy(new Builder());
+        final OpenShiftRequestBuilder osBuilder = spy(new OpenShiftRequestBuilder(builder));
+        doReturn(osBuilder).when(client).newRequestBuilder();
         return builder;
     }
 
