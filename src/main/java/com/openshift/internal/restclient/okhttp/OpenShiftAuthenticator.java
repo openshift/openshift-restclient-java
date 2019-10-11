@@ -59,7 +59,7 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
         try (Response authResponse = tryAuth()) {
             if (authResponse == null
                     || !authResponse.isSuccessful()) {
-                throw new UnauthorizedException(getAuthDetails(requestUrl),
+                throw new UnauthorizedException(getAuthorizationDetails(requestUrl),
                         ResponseCodeInterceptor.getStatus(response.body().string()));
             }
             String token = getToken(authResponse);
@@ -68,7 +68,7 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
                     .authorization(token)
                     .build();
         } catch(OpenShiftException e) {
-            throw new UnauthorizedException(getAuthDetails(requestUrl),
+            throw new UnauthorizedException(getAuthorizationDetails(requestUrl),
                     ResponseCodeInterceptor.getStatus(response.body().string()));
         }
     }
@@ -121,7 +121,7 @@ public class OpenShiftAuthenticator implements Authenticator, IHttpConstants {
                 .execute();
     }
 
-    private IAuthorizationDetails getAuthDetails(String url) {
+    private IAuthorizationDetails getAuthorizationDetails(String url) {
         IAuthorizationDetails details = null;
         Map<String, String> pairs = URIUtils.splitFragment(url);
         if (pairs.containsKey(ERROR)) {

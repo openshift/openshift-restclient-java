@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Red Hat, Inc.
+ * Copyright (c) 2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -57,44 +57,46 @@ public class OpenShiftRequestBuilder {
     }
 
     public OpenShiftRequestBuilder authorization(String token) {
+        // Authenticator only gets triggered with a 401.
+        // We thus always use the token even if it's null so that we get a 401 instead of 403 in OS 4.2
         builder.header(IHttpConstants.PROPERTY_AUTHORIZATION, IHttpConstants.AUTHORIZATION_BEARER + " " + token);
         return this;
     }
 
     public OpenShiftRequestBuilder url(URL url) {
-        this.builder.url(url);
+        builder.url(url);
         return this;
     }
 
     public OpenShiftRequestBuilder url(String url) {
-        this.builder.url(url);
+        builder.url(url);
         return this;
     }
 
     public OpenShiftRequestBuilder method(String method, RequestBody body) {
-        this.builder.method(method, body);
+        builder.method(method, body);
         return this;
     }
 
     public OpenShiftRequestBuilder addHeader(String key, String value) {
-        this.builder.addHeader(key, value);
+        builder.addHeader(key, value);
         return this;
     }
 
     public OpenShiftRequestBuilder header(String key, String value) {
-        this.builder.header(key, value);
+        builder.header(key, value);
         return this;
     }
 
     public OpenShiftRequestBuilder tag(Object tag) {
-        this.builder.tag(tag);
+        builder.tag(tag);
         return this;
     }
 
     public Builder builder() {
         return builder;
     }
-    
+
     public Request build() {
         return builder.build();
     }

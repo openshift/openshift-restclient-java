@@ -29,6 +29,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.openshift.internal.restclient.DefaultClient;
@@ -237,7 +238,7 @@ public class ClientBuilder {
             OkHttpClient okClient = createOkHttpClient(trustManager, sslContext, responseCodeInterceptor,
                     authenticator, dispatcher);
 
-            IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
+            IResourceFactory factory = (IResourceFactory) ObjectUtils.defaultIfNull(resourceFactory, new ResourceFactory(null));
             AuthorizationContext authContext = new AuthorizationContext(token, userName, password);
             DefaultClient client = new DefaultClient(new URL(this.baseUrl), okClient, factory, null, authContext);
 
@@ -293,13 +294,6 @@ public class ClientBuilder {
         }
 
         return builder.build();
-    }
-
-    private <T> T defaultIfNull(T value, T theDefault) {
-        if (value != null) {
-            return value;
-        }
-        return theDefault;
     }
 
     private X509TrustManager getCurrentTrustManager(TrustManagerFactory trustManagerFactory)

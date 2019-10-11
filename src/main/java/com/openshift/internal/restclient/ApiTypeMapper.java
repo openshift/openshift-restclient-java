@@ -265,13 +265,11 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
     }
 
     private String request(final URL url) throws IOException {
-//        Request request = new OpenShiftRequestBuilder()
-//            .acceptJson()
-//            .authorization(authorizationContext)
-//            .builder()
-//            .url(url)
-//            .build();
-        Request request = new Request.Builder().url(url).build();
+        Request request = new OpenShiftRequestBuilder()
+                .url(url)
+                .acceptJson()
+                .authorization(authorizationContext)
+                .build();
         try (Response response = client.newCall(request).execute()) {
             return response.body().string();
         }

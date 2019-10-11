@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -662,7 +663,7 @@ public class DefaultClient implements IClient, IHttpConstants {
             if (other.authContext == null) {
                 return false;
             }
-            return ObjectUtils.equals(authContext.getUserName(), other.authContext.getUserName());
+            return Objects.equals(authContext.getUserName(), other.authContext.getUserName());
         }
     }
 
