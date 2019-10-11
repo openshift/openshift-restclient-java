@@ -6,7 +6,26 @@ jdk:
   - oraclejdk8
   - oraclejdk11
 
-script:
-  mvn clean verify
+stages:
+  - test
+  - integration-test
 
 sudo: false
+
+jobs:
+  include:
+    - stage: integration-test
+      script: |
+        sudo echo '{"insecure-registries": ["172.30.0.0/16"]}' > daemon.json
+        sudo mv daemon.json /etc/docker
+        sudo cat /etc/docker/daemon.json
+        sudo service docker restart
+        ./startOCP.sh v3.9.0
+        mvn verify -Pintegration-tests -DserverURL=https://127.0.0.1:8443 -Ddefault.clusteradmin.user=admin -Ddefault.clusteradmin.password=admin -Docbinary.location=./oc
+        ./oc cluster down
+        ./startOCP.sh v3.10.0
+        mvn verify -Pintegration-tests -DserverURL=https://127.0.0.1:8443 -Ddefault.clusteradmin.user=admin -Ddefault.clusteradmin.password=admin -Docbinary.location=./oc
+        ./oc cluster down
+        ./startOCP v3.11.0
+        mvn verify -Pintegration-tests -DserverURL=https://127.0.0.1:8443 -Ddefault.clusteradmin.user=admin -Ddefault.clusteradmin.password=admin -Docbinary.location=./oc
+        ./oc cluster down
