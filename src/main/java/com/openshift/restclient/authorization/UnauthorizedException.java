@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -27,9 +27,8 @@ public class UnauthorizedException extends OpenShiftException {
     }
 
     public UnauthorizedException(IAuthorizationDetails details, IStatus status) {
-        super(String.format(
-                "%s See the authorization details for additional information or contact your system administrator.",
-                MSG_BASE));
+        super(MSG_BASE
+                + " See the authorization details for additional information or contact your system administrator.");
         this.status = status;
         this.details = details;
         if (details != null) {
