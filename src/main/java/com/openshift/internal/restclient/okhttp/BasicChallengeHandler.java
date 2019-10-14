@@ -14,28 +14,29 @@ package com.openshift.internal.restclient.okhttp;
 import org.apache.commons.lang.StringUtils;
 
 import com.openshift.restclient.authorization.IAuthorizationContext;
+import com.openshift.restclient.http.IHttpConstants;
 
 import okhttp3.Credentials;
 import okhttp3.Headers;
 import okhttp3.Request.Builder;
 
-public class BasicChallangeHandler implements IChallangeHandler {
+public class BasicChallengeHandler implements IChallangeHandler {
 
     private IAuthorizationContext context;
 
-    public BasicChallangeHandler(IAuthorizationContext context) {
+    public BasicChallengeHandler(IAuthorizationContext context) {
         this.context = context;
     }
 
     @Override
     public boolean canHandle(Headers headers) {
-        return OpenShiftAuthenticator.AUTHORIZATION_BASIC
-                .equalsIgnoreCase(headers.get(OpenShiftAuthenticator.PROPERTY_WWW_AUTHENTICATE));
+        return IHttpConstants.AUTHORIZATION_BASIC
+                .equalsIgnoreCase(headers.get(IHttpConstants.PROPERTY_WWW_AUTHENTICATE));
     }
 
     @Override
     public Builder handleChallenge(Builder builder) {
-        return builder.header(OpenShiftAuthenticator.PROPERTY_AUTHORIZATION,
+        return builder.header(IHttpConstants.PROPERTY_AUTHORIZATION,
                 Credentials.basic(
                         StringUtils.defaultIfBlank(context.getUserName(), ""),
                         StringUtils.defaultIfBlank(context.getPassword(), "")));

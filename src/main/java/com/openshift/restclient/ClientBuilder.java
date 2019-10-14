@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
-import com.openshift.internal.restclient.okhttp.OpenShiftAuthenticator;
+import com.openshift.internal.restclient.okhttp.AuthenticatorInterceptor;
 import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.utils.SSLUtils;
@@ -231,20 +231,20 @@ public class ClientBuilder {
             X509TrustManager trustManager = getCurrentTrustManager(trustManagerFactory);
             SSLContext sslContext = SSLUtils.getSSLContext(trustManager);
 
+            AuthenticatorInterceptor authenticatorInterceptor = new AuthenticatorInterceptor();
             ResponseCodeInterceptor responseCodeInterceptor = new ResponseCodeInterceptor();
-            OpenShiftAuthenticator authenticator = new OpenShiftAuthenticator();
             Dispatcher dispatcher = createDispatcher();
 
-            OkHttpClient okClient = createOkHttpClient(trustManager, sslContext, responseCodeInterceptor,
-                    authenticator, dispatcher);
+            OkHttpClient okClient = 
+                    createOkHttpClient(trustManager, sslContext, authenticatorInterceptor, responseCodeInterceptor, dispatcher);
 
             IResourceFactory factory = (IResourceFactory) ObjectUtils.defaultIfNull(resourceFactory, new ResourceFactory(null));
             AuthorizationContext authContext = new AuthorizationContext(token, userName, password);
             DefaultClient client = new DefaultClient(new URL(this.baseUrl), okClient, factory, null, authContext);
 
             authContext.setClient(client);
+            authenticatorInterceptor.setClient(client);
             responseCodeInterceptor.setClient(client);
-            authenticator.setClient(client);
             factory.setClient(client);
             return client;
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException | CertificateException
@@ -264,12 +264,11 @@ public class ClientBuilder {
     }
 
     private OkHttpClient createOkHttpClient(X509TrustManager trustManager, SSLContext sslContext,
-            ResponseCodeInterceptor responseCodeInterceptor, OpenShiftAuthenticator authenticator,
-            Dispatcher dispatcher) {
+            AuthenticatorInterceptor authenticatorInterceptor, ResponseCodeInterceptor responseCodeInterceptor, Dispatcher dispatcher) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new UserAgentInterceptor(userAgentPrefix))
                 .addInterceptor(responseCodeInterceptor)
-                .authenticator(authenticator)
+                .addInterceptor(authenticatorInterceptor)
                 .dispatcher(dispatcher)
                 .readTimeout(readTimeout, readTimeoutUnit)
                 .writeTimeout(writeTimeout, writeTimeoutUnit)

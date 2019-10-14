@@ -71,6 +71,10 @@ import okio.Source;
  */
 public class DefaultClient implements IClient, IHttpConstants {
 
+    public static final String PATH_OAUTH_AUTHORIZATION_SERVER = ".well-known/oauth-authorization-server";
+    public static final String PATH_KUBERNETES_VERSION = "version";
+    public static final String PATH_OPENSHIFT_VERSION = "version/openshift";
+
     public static final String SYSTEM_PROP_K8E_API_VERSION = "osjc.k8e.apiversion";
     public static final String SYSTEM_PROP_OPENSHIFT_API_VERSION = "osjc.openshift.apiversion";
 
@@ -102,9 +106,9 @@ public class DefaultClient implements IClient, IHttpConstants {
         if (this.factory != null) {
             this.factory.setClient(this);
         }
-        initMasterVersion("version/openshift", new VersionCallback("OpenShift", version -> this.openShiftVersion = version));
-        initMasterVersion("version", new VersionCallback("Kubernetes", version -> this.kubernetesVersion = version));
-        initMasterVersion(".well-known/oauth-authorization-server", new AuthorizationCallback());
+        initMasterVersion(PATH_OPENSHIFT_VERSION, new VersionCallback("OpenShift", version -> this.openShiftVersion = version));
+        initMasterVersion(PATH_KUBERNETES_VERSION, new VersionCallback("Kubernetes", version -> this.kubernetesVersion = version));
+        initMasterVersion(PATH_OAUTH_AUTHORIZATION_SERVER, new AuthorizationCallback());
         this.typeMapper = typeMapper != null ? typeMapper : new ApiTypeMapper(baseUrl.toString(), client, authContext);
         this.authContext = authContext;
     }

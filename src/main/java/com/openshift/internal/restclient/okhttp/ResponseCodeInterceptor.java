@@ -80,7 +80,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
         Response returnedResponse = response;
         String location = response.header(PROPERTY_LOCATION);
         if (StringUtils.isNotBlank(location)
-                && URIUtils.splitFragment(location).containsKey(OpenShiftAuthenticator.ACCESS_TOKEN)) {
+                && URIUtils.splitFragment(location).containsKey(IHttpConstants.PROPERTY_ACCESS_TOKEN)) {
             returnedResponse = response.newBuilder()
                     .request(response.request())
                     .code(STATUS_OK)
