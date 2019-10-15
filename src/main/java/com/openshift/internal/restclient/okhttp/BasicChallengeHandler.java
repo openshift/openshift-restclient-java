@@ -20,7 +20,7 @@ import okhttp3.Credentials;
 import okhttp3.Headers;
 import okhttp3.Request.Builder;
 
-public class BasicChallengeHandler implements IChallangeHandler {
+public class BasicChallengeHandler implements IChallengeHandler {
 
     private IAuthorizationContext context;
 

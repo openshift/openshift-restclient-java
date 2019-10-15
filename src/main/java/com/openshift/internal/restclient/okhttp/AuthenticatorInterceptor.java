@@ -52,7 +52,7 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
     private static final String ERROR_DETAILS = "error_details";
 
     private IClient client;
-    private Collection<IChallangeHandler> challangeHandlers = new ArrayList<>();
+    private Collection<IChallengeHandler> challangeHandlers = new ArrayList<>();
     
     @Override
     public Response intercept(Chain chain) throws IOException {
@@ -154,7 +154,7 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
         }
 
         private Request createAuthenticationRequest(Response response) {
-            for (IChallangeHandler challangeHandler : challangeHandlers) {
+            for (IChallengeHandler challangeHandler : challangeHandlers) {
                 if (!challangeHandler.canHandle(response.headers())) {
                     Builder requestBuilder = response.request().newBuilder().header(AUTH_ATTEMPTS, "1");
                     return challangeHandler.handleChallenge(requestBuilder).build();
