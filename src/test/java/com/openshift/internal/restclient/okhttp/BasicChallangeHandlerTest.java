@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.openshift.restclient.authorization.IAuthorizationContext;
+import com.openshift.restclient.http.IHttpConstants;
 
 import okhttp3.Headers;
 import okhttp3.Request;
@@ -33,11 +34,11 @@ public class BasicChallangeHandlerTest {
 
     @Mock
     private IAuthorizationContext context;
-    private BasicChallangeHandler handler;
+    private BasicChallengeHandler handler;
 
     @Before
     public void setUp() throws Exception {
-        this.handler = new BasicChallangeHandler(context);
+        this.handler = new BasicChallengeHandler(context);
 
         when(context.getUserName()).thenReturn("username");
         when(context.getPassword()).thenReturn("password");
@@ -45,30 +46,30 @@ public class BasicChallangeHandlerTest {
 
     @Test
     public void testCanHandle() {
-        assertTrue(handler.canHandle(givenHeader(OpenShiftAuthenticator.PROPERTY_WWW_AUTHENTICATE, "basic")));
-        assertTrue(handler.canHandle(givenHeader(OpenShiftAuthenticator.PROPERTY_WWW_AUTHENTICATE, "bAsIC")));
-        assertFalse(handler.canHandle(givenHeader(OpenShiftAuthenticator.PROPERTY_WWW_AUTHENTICATE, "foobar")));
-        assertFalse(handler.canHandle(givenHeader(OpenShiftAuthenticator.PROPERTY_WWW_AUTHENTICATE, "")));
+        assertTrue(handler.canHandle(givenHeader(IHttpConstants.PROPERTY_WWW_AUTHENTICATE, "basic")));
+        assertTrue(handler.canHandle(givenHeader(IHttpConstants.PROPERTY_WWW_AUTHENTICATE, "bAsIC")));
+        assertFalse(handler.canHandle(givenHeader(IHttpConstants.PROPERTY_WWW_AUTHENTICATE, "foobar")));
+        assertFalse(handler.canHandle(givenHeader(IHttpConstants.PROPERTY_WWW_AUTHENTICATE, "")));
         assertFalse(handler.canHandle(givenHeader("key", "value")));
     }
 
     @Test
     public void testHandleChallange() {
         Builder builder = new Request.Builder().url("http://foo");
-        Request request = handler.handleChallange(builder).build();
-        String authorization = request.header(OpenShiftAuthenticator.PROPERTY_AUTHORIZATION);
+        Request request = handler.handleChallenge(builder).build();
+        String authorization = request.header(IHttpConstants.PROPERTY_AUTHORIZATION);
         assertTrue("Exp. auth to not be blank", StringUtils.isNotBlank(authorization));
-        assertTrue("Exp. auth to be basic", authorization.startsWith(OpenShiftAuthenticator.AUTHORIZATION_BASIC));
+        assertTrue("Exp. auth to be basic", authorization.startsWith(IHttpConstants.AUTHORIZATION_BASIC));
     }
 
     @Test
     public void testHandleChallangeWhenUsernameIsNull() {
         when(context.getUserName()).thenReturn(null);
         Builder builder = new Request.Builder().url("http://foo");
-        Request request = handler.handleChallange(builder).build();
-        String authorization = request.header(OpenShiftAuthenticator.PROPERTY_AUTHORIZATION);
+        Request request = handler.handleChallenge(builder).build();
+        String authorization = request.header(IHttpConstants.PROPERTY_AUTHORIZATION);
         assertTrue("Exp. auth to not be blank", StringUtils.isNotBlank(authorization));
-        assertTrue("Exp. auth to be basic", authorization.startsWith(OpenShiftAuthenticator.AUTHORIZATION_BASIC));
+        assertTrue("Exp. auth to be basic", authorization.startsWith(IHttpConstants.AUTHORIZATION_BASIC));
     }
 
     private Headers givenHeader(String name, String value) {

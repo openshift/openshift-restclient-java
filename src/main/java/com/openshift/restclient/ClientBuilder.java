@@ -29,12 +29,13 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.ResourceFactory;
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
-import com.openshift.internal.restclient.okhttp.OpenShiftAuthenticator;
+import com.openshift.internal.restclient.okhttp.AuthenticatorInterceptor;
 import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.utils.SSLUtils;
@@ -230,62 +231,20 @@ public class ClientBuilder {
             X509TrustManager trustManager = getCurrentTrustManager(trustManagerFactory);
             SSLContext sslContext = SSLUtils.getSSLContext(trustManager);
 
+            AuthenticatorInterceptor authenticatorInterceptor = new AuthenticatorInterceptor();
             ResponseCodeInterceptor responseCodeInterceptor = new ResponseCodeInterceptor();
-            OpenShiftAuthenticator authenticator = new OpenShiftAuthenticator();
-            Dispatcher dispatcher = new Dispatcher();
+            Dispatcher dispatcher = createDispatcher();
 
-            // hiding these for now to since not certain
-            // if we need to really expose them.
-            dispatcher.setMaxRequests(maxRequests);
-            dispatcher.setMaxRequestsPerHost(maxRequestsPerHost);
-            String[] pieces = { this.userAgentPrefix, "openshift-restclient-java", Version.userAgent };
-            String userAgent = StringUtils.join(pieces, "/");
+            OkHttpClient okClient = 
+                    createOkHttpClient(trustManager, sslContext, authenticatorInterceptor, responseCodeInterceptor, dispatcher);
 
-            OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                    .addInterceptor(responseCodeInterceptor)
-                    .addNetworkInterceptor(new Interceptor() {
-                        @Override
-                        public Response intercept(Chain chain) throws IOException {
-                            Request agent = chain.request().newBuilder()
-                                    .header("User-Agent", userAgent)
-                                    .build();
-                            return chain.proceed(agent);
-                        }
-                    })
-                    .authenticator(authenticator)
-                    .dispatcher(dispatcher)
-                    .readTimeout(readTimeout, readTimeoutUnit)
-                    .writeTimeout(writeTimeout, writeTimeoutUnit)
-                    .connectTimeout(connectTimeout, connectTimeoutUnit)
-                    .pingInterval(pingInterval, pingIntervalUnit)
-                    .sslSocketFactory(sslContext.getSocketFactory(), trustManager);
-
-            if (!this.sslCertCallbackWithDefaultHostnameVerifier) {
-                builder.hostnameVerifier(sslCertificateCallback);
-            }
-
-            if (proxy != null) {
-                builder.proxy(proxy);
-            }
-
-            if (proxySelector != null) {
-                builder.proxySelector(proxySelector);
-            }
-
-            if (proxyAuthenticator != null) {
-                builder.proxyAuthenticator(proxyAuthenticator);
-            }
-
-            OkHttpClient okClient = builder.build();
-
-            IResourceFactory factory = defaultIfNull(resourceFactory, new ResourceFactory(null));
+            IResourceFactory factory = (IResourceFactory) ObjectUtils.defaultIfNull(resourceFactory, new ResourceFactory(null));
             AuthorizationContext authContext = new AuthorizationContext(token, userName, password);
             DefaultClient client = new DefaultClient(new URL(this.baseUrl), okClient, factory, null, authContext);
 
             authContext.setClient(client);
+            authenticatorInterceptor.setClient(client);
             responseCodeInterceptor.setClient(client);
-            authenticator.setClient(client);
-            authenticator.setOkClient(okClient);
             factory.setClient(client);
             return client;
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException | CertificateException
@@ -294,11 +253,46 @@ public class ClientBuilder {
         }
     }
 
-    private <T> T defaultIfNull(T value, T theDefault) {
-        if (value != null) {
-            return value;
+    private Dispatcher createDispatcher() {
+        Dispatcher dispatcher = new Dispatcher();
+
+        // hiding these for now to since not certain
+        // if we need to really expose them.
+        dispatcher.setMaxRequests(maxRequests);
+        dispatcher.setMaxRequestsPerHost(maxRequestsPerHost);
+        return dispatcher;
+    }
+
+    private OkHttpClient createOkHttpClient(X509TrustManager trustManager, SSLContext sslContext,
+            AuthenticatorInterceptor authenticatorInterceptor, ResponseCodeInterceptor responseCodeInterceptor, Dispatcher dispatcher) {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new UserAgentInterceptor(userAgentPrefix))
+                .addInterceptor(responseCodeInterceptor)
+                .addInterceptor(authenticatorInterceptor)
+                .dispatcher(dispatcher)
+                .readTimeout(readTimeout, readTimeoutUnit)
+                .writeTimeout(writeTimeout, writeTimeoutUnit)
+                .connectTimeout(connectTimeout, connectTimeoutUnit)
+                .pingInterval(pingInterval, pingIntervalUnit)
+                .sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+
+        if (!this.sslCertCallbackWithDefaultHostnameVerifier) {
+            builder.hostnameVerifier(sslCertificateCallback);
         }
-        return theDefault;
+
+        if (proxy != null) {
+            builder.proxy(proxy);
+        }
+
+        if (proxySelector != null) {
+            builder.proxySelector(proxySelector);
+        }
+
+        if (proxyAuthenticator != null) {
+            builder.proxyAuthenticator(proxyAuthenticator);
+        }
+
+        return builder.build();
     }
 
     private X509TrustManager getCurrentTrustManager(TrustManagerFactory trustManagerFactory)
@@ -378,6 +372,23 @@ public class ClientBuilder {
 
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
             trustManager.checkServerTrusted(chain, authType);
+        }
+    }
+
+    private static class UserAgentInterceptor implements Interceptor {
+        
+        private final String userAgent;
+        
+        public UserAgentInterceptor(String userAgentPrefix) {
+            this.userAgent = StringUtils.join(
+                    new String[]{ userAgentPrefix, "openshift-restclient-java", Version.userAgent }, "/");
+        }
+
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request agent = chain.request().newBuilder().header("User-Agent", userAgent).build();
+            return chain.proceed(agent);
         }
     }
 

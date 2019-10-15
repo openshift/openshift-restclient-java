@@ -57,7 +57,7 @@ public class Secret extends KubernetesResource implements ISecret {
 
     @Override
     public void setType(final String type) {
-        get(SECRET_TYPE).set(type.toString());
+        get(SECRET_TYPE).set(type);
     }
 
     @Override

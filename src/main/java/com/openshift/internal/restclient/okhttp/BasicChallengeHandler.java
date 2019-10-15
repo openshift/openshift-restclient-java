@@ -15,36 +15,31 @@ import org.apache.commons.lang.StringUtils;
 
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.http.IHttpConstants;
-import com.openshift.restclient.utils.Base64Coder;
 
+import okhttp3.Credentials;
 import okhttp3.Headers;
 import okhttp3.Request.Builder;
 
-public class BasicChallangeHandler implements IChallangeHandler {
+public class BasicChallengeHandler implements IChallengeHandler {
 
     private IAuthorizationContext context;
 
-    public BasicChallangeHandler(IAuthorizationContext context) {
+    public BasicChallengeHandler(IAuthorizationContext context) {
         this.context = context;
     }
 
     @Override
     public boolean canHandle(Headers headers) {
-        return OpenShiftAuthenticator.AUTHORIZATION_BASIC
-                .equalsIgnoreCase(headers.get(OpenShiftAuthenticator.PROPERTY_WWW_AUTHENTICATE));
+        return IHttpConstants.AUTHORIZATION_BASIC
+                .equalsIgnoreCase(headers.get(IHttpConstants.PROPERTY_WWW_AUTHENTICATE));
     }
 
     @Override
-    public Builder handleChallange(Builder builder) {
-        StringBuilder value = new StringBuilder();
-        if (StringUtils.isNotBlank(context.getUserName())) {
-            value.append(context.getUserName()).append(":");
-        }
-        if (StringUtils.isNotBlank(context.getPassword())) {
-            value.append(context.getPassword());
-        }
-        return builder.header(OpenShiftAuthenticator.PROPERTY_AUTHORIZATION,
-                IHttpConstants.AUTHORIZATION_BASIC + " " + Base64Coder.encode(value.toString()));
+    public Builder handleChallenge(Builder builder) {
+        return builder.header(IHttpConstants.PROPERTY_AUTHORIZATION,
+                Credentials.basic(
+                        StringUtils.defaultIfBlank(context.getUserName(), ""),
+                        StringUtils.defaultIfBlank(context.getPassword(), "")));
     }
 
 }

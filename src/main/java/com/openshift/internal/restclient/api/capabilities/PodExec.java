@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.URLBuilder;
 import com.openshift.internal.restclient.capability.AbstractCapability;
+import com.openshift.internal.restclient.okhttp.OpenShiftRequestBuilder;
 import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
@@ -95,12 +96,16 @@ public class PodExec extends AbstractCapability implements IPodExec {
 
         final String endpoint = urlBuilder.websocket();
 
-        Request request = client.newRequestBuilderTo(endpoint, IHttpConstants.MEDIATYPE_ANY).method("GET", null)
+        Request request = new OpenShiftRequestBuilder()
+                .url(endpoint)
+                .method("GET", null)
+                .accept(IHttpConstants.MEDIATYPE_ANY)
+                .authorization(client.getAuthorizationContext())
                 .addHeader(K8S_PROTOCOL_HEADER, K8S_PROTOCOL)
                 // Unless we mark this as ignored, exceptions triggered by interceptor would be
                 // lost in dispatcher thread
-                .tag(new ResponseCodeInterceptor.Ignore() {
-                }).build();
+                .tag(new ResponseCodeInterceptor.Ignore() {})
+                .build();
 
         ExecOutputListenerAdapter adapter = new ExecOutputListenerAdapter(listener);
         okClient.newWebSocket(request, adapter);

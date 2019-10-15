@@ -25,6 +25,7 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.NotFoundException;
 import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.authorization.ResourceForbiddenException;
+import com.openshift.restclient.authorization.UnauthorizedException;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IStatus;
 
@@ -37,12 +38,12 @@ import okhttp3.Response;
  */
 public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
 
-    public static final String X_OPENSHIFT_IGNORE_RCI = "X-OPENSHIFT-IGNORE-RCI";
-
     private static final Logger LOGGER = Logger.getLogger(ResponseCodeInterceptor.class);
 
-    private IClient client;
+    public static final String X_OPENSHIFT_IGNORE_RCI = "X-OPENSHIFT-IGNORE-RCI";
 
+    private IClient client;
+    
     /**
      * If a request tag() implements this interface, HTTP errors will not throw
      * OpenShift exceptions.
@@ -53,7 +54,8 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Response response = chain.proceed(chain.request());
-        if (!response.isSuccessful() && StringUtils.isBlank(response.request().header(X_OPENSHIFT_IGNORE_RCI))) {
+        if (!response.isSuccessful()
+                && StringUtils.isBlank(response.request().header(X_OPENSHIFT_IGNORE_RCI))) {
             switch (response.code()) {
             case STATUS_UPGRADE_PROTOCOL:
             case STATUS_MOVED_PERMANENTLY:
@@ -62,7 +64,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
                 response = makeSuccessIfAuthorized(response);
                 break;
             default:
-                if (!(response.request().tag() instanceof Ignore)) {
+                if (!isIgnoreTagged(response)) {
                     throw createOpenShiftException(client, response, null);
                 }
             }
@@ -70,11 +72,15 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
         return response;
     }
 
+    private boolean isIgnoreTagged(Response response) {
+        return response.request().tag() instanceof Ignore;
+    }
+
     private Response makeSuccessIfAuthorized(final Response response) {
         Response returnedResponse = response;
         String location = response.header(PROPERTY_LOCATION);
         if (StringUtils.isNotBlank(location)
-                && URIUtils.splitFragment(location).containsKey(OpenShiftAuthenticator.ACCESS_TOKEN)) {
+                && URIUtils.splitFragment(location).containsKey(IHttpConstants.PROPERTY_ACCESS_TOKEN)) {
             returnedResponse = response.newBuilder()
                     .request(response.request())
                     .code(STATUS_OK)
@@ -96,7 +102,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
         return null;
     }
 
-    public static OpenShiftException createOpenShiftException(IClient client, Response response, Throwable e)
+    private static OpenShiftException createOpenShiftException(IClient client, Response response, Throwable e)
             throws IOException {
         LOGGER.debug(response, e);
         IStatus status = getStatus(response.body().string());
@@ -108,12 +114,12 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
         case STATUS_BAD_REQUEST:
             return new BadRequestException(e, status, response.request().url().toString());
         case STATUS_FORBIDDEN:
-            return new ResourceForbiddenException(status != null ? status.getMessage() : "Resource Forbidden", status,
-                    e);
+            return new ResourceForbiddenException(
+                    status != null ? status.getMessage() : "Resource Forbidden", status, e);
         case STATUS_UNAUTHORIZED:
             String link = String.format("%s/oauth/token/request", client.getBaseURL());
             AuthorizationDetails details = new AuthorizationDetails(response.headers(), link);
-            return new com.openshift.restclient.authorization.UnauthorizedException(details, status);
+            return new UnauthorizedException(details, status);
         case IHttpConstants.STATUS_NOT_FOUND:
             return new NotFoundException(e, status, status == null ? "Not Found" : status.getMessage());
         default:
@@ -123,7 +129,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
     }
 
     public static OpenShiftException createOpenShiftException(IClient client, int responseCode, String message,
-            String response, Throwable e) throws IOException {
+            String response, Throwable e) {
         LOGGER.debug(response, e);
         IStatus status = getStatus(response);
         if (status != null && status.getCode() != 0) {
@@ -136,7 +142,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
             return new ResourceForbiddenException(status != null ? status.getMessage() : "Resource Forbidden", status,
                     e);
         case STATUS_UNAUTHORIZED:
-            return new com.openshift.restclient.authorization.UnauthorizedException(
+            return new UnauthorizedException(
                     client.getAuthorizationContext().getAuthorizationDetails(), status);
         case IHttpConstants.STATUS_NOT_FOUND:
             return new NotFoundException(status == null ? "Not Found" : status.getMessage());

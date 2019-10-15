@@ -18,6 +18,7 @@ package com.openshift.restclient.http;
  */
 
 public interface IHttpConstants {
+
     public static final int STATUS_UPGRADE_PROTOCOL = 101;
     public static final int STATUS_OK = 200;
     public static final int STATUS_MOVED_PERMANENTLY = 301;
@@ -40,6 +41,7 @@ public interface IHttpConstants {
 
     public static final String PROPERTY_AUTHKEY = "broker_auth_key";
     public static final String PROPERTY_AUTHIV = "broker_auth_iv";
+    static final String PROPERTY_ACCESS_TOKEN = "access_token";
 
     public static final String MEDIATYPE_ANY = "*/*";
     public static final String MEDIATYPE_APPLICATION_JSON = "application/json";
@@ -66,4 +68,5 @@ public interface IHttpConstants {
 
     static final String PUT = "PUT";
     static final String POST = "POST";
+
 }

@@ -12,7 +12,6 @@ package com.openshift.internal.restclient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,7 +57,7 @@ public class ResourceFactory implements IResourceFactory {
     public List<IResource> createList(String json, String kind) {
         ModelNode data = ModelNode.fromJSONString(json);
         final String dataKind = data.get(KIND).asString();
-        if (!(kind.toString() + "List").equals(dataKind)) {
+        if (!(kind + "List").equals(dataKind)) {
             throw new RuntimeException(
                     String.format("Unexpected container type '%s' for desired kind: %s", dataKind, kind));
         }
@@ -71,9 +70,7 @@ public class ResourceFactory implements IResourceFactory {
         }
     }
 
-    private List<IResource> buildList(final String version, List<ModelNode> items, String kind)
-            throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
+    private List<IResource> buildList(final String version, List<ModelNode> items, String kind) {
         List<IResource> resources = new ArrayList<IResource>(items.size());
         for (ModelNode item : items) {
             resources.add(create(item, version, kind));
@@ -125,7 +122,7 @@ public class ResourceFactory implements IResourceFactory {
     private IResource create(ModelNode node, String version, String kind) {
         try {
             node.get(APIVERSION).set(version);
-            node.get(KIND).set(kind.toString());
+            node.get(KIND).set(kind);
             Map<String, String[]> properyKeyMap = ResourcePropertiesRegistry.getInstance().get(version, kind);
             if (kind.endsWith("List")) {
                 return new com.openshift.internal.restclient.model.List(node, client, properyKeyMap);

@@ -34,7 +34,6 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.IOpenShiftWatchListener;
 import com.openshift.restclient.IOpenShiftWatchListener.ChangeType;
 import com.openshift.restclient.IWatcher;
-import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.http.IHttpConstants;
 import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
@@ -82,12 +81,18 @@ public class WatchClient implements IWatcher, IHttpConstants {
                     WatchEndpoint socket = new WatchEndpoint(client, listener, kind);
                     final String resourceVersion = getResourceVersion(kind, namespace, socket);
 
-                    final String endpoint = new URLBuilder(client.getBaseURL(), this.typeMappings).kind(kind)
-                            .namespace(namespace).watch()
+                    final String endpoint = new URLBuilder(client.getBaseURL(), this.typeMappings)
+                            .kind(kind)
+                            .namespace(namespace)
+                            .watch()
                             .addParmeter(ResourcePropertyKeys.RESOURCE_VERSION, resourceVersion).websocket();
-                    Request request = client.newRequestBuilderTo(endpoint)
+                    Request request = new OpenShiftRequestBuilder()
+                            .url(endpoint)
+                            .acceptJson()
+                            .authorization(client.getAuthorizationContext())
                             .header(PROPERTY_ORIGIN, client.getBaseURL().toString())
-                            .header(PROPERTY_USER_AGENT, "openshift-restclient-java").build();
+                            .header(PROPERTY_USER_AGENT, "openshift-restclient-java")
+                            .build();
                     okClient.newWebSocket(request, socket);
                     endpointMap.put(kind, socket);
                 }
@@ -95,13 +100,9 @@ public class WatchClient implements IWatcher, IHttpConstants {
             } catch (Exception e) {
                 endpointMap.clear();
                 status.set(Status.Stopped);
-                try {
-                    throw ResponseCodeInterceptor.createOpenShiftException(client, 0,
-                            String.format("Could not watch resources in namespace %s: %s", namespace, e.getMessage()),
-                            null, e);
-                } catch (IOException e1) {
-                    throw new OpenShiftException(e1, "IOException trying to create an OpenShift specific exception");
-                }
+                throw ResponseCodeInterceptor.createOpenShiftException(client, 0,
+                        String.format("Could not watch resources in namespace %s: %s", namespace, e.getMessage()), null,
+                        e);
             }
         }
         return this;

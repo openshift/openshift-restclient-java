@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016 Red Hat, Inc. 
+ * Copyright (c) 2016-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -16,10 +16,10 @@ import okhttp3.Request;
 import okhttp3.Request.Builder;
 
 /**
- * A challange handler that can retrieve a token
+ * A challenge handler that can retrieve a token
  *
  */
-interface IChallangeHandler {
+interface IChallengeHandler {
 
     /**
      * Is able to handle a challange given the auth mechanism provided in the header
@@ -35,5 +35,5 @@ interface IChallangeHandler {
      * @param builder
      * @return
      */
-    Request.Builder handleChallange(Builder builder);
+    Request.Builder handleChallenge(Builder builder);
 }

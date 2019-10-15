@@ -23,17 +23,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
+import com.openshift.internal.restclient.okhttp.OpenShiftRequestBuilder;
 import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.internal.restclient.okhttp.WatchClient;
 import com.openshift.restclient.IApiTypeMapper;
@@ -70,6 +71,10 @@ import okio.Source;
  */
 public class DefaultClient implements IClient, IHttpConstants {
 
+    public static final String PATH_OAUTH_AUTHORIZATION_SERVER = ".well-known/oauth-authorization-server";
+    public static final String PATH_KUBERNETES_VERSION = "version";
+    public static final String PATH_OPENSHIFT_VERSION = "version/openshift";
+
     public static final String SYSTEM_PROP_K8E_API_VERSION = "osjc.k8e.apiversion";
     public static final String SYSTEM_PROP_OPENSHIFT_API_VERSION = "osjc.openshift.apiversion";
 
@@ -101,10 +106,10 @@ public class DefaultClient implements IClient, IHttpConstants {
         if (this.factory != null) {
             this.factory.setClient(this);
         }
-        initMasterVersion("version/openshift", new VersionCallback("OpenShift", version -> this.openShiftVersion = version));
-        initMasterVersion("version", new VersionCallback("Kubernetes", version -> this.kubernetesVersion = version));
-        initMasterVersion(".well-known/oauth-authorization-server", new AuthorizationCallback());
-        this.typeMapper = typeMapper != null ? typeMapper : new ApiTypeMapper(baseUrl.toString(), client);
+        initMasterVersion(PATH_OPENSHIFT_VERSION, new VersionCallback("OpenShift", version -> this.openShiftVersion = version));
+        initMasterVersion(PATH_KUBERNETES_VERSION, new VersionCallback("Kubernetes", version -> this.kubernetesVersion = version));
+        initMasterVersion(PATH_OAUTH_AUTHORIZATION_SERVER, new AuthorizationCallback());
+        this.typeMapper = typeMapper != null ? typeMapper : new ApiTypeMapper(baseUrl.toString(), client, authContext);
         this.authContext = authContext;
     }
 
@@ -300,9 +305,12 @@ public class DefaultClient implements IClient, IHttpConstants {
                 .subContext(subContext)
                 .addParameters(params)
                 .build();
-        Request request = newRequestBuilderTo(endpoint.toString())
-                .method(method, requestBody)
-                .build();
+        Request request = newRequestBuilder()
+            .url(endpoint)
+            .method(method, requestBody)
+            .acceptJson()
+            .authorization(authContext)
+            .build();
         LOGGER.debug("About to make {} request: {}", request.method(), request);
         try {
             String body = request(request);
@@ -377,25 +385,9 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
     }
 
-    public Builder newRequestBuilderTo(String endpoint) {
-        return newRequestBuilderTo(endpoint, MEDIATYPE_APPLICATION_JSON);
-    }
-
-    public Builder newRequestBuilderTo(String endpoint, String acceptMediaType) {
-        Builder builder = new Builder()
-                .url(endpoint)
-                .header(PROPERTY_ACCEPT, acceptMediaType);
-        addAuthorizationHeader(builder);
-        return builder;
-    }
-
-    private void addAuthorizationHeader(Builder builder) {
-        String token = null;
-        if (this.authContext != null && StringUtils.isNotBlank(this.authContext.getToken())) {
-            token = this.authContext.getToken();
-        }
-        builder.header(IHttpConstants.PROPERTY_AUTHORIZATION,
-                String.format("%s %s", IHttpConstants.AUTHORIZATION_BEARER, token));
+    /* for debugging purposes */
+    protected OpenShiftRequestBuilder newRequestBuilder() {
+        return new OpenShiftRequestBuilder();
     }
 
     @Override
@@ -657,7 +649,7 @@ public class DefaultClient implements IClient, IHttpConstants {
             if (other.authContext == null) {
                 return false;
             }
-            return ObjectUtils.equals(authContext.getUserName(), other.authContext.getUserName());
+            return Objects.equals(authContext.getUserName(), other.authContext.getUserName());
         }
     }
 
@@ -681,5 +673,4 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
         return null;
     }
-
 }
