@@ -19,8 +19,8 @@ import static com.openshift.internal.restclient.capability.resources.testutils.B
 import static com.openshift.internal.restclient.capability.resources.testutils.BinaryCapabilityTestMocks.mockClient;
 import static com.openshift.internal.restclient.capability.resources.testutils.BinaryCapabilityTestMocks.mockPod;
 import static com.openshift.internal.restclient.capability.resources.testutils.BinaryCapabilityTestMocks.mockPortPair;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;

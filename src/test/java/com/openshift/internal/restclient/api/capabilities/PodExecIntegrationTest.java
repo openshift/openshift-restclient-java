@@ -33,11 +33,16 @@ import com.openshift.restclient.api.capabilities.IPodExec;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.IStoppable;
 import com.openshift.restclient.model.IPod;
+import com.openshift.restclient.model.IProject;
 
 public class PodExecIntegrationTest {
 
+    private static final int TIMEOUT_POD_READY = 30;
+
     private IntegrationTestHelper helper = new IntegrationTestHelper();
+    private IProject project;
     private IPod pod;
+    private IClient client;
 
     public static class TestExecListener implements IPodExec.IPodExecOutputListener {
 
@@ -100,9 +105,13 @@ public class PodExecIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        IClient client = helper.createClientForBasicAuth();
-        this.pod = helper.getDockerRegistryPod(client);
-        assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
+        this.client = helper.createClientForBasicAuth();
+        this.project = helper.getOrCreateIntegrationTestProject(client); 
+        this.pod = helper.getOrCreatePod(client,
+                project.getNamespaceName(),
+                IntegrationTestHelper.IMAGE_HELLO_OPENSHIFT_ALPINE);
+        assertNotNull("Could not create a pod to test against.", pod);
+        helper.waitForPodReady(client, pod.getNamespaceName(), pod.getName(), TIMEOUT_POD_READY);
     }
 
     @Test

@@ -10,6 +10,7 @@
 package com.openshift.internal.restclient;
 
 import static com.openshift.restclient.ResourceKind.BUILD_CONFIG;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -112,11 +113,7 @@ public class DefaultClientFilterIntegrationTest {
 
         Set<String> names = list.stream().map(IResource::getName).collect(Collectors.toSet());
 
-        assertEquals(3, list.size());
-        assertTrue("Should contain build2", names.contains("build2"));
-        assertTrue("Should contain build3", names.contains("build3"));
-        assertTrue("Should contain build4", names.contains("build4"));
-
+        assertThat(names).contains("build2", "build3", "build4").doesNotContain("build1");
     }
 
     @Test
@@ -125,17 +122,13 @@ public class DefaultClientFilterIntegrationTest {
 
         Set<String> names = list.stream().map(IResource::getName).collect(Collectors.toSet());
 
-        assertEquals(2, list.size());
-        assertTrue("Should contain build2", names.contains("build2"));
-        assertTrue("Should contain build4", names.contains("build4"));
+        assertThat(names).contains("build2", "build4").doesNotContain("build1", "build3");
     }
 
     @Test
     public void testFilteringWithLabelCombinedLabelQuery() {
         List<IBuildConfig> list = client.list(BUILD_CONFIG, project.getNamespaceName(), "foo,bar=no");
 
-        assertEquals(1, list.size());
-        IBuildConfig bc = list.get(0);
-        assertEquals("build1", bc.getName());
+        assertThat(list).allMatch(bc -> "build1".equals(bc.getName()));
     }
 }

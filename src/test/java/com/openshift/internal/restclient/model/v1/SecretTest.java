@@ -10,12 +10,10 @@
 package com.openshift.internal.restclient.model.v1;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.io.ByteArrayInputStream;
 
-import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;

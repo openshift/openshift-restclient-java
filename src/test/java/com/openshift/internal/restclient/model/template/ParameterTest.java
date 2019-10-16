@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.fest.assertions.Assertions;
+import org.assertj.core.api.Assertions;
 import org.jboss.dmr.ModelNode;
 import org.junit.Test;
 

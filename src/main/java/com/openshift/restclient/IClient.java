@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.openshift.internal.restclient.KubernetesVersion;
-import com.openshift.internal.restclient.OpenShiftMajorVersion;
 import com.openshift.restclient.api.ITypeFactory;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.capability.ICapable;

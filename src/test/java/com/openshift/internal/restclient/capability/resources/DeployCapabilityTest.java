@@ -16,7 +16,7 @@ import static com.openshift.restclient.utils.ResourceTestHelper.givenResourceIsA
 import static com.openshift.restclient.utils.ResourceTestHelper.thenResourceShouldBeUpdated;
 import static com.openshift.restclient.utils.ResourceTestHelper.thenResourceShouldNotBeUpdated;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
