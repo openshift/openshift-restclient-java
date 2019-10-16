@@ -42,7 +42,7 @@ public class OpenshiftBinaryPodLogRetrievalIntegrationTest2 {
         helper.setOpenShiftBinarySystemProperty();
         this.client = helper.createClientForBasicAuth();
         this.project = helper.getOrCreateIntegrationTestProject(client);
-        IPod pod = helper.createPod(client, project.getNamespaceName(), IntegrationTestHelper.appendRandom("test-pod"));
+        IPod pod = helper.getOrCreatePod(client, project.getNamespaceName(), IntegrationTestHelper.IMAGE_HELLO_OPENSHIFT);
         this.pod = helper.waitForResource(
                 client, 
                 pod,

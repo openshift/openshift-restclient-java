@@ -23,6 +23,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,6 +71,11 @@ import com.openshift.restclient.model.deploy.DeploymentTriggerType;
 import okhttp3.OkHttpClient;
 
 public class IntegrationTestHelper implements ResourcePropertyKeys {
+
+    public static final String IMAGE_HELLO_OPENSHIFT_ALPINE = "adietish/hello-openshift-alpine:0.3";
+    public static final String IMAGE_HELLO_OPENSHIFT = "openshift/hello-openshift";
+    
+    public static final String POD_NAME_DEFAULT = "test-pod";
 
     public static final long TEST_TIMEOUT = 6 * 1000;
     public static final long TEST_LONG_TIMEOUT = 3 * 60 * 1000;
@@ -133,15 +145,21 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
      * @return the existing/new project
      */
     public IProject getOrCreateProject(String name, IClient client) {
-        IProject project = null;
+        return getOrCreateResource(
+            () -> client.get(ResourceKind.PROJECT, name, ""), 
+            () -> createProject(name, client));
+    }
+
+    private <R extends IResource> R getOrCreateResource(Supplier<R> supplier, Supplier<R> factory) {
+        R resource = null;
         try {
-            project = client.get(ResourceKind.PROJECT, name, "");
+            resource = supplier.get();
         } catch (NotFoundException | ResourceForbiddenException e) {
             // OS3: NotFoundException
             // OS4: ResourceForbiddenException
-            project = createProject(name, client);
+            resource = factory.get();
         }
-        return project;
+        return resource;
     }
 
     public static String appendRandom(String string) {
@@ -154,10 +172,14 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
     }
     
     private Optional<IPod> getDockerRegistryPod(IClient client, String project, String podPrefix) {
-        List<IPod> pods = client.list(ResourceKind.POD, project);
-        return pods.stream()
-                .filter(p -> isDockerRegistry(p, podPrefix))
-                .findFirst();
+        try {
+            List<IPod> pods = client.list(ResourceKind.POD, project);
+            return pods.stream()
+                    .filter(p -> isDockerRegistry(p, podPrefix))
+                    .findFirst();
+        } catch (ResourceForbiddenException e) {
+            return Optional.empty();
+        }
     }
     
     public IPod getDockerRegistryPod(IClient client) {
@@ -167,7 +189,6 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
         }
         return pod.orElse(null);
     }
-
 
     public <R extends IResource> Collection<R> createResources(IClient client, R... resources) {
         if (ArrayUtils.isEmpty(resources)) {
@@ -186,8 +207,41 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
         return client.create(resource);
     }
 
-    public IPod createPod(IClient client, String namespace, String name) {
-        return client.create(stubPod(client, namespace, name));
+    public IPod getPod(IClient client, String namespace, String name) {
+        return client.get(ResourceKind.POD, name, namespace);
+    }
+
+    public IPod createPod(IClient client, String namespace, String name, String image) {
+        return client.create(stubPod(client, namespace, name, image));
+    }
+
+    public IPod getOrCreatePod(IClient client, String namespace, String image) {
+        return getOrCreatePod(client, namespace, POD_NAME_DEFAULT, image);
+    }
+
+    public IPod getOrCreatePod(IClient client, String namespace, String name, String image) {
+        return getOrCreateResource(
+            () -> getPod(client, namespace, name), 
+            () -> createPod(client, namespace, name, image));
+    }
+
+    public boolean waitForPodReady(IClient client, String namespace, String name, int timeout) throws InterruptedException, ExecutionException, TimeoutException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Boolean> podReady = executor.submit(() -> {
+            IPod pod = null;
+            try {
+                while (pod == null
+                        || !pod.isReady()) {
+                    pod = getPod(client, namespace, name);
+                    Thread.sleep(2 * 1000);
+                }
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return pod.isReady();
+        });
+        return podReady.get(timeout, TimeUnit.SECONDS);
     }
 
     /**
@@ -200,13 +254,13 @@ public class IntegrationTestHelper implements ResourcePropertyKeys {
      * 
      * @return a pod definition that needs to be further created using the client
      */
-    public IPod stubPod(IClient client, String namespace, String name) {
+    private IPod stubPod(IClient client, String namespace, String name, String image) {
         ModelNode builder = new ModelNodeBuilder().set(ResourcePropertyKeys.KIND, ResourceKind.POD)
                 .set(ResourcePropertyKeys.METADATA_NAME, name)
                 .set(ResourcePropertyKeys.METADATA_NAMESPACE, namespace)
                 .add("spec.containers",
-                        new ModelNodeBuilder().set(ResourcePropertyKeys.NAME, "hello-openshift")
-                                .set("image", "openshift/hello-openshift")
+                        new ModelNodeBuilder().set(ResourcePropertyKeys.NAME, name)
+                                .set("image", image)
                                 .add("ports", new ModelNodeBuilder().set("containerPort", 8080).set("protocol", "TCP")))
                 .build();
         return new Pod(builder, client, new HashMap<>());

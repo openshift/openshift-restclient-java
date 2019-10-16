@@ -12,7 +12,6 @@
 package com.openshift.internal.restclient;
 
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -26,8 +25,6 @@ import java.util.function.Supplier;
 import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
-import org.mockito.Mockito;
-import org.mockito.quality.Strictness;
 import org.mockito.stubbing.OngoingStubbing;
 
 import com.openshift.restclient.IApiTypeMapper;

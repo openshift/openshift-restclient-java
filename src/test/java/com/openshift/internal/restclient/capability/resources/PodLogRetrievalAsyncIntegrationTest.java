@@ -29,6 +29,7 @@ import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync;
 import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync.IPodLogListener;
 import com.openshift.restclient.capability.resources.IPodLogRetrievalAsync.Options;
 import com.openshift.restclient.model.IPod;
+import com.openshift.restclient.model.IProject;
 
 public class PodLogRetrievalAsyncIntegrationTest {
 
@@ -41,8 +42,12 @@ public class PodLogRetrievalAsyncIntegrationTest {
     public void testAsyncLogRetrieval() throws Exception {
         latch = new CountDownLatch(2);
         DefaultClient client = (DefaultClient) helper.createClientForBasicAuth();
-        IPod pod = helper.getDockerRegistryPod(client);
-        assertNotNull("Need a pod to continue the test. Expected to find the registry", pod);
+        IProject project = helper.getOrCreateIntegrationTestProject(client); 
+        IPod pod = helper.getOrCreatePod(client,
+                project.getNamespaceName(),
+                getClass().getSimpleName().toLowerCase() + "-pod",
+                IntegrationTestHelper.IMAGE_HELLO_OPENSHIFT_ALPINE);
+        assertNotNull("Could not create a pod to test against.", pod);
 
         final String container = pod.getContainers().iterator().next().getName();
 

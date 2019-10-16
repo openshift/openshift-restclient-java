@@ -11,8 +11,6 @@
 
 package com.openshift.restclient.model;
 
-import com.openshift.restclient.model.IResource;
-
 public interface IEvent extends IResource {
 
     /**

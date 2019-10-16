@@ -25,7 +25,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.TypeMapperFixture;
-import com.openshift.internal.restclient.api.capabilities.PodExec.ExecOutputListenerAdapter;
 import com.openshift.internal.restclient.capability.resources.PodLogRetrievalAsync;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.api.capabilities.IPodExec;

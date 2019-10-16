@@ -10,8 +10,8 @@
 package com.openshift.internal.restclient.model.v1;
 
 import static com.openshift.internal.util.JBossDmrExtentions.getPath;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -307,8 +307,10 @@ public class ReplicationControllerTest {
     @Test
     public void shouldReturnTemplateLabels() {
         Map<String, String> labels = rc.getTemplateLabels();
-        assertThat(labels).hasSize(3).includes(entry("deployment", "database-1"))
-                .includes(entry("deploymentconfig", "database")).includes(entry("name", "database"));
+        assertThat(labels).hasSize(3)
+            .contains(entry("deployment", "database-1"))
+            .contains(entry("deploymentconfig", "database"))
+            .contains(entry("name", "database"));
     }
 
     @Test

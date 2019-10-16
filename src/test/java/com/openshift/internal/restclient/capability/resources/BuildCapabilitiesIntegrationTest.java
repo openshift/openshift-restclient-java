@@ -68,45 +68,53 @@ public class BuildCapabilitiesIntegrationTest {
         assertNotNull(bc);
     }
 
-    @Test
-    public void testBuildActions() {
-        // trigger the build
-        LOG.debug("Triggering build from the buildconfig...");
-        IBuild build = bc.accept(new CapabilityVisitor<IBuildTriggerable, IBuild>() {
-            @Override
-            public IBuild visit(IBuildTriggerable capability) {
-                return capability.trigger();
-            }
-        }, null);
-        assertNotNull("Exp. to be able to trigger a build from a buildconfig", build);
-        LOG.debug("Triggered build {}", build);
+    @After
+    public void tearDown() {
+        helper.cleanUpResources(client, bc, is);
+    }
 
-        LOG.debug("Canceling the build...");
-        // cancel the build
-        build = build.accept(new CapabilityVisitor<IBuildCancelable, IBuild>() {
+    @Test
+    public void shouldTriggerBuild() {
+        IBuild build = triggerBuild(bc);
+        assertNotNull("Exp. to be able to trigger a build from a buildconfig", build);        
+    }
+
+    @Test
+    public void shouldCancelBuild() {
+        // given
+        final IBuild build = triggerBuild(bc);
+        // when
+        IBuild cancelledBuild = build.accept(new CapabilityVisitor<IBuildCancelable, IBuild>() {
 
             @Override
             public IBuild visit(IBuildCancelable cap) {
-                return cap.cancel();
+                // bug in 4.1? build needs to be refreshed
+                IBuild refreshedBuild = refresh(build);
+                refreshedBuild.cancel();
+                return refreshedBuild;
             }
         }, null);
-        assertNotNull("Exp. to be able to cancel a build", build);
-        LOG.debug("Canceled build {}", build);
+        assertNotNull("Exp. to be able to cancel a build", cancelledBuild);
+    }
 
-        // trigger the build from a build
-        LOG.debug("Triggering build from a build...");
+    @Test
+    public void shouldTriggerBuildFromBuild() {
+        // given
+        IBuild build = triggerBuild(bc);
+        // when
         build = build.accept(new CapabilityVisitor<IBuildTriggerable, IBuild>() {
             @Override
             public IBuild visit(IBuildTriggerable capability) {
                 return capability.trigger();
             }
         }, null);
+        // when
         assertNotNull("Exp. to be able to trigger a build from a build", build);
-        LOG.debug("Triggered build {}", build);
+    }
 
-        // add a build cause
-        LOG.debug("Triggering build with build cause...");
-        build = build.accept(new CapabilityVisitor<IBuildTriggerable, IBuild>() {
+    @Test
+    public void shouldTriggerBuildWithCause() {
+        IBuild build = bc.accept(new CapabilityVisitor<IBuildTriggerable, IBuild>() {
             @Override
             public IBuild visit(IBuildTriggerable capability) {
                 capability.addBuildCause("test cause");
@@ -114,12 +122,20 @@ public class BuildCapabilitiesIntegrationTest {
             }
         }, null);
         assertNotNull("Exp. to be able to add a build cause for a build", build);
-        LOG.debug("Triggered build {}", build);
     }
 
-    @After
-    public void tearDown() {
-        helper.cleanUpResources(client, bc, is);
+    private IBuild refresh(IBuild build) {
+        return client.get(ResourceKind.BUILD, build.getName(), build.getNamespaceName());
+    }
+
+    private IBuild triggerBuild(IBuildConfig bc) {
+        IBuild build = bc.accept(new CapabilityVisitor<IBuildTriggerable, IBuild>() {
+            @Override
+            public IBuild visit(IBuildTriggerable capability) {
+                return capability.trigger();
+            }
+        }, null);
+        return build;
     }
 
 }

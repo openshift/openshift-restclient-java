@@ -10,7 +10,7 @@
 package com.openshift.internal.restclient;
 
 import static com.openshift.internal.restclient.IntegrationTestHelper.MILLISECONDS_PER_SECOND;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

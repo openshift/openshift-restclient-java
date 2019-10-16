@@ -11,7 +11,7 @@
 
 package com.openshift.internal.restclient.capability.resources;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -44,6 +44,7 @@ import com.openshift.restclient.capability.resources.IRSyncable.LocalPeer;
 import com.openshift.restclient.capability.resources.IRSyncable.Peer;
 import com.openshift.restclient.capability.resources.IRSyncable.PodPeer;
 import com.openshift.restclient.model.IPod;
+import com.openshift.restclient.model.IProject;
 
 /**
  * 
@@ -51,6 +52,8 @@ import com.openshift.restclient.model.IPod;
  *
  */
 public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
+    private static final int TIMEOUT_POD_READY = 30;
+
     // rsync now reports special characters as octal UTF-8: 'é' -> octal utf8: \\0303\\0251, hex utf8: \u00e9
     private static final String TARGET_FOLDER_WITH_SPECIAL_CHARS = "/tmp/OpenshiftBinaryRSyncRetrievalIntegrationTest/with sp@ce/";
     private static final String FILE_NAME_SPECIAL_CHARS = "test with speci@l characters and spaces";
@@ -68,6 +71,7 @@ public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
+    private IProject project;
     private IPod pod;
     private String podFolderToClean;
 
@@ -76,8 +80,13 @@ public class OpenshiftBinaryRSyncRetrievalIntegrationTest {
         // given
         this.helper.setOpenShiftBinarySystemProperty();
         this.client = helper.createClientForBasicAuth();
-        this.pod = helper.getDockerRegistryPod(client);
-        assertNotNull("Did not find the registry pod to which to rsync", pod);
+        this.project = helper.getOrCreateIntegrationTestProject(client); 
+        this.pod = helper.getOrCreatePod(client,
+                project.getNamespaceName(),
+                getClass().getSimpleName().toLowerCase() + "-pod",
+                IntegrationTestHelper.IMAGE_HELLO_OPENSHIFT_ALPINE);
+        assertNotNull("Could not create a pod to test against.", pod);
+        helper.waitForPodReady(client, pod.getNamespaceName(), pod.getName(), TIMEOUT_POD_READY);
     }
 
     @After

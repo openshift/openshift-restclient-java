@@ -10,7 +10,7 @@
 package com.openshift.internal.restclient.model;
 
 import static com.openshift.internal.util.JBossDmrExtentions.getPath;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
