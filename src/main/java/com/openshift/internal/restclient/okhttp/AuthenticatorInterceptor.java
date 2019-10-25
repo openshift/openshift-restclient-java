@@ -13,8 +13,6 @@ package com.openshift.internal.restclient.okhttp;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -29,13 +27,11 @@ import com.openshift.restclient.authorization.IAuthorizationDetails;
 import com.openshift.restclient.authorization.UnauthorizedException;
 import com.openshift.restclient.http.IHttpConstants;
 
-import okhttp3.Authenticator;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.Response;
-import okhttp3.Route;
 
 /**
  * Adds authorization means to every request. Authorizes and retrieves the token
@@ -52,7 +48,6 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
     private static final String ERROR_DETAILS = "error_details";
 
     private IClient client;
-    private Collection<IChallengeHandler> challangeHandlers = new ArrayList<>();
     
     @Override
     public Response intercept(Chain chain) throws IOException {
@@ -93,13 +88,13 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
         if (okClient == null) {
             return null;
         }
-        Request authRequest = new Request.Builder()
-                .addHeader(CSRF_TOKEN, "1")
-                .url(new URL(client.getAuthorizationEndpoint().toExternalForm() 
-                        + "?response_type=token&client_id=openshift-challenging-client").toString())
-                .build();
+        Request authRequest = appendAuthorization(
+                client.getAuthorizationContext(),
+                new Request.Builder()
+                    .addHeader(CSRF_TOKEN, "1")
+                    .url(new URL(client.getAuthorizationEndpoint().toExternalForm() 
+                            + "?response_type=token&client_id=openshift-challenging-client").toString()));
         return okClient.newBuilder()
-                .authenticator(new OpenShiftAuthenticator())
                 .followRedirects(false)
                 .build()
                 .newCall(authRequest)
@@ -132,36 +127,11 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
 
     public void setClient(IClient client) {
         this.client = client;
-        initChallengeHandlers(client.getAuthorizationContext());
     }
 
-    private void initChallengeHandlers(IAuthorizationContext context) {
-        challangeHandlers.clear();
-        challangeHandlers.add(new BasicChallengeHandler(context));
+    private Request appendAuthorization(IAuthorizationContext context, Builder builder) {
+        builder.header(AUTH_ATTEMPTS, "1");
+        return new BasicChallengeHandler(context).handleChallenge(builder).build();
     }
 
-    private final class OpenShiftAuthenticator implements Authenticator {
-        @Override
-        public Request authenticate(Route route, Response response) throws IOException {
-            if (StringUtils.isNotBlank(response.request().header(AUTH_ATTEMPTS))) {
-                return null;
-            }
-            if (StringUtils.isNotBlank(response.header(IHttpConstants.PROPERTY_WWW_AUTHENTICATE))) {
-                Request authenticationRequest = createAuthenticationRequest(response);
-                response.close();
-                return authenticationRequest;
-            }
-            return null;
-        }
-
-        private Request createAuthenticationRequest(Response response) {
-            for (IChallengeHandler challangeHandler : challangeHandlers) {
-                if (!challangeHandler.canHandle(response.headers())) {
-                    Builder requestBuilder = response.request().newBuilder().header(AUTH_ATTEMPTS, "1");
-                    return challangeHandler.handleChallenge(requestBuilder).build();
-                }
-            }
-            return null;
-        }
-    }
 }
