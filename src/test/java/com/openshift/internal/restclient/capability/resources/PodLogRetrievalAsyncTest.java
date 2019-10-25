@@ -19,6 +19,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.net.URL;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +54,7 @@ public class PodLogRetrievalAsyncTest extends TypeMapperFixture {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        client = new DefaultClient(null, getHttpClient(), null, getApiTypeMapper(), null);
+        client = new DefaultClient(new URL("http://localhost"), getHttpClient(), null, getApiTypeMapper(), null);
         pod = new MocksFactory().mock(IPod.class);
         capability = new PodLogRetrievalAsync(pod, client);
 

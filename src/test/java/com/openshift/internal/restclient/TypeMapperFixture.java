@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016-2018 Red Hat, Inc. 
+ * Copyright (c) 2016-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -81,6 +81,12 @@ public class TypeMapperFixture {
     }
 
     static class TestOkHttpClient extends OkHttpClient {
+
+        void whenRequestTo(String url, Response response) throws IOException {
+            Call call = mock(Call.class);
+            doReturn(response).when(call).execute();
+            doReturn(call).when(this).newCall(requestTo(url));
+        }
 
         OngoingStubbing<Response> whenRequestTo(String url) throws IOException {
             Call call = mock(Call.class);
