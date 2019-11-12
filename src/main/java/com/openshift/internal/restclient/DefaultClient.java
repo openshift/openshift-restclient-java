@@ -74,11 +74,11 @@ public class DefaultClient implements IClient, IHttpConstants {
     public static final String PATH_OAUTH_AUTHORIZATION_SERVER = ".well-known/oauth-authorization-server";
     public static final String PATH_KUBERNETES_VERSION = "version";
     public static final String PATH_OPENSHIFT_VERSION = "version/openshift";
+    public static final String URL_HEALTH_CHECK = "healthz";
+    private static final String OS_API_ENDPOINT = "oapi";
 
     public static final String SYSTEM_PROP_K8E_API_VERSION = "osjc.k8e.apiversion";
     public static final String SYSTEM_PROP_OPENSHIFT_API_VERSION = "osjc.openshift.apiversion";
-
-    private static final String URL_HEALTH_CHECK = "healthz";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
     private URL baseUrl;
@@ -89,8 +89,6 @@ public class DefaultClient implements IClient, IHttpConstants {
     private IResourceFactory factory;
     private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<>();
     private boolean capabilitiesInitialized = false;
-
-    private static final String OS_API_ENDPOINT = "oapi";
 
     private String openShiftVersion;
     private String kubernetesVersion;

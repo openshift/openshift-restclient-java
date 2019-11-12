@@ -84,7 +84,8 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
         return url.endsWith(DefaultClient.PATH_OPENSHIFT_VERSION)
                 || url.endsWith(DefaultClient.PATH_KUBERNETES_VERSION)
                 || url.endsWith(DefaultClient.PATH_OAUTH_AUTHORIZATION_SERVER)
-                || request.url().toString().startsWith(client.getAuthorizationEndpoint().toString());
+                || request.url().toString().startsWith(client.getAuthorizationEndpoint().toString())
+                || url.endsWith(DefaultClient.URL_HEALTH_CHECK);
     }
 
     private Response authenticate() throws IOException {
