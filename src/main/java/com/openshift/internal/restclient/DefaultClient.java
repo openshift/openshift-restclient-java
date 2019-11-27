@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
@@ -54,8 +53,6 @@ import com.openshift.restclient.model.IList;
 import com.openshift.restclient.model.IResource;
 import com.openshift.restclient.model.JSONSerializeable;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -71,29 +68,29 @@ import okio.Source;
  */
 public class DefaultClient implements IClient, IHttpConstants {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
+
     public static final String PATH_OAUTH_AUTHORIZATION_SERVER = ".well-known/oauth-authorization-server";
     public static final String PATH_KUBERNETES_VERSION = "version";
     public static final String PATH_OPENSHIFT_VERSION = "version/openshift";
-    public static final String URL_HEALTH_CHECK = "healthz";
-    private static final String OS_API_ENDPOINT = "oapi";
+    public static final String PATH_HEALTH_CHECK = "healthz";
 
     public static final String SYSTEM_PROP_K8E_API_VERSION = "osjc.k8e.apiversion";
     public static final String SYSTEM_PROP_OPENSHIFT_API_VERSION = "osjc.openshift.apiversion";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
+    private static final String OS_API_ENDPOINT = "oapi";
+
     private URL baseUrl;
-    private CompletableFuture<URL> authorizationEndpoint = new CompletableFuture<>();
-    private CompletableFuture<URL> tokenEndpoint = new CompletableFuture<>();
-    
     private OkHttpClient client;
     private IResourceFactory factory;
     private Map<Class<? extends ICapability>, ICapability> capabilities = new HashMap<>();
     private boolean capabilitiesInitialized = false;
 
-    private String openShiftVersion;
-    private String kubernetesVersion;
-    private AuthorizationContext authContext;
-    private IApiTypeMapper typeMapper;
+    private final AuthorizationContext authContext;
+    private final IApiTypeMapper typeMapper;
+    private final ClusterVersion kubernetesVersion;
+    private final ClusterVersion openShiftVersion;
+    private final AuthorizationEndpoints authorizationEndpoints;
     private OpenShiftMajorVersion openShiftMajorVersion;
 
     public DefaultClient(URL baseUrl, OkHttpClient client, IResourceFactory factory, IApiTypeMapper typeMapper,
@@ -104,11 +101,11 @@ public class DefaultClient implements IClient, IHttpConstants {
         if (this.factory != null) {
             this.factory.setClient(this);
         }
-        initMasterVersion(PATH_OPENSHIFT_VERSION, new VersionCallback("OpenShift", version -> this.openShiftVersion = version));
-        initMasterVersion(PATH_KUBERNETES_VERSION, new VersionCallback("Kubernetes", version -> this.kubernetesVersion = version));
-        initMasterVersion(PATH_OAUTH_AUTHORIZATION_SERVER, new AuthorizationCallback());
         this.typeMapper = typeMapper != null ? typeMapper : new ApiTypeMapper(baseUrl.toString(), client, authContext);
         this.authContext = authContext;
+        this.kubernetesVersion = new ClusterVersion(baseUrl.toExternalForm() + "/" + PATH_KUBERNETES_VERSION, "Kubernetes Version", client);
+        this.openShiftVersion = new ClusterVersion(baseUrl.toExternalForm() + "/" + PATH_OPENSHIFT_VERSION, "OpenShift Version", client);
+        this.authorizationEndpoints = new AuthorizationEndpoints(baseUrl.toExternalForm(), client);
     }
 
     @Override
@@ -373,7 +370,7 @@ public class DefaultClient implements IClient, IHttpConstants {
     public String getServerReadyStatus() {
         try {
             Request request = new Request.Builder()
-                    .url(new URL(this.baseUrl, URL_HEALTH_CHECK))
+                    .url(new URL(this.baseUrl, PATH_HEALTH_CHECK))
                     .header(PROPERTY_ACCEPT, "*/*")
                     .build();
             return request(request);
@@ -454,86 +451,14 @@ public class DefaultClient implements IClient, IHttpConstants {
         return typeMapper.getPreferedVersionFor(OS_API_ENDPOINT);
     }
 
-    private void initMasterVersion(String versionInfoType, Callback callback) {
-        try {
-            Request request = new Builder().url(new URL(this.baseUrl, versionInfoType))
-                    .header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON)
-                    .tag(new ResponseCodeInterceptor.Ignore() {})
-                    .build();
-            client.newCall(request).enqueue(callback);
-        } catch (IOException e) {
-            LOGGER.warn("Exception while trying to determine master version of openshift and kubernetes", e);
-        }
-    }
-
-    private class VersionCallback implements Callback {
-        String description;
-        Consumer<String> versionSetter;
-
-        public VersionCallback(String description, Consumer<String> versionSetter) {
-            this.description = description;
-            this.versionSetter = versionSetter;
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) {
-            versionSetter.accept("");
-            LOGGER.warn("Exception while trying to determine {} master version", description, e);
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-            try {
-                if (response.isSuccessful()) {
-                    versionSetter.accept(ModelNode.fromJSONString(response.body().string()).get("gitVersion").asString());
-                } else {
-                    versionSetter.accept("");
-                    LOGGER.warn("Failed to determine {} master version: got {}", description, response.code());
-                }
-            } finally {
-                response.close();
-            }
-        }
-    }
-
-    private class AuthorizationCallback implements Callback {
-
-        private void setDefaults() {
-            DefaultClient.this.authorizationEndpoint.complete(DefaultClient.this.getDefaultAuthorizationEndpoint());
-            DefaultClient.this.tokenEndpoint.complete(DefaultClient.this.getDefaultTokenEndpoint());
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) {
-            setDefaults();
-            LOGGER.warn("Exception while trying to get authorization endpoint", e);
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-            try {
-                if (response.isSuccessful()) {
-                    ModelNode node = ModelNode.fromJSONString(response.body().string());
-                    DefaultClient.this.authorizationEndpoint.complete(new URL(node.get("authorization_endpoint").asString()));
-                    DefaultClient.this.tokenEndpoint.complete(new URL(node.get("token_endpoint").asString()));
-                } else {
-                    setDefaults();
-                    LOGGER.warn("Failed to determine authorization endpoint: got {}", response.code());
-                }
-            } finally {
-                response.close();
-            }
-        }
-    }
-
     @Override
     public String getOpenshiftMasterVersion() {
-        return this.openShiftVersion;
+        return openShiftVersion.get();
     }
 
     @Override
     public String getKubernetesMasterVersion() {
-        return this.kubernetesVersion;
+        return kubernetesVersion.get();
     }
 
     @Override
@@ -543,11 +468,7 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     @Override
     public URL getAuthorizationEndpoint() {
-        try {
-            return authorizationEndpoint.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new OpenShiftException(e, e.getLocalizedMessage());
-        }
+        return authorizationEndpoints.getAuthorizationEndpoint();
     }
     
     protected URL getDefaultAuthorizationEndpoint() {
@@ -560,11 +481,7 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     @Override
     public URL getTokenEndpoint() {
-        try {
-            return tokenEndpoint.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new OpenShiftException(e, e.getLocalizedMessage());
-        }
+        return authorizationEndpoints.getTokenEndpoint();
     }
     
     protected URL getDefaultTokenEndpoint() {
@@ -627,20 +544,6 @@ public class DefaultClient implements IClient, IHttpConstants {
         } else if (!baseUrl.toString().equals(other.baseUrl.toString())) {
             return false;
         }
-        if (kubernetesVersion == null) {
-            if (other.kubernetesVersion != null) {
-                return false;
-            }
-        } else if (!kubernetesVersion.equals(other.kubernetesVersion)) {
-            return false;
-        }
-        if (openShiftVersion == null) {
-            if (other.openShiftVersion != null) {
-                return false;
-            }
-        } else if (!openShiftVersion.equals(other.openShiftVersion)) {
-            return false;
-        }
         if (authContext == null) {
             return other.authContext == null;
         } else {
@@ -671,4 +574,118 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
         return null;
     }
+
+    private abstract static class RequestingSupplier<T> implements Supplier<T> {
+
+        private String url;
+        protected String description;
+        private OkHttpClient client;
+
+        private boolean requested = false;
+        private T value;
+
+        protected RequestingSupplier(String url, String description, OkHttpClient client) {
+            this.url = url;
+            this.description = description;
+            this.client = client;
+            this.value = getDefaultValue();
+        }
+
+        @Override
+        public T get() {
+            return requestIfRequired();
+        }
+
+        private T requestIfRequired() {
+            if (!requested) {
+                this.value = request(url);
+            }
+            return value;
+        }
+
+        protected T request(String url) {        
+            Request request = new Builder()
+                    .url(url)
+                    .header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON)
+                    .tag(new ResponseCodeInterceptor.Ignore() {})
+                    .build();
+            try (Response response = client.newCall(request).execute()) {
+                this.requested = true;
+                if (response != null
+                        && response.isSuccessful()) {
+                    this.value = extractValue(response.body().string());
+                } else {
+                    LOGGER.error("Failed to determine {}: got {}", description, 
+                            response == null ? "null" : response.code());
+                }
+            } catch (IOException | IllegalArgumentException e) {
+                LOGGER.error("Failed to determine {}.", description, e);
+            }
+            return this.value;
+        }
+
+        protected abstract T getDefaultValue();
+
+        protected abstract T extractValue(String response) throws IOException;
+    }
+
+    private class ClusterVersion extends RequestingSupplier<String> {
+
+        protected ClusterVersion(String url, String description, OkHttpClient client) {
+            super(url, description, client);
+        }
+
+        @Override
+        protected String extractValue(String response) {
+            return ModelNode.fromJSONString(response).get("gitVersion").asString();
+        }
+
+        @Override
+        protected String getDefaultValue() {
+            return "";
+        }
+    }
+
+    private class AuthorizationEndpoints  {
+
+        private RequestingSupplier<ModelNode> endpointsSupplier;
+        
+        protected AuthorizationEndpoints(String baseUrl, OkHttpClient client) {
+
+            this.endpointsSupplier = new RequestingSupplier<ModelNode>(baseUrl + "/" + PATH_OAUTH_AUTHORIZATION_SERVER, "authorization- & token-endpoint", client) {
+                @Override
+                protected ModelNode extractValue(String response) throws IOException {
+                    return ModelNode.fromJSONString(response);
+                }
+
+                @Override
+                protected ModelNode getDefaultValue() {
+                    return null;
+                }
+            };
+        }
+
+        public URL getAuthorizationEndpoint() {
+            return getEndpoint(node -> node.get("authorization_endpoint").asString(), "token_endpoint");
+        }
+
+        public URL getTokenEndpoint() {
+            return getEndpoint(node -> node.get("token_endpoint").asString(), "token-endpoint");
+        }
+
+        private URL getEndpoint(Function<ModelNode, String> extractor, String description) {
+            URL authorizationEndpoint = null;
+            ModelNode node = endpointsSupplier.get();
+            if (node != null) {
+                try {
+                    authorizationEndpoint = new URL(extractor.apply(node));
+                } catch (MalformedURLException e) {
+                    LOGGER.error("Failed to determine {}.", description, e);
+                }
+            }
+            return authorizationEndpoint;
+
+        }
+    }
+    
 }

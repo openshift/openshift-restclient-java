@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2016-2018 Red Hat, Inc. 
+ * Copyright (c) 2016-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -16,6 +16,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +49,7 @@ public class PodExecTest extends TypeMapperFixture {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        client = new DefaultClient(null, getHttpClient(), null, getApiTypeMapper(), null);
+        client = new DefaultClient(new URL("https://localhost"), getHttpClient(), null, getApiTypeMapper(), null);
         pod = new MocksFactory().mock(IPod.class);
         capability = new PodLogRetrievalAsync(pod, client);
         adapter = new PodExec.ExecOutputListenerAdapter(listener);
