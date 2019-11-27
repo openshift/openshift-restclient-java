@@ -57,9 +57,9 @@ public class OpenShiftRequestBuilder {
     }
 
     public OpenShiftRequestBuilder authorization(String token) {
-        // Authenticator only gets triggered with a 401.
-        // We thus always use the token even if it's null so that we get a 401 instead of 403 in OS 4.2
-        builder.header(IHttpConstants.PROPERTY_AUTHORIZATION, IHttpConstants.AUTHORIZATION_BEARER + " " + token);
+        if (!StringUtils.isBlank(token)) {
+            builder.header(IHttpConstants.PROPERTY_AUTHORIZATION, IHttpConstants.AUTHORIZATION_BEARER + " " + token);
+        }
         return this;
     }
 
