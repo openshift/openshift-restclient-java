@@ -26,6 +26,6 @@ jobs:
         ./startOCP.sh v3.10.0
         mvn verify -Pintegration-tests -DserverURL=https://127.0.0.1:8443 -Ddefault.clusteradmin.user=admin -Ddefault.clusteradmin.password=admin -Docbinary.location=./oc
         ./oc cluster down
-        ./startOCP v3.11.0
+        ./startOCP.sh v3.11.0
         mvn verify -Pintegration-tests -DserverURL=https://127.0.0.1:8443 -Ddefault.clusteradmin.user=admin -Ddefault.clusteradmin.password=admin -Docbinary.location=./oc
         ./oc cluster down
