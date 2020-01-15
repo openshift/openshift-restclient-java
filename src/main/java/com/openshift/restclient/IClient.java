@@ -314,11 +314,13 @@ public interface IClient extends ICapable, Cloneable {
     
     /**
      * @return the authentication endpoint to be used when login
+     * @throws OpenShiftException if endpoint retrieval fails
      */
     URL getAuthorizationEndpoint();
     
     /**
      * @return the token endpoint to be used when login
+     * @throws OpenShiftException if endpoint retrieval fails
      */
     URL getTokenEndpoint();
 

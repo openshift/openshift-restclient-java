@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2019 Red Hat, Inc. 
+ * Copyright (c) 2019-2020 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -16,8 +16,8 @@ import java.net.URL;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
+import com.openshift.internal.restclient.AuthorizationEndpoints;
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.authorization.AuthorizationDetails;
 import com.openshift.internal.util.URIUtils;
@@ -27,6 +27,7 @@ import com.openshift.restclient.authorization.IAuthorizationDetails;
 import com.openshift.restclient.authorization.UnauthorizedException;
 import com.openshift.restclient.http.IHttpConstants;
 
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -38,8 +39,6 @@ import okhttp3.Response;
  * if it's not present yet.
  */
 public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
-
-    private static final Logger LOGGER = Logger.getLogger(AuthenticatorInterceptor.class);
 
     public static final String ACCESS_TOKEN = "access_token";
     private static final String AUTH_ATTEMPTS = "X-OPENSHIFT-AUTH-ATTEMPTS";
@@ -58,29 +57,39 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
         }
         IAuthorizationContext authorizationContext = client.getAuthorizationContext();
         if (StringUtils.isBlank(authorizationContext.getToken())) {
-            try (Response authResponse = authenticate()) {
-                if (authResponse == null
-                        || !authResponse.isSuccessful()) {
+            request = createAuthorizationRequest(request, url, authorizationContext);
+        }
+        return chain.proceed(request);
+    }
+
+    private Request createAuthorizationRequest(Request request, String url, IAuthorizationContext authorizationContext) throws IOException {
+        try (Response authResponse = authenticate()) {
+            if (authResponse != null) {
+                if (!authResponse.isSuccessful()) {
                     throw new UnauthorizedException(getAuthorizationDetails(url),
-                            authResponse == null ? null : ResponseCodeInterceptor.getStatus(authResponse.body().string()));
+                            ResponseCodeInterceptor.getStatus(authResponse.body().string()));
                 }
                 String token = getToken(authResponse);
                 setToken(token, client.getAuthorizationContext());
-                request = new OpenShiftRequestBuilder(request.newBuilder())
-                        .acceptJson()
+                request = new OpenShiftRequestBuilder(request.newBuilder()).acceptJson()
                         .authorization(authorizationContext)
                         .build();
             }
+            return request;
         }
-        return chain.proceed(request);
     }
 
     private boolean isUrlWithoutAuthorization(Request request, String url) {
         return url.endsWith(DefaultClient.PATH_OPENSHIFT_VERSION)
                 || url.endsWith(DefaultClient.PATH_KUBERNETES_VERSION)
-                || url.endsWith(DefaultClient.PATH_OAUTH_AUTHORIZATION_SERVER)
-                || request.url().toString().startsWith(client.getAuthorizationEndpoint().toString())
-                || url.endsWith(DefaultClient.PATH_HEALTH_CHECK);
+                || url.endsWith(DefaultClient.PATH_HEALTH_CHECK)
+                || url.endsWith(AuthorizationEndpoints.PATH_OAUTH_AUTHORIZATION_SERVER)
+                || isAuthorizationEndpoint(request.url(), client.getAuthorizationEndpoint());
+    }
+
+    private boolean isAuthorizationEndpoint(HttpUrl request, URL authEndpoint) {
+        return authEndpoint != null
+                && request.toString().startsWith(authEndpoint.toString());
     }
 
     private Response authenticate() throws IOException {
@@ -88,11 +97,15 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
         if (okClient == null) {
             return null;
         }
+        URL endpoint = client.getAuthorizationEndpoint();
+        if (endpoint == null) {
+            return null;
+        }
         Request authRequest = appendAuthorization(
                 client.getAuthorizationContext(),
                 new Request.Builder()
                     .addHeader(CSRF_TOKEN, "1")
-                    .url(new URL(client.getAuthorizationEndpoint().toExternalForm() 
+                    .url(new URL(endpoint.toExternalForm() 
                             + "?response_type=token&client_id=openshift-challenging-client").toString()));
         return okClient.newBuilder()
                 .followRedirects(false)
@@ -111,6 +124,9 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
     }
 
     private String getToken(Response response) {
+        if (response == null) {
+            return null;
+        }
         String token = null;
         Map<String, String> pairs = URIUtils.splitFragment(response.header(PROPERTY_LOCATION));
         if (pairs.containsKey(ACCESS_TOKEN)) {

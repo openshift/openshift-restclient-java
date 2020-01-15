@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2019 Red Hat, Inc.
+ * Copyright (c) 2019-2020 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,8 +7,7 @@
  * 
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
- ******************************************************************************
- */
+ ******************************************************************************/
 
 package com.openshift.internal.restclient;
 
@@ -56,7 +55,7 @@ public class ClusterVersionsTest extends TypeMapperFixture {
         getHttpClient().whenRequestTo(base + "/version/openshift",
             responseOf("{bogus"));
 
-        assertThat(getIClient().getOpenshiftMasterVersion()).isEqualTo("");
+        assertThat(getIClient().getOpenshiftMasterVersion()).isEqualTo(null);
     }
 
 }

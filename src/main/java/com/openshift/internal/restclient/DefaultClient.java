@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015-2019 Red Hat, Inc. Distributed under license by Red Hat, Inc.
+ * Copyright (c) 2015-2020 Red Hat, Inc. Distributed under license by Red Hat, Inc.
  * All rights reserved. This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
@@ -34,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.authorization.AuthorizationContext;
 import com.openshift.internal.restclient.okhttp.OpenShiftRequestBuilder;
-import com.openshift.internal.restclient.okhttp.ResponseCodeInterceptor;
 import com.openshift.internal.restclient.okhttp.WatchClient;
 import com.openshift.restclient.IApiTypeMapper;
 import com.openshift.restclient.IClient;
@@ -56,7 +53,6 @@ import com.openshift.restclient.model.JSONSerializeable;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.BufferedSink;
@@ -70,7 +66,6 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
 
-    public static final String PATH_OAUTH_AUTHORIZATION_SERVER = ".well-known/oauth-authorization-server";
     public static final String PATH_KUBERNETES_VERSION = "version";
     public static final String PATH_OPENSHIFT_VERSION = "version/openshift";
     public static final String PATH_HEALTH_CHECK = "healthz";
@@ -575,60 +570,6 @@ public class DefaultClient implements IClient, IHttpConstants {
         return null;
     }
 
-    private abstract static class RequestingSupplier<T> implements Supplier<T> {
-
-        private String url;
-        protected String description;
-        private OkHttpClient client;
-
-        private boolean requested = false;
-        private T value;
-
-        protected RequestingSupplier(String url, String description, OkHttpClient client) {
-            this.url = url;
-            this.description = description;
-            this.client = client;
-            this.value = getDefaultValue();
-        }
-
-        @Override
-        public T get() {
-            return requestIfRequired();
-        }
-
-        private T requestIfRequired() {
-            if (!requested) {
-                this.value = request(url);
-            }
-            return value;
-        }
-
-        protected T request(String url) {        
-            Request request = new Builder()
-                    .url(url)
-                    .header(PROPERTY_ACCEPT, MEDIATYPE_APPLICATION_JSON)
-                    .tag(new ResponseCodeInterceptor.Ignore() {})
-                    .build();
-            try (Response response = client.newCall(request).execute()) {
-                this.requested = true;
-                if (response != null
-                        && response.isSuccessful()) {
-                    this.value = extractValue(response.body().string());
-                } else {
-                    LOGGER.error("Failed to determine {}: got {}", description, 
-                            response == null ? "null" : response.code());
-                }
-            } catch (IOException | IllegalArgumentException e) {
-                LOGGER.error("Failed to determine {}.", description, e);
-            }
-            return this.value;
-        }
-
-        protected abstract T getDefaultValue();
-
-        protected abstract T extractValue(String response) throws IOException;
-    }
-
     private class ClusterVersion extends RequestingSupplier<String> {
 
         protected ClusterVersion(String url, String description, OkHttpClient client) {
@@ -637,7 +578,12 @@ public class DefaultClient implements IClient, IHttpConstants {
 
         @Override
         protected String extractValue(String response) {
-            return ModelNode.fromJSONString(response).get("gitVersion").asString();
+            try {
+                return ModelNode.fromJSONString(response).get("gitVersion").asString();
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("Could not retrieve {}: Invalid JSON.", description);
+                return null;
+            }
         }
 
         @Override
@@ -645,47 +591,4 @@ public class DefaultClient implements IClient, IHttpConstants {
             return "";
         }
     }
-
-    private class AuthorizationEndpoints  {
-
-        private RequestingSupplier<ModelNode> endpointsSupplier;
-        
-        protected AuthorizationEndpoints(String baseUrl, OkHttpClient client) {
-
-            this.endpointsSupplier = new RequestingSupplier<ModelNode>(baseUrl + "/" + PATH_OAUTH_AUTHORIZATION_SERVER, "authorization- & token-endpoint", client) {
-                @Override
-                protected ModelNode extractValue(String response) throws IOException {
-                    return ModelNode.fromJSONString(response);
-                }
-
-                @Override
-                protected ModelNode getDefaultValue() {
-                    return null;
-                }
-            };
-        }
-
-        public URL getAuthorizationEndpoint() {
-            return getEndpoint(node -> node.get("authorization_endpoint").asString(), "token_endpoint");
-        }
-
-        public URL getTokenEndpoint() {
-            return getEndpoint(node -> node.get("token_endpoint").asString(), "token-endpoint");
-        }
-
-        private URL getEndpoint(Function<ModelNode, String> extractor, String description) {
-            URL authorizationEndpoint = null;
-            ModelNode node = endpointsSupplier.get();
-            if (node != null) {
-                try {
-                    authorizationEndpoint = new URL(extractor.apply(node));
-                } catch (MalformedURLException e) {
-                    LOGGER.error("Failed to determine {}.", description, e);
-                }
-            }
-            return authorizationEndpoint;
-
-        }
-    }
-    
 }
