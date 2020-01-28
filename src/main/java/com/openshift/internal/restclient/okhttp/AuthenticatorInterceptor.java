@@ -27,7 +27,6 @@ import com.openshift.restclient.authorization.IAuthorizationDetails;
 import com.openshift.restclient.authorization.UnauthorizedException;
 import com.openshift.restclient.http.IHttpConstants;
 
-import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -52,7 +51,7 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         String url = request.url().toString();
-        if (isUrlWithoutAuthorization(request, url)) {
+        if (isUrlWithoutAuthorization(url)) {
             return chain.proceed(request);
         }
         IAuthorizationContext authorizationContext = client.getAuthorizationContext();
@@ -79,17 +78,17 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
         }
     }
 
-    private boolean isUrlWithoutAuthorization(Request request, String url) {
+    private boolean isUrlWithoutAuthorization(String url) {
         return url.endsWith(DefaultClient.PATH_OPENSHIFT_VERSION)
                 || url.endsWith(DefaultClient.PATH_KUBERNETES_VERSION)
                 || url.endsWith(DefaultClient.PATH_HEALTH_CHECK)
                 || url.endsWith(AuthorizationEndpoints.PATH_OAUTH_AUTHORIZATION_SERVER)
-                || isAuthorizationEndpoint(request.url(), client.getAuthorizationEndpoint());
+                || isAuthorizationEndpoint(url, client.getAuthorizationEndpoint());
     }
 
-    private boolean isAuthorizationEndpoint(HttpUrl request, URL authEndpoint) {
+    private boolean isAuthorizationEndpoint(String url, URL authEndpoint) {
         return authEndpoint != null
-                && request.toString().startsWith(authEndpoint.toString());
+                && url.startsWith(authEndpoint.toString());
     }
 
     private Response authenticate() throws IOException {
