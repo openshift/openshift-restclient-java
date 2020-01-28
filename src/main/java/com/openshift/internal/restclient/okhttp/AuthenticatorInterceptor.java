@@ -27,6 +27,7 @@ import com.openshift.restclient.authorization.IAuthorizationDetails;
 import com.openshift.restclient.authorization.UnauthorizedException;
 import com.openshift.restclient.http.IHttpConstants;
 
+import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -40,7 +41,6 @@ import okhttp3.Response;
 public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
 
     public static final String ACCESS_TOKEN = "access_token";
-    private static final String AUTH_ATTEMPTS = "X-OPENSHIFT-AUTH-ATTEMPTS";
     private static final String CSRF_TOKEN = "X-CSRF-Token";
     private static final String ERROR = "error";
     private static final String ERROR_DETAILS = "error_details";
@@ -51,7 +51,8 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         String url = request.url().toString();
-        if (isUrlWithoutAuthorization(url)) {
+        if (AuthAttempHeader.isContainedIn(request.headers())
+                || isUrlWithoutAuthorization(url)) {
             return chain.proceed(request);
         }
         IAuthorizationContext authorizationContext = client.getAuthorizationContext();
@@ -145,8 +146,21 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
     }
 
     private Request appendAuthorization(IAuthorizationContext context, Builder builder) {
-        builder.header(AUTH_ATTEMPTS, "1");
+        AuthAttempHeader.add(builder);
         return new BasicChallengeHandler(context).handleChallenge(builder).build();
     }
 
+    private static class AuthAttempHeader {
+
+        private static final String AUTH_ATTEMPTS = "X-OPENSHIFT-AUTH-ATTEMPTS";
+
+        public static void add(Builder builder) {
+            builder.header(AUTH_ATTEMPTS, "1");    
+        }
+
+        public static boolean isContainedIn(Headers headers) {
+            return headers != null
+                    && headers.get(AUTH_ATTEMPTS) != null;
+        }
+    }
 }
