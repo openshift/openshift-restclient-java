@@ -37,7 +37,7 @@ public interface IHttpConstants {
     public static final String PROPERTY_ORIGIN = "Origin";
     public static final String PROPERTY_LOCATION = "Location";
     public static final String PROPERTY_USER_AGENT = "User-Agent";
-    public static final String PROPERTY_WWW_AUTHENTICATE = "Www-Authenticate";
+    public static final String PROPERTY_WWW_AUTHENTICATE = "WWW-Authenticate";
 
     public static final String PROPERTY_AUTHKEY = "broker_auth_key";
     public static final String PROPERTY_AUTHIV = "broker_auth_iv";

@@ -48,6 +48,7 @@ public class BasicChallangeHandlerTest {
     public void testCanHandle() {
         assertTrue(handler.canHandle(givenHeader(IHttpConstants.PROPERTY_WWW_AUTHENTICATE, "basic")));
         assertTrue(handler.canHandle(givenHeader(IHttpConstants.PROPERTY_WWW_AUTHENTICATE, "bAsIC")));
+        assertTrue(handler.canHandle(givenHeader(IHttpConstants.PROPERTY_WWW_AUTHENTICATE, "Basic realm=\"WallyWorld\"")));
         assertFalse(handler.canHandle(givenHeader(IHttpConstants.PROPERTY_WWW_AUTHENTICATE, "foobar")));
         assertFalse(handler.canHandle(givenHeader(IHttpConstants.PROPERTY_WWW_AUTHENTICATE, "")));
         assertFalse(handler.canHandle(givenHeader("key", "value")));
