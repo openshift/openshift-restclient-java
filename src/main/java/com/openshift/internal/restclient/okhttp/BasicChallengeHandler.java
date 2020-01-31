@@ -30,8 +30,9 @@ public class BasicChallengeHandler implements IChallengeHandler {
 
     @Override
     public boolean canHandle(Headers headers) {
-        return IHttpConstants.AUTHORIZATION_BASIC
-                .equalsIgnoreCase(headers.get(IHttpConstants.PROPERTY_WWW_AUTHENTICATE));
+        String header = headers.get(IHttpConstants.PROPERTY_WWW_AUTHENTICATE);
+        return StringUtils.isNotEmpty(header)
+                && header.toLowerCase().startsWith(IHttpConstants.AUTHORIZATION_BASIC.toLowerCase());
     }
 
     @Override
