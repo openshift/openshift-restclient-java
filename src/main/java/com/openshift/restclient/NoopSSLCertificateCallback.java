@@ -12,7 +12,6 @@
 package com.openshift.restclient;
 
 import java.security.cert.X509Certificate;
-
 import javax.net.ssl.SSLSession;
 
 /**
