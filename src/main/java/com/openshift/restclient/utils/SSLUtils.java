@@ -17,7 +17,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 

@@ -17,7 +17,6 @@ import java.net.Socket;
 import java.net.URL;
 import java.security.KeyStore;
 import java.text.MessageFormat;
-
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;

@@ -44,6 +44,10 @@
     <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>
     </module>
+    <module name="SuppressionFilter">
+        <property name="file" value="checkstyle-suppressions.xml"/>
+        <property name="optional" value="false"/>
+    </module>
     <module name="LineLength">
         <property name="max" value="175"/>
         <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
