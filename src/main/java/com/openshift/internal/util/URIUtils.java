@@ -19,14 +19,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper methods for manipulating URIs
  * 
  */
 public class URIUtils {
-    private static final Logger LOG = Logger.getLogger(URIUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(URIUtils.class);
 
     private URIUtils() {
     }

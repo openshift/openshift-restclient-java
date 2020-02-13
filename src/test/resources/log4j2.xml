@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" packages="org.jboss.tools.openshift.internal.client.log">>
+    <Appenders>
+		<Console
+			name="Console"
+			target="SYSTEM_OUT"
+			ignoreExceptions="false">
+			<PatternLayout pattern="%n%d{yyyy-MM-dd HH:mm:ss.SSS} [%p]\t%m" />
+		</Console>
+    </Appenders>
+    <Loggers>
+        <Root
+        	level="debug"
+        	additivity="false">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
