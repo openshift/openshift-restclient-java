@@ -164,6 +164,11 @@ public interface IRSyncable extends IBinaryCapability {
         public void append(StringBuilder commandLine) {
             commandLine.append(" ").append(getParameter());
         }
+
+        @Override
+        public String toString() {
+            return getParameter();
+        }
     }
 
     /**
