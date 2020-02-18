@@ -28,7 +28,7 @@ import com.openshift.restclient.model.IReplicationController;
 public class DeployCapability implements IDeployCapability {
 
     private static final List<String> COMPLETED_STATES = Arrays.asList("Complete", "Failed");
-    private static final Logger LOG = LoggerFactory.getLogger(IDeployCapability.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeployCapability.class);
 
     private final IClient client;
     private final IDeploymentConfig config;

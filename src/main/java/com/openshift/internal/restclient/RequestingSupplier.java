@@ -1,3 +1,14 @@
+/******************************************************************************* 
+ * Copyright (c) 2020 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/
+
 package com.openshift.internal.restclient;
 
 import static com.openshift.restclient.http.IHttpConstants.MEDIATYPE_APPLICATION_JSON;
@@ -18,7 +29,7 @@ import okhttp3.Response;
 
 abstract class RequestingSupplier<T> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestingSupplier.class);
 
     private String url;
     protected String description;

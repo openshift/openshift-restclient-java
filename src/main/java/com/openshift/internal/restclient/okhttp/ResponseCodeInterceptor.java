@@ -14,7 +14,8 @@ package com.openshift.internal.restclient.okhttp;
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.DefaultClient;
 import com.openshift.internal.restclient.authorization.AuthorizationDetails;
@@ -38,7 +39,7 @@ import okhttp3.Response;
  */
 public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
 
-    private static final Logger LOGGER = Logger.getLogger(ResponseCodeInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseCodeInterceptor.class);
 
     public static final String X_OPENSHIFT_IGNORE_RCI = "X-OPENSHIFT-IGNORE-RCI";
 
@@ -104,7 +105,7 @@ public class ResponseCodeInterceptor implements Interceptor, IHttpConstants {
 
     private static OpenShiftException createOpenShiftException(IClient client, Response response, Throwable e)
             throws IOException {
-        LOGGER.debug(response, e);
+        LOGGER.debug(response.toString(), e);
         IStatus status = getStatus(response.body().string());
         int responseCode = response.code();
         if (status != null && status.getCode() != 0) {

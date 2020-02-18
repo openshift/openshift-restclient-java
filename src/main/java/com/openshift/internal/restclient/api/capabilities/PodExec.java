@@ -38,7 +38,7 @@ import okio.ByteString;
 
 public class PodExec extends AbstractCapability implements IPodExec {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IPodExec.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PodExec.class);
     private static final String CAPABILITY = "exec";
 
     private static final String COMMAND = "command";
