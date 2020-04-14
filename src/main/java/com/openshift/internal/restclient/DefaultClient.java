@@ -64,11 +64,14 @@ import okio.Source;
  */
 public class DefaultClient implements IClient, IHttpConstants {
 
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClient.class);
 
     public static final String PATH_KUBERNETES_VERSION = "version";
     public static final String PATH_OPENSHIFT_VERSION = "version/openshift";
     public static final String PATH_HEALTH_CHECK = "healthz";
+    public static final String PATH_DEFAULT_OAUTH_TOKEN = "oauth/token";
+    public static final String PATH_DEFAULT_OAUTH_AUTHORIZE = "oauth/authorize";
 
     public static final String SYSTEM_PROP_K8E_API_VERSION = "osjc.k8e.apiversion";
     public static final String SYSTEM_PROP_OPENSHIFT_API_VERSION = "osjc.openshift.apiversion";
@@ -272,6 +275,7 @@ public class DefaultClient implements IClient, IHttpConstants {
                 getPayload(payload, method), params);
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T execute(ITypeFactory factory, String method, String kind, String version, String namespace,
             String name, String subresource, String subContext, RequestBody requestBody, Map<String, String> params) {
         if (factory == null) {
@@ -332,7 +336,7 @@ public class DefaultClient implements IClient, IHttpConstants {
         }
         String json = payload == null ? "" : payload.toJson(true);
         LOGGER.debug("About to send payload: {}", json);
-        return RequestBody.create(MediaType.parse(MEDIATYPE_APPLICATION_JSON), json);
+        return RequestBody.create(json, MediaType.parse(MEDIATYPE_APPLICATION_JSON));
     }
 
 
@@ -463,12 +467,17 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     @Override
     public URL getAuthorizationEndpoint() {
-        return authorizationEndpoints.getAuthorizationEndpoint();
+        URL url = authorizationEndpoints.getAuthorizationEndpoint();
+        if (url != null) {
+            return url;
+        }
+        return getDefaultAuthorizationEndpoint();
+                
     }
     
     protected URL getDefaultAuthorizationEndpoint() {
         try {
-            return new URL(getBaseURL(), "oauth/authorize");
+            return new URL(getBaseURL(), PATH_DEFAULT_OAUTH_AUTHORIZE);
         } catch (MalformedURLException e) {
             throw new OpenShiftException(e, e.getLocalizedMessage());
         }
@@ -476,12 +485,16 @@ public class DefaultClient implements IClient, IHttpConstants {
 
     @Override
     public URL getTokenEndpoint() {
-        return authorizationEndpoints.getTokenEndpoint();
+        URL url = authorizationEndpoints.getTokenEndpoint();
+        if (url != null) {
+            return url;
+        }
+        return getDefaultTokenEndpoint();
     }
     
     protected URL getDefaultTokenEndpoint() {
         try {
-            return new URL(getBaseURL(), "oauth/token");
+            return new URL(getBaseURL(), PATH_DEFAULT_OAUTH_TOKEN);
         } catch (MalformedURLException e) {
             throw new OpenShiftException(e, e.getLocalizedMessage());
         }
