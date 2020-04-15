@@ -72,37 +72,44 @@ public class ReplicationControllerTest {
                 ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.REPLICATION_CONTROLLER));
     }
 
-    public void testGetEnvironmentVariablesWithValueFrom() {
+    @Test
+    public void shouldReturnValueFrom_FieldRef() {
+        Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables();
+        Optional<IEnvironmentVariable> envVar = envVars.stream()
+                .filter(e -> "ENV_FIELD_REF".equals(e.getName()))
+                .findFirst();
+        assertThat(envVar.isPresent()).isTrue();
+        IEnvVarSource from = envVar.get().getValueFrom();
+        assertThat(from).isInstanceOf(IObjectFieldSelector.class);
+        IObjectFieldSelector selector = (IObjectFieldSelector) from;
+        assertThat(selector.getFieldPath()).isEqualTo("metadata.namespace");
+    }
+    
+    @Test
+    public void shouldReturnValueFrom_ConfigMapKeyRef() {
+        Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables();
+        Optional<IEnvironmentVariable> envVar = envVars.stream()
+                .filter(e -> "ENV_CONFIGMAPKEY_REF".equals(e.getName()))
+                .findFirst();
+        assertThat(envVar.isPresent()).isTrue();
+        IEnvVarSource from = envVar.get().getValueFrom();
+        assertThat(from).isInstanceOf(IConfigMapKeySelector.class);
+        IConfigMapKeySelector configSelector = (IConfigMapKeySelector) from;
+        assertThat(configSelector.getName()).isEqualTo("env-config", configSelector.getName());
+        assertThat(configSelector.getKey()).isEqualTo("log_level");
+    }
 
+    @Test
+    public void shouldReturnValueFrom_SecretKeyRef() {
         Collection<IEnvironmentVariable> envVars = rc.getEnvironmentVariables();
 
-        // fieldref
-        Optional<IEnvironmentVariable> envVar = envVars.stream()
-                .filter(e -> "OPENSHIFT_KUBE_PING_NAMESPACE".equals(e.getName())).findFirst();
-        assertTrue("Exp. to find env var", envVar.isPresent());
+        Optional<IEnvironmentVariable> envVar = envVars.stream().filter(e -> "ENV_SECRETKEY_REF".equals(e.getName())).findFirst();
+        assertThat(envVar.isPresent()).isTrue();
         IEnvVarSource from = envVar.get().getValueFrom();
-        assertTrue(from instanceof IObjectFieldSelector);
-        IObjectFieldSelector selector = (IObjectFieldSelector) from;
-        assertEquals("v1", selector.getApiVersion());
-        assertEquals("metadata.namespace", selector.getFieldPath());
-
-        // configmapkeyref
-        envVar = envVars.stream().filter(e -> "OPENSHIFT_CONFIGMAP_KEY_REF".equals(e.getName())).findFirst();
-        assertTrue("Exp. to find env var", envVar.isPresent());
-        from = envVar.get().getValueFrom();
-        assertTrue(from instanceof IConfigMapKeySelector);
-        IConfigMapKeySelector configSelector = (IConfigMapKeySelector) from;
-        assertEquals("xyz", configSelector.getName());
-        assertEquals("abc123", configSelector.getKey());
-
-        // secretkeyref
-        envVar = envVars.stream().filter(e -> "OPENSHIFT_SECRET_KEY_REF".equals(e.getName())).findFirst();
-        assertTrue("Exp. to find env var", envVar.isPresent());
-        from = envVar.get().getValueFrom();
-        assertTrue(from instanceof ISecretKeySelector);
+        assertThat(from).isInstanceOf(ISecretKeySelector.class);
         ISecretKeySelector secretKeySelector = (ISecretKeySelector) from;
-        assertEquals("bar", secretKeySelector.getName());
-        assertEquals("foo", secretKeySelector.getKey());
+        assertThat(secretKeySelector.getName()).isEqualTo("nodejs-mongo-persistent");
+        assertThat(secretKeySelector.getKey()).isEqualTo("database-user");
     }
 
     @Test

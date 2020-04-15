@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Red Hat, Inc.
+ * Copyright (c) 2016-2020 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -14,8 +14,6 @@ package com.openshift.restclient.model;
 import com.openshift.restclient.model.IEnvironmentVariable.IEnvVarSource;
 
 public interface IObjectFieldSelector extends IEnvVarSource {
-
-    String getApiVersion();
 
     String getFieldPath();
 }
