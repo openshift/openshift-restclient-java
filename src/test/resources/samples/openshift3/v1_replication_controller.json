@@ -65,8 +65,28 @@
                             {
                                 "name": "MYSQL_DATABASE",
                                 "value": "root"
-                            }
-                        ],
+                            },
+                            {
+                                "name": "ENV_FIELD_REF",
+                                "valueFrom": { "fieldRef": {
+                                    "fieldPath": "metadata.namespace"
+                                }}
+                            },
+				            {
+					            "name": "ENV_CONFIGMAPKEY_REF",
+					            "valueFrom": { "configMapKeyRef": {
+					                "name": "env-config",
+					                "key": "log_level"
+					            }}
+					        },
+					        {
+			                    "name" : "ENV_SECRETKEY_REF",
+			                    "valueFrom" : { "secretKeyRef" : {
+			                        "name" : "nodejs-mongo-persistent",
+			                        "key" : "database-user"
+			                    }}
+			                }					        
+		                ],
                         "resources": {},
                         "terminationMessagePath": "/dev/termination-log",
                         "imagePullPolicy": "Always",
