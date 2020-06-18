@@ -1,0 +1,139 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "creationTimestamp": "2020-04-16T14:37:03Z",
+                "name": "machine-config-daemon-events",
+                "namespace": "default",
+                "resourceVersion": "2388",
+                "selfLink": "/apis/rbac.authorization.k8s.io/v1/namespaces/default/rolebindings/machine-config-daemon-events",
+                "uid": "ffc653d7-9cb1-4af9-89d4-1aa95512b1fd"
+            },
+            "roleRef": {
+                "apiGroup": "rbac.authorization.k8s.io",
+                "kind": "ClusterRole",
+                "name": "machine-config-daemon-events"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "machine-config-daemon",
+                    "namespace": "openshift-machine-config-operator"
+                }
+            ]
+        },
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "creationTimestamp": "2020-04-16T15:05:23Z",
+                "name": "prometheus-k8s",
+                "namespace": "default",
+                "resourceVersion": "15971",
+                "selfLink": "/apis/rbac.authorization.k8s.io/v1/namespaces/default/rolebindings/prometheus-k8s",
+                "uid": "016e7037-7081-45ef-bf3c-3f75773b0ef9"
+            },
+            "roleRef": {
+                "apiGroup": "rbac.authorization.k8s.io",
+                "kind": "Role",
+                "name": "prometheus-k8s"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "prometheus-k8s",
+                    "namespace": "openshift-monitoring"
+                }
+            ]
+        },
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "annotations": {
+                    "openshift.io/description": "Allows deploymentconfigs in this namespace to rollout pods in this namespace.  It is auto-managed by a controller; remove subjects to disable."
+                },
+                "creationTimestamp": "2020-04-16T14:42:27Z",
+                "name": "system:deployers",
+                "namespace": "default",
+                "resourceVersion": "6343",
+                "selfLink": "/apis/rbac.authorization.k8s.io/v1/namespaces/default/rolebindings/system:deployers",
+                "uid": "686aef1c-9b44-4b14-b618-7b795dce8afb"
+            },
+            "roleRef": {
+                "apiGroup": "rbac.authorization.k8s.io",
+                "kind": "ClusterRole",
+                "name": "system:deployer"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "deployer",
+                    "namespace": "default"
+                }
+            ]
+        },
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "annotations": {
+                    "openshift.io/description": "Allows builds in this namespace to push images to this namespace.  It is auto-managed by a controller; remove subjects to disable."
+                },
+                "creationTimestamp": "2020-04-16T14:42:27Z",
+                "name": "system:image-builders",
+                "namespace": "default",
+                "resourceVersion": "6309",
+                "selfLink": "/apis/rbac.authorization.k8s.io/v1/namespaces/default/rolebindings/system:image-builders",
+                "uid": "168be431-6fb1-4ff2-b31d-69f25425da20"
+            },
+            "roleRef": {
+                "apiGroup": "rbac.authorization.k8s.io",
+                "kind": "ClusterRole",
+                "name": "system:image-builder"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "builder",
+                    "namespace": "default"
+                }
+            ]
+        },
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "annotations": {
+                    "openshift.io/description": "Allows all pods in this namespace to pull images from this namespace.  It is auto-managed by a controller; remove subjects to disable."
+                },
+                "creationTimestamp": "2020-04-16T14:42:26Z",
+                "name": "system:image-pullers",
+                "namespace": "default",
+                "resourceVersion": "6276",
+                "selfLink": "/apis/rbac.authorization.k8s.io/v1/namespaces/default/rolebindings/system:image-pullers",
+                "uid": "0ce48cfa-80c0-4ec0-a6ba-e7f10aa8ed9c"
+            },
+            "roleRef": {
+                "apiGroup": "rbac.authorization.k8s.io",
+                "kind": "ClusterRole",
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "apiGroup": "rbac.authorization.k8s.io",
+                    "kind": "Group",
+                    "name": "system:serviceaccounts:default"
+                }
+            ]
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}

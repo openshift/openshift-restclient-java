@@ -80,9 +80,9 @@ public class TypeMapperFixture {
         mapper = new ApiTypeMapper(base, client, null);
     }
 
-    static class TestOkHttpClient extends OkHttpClient {
+    protected static class TestOkHttpClient extends OkHttpClient {
 
-        void whenRequestTo(String url, Response response) throws IOException {
+        public void whenRequestTo(String url, Response response) throws IOException {
             Call call = mock(Call.class);
             doReturn(response).when(call).execute();
             doReturn(call).when(this).newCall(requestTo(url));

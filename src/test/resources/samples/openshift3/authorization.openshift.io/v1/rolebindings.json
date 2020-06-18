@@ -1,0 +1,140 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "authorization.openshift.io/v1",
+            "groupNames": null,
+            "kind": "RoleBinding",
+            "metadata": {
+                "creationTimestamp": "2019-03-06T15:28:13Z",
+                "name": "admin",
+                "namespace": "jbosstools",
+                "resourceVersion": "231467480",
+                "selfLink": "/apis/authorization.openshift.io/v1/namespaces/jbosstools/rolebindings/admin",
+                "uid": "74f6f212-4024-11e9-98a4-02e0bae989b4"
+            },
+            "roleRef": {
+                "name": "admin"
+            },
+            "subjects": [
+                {
+                    "kind": "User",
+                    "name": "105985317302514941658"
+                }
+            ],
+            "userNames": [
+                "105985317302514941658"
+            ]
+        },
+        {
+            "apiVersion": "authorization.openshift.io/v1",
+            "groupNames": null,
+            "kind": "RoleBinding",
+            "metadata": {
+                "creationTimestamp": "2019-03-06T15:28:13Z",
+                "name": "project-owner",
+                "namespace": "jbosstools",
+                "resourceVersion": "231467483",
+                "selfLink": "/apis/authorization.openshift.io/v1/namespaces/jbosstools/rolebindings/project-owner",
+                "uid": "74f7fe60-4024-11e9-98a4-02e0bae989b4"
+            },
+            "roleRef": {
+                "name": "project-owner"
+            },
+            "subjects": [
+                {
+                    "kind": "User",
+                    "name": "105985317302514941658"
+                }
+            ],
+            "userNames": [
+                "105985317302514941658"
+            ]
+        },
+        {
+            "apiVersion": "authorization.openshift.io/v1",
+            "groupNames": null,
+            "kind": "RoleBinding",
+            "metadata": {
+                "creationTimestamp": "2019-03-06T15:28:13Z",
+                "name": "system:deployers",
+                "namespace": "jbosstools",
+                "resourceVersion": "231467487",
+                "selfLink": "/apis/authorization.openshift.io/v1/namespaces/jbosstools/rolebindings/system%3Adeployers",
+                "uid": "74fb1262-4024-11e9-98a4-02e0bae989b4"
+            },
+            "roleRef": {
+                "name": "system:deployer"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "deployer",
+                    "namespace": "jbosstools"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:jbosstools:deployer"
+            ]
+        },
+        {
+            "apiVersion": "authorization.openshift.io/v1",
+            "groupNames": null,
+            "kind": "RoleBinding",
+            "metadata": {
+                "creationTimestamp": "2019-03-06T15:28:13Z",
+                "name": "system:image-builders",
+                "namespace": "jbosstools",
+                "resourceVersion": "231467485",
+                "selfLink": "/apis/authorization.openshift.io/v1/namespaces/jbosstools/rolebindings/system%3Aimage-builders",
+                "uid": "74fa4045-4024-11e9-98a4-02e0bae989b4"
+            },
+            "roleRef": {
+                "name": "system:image-builder"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "builder",
+                    "namespace": "jbosstools"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:jbosstools:builder"
+            ]
+        },
+        {
+            "apiVersion": "authorization.openshift.io/v1",
+            "groupNames": [
+                "system:serviceaccounts:jbosstools"
+            ],
+            "kind": "RoleBinding",
+            "metadata": {
+                "annotations": {
+                    "openshift.io/description": "Allows all pods in this namespace to pull images from this namespace.  It is auto-managed by a controller; remove subjects to disable."
+                },
+                "creationTimestamp": "2019-03-06T15:28:13Z",
+                "name": "system:image-pullers",
+                "namespace": "jbosstools",
+                "resourceVersion": "231467475",
+                "selfLink": "/apis/authorization.openshift.io/v1/namespaces/jbosstools/rolebindings/system%3Aimage-pullers",
+                "uid": "74f0bf3f-4024-11e9-8234-02fe3a6cfaba"
+            },
+            "roleRef": {
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:jbosstools"
+                }
+            ],
+            "userNames": null
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}
