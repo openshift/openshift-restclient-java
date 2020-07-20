@@ -75,7 +75,10 @@ public enum Samples {
     V1_LIFECYCLE("openshift3/v1_lifecycle.json"),
     V1_DOCKER_IMAGE_MANIFEST("dockerregistry/v1_image_manifest.json"),
     V1_BUILDCONFIG_PIPELINE("openshift3/v1_buildconfig_pipeline.json"),
-    V1_CONFIGMAP_CONSOLE_PUBLIC("openshift3/v1_config_map_console_public.json");
+    V1_CONFIGMAP_CONSOLE_PUBLIC("openshift3/v1_config_map_console_public.json"),
+  
+    RBAC_AUTHORIZATION_K8S_IO_ROLEBINDINGS("k8s/rbac.authorization.k8s.io/v1/rolebindings.json"),
+    AUTHORIZATION_OPENSHIFT_IO_ROLEBINDINGS("openshift3/authorization.openshift.io/v1/rolebindings.json");
     
     private static final String SAMPLES_FOLDER = "/samples/";
 
