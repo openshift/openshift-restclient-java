@@ -72,7 +72,7 @@ abstract class RequestingSupplier<T> {
                     && response.isSuccessful()) {
                 this.value = extractValue(response.body().string());
             } else {
-                LOGGER.error("Failed to determine {}: got {}", description, 
+                LOGGER.info("Failed to determine {}: got {}", description, 
                         response == null ? "null" : response.code());
             }
         }
