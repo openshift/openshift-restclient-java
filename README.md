@@ -3,6 +3,8 @@ OpenShift Java REST Client
 
 [![Travis](https://travis-ci.org/openshift/openshift-restclient-java.svg?branch=master)](https://travis-ci.org/openshift/openshift-restclient-java) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.openshift/openshift-restclient-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.openshift/openshift-restclient-java)
 
+**The project is now in the maintenance mode. Only critical bugs will be fixed, and there won’t be any more feature development. Please consider moving to the OpenShift client library that's developed by the great team at [fabric8](https://github.com/fabric8io/kubernetes-client/).**
+
 This is the Java REST client for the version 3 architecture of [OpenShift](https://github.com/openshift/origin) based on Kubernetes.  The implementation is
 a work in progress to provide similar functionality and features of the command-line interface and is used by JBoss Tools for OpenShift.  For compatibility with
 OpenShift 2.x see https://github.com/openshift/openshift-java-client/.
