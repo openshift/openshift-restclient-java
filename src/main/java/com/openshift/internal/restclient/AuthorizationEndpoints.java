@@ -61,7 +61,7 @@ public class AuthorizationEndpoints  {
                 try {
                     authorizationEndpoint = new URL(extractor.apply(node));
                 } catch (MalformedURLException e) {
-                    LOGGER.error("Failed to determine {}.", description, e);
+                    LOGGER.info("Failed to determine {}.", description, e);
                 }
             }
         } catch (IllegalArgumentException e) {
