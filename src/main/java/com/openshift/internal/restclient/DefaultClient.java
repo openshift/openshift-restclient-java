@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 import org.slf4j.Logger;
@@ -339,19 +340,19 @@ public class DefaultClient implements IClient, IHttpConstants {
         return RequestBody.create(json, MediaType.parse(MEDIATYPE_APPLICATION_JSON));
     }
 
-
-    private RequestBody getPayload(InputStream payload, String method) {
+    RequestBody getPayload(InputStream payload, String method) {
         if(isPayloadlessMethod(method)) {
             return null;
         }
+        InputStream input = payload == null ? IOUtils.toInputStream("") : payload;
         LOGGER.debug("About to send binary payload");
         return new RequestBody() {
             @Override
             public void writeTo(BufferedSink sink) throws IOException {
-                Source source = Okio.source(payload);
+                Source source = Okio.source(input);
                 sink.writeAll(source);
             }
-            
+
             @Override
             public MediaType contentType() {
                 return MediaType.parse(MEDIATYPE_APPLICATION_OCTET_STREAM);
