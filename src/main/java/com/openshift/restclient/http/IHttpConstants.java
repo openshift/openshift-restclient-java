@@ -44,7 +44,7 @@ public interface IHttpConstants {
     static final String PROPERTY_ACCESS_TOKEN = "access_token";
 
     public static final String MEDIATYPE_ANY = "*/*";
-    public static final String MEDIATYPE_APPLICATION_JSON = "application/json";
+    public static final String MEDIATYPE_APPLICATION_JSON = "application/json;charset=utf-8";
     public static final String MEDIATYPE_APPLICATION_XML = "application/xml";
     public static final String MEDIATYPE_APPLICATION_FORMURLENCODED = "application/x-www-form-urlencoded";
     public static final String MEDIATYPE_APPLICATION_OCTET_STREAM = "application/octet-stream";
