@@ -120,4 +120,12 @@ public class AuthorizationContext implements IAuthorizationContext {
         return this.password;
     }
 
+    @Override
+    public void invalidate() {
+        this.user = null;
+        this.token = null;
+    }
+    
+    
+
 }

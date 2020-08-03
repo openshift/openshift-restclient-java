@@ -87,4 +87,10 @@ public interface IAuthorizationContext {
      * 
      */
     IAuthorizationDetails getAuthorizationDetails();
+    
+    /**
+     * Invalidates this context which forces re-authentication. The context gets unauthenticated,
+     * User and token are cleared.
+     */
+    void invalidate();
 }
