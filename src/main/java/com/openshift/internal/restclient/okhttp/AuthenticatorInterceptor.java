@@ -41,6 +41,7 @@ import okhttp3.Response;
 public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
 
     public static final String ACCESS_TOKEN = "access_token";
+    public static final String EXPIRES_IN = "expires_in";
     private static final String CSRF_TOKEN = "X-CSRF-Token";
     private static final String ERROR = "error";
     private static final String ERROR_DETAILS = "error_details";
@@ -69,8 +70,9 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
                     throw new UnauthorizedException(getAuthorizationDetails(url),
                             ResponseCodeInterceptor.getStatus(authResponse.body().string()));
                 }
-                String token = getToken(authResponse);
-                setToken(token, client.getAuthorizationContext());
+                Map<String, String> location = getLocation(authResponse);
+                setToken(getToken(location), authorizationContext);
+                setExpiresIn(getExpiresIn(location), authorizationContext);
                 request = new OpenShiftRequestBuilder(request.newBuilder()).acceptJson()
                         .authorization(authorizationContext)
                         .build();
@@ -123,21 +125,38 @@ public class AuthenticatorInterceptor implements Interceptor, IHttpConstants {
         return details;
     }
 
-    private String getToken(Response response) {
+    private Map<String, String> getLocation(Response response) {
         if (response == null) {
             return null;
         }
-        String token = null;
-        Map<String, String> pairs = URIUtils.splitFragment(response.header(PROPERTY_LOCATION));
-        if (pairs.containsKey(ACCESS_TOKEN)) {
-            token = pairs.get(ACCESS_TOKEN);
+        return URIUtils.splitFragment(response.header(PROPERTY_LOCATION));
+    }
+    
+    private String getToken(Map<String, String> location) {
+        if (location == null
+                || location.isEmpty()) {
+            return null;
         }
-        return token;
+        return location.get(ACCESS_TOKEN);
+    }
+
+    private String getExpiresIn(Map<String, String> location) {
+        if (location == null
+                || location.isEmpty()) {
+            return null;
+        }
+        return location.get(EXPIRES_IN);
     }
 
     private void setToken(String token, IAuthorizationContext authorizationContext) {
         if (authorizationContext != null) {
             authorizationContext.setToken(token);
+        }
+    }
+
+    private void setExpiresIn(String expiresIn, IAuthorizationContext authorizationContext) {
+        if (authorizationContext != null) {
+            authorizationContext.setExpiresIn(expiresIn);
         }
     }
 

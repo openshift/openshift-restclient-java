@@ -9,6 +9,8 @@
 
 package com.openshift.restclient.authorization;
 
+import java.time.Instant;
+
 import com.openshift.restclient.model.user.IUser;
 
 public interface IAuthorizationContext {
@@ -83,6 +85,20 @@ public interface IAuthorizationContext {
     String getExpiresIn();
 
     /**
+     * Returns the the point in time when the token expires. 
+     * This is calculated out of the moment when the context was created 
+     * 
+     * @return the instant when the token expires 
+     */
+    Instant getExpires();
+    
+    /**
+     * Sets the time in seconds when the token expires.
+     * 
+     */
+    void setExpiresIn(String expiresIn);
+
+    /**
      * Retrieve the authorization details for a server
      * 
      */
@@ -93,4 +109,5 @@ public interface IAuthorizationContext {
      * User and token are cleared.
      */
     void invalidate();
+
 }

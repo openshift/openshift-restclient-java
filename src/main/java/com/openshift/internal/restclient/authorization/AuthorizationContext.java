@@ -9,9 +9,12 @@
 
 package com.openshift.internal.restclient.authorization;
 
+import java.time.Instant;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
 import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.authorization.IAuthorizationDetails;
@@ -20,11 +23,12 @@ import com.openshift.restclient.model.user.IUser;
 public class AuthorizationContext implements IAuthorizationContext {
 
     private String token;
-    private String expires;
-    private String scheme;
+    private String expiresIn;
     private IUser user;
+    private String scheme;
     private String userName;
     private String password;
+    private Instant created;
     private IClient client;
 
     public AuthorizationContext(String scope) {
@@ -35,17 +39,19 @@ public class AuthorizationContext implements IAuthorizationContext {
         this.token = token;
         this.userName = userName;
         this.password = password;
+        this.created = Instant.now();
     }
 
     public AuthorizationContext(String token, String expires, IUser user, String scheme) {
         this.token = token;
-        this.expires = expires;
+        this.expiresIn = expires;
         this.user = user;
         this.scheme = scheme;
+        this.created = Instant.now();
     }
 
     public AuthorizationContext clone() {
-        AuthorizationContext context = new AuthorizationContext(this.token, this.expires, this.user, this.scheme);
+        AuthorizationContext context = new AuthorizationContext(this.token, this.expiresIn, this.user, this.scheme);
         context.setUserName(this.userName);
         context.setPassword(this.password);
         context.setClient(this.client);
@@ -72,13 +78,35 @@ public class AuthorizationContext implements IAuthorizationContext {
     }
 
     @Override
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @Override
     public String getToken() {
         return this.token;
     }
 
+    public void setExpiresIn(String expiresIn) {
+        this.expiresIn = expiresIn;
+    }
+
     @Override
     public String getExpiresIn() {
-        return expires;
+        return expiresIn;
+    }
+
+    @Override
+    public Instant getExpires() {
+        if (created == null) {
+            return null;
+        }
+        try {
+            return created.plusSeconds(Long.parseLong(expiresIn));
+        } catch (NumberFormatException e) {
+            throw new OpenShiftException(e, 
+                    "Could not determine time when the token expires: value for 'expiresIn' is illegal: " + expiresIn + ".");
+        }
     }
 
     @Override
@@ -95,10 +123,6 @@ public class AuthorizationContext implements IAuthorizationContext {
         this.user = user;
     }
 
-    @Override
-    public void setToken(String token) {
-        this.token = token;
-    }
 
     @Override
     public void setUserName(String userName) {
@@ -125,7 +149,5 @@ public class AuthorizationContext implements IAuthorizationContext {
         this.user = null;
         this.token = null;
     }
-    
-    
 
 }

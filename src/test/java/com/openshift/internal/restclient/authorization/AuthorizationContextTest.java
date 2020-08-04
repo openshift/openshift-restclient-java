@@ -16,6 +16,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.lang.reflect.Field;
+import java.time.Instant;
+
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +26,9 @@ import org.junit.Test;
 import com.openshift.internal.restclient.model.properties.ResourcePropertiesRegistry;
 import com.openshift.internal.restclient.model.user.OpenShiftUser;
 import com.openshift.restclient.IClient;
+import com.openshift.restclient.OpenShiftException;
 import com.openshift.restclient.ResourceKind;
+import com.openshift.restclient.authorization.IAuthorizationContext;
 import com.openshift.restclient.model.user.IUser;
 import com.openshift.restclient.utils.Samples;
 
@@ -39,7 +44,7 @@ public class AuthorizationContextTest {
     @Before
     public void setup() throws Exception {
         IUser user = mock(IUser.class);
-        this.context = new AuthorizationContext(TOKEN, EXPIRES, user, SCHEME);
+        this.context = new AuthorizationContext(TOKEN, EXPIRES, user, SCHEME); 
         this.client = createClient();
         context.setClient(client);
     }
@@ -62,5 +67,51 @@ public class AuthorizationContextTest {
         context.isAuthorized();
         // then
         verify(client, times(1)).get(ResourceKind.USER, "~", "");
+    }
+
+    @Test
+    public void expiresShouldReturnInstantOfCreatePlusExpiresIn() throws Exception {
+        // given
+        Instant created = getCreated(context);
+        String expiresIn = context.getExpiresIn();
+        // when
+        Instant expires = context.getExpires();
+        // then
+        assertThat(expires).isEqualTo(created.plusSeconds(Long.parseLong(expiresIn)));
+    }
+
+    @Test(expected = OpenShiftException.class)
+    public void expiresShouldThrowIfExpiresInIsNotParseable() throws Exception {
+        // given
+        context.setExpiresIn("not a long");
+        // when
+        context.getExpires();
+        // then
+    }
+
+    @Test
+    public void expiresShouldReturnNullIfCreatedIsNull() throws Exception {
+        // given
+        setCreated(context, null);
+        // when
+        Instant expires = context.getExpires();
+        // then
+        assertThat(expires).isNull();
+    }
+
+    private Instant getCreated(IAuthorizationContext context) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Field created = getCreatedField();
+        return (Instant) created.get(context);
+    }
+    
+    private void setCreated(IAuthorizationContext context, Instant created) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Field createdField = getCreatedField();
+        createdField.set(context, created);
+    }
+
+    private Field getCreatedField() throws NoSuchFieldException {
+        Field createdField = AuthorizationContext.class.getDeclaredField("created");
+        createdField.setAccessible(true);
+        return createdField;
     }
 }
