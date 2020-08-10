@@ -242,13 +242,13 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
 
     private Collection<ApiGroup> getLegacyGroups() {
         Collection<ApiGroup> groups = new ArrayList<>();
-        for (String e : Arrays.asList(KUBE_API, OS_API)) {
+        for (String endpoint : Arrays.asList(KUBE_API, OS_API)) {
             try {
-                String json = readEndpoint(e);
+                String json = readEndpoint(endpoint);
                 ModelNode n = ModelNode.fromJSONString(json);
-                groups.add(new LegacyApiGroup(e, n));
+                groups.add(new LegacyApiGroup(endpoint, n));
             } catch (Exception ex) {
-                LOGGER.error("Can't access legacy endpoint {}", e);
+                LOGGER.info("Can't access legacy endpoint {}", endpoint, ex);
             }
         }
         return groups;
