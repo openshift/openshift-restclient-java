@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.openshift.internal.restclient.model.KubernetesResource;
 import com.openshift.internal.restclient.model.volume.property.HostPathVolumeProperties;
@@ -32,6 +34,8 @@ import com.openshift.restclient.model.volume.property.IPersistentVolumePropertie
 import com.openshift.restclient.utils.MemoryUnit;
 
 public class PersistentVolume extends KubernetesResource implements IPersistentVolume {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PersistentVolume.class);
 
     private static final String PV_ACCESS_MODES = "spec.accessModes";
     private static final String PV_CAPACITY = "spec.capacity.storage";
@@ -243,6 +247,7 @@ public class PersistentVolume extends KubernetesResource implements IPersistentV
         if ( bytes % designatedUnit.getFactor() == 0L ) {
             return bytes / designatedUnit.getFactor();
         }
+        LOGGER.warn("Could not convert capacity: {} to unit {}", capacity, designatedUnit);
         return 0L;
     }
 
