@@ -46,6 +46,9 @@ import com.openshift.restclient.model.JSONSerializeable;
 import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import okio.Buffer;
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Source;
 
 /**
  * @author Jeff Cantrill
@@ -158,7 +161,7 @@ public class DefaultClientTest extends TypeMapperFixture {
     }
     
     @Test
-    public void should_use_paylod_in_delete_request() throws IOException {
+    public void should_use_payload_in_delete_request() throws IOException {
         // given
         DefaultClient client = spy(this.client);
 
@@ -177,7 +180,7 @@ public class DefaultClientTest extends TypeMapperFixture {
     }
 
     @Test
-    public void should_use_paylod_in_post_request() throws IOException {
+    public void should_use_payload_in_post_request() throws IOException {
         // given
         DefaultClient client = spy(this.client);
 
@@ -196,7 +199,7 @@ public class DefaultClientTest extends TypeMapperFixture {
     }
 
     @Test
-    public void should_use_paylod_in_put_request() throws IOException {
+    public void should_use_payload_in_put_request() throws IOException {
         // given
         DefaultClient client = spy(this.client);
 
@@ -215,7 +218,7 @@ public class DefaultClientTest extends TypeMapperFixture {
     }
 
     @Test
-    public void should_not_use_paylod_in_get_request() throws IOException {
+    public void should_not_use_payload_in_get_request() throws IOException {
         // given
         DefaultClient client = spy(this.client);
 
@@ -233,7 +236,7 @@ public class DefaultClientTest extends TypeMapperFixture {
     }
 
     @Test
-    public void should_not_use_paylod_in_head_request() throws IOException {
+    public void should_not_use_payload_in_head_request() throws IOException {
         // given
         DefaultClient client = spy(this.client);
 
@@ -267,6 +270,25 @@ public class DefaultClientTest extends TypeMapperFixture {
         // then
         verify(builder).method(anyString(), bodyCaptor.capture());
         assertThat(bodyCaptor.getValue().contentLength()).isEqualTo(0);        
+    }
+
+    @Test
+    public void should_transform_input_to_empty_string_when_payload_is_null() throws IOException {
+        // given
+        DefaultClient client = spy(this.client);
+        RequestBody payload = client.getPayload(null, HttpMethod.DELETE.name());
+
+        BufferedSink bufferedSink = mock(BufferedSink.class);
+        ArgumentCaptor<Source> bodyCaptor = ArgumentCaptor.forClass(Source.class);
+
+        // when
+        payload.writeTo(bufferedSink);
+
+        // then
+        verify(bufferedSink).writeAll(bodyCaptor.capture());
+        String actualPayload = Okio.buffer(bodyCaptor.getValue()).readUtf8();
+
+        assertThat(actualPayload).isEqualTo("");
     }
 
     private String getPayload(Builder builder, ArgumentCaptor<RequestBody> builderCaptor) throws IOException {
