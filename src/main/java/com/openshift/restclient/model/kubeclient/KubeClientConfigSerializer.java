@@ -11,7 +11,6 @@
 
 package com.openshift.restclient.model.kubeclient;
 
-import java.beans.IntrospectionException;
 import java.io.Reader;
 
 import org.yaml.snakeyaml.Yaml;
@@ -34,7 +33,7 @@ public class KubeClientConfigSerializer {
 
     private static class YamlPropertyUtils extends PropertyUtils {
         @Override
-        public Property getProperty(Class<? extends Object> type, String name) throws IntrospectionException {
+        public Property getProperty(Class<? extends Object> type, String name) {
             if (name.indexOf('-') > -1) {
                 name = BeanUtils.toCamelCase(name, "-");
             }
