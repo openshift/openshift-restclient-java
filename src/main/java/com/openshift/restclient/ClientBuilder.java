@@ -42,10 +42,10 @@ import com.openshift.restclient.utils.SSLUtils;
 import okhttp3.Authenticator;
 import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
+import okhttp3.OkHttp;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.internal.Version;
 
 /**
  * Builder to create IClient instances.
@@ -380,7 +380,7 @@ public class ClientBuilder {
         
         public UserAgentInterceptor(String userAgentPrefix) {
             this.userAgent = StringUtils.join(
-                    new String[]{ userAgentPrefix, "openshift-restclient-java", Version.userAgent }, "/");
+                    new String[]{ userAgentPrefix, "openshift-restclient-java", "okhttp/" + OkHttp.VERSION }, "/");
         }
 
 

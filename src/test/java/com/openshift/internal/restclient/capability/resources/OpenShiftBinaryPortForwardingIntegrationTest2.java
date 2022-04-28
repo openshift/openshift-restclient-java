@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
@@ -92,7 +93,7 @@ public class OpenShiftBinaryPortForwardingIntegrationTest2 implements ResourcePr
         con.setRequestMethod("GET");
         con.setDoInput(true);
         con.connect();
-        System.out.println(IOUtils.toString(con.getInputStream()));
+        System.out.println(IOUtils.toString(con.getInputStream(), StandardCharsets.UTF_8));
         con.disconnect();
     }
 }

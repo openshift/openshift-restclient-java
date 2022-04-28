@@ -66,7 +66,6 @@ public class DeployCapabilityTest {
         assertTrue("Exp. the capability to be supported", cap.isSupported());
     }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = OpenShiftException.class)
     public void testThrowsErrorWhenUnableToFindLatestDeployment() {
         when(client.get(anyString(), anyString(), anyString())).thenThrow(OpenShiftException.class);

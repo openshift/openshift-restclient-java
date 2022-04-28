@@ -13,6 +13,7 @@ package com.openshift.internal.restclient.capability.resources;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -216,12 +217,12 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
             Thread.sleep(1000);
             if (!process.isAlive() && process.exitValue() != 0) {
                 throw new OpenShiftException("OpenShiftBinaryCapability process exited: %s",
-                        IOUtils.toString(process.getErrorStream()));
+                        IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8));
             }
         } catch (InterruptedException e) {
             if (!process.isAlive() && process.exitValue() != 0) {
                 throw new OpenShiftException("OpenShiftBinaryCapability process exited: %s",
-                        IOUtils.toString(process.getErrorStream()));
+                        IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8));
             }
         }
     }
@@ -240,7 +241,7 @@ public abstract class AbstractOpenShiftBinaryCapability implements IBinaryCapabi
             if (exitValue != 0) {
                 try {
                     LOG.debug("OpenShiftBinaryCapability process error stream: {}",
-                            IOUtils.toString(process.getErrorStream()));
+                            IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8));
                 } catch (IOException e) {
                     LOG.debug("IOException trying to debug the process error stream", e);
                 }
