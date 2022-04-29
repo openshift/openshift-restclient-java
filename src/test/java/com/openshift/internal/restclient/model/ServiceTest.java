@@ -87,7 +87,6 @@ public class ServiceTest {
         assertEquals("foo", service.getPorts().get(0).getName());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testGetPods() {
         // setup

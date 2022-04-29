@@ -14,8 +14,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
-import java.io.IOException;
-
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,8 +74,8 @@ public class RouteTest {
     }
 
     @Test
-    public void createPortWhenUndefined() throws IOException {
-        ModelNode node = ModelNode.fromJSONStream(Samples.V1_ROUTE_WO_TLS.getContent());
+    public void createPortWhenUndefined() {
+        ModelNode node = ModelNode.fromJSONString(Samples.V1_ROUTE_WO_TLS.getContentAsString());
         route = new Route(node, client, ResourcePropertiesRegistry.getInstance().get(VERSION, ResourceKind.ROUTE));
         ITargetPort port = route.createPort();
         assertNotNull(port);

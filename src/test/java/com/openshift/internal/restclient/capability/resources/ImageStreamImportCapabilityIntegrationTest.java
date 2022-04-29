@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,8 +28,6 @@ import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IProject;
 import com.openshift.restclient.model.IStatus;
 import com.openshift.restclient.model.image.IImageStreamImport;
-
-import junit.framework.Assert;
 
 public class ImageStreamImportCapabilityIntegrationTest {
 

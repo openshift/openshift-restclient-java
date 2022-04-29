@@ -104,12 +104,4 @@ public enum Samples {
         return content;
     }
 
-    public InputStream getContent(){
-        try {
-            return Samples.class.getResourceAsStream(filePath);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            throw new RuntimeException("Could not read file " + filePath + ": " + e.getMessage());
-        }
-    }
 }
