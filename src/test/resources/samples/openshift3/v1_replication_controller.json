@@ -98,7 +98,7 @@
                 ],
                 "restartPolicy": "Always",
                 "dnsPolicy": "ClusterFirst",
-                "serviceAccountName": "dbServiceAccountName",
+                "serviceAccountName": "dbServiceAccountName"
             }
         }
     },

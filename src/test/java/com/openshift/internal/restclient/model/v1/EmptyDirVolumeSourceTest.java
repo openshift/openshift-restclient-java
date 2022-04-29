@@ -12,7 +12,7 @@
 package com.openshift.internal.restclient.model.v1;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.jboss.dmr.ModelNode;
 import org.junit.Before;

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -344,7 +345,7 @@ public class DefaultClient implements IClient, IHttpConstants {
         if(isPayloadlessMethod(method)) {
             return null;
         }
-        InputStream input = payload == null ? IOUtils.toInputStream("") : payload;
+        InputStream input = payload == null ? IOUtils.toInputStream("", StandardCharsets.UTF_8) : payload;
         LOGGER.debug("About to send binary payload");
         return new RequestBody() {
             @Override

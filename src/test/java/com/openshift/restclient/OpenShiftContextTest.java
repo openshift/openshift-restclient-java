@@ -9,9 +9,9 @@
 
 package com.openshift.restclient;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotSame;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 
 import org.junit.After;
 import org.junit.Test;

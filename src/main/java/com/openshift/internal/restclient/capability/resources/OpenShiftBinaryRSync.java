@@ -13,6 +13,7 @@ package com.openshift.internal.restclient.capability.resources;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -128,7 +129,7 @@ public class OpenShiftBinaryRSync extends AbstractOpenShiftBinaryCapability impl
 
     private static String getErrorMessage(InputStream errorStream) {
         try {
-            return IOUtils.toString(errorStream);
+            return IOUtils.toString(errorStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             LOG.error("Could not retrieve error message from process", e);
             return null;

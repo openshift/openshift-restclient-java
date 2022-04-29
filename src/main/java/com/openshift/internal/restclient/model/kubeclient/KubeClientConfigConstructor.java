@@ -25,9 +25,9 @@ public class KubeClientConfigConstructor extends Constructor {
         super(KubeClientConfig.class);
 
         TypeDescription configTypeDesc = new TypeDescription(KubeClientConfig.class);
-        configTypeDesc.putListPropertyType(CONTEXTS, Context.class);
-        configTypeDesc.putListPropertyType(CLUSTERS, Cluster.class);
-        configTypeDesc.putListPropertyType(USERS, User.class);
+        configTypeDesc.addPropertyParameters(CONTEXTS, Context.class);
+        configTypeDesc.addPropertyParameters(CLUSTERS, Cluster.class);
+        configTypeDesc.addPropertyParameters(USERS, User.class);
         addTypeDescription(configTypeDesc);
 
         setPropertyUtils(propertyUtils);

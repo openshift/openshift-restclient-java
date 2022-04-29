@@ -22,7 +22,7 @@
         "to": {
             "kind": "Service",
             "name": "frontend"
-        },
+        }
     },
     "status": {}
 }
