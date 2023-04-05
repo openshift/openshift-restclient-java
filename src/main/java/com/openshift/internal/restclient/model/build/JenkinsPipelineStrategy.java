@@ -68,12 +68,10 @@ public class JenkinsPipelineStrategy extends ModelNodeAdapter
     @Override
     public Collection<IEnvironmentVariable> getEnvVars() {
         String[] path = JBossDmrExtentions.getPath(getPropertyKeys(), ENV);
-        ModelNode envNode = getNode().get(path);
-        if (envNode.isDefined()) {
-            return envNode.asList().stream().map(n -> new EnvironmentVariable(n, getPropertyKeys()))
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        ModelNode envNode = getNode();
+        Map<String, String[]> propertyKeys = getPropertyKeys();
+        EnvVars env = new EnvVars();
+        return env.getEnvVars(path, envNode, propertyKeys);
     }
 
     @Override

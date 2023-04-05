@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.openshift.restclient.model.build.*;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.dmr.ModelNode;
 
@@ -28,20 +29,6 @@ import com.openshift.internal.restclient.model.build.WebhookTrigger;
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.IBuildConfig;
 import com.openshift.restclient.model.IObjectReference;
-import com.openshift.restclient.model.build.BuildSourceType;
-import com.openshift.restclient.model.build.BuildStrategyType;
-import com.openshift.restclient.model.build.BuildTriggerType;
-import com.openshift.restclient.model.build.IBinaryBuildSource;
-import com.openshift.restclient.model.build.IBuildSource;
-import com.openshift.restclient.model.build.IBuildStrategy;
-import com.openshift.restclient.model.build.IBuildTrigger;
-import com.openshift.restclient.model.build.ICustomBuildStrategy;
-import com.openshift.restclient.model.build.IDockerBuildStrategy;
-import com.openshift.restclient.model.build.IGitBuildSource;
-import com.openshift.restclient.model.build.IImageChangeTrigger;
-import com.openshift.restclient.model.build.IJenkinsPipelineStrategy;
-import com.openshift.restclient.model.build.ISourceBuildStrategy;
-import com.openshift.restclient.model.build.IWebhookTrigger;
 
 public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
@@ -70,6 +57,23 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
     public BuildConfig(ModelNode node, IClient client, Map<String, String[]> overrideProperties) {
         super(node, client, null);
         CapabilityInitializer.initializeCapabilities(getModifiableCapabilities(), this, client);
+    }
+
+    public class GitBuildSourceHandler implements IBuildSourceHandler {
+        @Override
+        public void setProperties(IBuildSource source) {
+            IGitBuildSource git = (IGitBuildSource) source;
+            set(BUILDCONFIG_SOURCE_REF, git.getRef());
+            set(BUILDCONFIG_SOURCE_URI, git.getURI());
+        }
+    }
+
+    public class BinaryBuildSourceHandler implements IBuildSourceHandler {
+        @Override
+        public void setProperties(IBuildSource source) {
+            IBinaryBuildSource binary = (IBinaryBuildSource) source;
+            set(BUILDCONFIG_SOURCE_BINARY_ASFILE, binary.getAsFile());
+        }
     }
 
     @Override
@@ -179,23 +183,22 @@ public class BuildConfig extends KubernetesResource implements IBuildConfig {
 
     @Override
     public void setBuildSource(IBuildSource source) {
+        IBuildSourceHandler handler = null;
         switch (source.getType()) {
         case BuildSourceType.GIT:
             if (!(source instanceof IGitBuildSource)) {
                 throw new IllegalArgumentException("IBuildSource of type Git does not implement IGitBuildSource");
             }
-            IGitBuildSource git = (IGitBuildSource) source;
-            set(BUILDCONFIG_SOURCE_REF, git.getRef());
-            set(BUILDCONFIG_SOURCE_URI, git.getURI());
+            handler = new GitBuildSourceHandler();
             break;
         case BuildSourceType.BINARY:
             if (!(source instanceof IBinaryBuildSource)) {
                 throw new IllegalArgumentException("IBuildSource of type Binary does not implement IBinaryBuildSource");
             }
-            IBinaryBuildSource binary = (IBinaryBuildSource) source;
-            set(BUILDCONFIG_SOURCE_BINARY_ASFILE, binary.getAsFile());
+            handler = new BinaryBuildSourceHandler();
             break;
         }
+        handler.setProperties(source);
         set(BUILDCONFIG_SOURCE_TYPE, source.getType());
         set(BUILDCONFIG_SOURCE_CONTEXTDIR, source.getContextDir());
     }

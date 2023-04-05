@@ -189,8 +189,9 @@ public class ApiTypeMapper implements IApiTypeMapper, ResourcePropertyKeys {
         VersionedApiResource resource = new VersionedApiResource(prefix, apiGroupName, version, name, kind, namespaced);
         VersionedType type = new VersionedType(prefix, typeApiGroupName != null ? typeApiGroupName : apiGroupName,
                 typeVersion != null ? typeVersion : version, kind);
-        if (capability == null && node.has(VERBS) && !node.get(VERBS).asList().isEmpty()
-                && !endpoints.contains(resource)) {
+        boolean hasVerbs = node.has(VERBS) && !node.get(VERBS).asList().isEmpty();
+        boolean isNotEndpoint = !endpoints.contains(resource);
+        if (capability == null && hasVerbs && isNotEndpoint){
             endpoints.add(resource);
         }
         if (!types.contains(type)) {

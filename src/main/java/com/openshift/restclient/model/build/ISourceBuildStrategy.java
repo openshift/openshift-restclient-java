@@ -17,7 +17,7 @@ import java.util.Map;
 import com.openshift.restclient.images.DockerImageURI;
 import com.openshift.restclient.model.IEnvironmentVariable;
 
-public interface ISourceBuildStrategy extends IBuildStrategy {
+public interface ISourceBuildStrategy extends IBuildStrategy, GetEnvSuper {
 
     /**
      * Returns the Builder Image used to execute the build
@@ -41,8 +41,6 @@ public interface ISourceBuildStrategy extends IBuildStrategy {
     Map<String, String> getEnvironmentVariables();
 
     void setEnvironmentVariables(Map<String, String> envVars);
-
-    Collection<IEnvironmentVariable> getEnvVars();
 
     /**
      * Setting using a null collection will early return without modification to the

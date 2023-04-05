@@ -18,6 +18,7 @@ import org.jboss.dmr.ModelType;
 
 import com.openshift.restclient.IClient;
 import com.openshift.restclient.model.serviceaccount.IServiceAccount;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author David Simansky | dsimansk@redhat.com
@@ -33,8 +34,13 @@ public class ServiceAccount extends KubernetesResource implements IServiceAccoun
 
     @Override
     public Collection<String> getSecrets() {
+        return getServiceAccountSecrets(SERVICE_ACCOUNT_SECRETS);
+    }
+
+    @NotNull
+    private Collection<String> getServiceAccountSecrets(String serviceAccountSecrets) {
         Collection<String> secrets = new ArrayList<>();
-        ModelNode node = get(SERVICE_ACCOUNT_SECRETS);
+        ModelNode node = get(serviceAccountSecrets);
         if (node.getType() != ModelType.LIST) {
             return secrets;
         }
@@ -52,15 +58,7 @@ public class ServiceAccount extends KubernetesResource implements IServiceAccoun
 
     @Override
     public Collection<String> getImagePullSecrets() {
-        Collection<String> secrets = new ArrayList<>();
-        ModelNode node = get(SERVICE_ACCOUNT_IMAGE_PULL_SECRETS);
-        if (node.getType() != ModelType.LIST) {
-            return secrets;
-        }
-        for (ModelNode entry : node.asList()) {
-            secrets.add(asString(entry, NAME));
-        }
-        return secrets;
+        return getServiceAccountSecrets(SERVICE_ACCOUNT_IMAGE_PULL_SECRETS);
     }
 
     @Override

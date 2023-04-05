@@ -16,16 +16,14 @@ import static com.openshift.internal.util.JBossDmrExtentions.asString;
 import static com.openshift.internal.util.JBossDmrExtentions.set;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
+import com.openshift.restclient.model.build.GetEnvSuper;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
-import com.openshift.internal.restclient.model.EnvironmentVariable;
 import com.openshift.internal.restclient.model.ModelNodeAdapter;
 import com.openshift.internal.restclient.model.properties.ResourcePropertyKeys;
 import com.openshift.internal.util.JBossDmrExtentions;
@@ -34,7 +32,7 @@ import com.openshift.restclient.model.IEnvironmentVariable;
 import com.openshift.restclient.model.build.BuildStrategyType;
 import com.openshift.restclient.model.build.ISourceBuildStrategy;
 
-public class SourceBuildStrategy extends ModelNodeAdapter implements ISourceBuildStrategy, ResourcePropertyKeys {
+public class SourceBuildStrategy extends ModelNodeAdapter implements ISourceBuildStrategy, ResourcePropertyKeys, GetEnvSuper {
 
     public static final String FROM_IMAGE = "sourceStrategy.from.name";
     public static final String FROM_KIND = "sourceStrategy.from.kind";
@@ -96,12 +94,10 @@ public class SourceBuildStrategy extends ModelNodeAdapter implements ISourceBuil
     @Override
     public Collection<IEnvironmentVariable> getEnvVars() {
         String[] path = JBossDmrExtentions.getPath(getPropertyKeys(), ENV);
-        ModelNode envNode = getNode().get(path);
-        if (envNode.isDefined()) {
-            return envNode.asList().stream().map(n -> new EnvironmentVariable(n, getPropertyKeys()))
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        ModelNode envNode = getNode();
+        Map<String, String[]> propertyKeys = getPropertyKeys();
+        EnvVars env = new EnvVars();
+        return env.getEnvVars(path, envNode, propertyKeys);
     }
 
     @Override
@@ -134,10 +130,10 @@ public class SourceBuildStrategy extends ModelNodeAdapter implements ISourceBuil
         ModelNode env = getNode().get(path);
         env.clear();
         for (Entry<String, String> entry : envVars.entrySet()) {
-            ModelNode var = new ModelNode();
-            var.get(NAME).set(entry.getKey());
-            var.get(VALUE).set(entry.getValue());
-            env.add(var);
+            ModelNode mNode = new ModelNode();
+            mNode.get(NAME).set(entry.getKey());
+            mNode.get(VALUE).set(entry.getValue());
+            env.add(mNode);
         }
     }
 
